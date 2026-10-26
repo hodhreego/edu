@@ -35,7 +35,8 @@ body{padding-top:var(--eh)!important}
 #edu-nav form.cod button{border:0;border-radius:99px;background:var(--ec,#1f4fd8);color:#fff;font:800 12px "Segoe UI",Roboto,Arial,sans-serif;padding:6px 12px;cursor:pointer}
 #edu-nav form.cod button:hover{filter:brightness(1.12)}
 #edu-nav .tag{display:inline-flex;align-items:center;gap:5px;background:color-mix(in srgb,var(--ec,#1f4fd8) 13%,#fff);color:var(--ec,#1f4fd8);border-radius:99px;padding:5px 11px;font-weight:800;font-size:12px;white-space:nowrap;flex:none}
-#edu-nav .tag.k{letter-spacing:.08em;background:var(--ec,#1f4fd8);color:#fff;font-size:calc(30px*var(--ez,1));letter-spacing:.08em;font-weight:900;padding:6px 18px;box-shadow:0 2px 8px #0003;border-radius:14px}
+#edu-nav .tag.k{letter-spacing:.08em;background:var(--ec,#1f4fd8);color:#fff;font-size:calc(30px*var(--ez,1));letter-spacing:.08em;font-weight:900;padding:8px 30px;box-shadow:0 2px 8px #0003;border-radius:14px;min-width:190px;justify-content:center;cursor:pointer;user-select:none;transition:zoom .15s}
+#edu-nav .tag.k.big{zoom:1.3}
 #edu-nav .pn{display:flex;gap:6px;flex:none}
 #edu-nav a.n{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 12px;border-radius:99px;text-decoration:none;color:#fff;background:var(--ec,#1f4fd8);font-weight:800;white-space:nowrap}
 #edu-nav a.n.off{background:#cfd6e6;pointer-events:none}
@@ -50,7 +51,7 @@ html.edu-hc #edu-nav .tag.k{background:#ffeb3b!important;color:#000!important}
 html.edu-hc #edu-nav .sels,html.edu-hc #edu-nav form.cod{background:#fff!important;border-color:#ffeb3b!important}
 html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b!important;color:#000!important}
 @media(max-width:1060px){#edu-nav .tag.k{display:inline-flex;font-size:calc(26px*var(--ez,1))}}
-@media(min-width:901px) and (max-width:1400px){#edu-nav select{max-width:118px}#edu-nav .tag.k{font-size:calc(26px*var(--ez,1));padding:5px 12px}#edu-nav a.b span{display:none}}
+@media(min-width:901px) and (max-width:1400px){#edu-nav select{max-width:118px}#edu-nav .tag.k{font-size:calc(26px*var(--ez,1));padding:6px 22px;min-width:170px}#edu-nav a.b span{display:none}}
 @media(max-width:900px){
  #edu-nav{padding:7px 10px;gap:7px 8px}
  #edu-nav a.b span{display:none}
@@ -89,7 +90,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   '</div>'+
   '<span class="sp"></span>'+
   (cur.aula?'<span class="tag">Aula '+cur.aula+'</span>':'')+
-  (cur.cod?'<span class="tag k" title="Código deste jogo">🔑 '+cur.cod+'</span>':'')+
+  (cur.cod?'<span class="tag k" id="en-k" title="Clique para aumentar o código">🔑 '+cur.cod+'</span>':'')+
   '<form class="cod" id="en-c" autocomplete="off" title="Digite o código de 4 números de uma atividade"><b>🔑</b>'+
    '<input id="en-cv" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Código" aria-label="Código da atividade"><button type="submit">Ir ▶</button></form>'+
   '<button class="ac" id="en-a" title="Acessibilidade" aria-label="Acessibilidade">♿</button>'+
@@ -110,6 +111,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  document.getElementById('en-m').onchange=function(){var m=this.value;var t=TEMAS.filter(function(x){return x.mat===m})[0];location.href=first(function(j){return j.tema===t.id})||HUB};
  document.getElementById('en-t').onchange=function(){var t=this.value;location.href=first(function(j){return j.tema===t})||HUB};
  document.getElementById('en-g').onchange=function(){location.href=this.value};
+ var kk=document.getElementById('en-k');if(kk){try{if(localStorage.getItem('edu_kbig')==='1')kk.classList.add('big')}catch(e){}kk.onclick=function(){kk.classList.toggle('big');try{localStorage.setItem('edu_kbig',kk.classList.contains('big')?'1':'0')}catch(e){}setH()}}
  var f=document.getElementById('en-c'),iv=document.getElementById('en-cv');
  iv.addEventListener('input',function(){iv.value=iv.value.replace(/\D/g,'').slice(0,4)});
  f.addEventListener('submit',function(e){
