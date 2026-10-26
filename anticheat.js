@@ -12,11 +12,11 @@
  'html,body{-webkit-touch-callout:none!important;-webkit-user-select:none!important;user-select:none!important}'+
  'input,textarea,[contenteditable]{-webkit-user-select:text!important;user-select:text!important}'+
  'img,svg,canvas{-webkit-user-drag:none;user-drag:none}'+
- '#ac-aviso{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483600;width:80vw;height:80vh;background:#d00000;color:#fff;border:8px solid #fff;border-radius:28px;'+
+ '#ac-aviso{position:fixed!important;left:10vw!important;top:10vh!important;right:auto!important;bottom:auto!important;margin:0!important;z-index:2147483600;width:80vw!important;height:80vh!important;height:80dvh!important;max-width:none!important;background:#d00000;color:#fff;border:8px solid #fff;border-radius:28px;'+
  'padding:3vh 3vw;text-align:center;font:900 clamp(30px,7vw,84px)/1.12 "Segoe UI",Roboto,Arial,sans-serif;box-shadow:0 0 0 10px #d00000,0 0 0 9999px rgba(0,0,0,.55),0 24px 70px rgba(0,0,0,.7);display:none;flex-direction:column;align-items:center;justify-content:center;gap:2vh;animation:ac-sacode .4s infinite;cursor:pointer}'+
  '#ac-aviso small{display:block;font:700 clamp(16px,2.6vw,30px)/1.3 "Segoe UI",Roboto,Arial,sans-serif;opacity:.97}'+
  '#ac-aviso em{display:block;font:800 clamp(14px,2vw,22px) "Segoe UI",Roboto,Arial,sans-serif;font-style:normal;background:#fff;color:#d00000;border-radius:99px;padding:6px 22px}'+
- '@keyframes ac-sacode{0%,100%{transform:translate(-50%,-50%) rotate(0)}12%{transform:translate(calc(-50% - 22px),calc(-50% + 6px)) rotate(-2.2deg)}25%{transform:translate(calc(-50% + 22px),calc(-50% - 6px)) rotate(2.2deg)}38%{transform:translate(calc(-50% - 16px),calc(-50% - 8px)) rotate(-1.6deg)}50%{transform:translate(calc(-50% + 16px),calc(-50% + 8px)) rotate(1.6deg)}65%{transform:translate(calc(-50% - 10px),-50%) rotate(-1deg)}80%{transform:translate(calc(-50% + 10px),-50%) rotate(1deg)}}'+
+ '@keyframes ac-sacode{0%,100%{transform:translate(0,0) rotate(0)}12%{transform:translate(-22px,6px) rotate(-2.2deg)}25%{transform:translate(22px,-6px) rotate(2.2deg)}38%{transform:translate(-16px,-8px) rotate(-1.6deg)}50%{transform:translate(16px,8px) rotate(1.6deg)}65%{transform:translate(-10px,0) rotate(-1deg)}80%{transform:translate(10px,0) rotate(1deg)}}'+
  '@media print{#ac-aviso{display:none!important}}';
  document.head.appendChild(css);
  var box=document.createElement('div');box.id='ac-aviso';box.setAttribute('role','alert');
