@@ -26,7 +26,7 @@
  '#edu-nav a.n{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 10px;border-radius:99px;text-decoration:none;color:#fff;background:var(--ec,#1f4fd8);font-weight:800;white-space:nowrap}'+
  '#edu-nav a.n.off{background:#cfd6e6;pointer-events:none}'+
  '#edu-nav a.n:hover{filter:brightness(1.1)}'+
- '#edu-nav .tag{display:inline-block;background:color-mix(in srgb,var(--ec,#1f4fd8) 14%,#fff);color:var(--ec,#1f4fd8);border-radius:99px;padding:3px 10px;font-weight:800;font-size:12px;white-space:nowrap}'+
+ '#edu-nav .tag{display:inline-block;margin-right:4px;background:color-mix(in srgb,var(--ec,#1f4fd8) 14%,#fff);color:var(--ec,#1f4fd8);border-radius:99px;padding:3px 10px;font-weight:800;font-size:12px;white-space:nowrap}'+
  '@media(max-width:900px){#edu-nav label span{display:none}#edu-nav .brand span{display:none}#edu-nav select{max-width:150px}#edu-nav .tag{display:none}}'+
  '@media(max-width:640px){#edu-nav{overflow-x:auto;gap:7px;padding:0 8px}#edu-nav select{max-width:118px;font-size:12px;padding:5px 24px 5px 9px}#edu-nav .sep{display:none}}'+
  '@media(prefers-color-scheme:dark){#edu-nav{background:rgba(24,32,58,.92);border-color:#2a3558;color:#eef2fc}#edu-nav a.b{color:#eef2fc}#edu-nav a.b:hover{background:#222c4c}#edu-nav select{background-color:#18203a;color:#eef2fc;border-color:#2a3558}#edu-nav label{color:#a3afcf}#edu-nav .sep{background:#2a3558}}'+
@@ -47,7 +47,7 @@
   '<label><span>Matéria</span><select id="en-m" aria-label="Matéria">'+ms+'</select></label>'+
   '<label><span>Tema</span><select id="en-t" aria-label="Tema">'+ts+'</select></label>'+
   '<label><span>Jogo</span><select id="en-g" aria-label="Jogo">'+gs+'</select></label>'+
-  '<span class="sp"></span>'+(cur.aula?'<span class="tag">Aula '+cur.aula+'</span>':'')+
+  '<span class="sp"></span>'+(cur.aula?'<span class="tag">Aula '+cur.aula+'</span>':'')+'<span class="tag" title="Código deste jogo: digite no início do site">🔑 '+cur.cod+'</span>'+
   '<a class="n'+(prev?'':' off')+'" href="'+(prev?prev.href:'#')+'" title="Jogo anterior">◀</a>'+
   '<a class="n'+(next?'':' off')+'" href="'+(next?next.href:'#')+'" title="Próximo jogo">Próximo ▶</a>';
  document.body.insertBefore(nav,document.body.firstChild);

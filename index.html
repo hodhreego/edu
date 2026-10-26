@@ -53,6 +53,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 .cod input:focus{outline:none;border-color:var(--brand)}
 .cod button{font:800 20px "Segoe UI",Roboto,Arial,sans-serif;background:var(--brand);color:#fff;border:0;border-radius:14px;padding:12px 26px;cursor:pointer}
 .cod .err{color:#d93025;font-weight:700;order:4;flex-basis:100%;display:none}
+.kod{display:flex;align-items:center;justify-content:center;gap:8px;background:color-mix(in srgb,var(--c) 10%,var(--surface));border:2px dashed var(--c);border-radius:12px;padding:6px 10px;font-weight:700;color:var(--c)}.kod b{font:900 24px "Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.14em;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -106,7 +107,7 @@ function draw(){
   const g=document.createElement('div');g.className='grid';
   js.forEach(j=>{n++;
    const c=document.createElement('div');c.className='card';c.style.setProperty('--c',t.cor);
-   c.innerHTML='<div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
+   c.innerHTML='<div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><div class="kod" title="Digite este código na caixa do topo">🔑 Código <b>'+j.cod+'</b></div><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
    g.appendChild(c)});
   s.appendChild(g);out.appendChild(s)});
  empty.style.display=n?'none':'block'}
