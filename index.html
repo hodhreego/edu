@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Jogos de Matemática, Idiomas e Educação Financeira</title>
+<title>Loja de Matemática</title>
 <style>
 :root{--bg:#f4f7fc;--surface:#fff;--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--brand:#1f4fd8;--brand2:#ff7a1a;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#0e1424;--surface:#18203a;--ink:#eef2fc;--muted:#a3afcf;--line:#2a3558;--brand:#6c93ff;--brand2:#ff9a4d;color-scheme:dark}}
@@ -12,6 +12,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Robot
 .hero{background:linear-gradient(135deg,#1f4fd8,#6a3df0 60%,#ff7a1a);color:#fff;padding:34px 20px 80px;position:relative;overflow:hidden}
 .hero .in{max-width:1280px;margin:0 auto;position:relative;z-index:1}
 .hero h1{margin:0 0 8px;font-size:clamp(26px,5vw,46px);line-height:1.1}
+.marca{display:flex;align-items:center;gap:clamp(12px,3vw,26px);margin:0 0 12px}.marca .lg{width:clamp(78px,12vw,128px);flex:none;filter:drop-shadow(0 6px 10px #0006)}.marca h1{margin:0;font-family:Georgia,"Times New Roman",serif;letter-spacing:.02em;text-shadow:0 3px 10px #0005}.slogan{font-size:clamp(13px,2vw,18px);opacity:.95;letter-spacing:.08em;text-transform:uppercase;margin-top:4px;font-weight:600}
+.meandro{height:16px;background:#fff;opacity:.9;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cpath d='M0 15V1h14v10H6V5h4v4' fill='none' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M16 15V1h14v10h-8V5h4v4' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") repeat-x;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16'%3E%3Cpath d='M0 15V1h14v10H6V5h4v4' fill='none' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M16 15V1h14v10h-8V5h4v4' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") repeat-x;margin-top:18px}
 .hero p{margin:0;max-width:680px;font-size:clamp(15px,2.2vw,18px);opacity:.95}
 .sym{position:absolute;font-weight:800;opacity:.13;user-select:none;pointer-events:none;font-size:90px}
 .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
@@ -58,10 +60,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 </head>
 <body>
 <div class="hero"><div class="in">
-<h1>🎲 Jogos de Matemática, Idiomas e Educação Financeira</h1>
+<div class="marca"><div class="lg" id="lgo"></div><div><h1>Loja de Matemática</h1><div class="slogan">Jogos de matemática, idiomas e educação financeira</div></div></div>
 <p>Escolha a matéria, depois o jogo. Arraste a resposta até o cartão certo, ganhe moedas e avance de fase. Funciona no computador, no Chromebook e no celular.</p>
 <div class="badges"><span>🖱️ Arrastar ou clicar</span><span>🔊 Clique na palavra para ouvir</span><span>🪙 +15 por acerto</span></div>
-</div>
+<div class="meandro"></div></div>
 <span class="sym" style="left:4%;top:20px">+</span><span class="sym" style="right:6%;top:30px;font-size:120px">÷</span><span class="sym" style="left:46%;bottom:-18px;font-size:110px">×</span><span class="sym" style="right:30%;top:-10px">−</span>
 </div>
 <main>
@@ -115,7 +117,7 @@ function usar(c){var i=document.getElementById('codv');i.value=c;i.scrollIntoVie
 function entrar(c){var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
 document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=document.getElementById('codv').value;document.getElementById('coderr').style.display=entrar(v)?'none':'block'};
 var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
-drawMats();chips();draw();
+document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();
 </script>
 </body>
 </html>

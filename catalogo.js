@@ -1,5 +1,13 @@
 /* Catálogo único: usado pelo hub (index.html) e pelo menu superior (menu.js).
    Jogo novo: acrescente um J(...) em JOGOS. Último parâmetro opcional = número da aula. */
+/* Logotipo: templo grego (Loja de Matemática). LOGO('x') devolve o SVG; o sufixo evita conflito de ids. */
+const LOGO=function(k){return '<svg viewBox="0 0 120 104" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Loja de Matemática"><defs><linearGradient id="lg'+k+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#d8920f"/></linearGradient><linearGradient id="lm'+k+'" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dfe6f5"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#cdd7ee"/></linearGradient></defs>'+
+ '<polygon points="6,40 60,6 114,40" fill="url(#lg'+k+')" stroke="#8a5a00" stroke-width="2" stroke-linejoin="round"/>'+
+ '<polygon points="22,36 60,13 98,36" fill="#1b2f78"/>'+
+ '<text x="60" y="35" text-anchor="middle" font-size="19" font-weight="900" fill="#ffe08a" font-family="Georgia,serif">π</text>'+
+ '<rect x="10" y="40" width="100" height="7" rx="1.5" fill="url(#lg'+k+')" stroke="#8a5a00" stroke-width="1.5"/>'+
+ [18,36,54,72,90].map(function(x){return '<rect x="'+(x-2)+'" y="48" width="18" height="4.5" rx="1" fill="url(#lg'+k+')" stroke="#8a5a00" stroke-width="1"/><rect x="'+x+'" y="52.5" width="14" height="30" fill="url(#lm'+k+')" stroke="#7d8db8" stroke-width="1.2"/><line x1="'+(x+4.5)+'" y1="53" x2="'+(x+4.5)+'" y2="82" stroke="#aab6d6" stroke-width="1"/><line x1="'+(x+9.5)+'" y1="53" x2="'+(x+9.5)+'" y2="82" stroke="#aab6d6" stroke-width="1"/><rect x="'+(x-2)+'" y="82.5" width="18" height="4" rx="1" fill="url(#lg'+k+')" stroke="#8a5a00" stroke-width="1"/>'}).join('')+
+ '<rect x="8" y="87" width="104" height="5.5" rx="1.5" fill="#f3f6fd" stroke="#7d8db8" stroke-width="1.3"/><rect x="3" y="92.5" width="114" height="6" rx="1.5" fill="#e4eaf8" stroke="#7d8db8" stroke-width="1.3"/><rect x="0" y="98.5" width="120" height="5" rx="1.5" fill="url(#lg'+k+')" stroke="#8a5a00" stroke-width="1.3"/></svg>'};
 const FUS='<svg viewBox="0 0 38 20"><rect width="38" height="20" fill="#fff"/>'+[0,3.08,6.16,9.24,12.32,15.4,18.48].map(y=>'<rect y="'+y+'" width="38" height="1.54" fill="#b22234"/>').join('')+'<rect width="15.2" height="10.77" fill="#3c3b6e"/></svg>';
 const FES='<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/></svg>';
 const FFR='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>';

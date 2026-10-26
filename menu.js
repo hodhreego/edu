@@ -17,7 +17,7 @@ body{padding-top:var(--eh)!important}
 #edu-nav *{box-sizing:border-box}
 #edu-nav a.b{display:flex;align-items:center;gap:8px;text-decoration:none;color:#16213a;font-weight:800;font-size:14px;white-space:nowrap;padding:3px 10px 3px 3px;border-radius:12px;flex:none}
 #edu-nav a.b:hover{background:#eef2fc}
-#edu-nav a.b i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#1f4fd8,#6a3df0);color:#fff;font-size:17px}
+#edu-nav a.b i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:#fff;border:1px solid #dfe6f5;color:#fff;font-size:17px;padding:2px}#edu-nav a.b i svg{width:100%;height:100%}
 #edu-nav .sels{display:flex;align-items:center;gap:6px;background:#f2f5fc;border:1px solid #e1e7f3;border-radius:14px;padding:4px;flex:0 1 auto;min-width:0}
 #edu-nav .sels label{display:flex;flex-direction:column;gap:1px;min-width:0;padding:0 2px}
 #edu-nav .sels label span{color:#6a7592;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;padding-left:10px}
@@ -82,7 +82,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  var gs=jt.map(function(j){return opt(j.href,lab(j),j===cur)}).join('');
  var prev=idx>0?jt[idx-1]:null,next=idx<jt.length-1?jt[idx+1]:null;
  nav.innerHTML=
-  '<a class="b brand" href="'+HUB+'" title="Voltar ao início"><i>🎓</i><span>Jogos Educativos</span></a>'+
+  '<a class="b brand" href="'+HUB+'" title="Loja de Matemática — voltar ao início"><i>'+(typeof LOGO==='function'?LOGO('n'):'🏛️')+'</i><span>Loja de Matemática</span></a>'+
   '<div class="sels">'+
    '<label><span>Matéria</span><select id="en-m" aria-label="Matéria">'+ms+'</select></label><i class="div"></i>'+
    '<label><span>Tema</span><select id="en-t" aria-label="Tema">'+ts+'</select></label><i class="div"></i>'+
