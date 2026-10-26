@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jogos de Matemática, Idiomas e Educação Financeira</title>
+<style>
+:root{--bg:#f4f7fc;--surface:#fff;--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--brand:#1f4fd8;--brand2:#ff7a1a;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1424;--surface:#18203a;--ink:#eef2fc;--muted:#a3afcf;--line:#2a3558;--brand:#6c93ff;--brand2:#ff9a4d;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
+.hero{background:linear-gradient(135deg,#1f4fd8,#6a3df0 60%,#ff7a1a);color:#fff;padding:34px 20px 80px;position:relative;overflow:hidden}
+.hero .in{max-width:1280px;margin:0 auto;position:relative;z-index:1}
+.hero h1{margin:0 0 8px;font-size:clamp(26px,5vw,46px);line-height:1.1}
+.hero p{margin:0;max-width:680px;font-size:clamp(15px,2.2vw,18px);opacity:.95}
+.sym{position:absolute;font-weight:800;opacity:.13;user-select:none;pointer-events:none;font-size:90px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.badges span{background:#ffffff26;border:1px solid #ffffff55;border-radius:99px;padding:4px 12px;font-size:13px}
+main{max-width:1280px;margin:-48px auto 40px;padding:0 16px;position:relative;z-index:2}
+.mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:0 0 22px}
+.mat{position:relative;border:4px solid #fff;border-radius:26px;padding:20px 12px 16px;background:var(--c);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font:800 clamp(20px,2.6vw,26px) "Segoe UI",Roboto,Arial,sans-serif;box-shadow:0 10px 26px #0003;transition:transform .15s;min-height:210px;justify-content:center}
+.mat:hover{transform:translateY(-4px) scale(1.02)}
+.mat.on{outline:6px solid var(--ink);outline-offset:3px;transform:scale(1.04)}
+.mat .ic{height:104px;display:flex;align-items:center;justify-content:center;font-size:92px;line-height:1;filter:drop-shadow(0 4px 6px #0004)}
+.mat .ic svg{width:min(100%,138px);height:auto;border-radius:8px;box-shadow:0 4px 10px #0005}
+.mat small{font:600 14px "Segoe UI",Roboto,Arial,sans-serif;opacity:.92;text-align:center}
+.mat.eng{animation:pulso 2.2s infinite}@keyframes pulso{50%{transform:scale(1.035)}}
+.bar{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;box-shadow:0 8px 24px #1f4fd81a}
+.lab{font:700 13px "Segoe UI",Roboto,Arial,sans-serif;color:var(--muted);align-self:center;margin-right:4px}
+.chip{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:7px 16px;font:600 15px "Segoe UI",Roboto,Arial,sans-serif;cursor:pointer}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+section{margin-top:28px}
+section h2{display:flex;align-items:center;gap:10px;margin:0 0 4px;font-size:22px}
+section h2 i{font-style:normal;display:inline-flex;width:38px;height:38px;border-radius:11px;align-items:center;justify-content:center;font-size:21px;background:var(--c);color:#fff}
+section>p{margin:0 0 12px;color:var(--muted);font-size:14.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px #16213a22}
+.card .em{font-size:34px;line-height:1}
+.card h3{margin:0;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:14px;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-size:12px;border-radius:99px;padding:2px 10px;background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c);font-weight:700}
+.play{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--c);color:#fff;text-decoration:none;font-weight:700;border-radius:10px;padding:9px 14px;margin-top:4px}
+.play:hover{filter:brightness(1.1)}
+.empty{display:none;text-align:center;color:var(--muted);padding:30px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
+@media (prefers-color-scheme:dark){.card:hover{box-shadow:0 10px 24px #0008}}
+@media(max-width:600px){.mats{grid-template-columns:repeat(2,1fr);gap:10px}.mat{min-height:160px;padding:12px 8px}.mat .ic{height:72px;font-size:64px}.mat .ic svg{height:62px}}
+</style>
+</head>
+<body>
+<div class="hero"><div class="in">
+<h1>🎲 Jogos de Matemática, Idiomas e Educação Financeira</h1>
+<p>Escolha a matéria, depois o jogo. Arraste a resposta até o cartão certo, ganhe moedas e avance de fase. Funciona no computador, no Chromebook e no celular.</p>
+<div class="badges"><span>🖱️ Arrastar ou clicar</span><span>🔊 Clique na palavra para ouvir</span><span>🪙 +15 por acerto</span></div>
+</div>
+<span class="sym" style="left:4%;top:20px">+</span><span class="sym" style="right:6%;top:30px;font-size:120px">÷</span><span class="sym" style="left:46%;bottom:-18px;font-size:110px">×</span><span class="sym" style="right:30%;top:-10px">−</span>
+</div>
+<main>
+<div class="mats" id="mats"></div>
+<div class="bar" id="bar"></div>
+<div id="out"></div>
+<div class="empty" id="empty">Nada por aqui ainda.</div>
+</main>
+<footer>Prof. Rodrigo · Novos jogos entram aqui a cada atualização.</footer>
+<script>
+/* ===== COMO ATUALIZAR =====
+   Jogo novo: acrescente um J(...) em JOGOS no tema certo (TEMAS). Cada tema pertence a uma matéria (MATS). */
+const FUS='<svg viewBox="0 0 38 20"><rect width="38" height="20" fill="#fff"/>'+[0,3.08,6.16,9.24,12.32,15.4,18.48].map(y=>'<rect y="'+y+'" width="38" height="1.54" fill="#b22234"/>').join('')+'<rect width="15.2" height="10.77" fill="#3c3b6e"/></svg>';
+const FES='<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/></svg>';
+const FFR='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>';
+const FIT='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>';
+const sm=s=>s.replace('<svg','<svg width="24" height="14" style="border-radius:2px"');
+const MATS=[
+ {id:'mat',nome:'Matemática',ic:'<span>➗</span>',cor:'#1f4fd8',sub:'6º, 7º e 9º ano'},
+ {id:'fin',nome:'Educação Financeira',ic:'<span>💰</span>',cor:'#0f9d58',sub:'Dinheiro, lojas e juros'},
+ {id:'en',nome:'English',ic:FUS,cor:'#c62828',sub:'6º e 8º ano',cls:'eng',play:'Play'},
+ {id:'es',nome:'Español',ic:FES,cor:'#c2410c',sub:'Preposiciones',play:'Jugar'},
+ {id:'fr',nome:'Français',ic:FFR,cor:'#1d4ed8',sub:'Prépositions',play:'Jouer'},
+ {id:'it',nome:'Italiano',ic:FIT,cor:'#15803d',sub:'Preposizioni',play:'Gioca'}
+];
+const TEMAS=[
+ {id:'inteiros',mat:'mat',nome:'Números inteiros',icon:'➕',cor:'#1f4fd8',desc:'Sinais, adição, subtração e multiplicação com números positivos e negativos.'},
+ {id:'fracoes',mat:'mat',nome:'Frações',icon:'🍕',cor:'#e8590c',desc:'Da figura pintada às contas com frações.'},
+ {id:'porcentagem',mat:'mat',nome:'Porcentagem',icon:'🔟',cor:'#c2185b',desc:'50%, 10% e 25%: metade, décima parte e um quarto, até os descontos da loja.'},
+ {id:'algebra',mat:'mat',nome:'Álgebra',icon:'🔤',cor:'#7c3aed',desc:'Letras, expressões e produtos notáveis.'},
+ {id:'geometria',mat:'mat',nome:'Geometria e Trigonometria',icon:'📐',cor:'#0891b2',desc:'Pitágoras, trigonometria, área do círculo e volumes dos sólidos.'},
+ {id:'dinheiro',mat:'fin',nome:'Dinheiro: pagar, somar e dar troco',icon:'💰',cor:'#0f9d58',desc:'Moedas e cédulas do real em proporção real: pague o valor exato, some compras e entregue o troco.'},
+ {id:'lojas',mat:'fin',nome:'Lojas e comércios',icon:'🏪',cor:'#e11d48',desc:'Cada loja com os seus produtos: compre, some e dê o troco como um verdadeiro caixa.'},
+ {id:'trabalho',mat:'fin',nome:'Salário e compras',icon:'💼',cor:'#0d9488',desc:'Folha de pagamento dos funcionários e lista de compras.'},
+ {id:'financeira',mat:'fin',nome:'Juros, investimentos e conceitos',icon:'📈',cor:'#4338ca',desc:'Juros simples e compostos, siglas da renda fixa e vocabulário de educação financeira (3ª série).'},
+ {id:'ingles',mat:'en',nome:'Vocabulary and Grammar',icon:sm(FUS),cor:'#c62828',desc:'Ligue a frase ou o número à figura certa. Clique na palavra para ouvir.'},
+ {id:'es',mat:'es',nome:'Español',icon:sm(FES),cor:'#c2410c',desc:'Preposiciones de lugar.'},
+ {id:'fr',mat:'fr',nome:'Français',icon:sm(FFR),cor:'#1d4ed8',desc:'Prépositions de lieu.'},
+ {id:'it',mat:'it',nome:'Italiano',icon:sm(FIT),cor:'#15803d',desc:'Preposizioni di luogo.'}
+];
+const J=(tema,emoji,titulo,desc,href,serie,fases)=>({tema,emoji,titulo,desc,href,serie,fases});
+const JOGOS=[
+ J('inteiros','🧮','Soma de Inteiros','8 fases: somas, subtrações, três termos, letras (álgebra), contas com frutas, vezes e tabuada com sinais.','soma-de-inteiros-jogo.html','6º e 7º ano',8),
+ J('fracoes','🍰','Frações','6 fases: fração em figuras, soma e subtração, fração de um número, simplificação e frações com frutas.','fracoes-jogo.html','6º ano',6),
+ J('porcentagem','🔟','Porcentagem Fácil','50% (metade), 10% e 25%, misturas e descontos em reais.','porcentagem-jogo.html','6º ano',6),
+ J('algebra','🔤','Álgebra com letras','Termos semelhantes, valor numérico e expressões com letras.','algebra-letras-jogo.html','7º ano'),
+ J('algebra','✖️','Produtos Notáveis','Quadrado da soma, quadrado da diferença e produto da soma pela diferença.','produtos-notaveis-jogo.html','9º ano'),
+ J('geometria','📐','Teorema de Pitágoras','Ache a hipotenusa e os catetos de triângulos retângulos.','pitagoras-jogo.html','9º ano'),
+ J('geometria','📏','Trigonometria','Seno, cosseno e tangente no triângulo retângulo.','trigonometria-jogo.html','9º ano'),
+ J('geometria','⭕','Área do Círculo','Calcule a área do círculo a partir do raio ou do diâmetro.','area-do-circulo-jogo.html','9º ano'),
+ J('geometria','🧊','Volume do Cubo','Volume do cubo a partir da aresta.','volume-do-cubo-jogo.html','9º ano'),
+ J('geometria','🔵','Volume: Esfera, Cilindro e Cone','Escolha a fórmula certa e calcule o volume.','volume-esfera-cilindro-jogo.html','9º ano'),
+ J('geometria','🔺','Volume da Pirâmide','Área da base vezes altura, dividido por 3.','volume-da-piramide-jogo.html','9º ano'),
+ J('dinheiro','💰','Contagem de Dinheiro','Arraste moedas e cédulas para pagar o valor exato, somar dois produtos e dar o troco.','contagem-dinheiro-jogo.html','6º ano',6),
+ J('dinheiro','🏪','Mercadinho','Você é o caixa! Produtos no leitor, soma e troco, com som de caixa registradora.','mercadinho-jogo.html','6º ano',5),
+ J('dinheiro','⚡','Mercadinho 2 — Caixa Rápido','Dois a cinco produtos, só moedas e troco de R$ 20, 50 e 100.','mercadinho-caixa-rapido-jogo.html','6º ano',6),
+ J('dinheiro','🪙','Troco com Cédulas','Troco de R$ 5 até R$ 100, um passo de cada vez.','troco-cedulas-jogo.html','6º ano',6),
+ J('dinheiro','🪙','Dando o Troco','Troco de R$ 5, 10, 20, 50 e 100, até compras com dois produtos.','troco-jogo.html','6º ano',6),
+ J('dinheiro','💵','Contagem de Dólares','Moedas (cents) e notas (bills) americanas: pagar, somar e dar o troco.','contagem-dolares-jogo.html','6º ao 8º ano',6),
+ J('lojas','🥖','Padaria','Pão, café, bolo e salgados.','loja-padaria-jogo.html','6º ano',6),
+ J('lojas','🛒','Mercadinho (produtos)','Arroz, feijão, leite, carne e mais.','loja-mercadinho-jogo.html','6º ano',6),
+ J('lojas','✏️','Papelaria','Caderno, lápis, caneta, mochila.','loja-papelaria-jogo.html','6º ano',6),
+ J('lojas','🧴','Loja de Higiene','Shampoo, sabonete, escova de dente.','loja-farmacia-jogo.html','6º ano',6),
+ J('lojas','🍔','Lanchonete','Hambúrguer, batata, suco e sorvete.','loja-lanchonete-jogo.html','6º ano',6),
+ J('lojas','🧸','Loja de Brinquedos','Bola, boneca, quebra-cabeça.','loja-brinquedos-jogo.html','6º ano',6),
+ J('lojas','👕','Loja de Roupas','Camiseta, calça, tênis, boné.','loja-roupas-jogo.html','6º ano',6),
+ J('lojas','📱','Loja de Celular','Capinha, fone, carregador, película.','loja-celular-jogo.html','6º ano',6),
+ J('lojas','💻','Loja de Informática','Mouse, teclado, pendrive, webcam.','loja-informatica-jogo.html','6º ano',6),
+ J('lojas','🐶','Pet Shop','Ração, coleira, brinquedo, areia.','loja-petshop-jogo.html','6º ano',6),
+ J('lojas','🥬','Feira Livre','Frutas, verduras, ovos e mel.','loja-feira-jogo.html','6º ano',6),
+ J('trabalho','💼','Folha de Pagamento','Pague o salário dos funcionários da escola e ganhe bônus. Seu nome fica travado no holerite.','salarios-funcionarios-jogo.html','6º ao 9º ano',6),
+ J('trabalho','🛍️','Lista de Compras','Some os preços de dois produtos da lista.','lista-de-compras-jogo.html','6º ano',3),
+ J('financeira','📈','Juros e Montante','Juros simples e compostos, montante e descontos.','juros-simples-compostos-jogo.html','3ª série EM',4),
+ J('financeira','🏦','Renda Fixa e Siglas','CDB, LCI, Tesouro Selic, FGC, IOF e outros.','renda-fixa-siglas-jogo.html','3ª série EM',1),
+ J('financeira','📚','Termos Financeiros','Orçamento, inflação, reserva de emergência, crédito.','educacao-financeira-termos-jogo.html','3ª série EM',1),
+ J('ingles','🏃','Phrasal Verbs','Ligue cada phrasal verb à figura que o representa.','phrasal-verbs-jogo.html','8º ano'),
+ J('ingles','📍','Prepositions of Place','in, on, under, next to, between...','preposicoes-de-lugar-jogo.html','6º ano'),
+ J('ingles','🔢','English Numbers','Números cardinais e ordinais em inglês.','numbers-ingles-jogo.html','6º ano'),
+ J('ingles','🐶','Animals','Animais de estimação, da fazenda e selvagens.','animals-ingles-jogo.html','6º ano',2),
+ J('ingles','🍎','Food and Drinks','Frutas, vegetais, comidas e bebidas.','food-drinks-ingles-jogo.html','6º ano',2),
+ J('ingles','👕','Clothes','Roupas e acessórios.','clothes-ingles-jogo.html','6º ano',1),
+ J('ingles','🧑‍🏫','Jobs','Profissões: teacher, doctor, pilot...','jobs-ingles-jogo.html','6º ao 8º ano',1),
+ J('ingles','☀️','Weather and Sports','Clima, natureza e esportes.','weather-sports-ingles-jogo.html','6º ano',2),
+ J('ingles','🧍','Body and Family','Partes do corpo e família.','body-family-ingles-jogo.html','6º ano',1),
+ J('ingles','🏠','House and School','Casa, objetos e material escolar.','house-school-ingles-jogo.html','6º ano',2),
+ J('ingles','🚗','Transport and Actions','Meios de transporte e verbos de ação.','transport-verbs-ingles-jogo.html','6º ano',2),
+ J('es','📍','Preposiciones de lugar','dentro de, sobre, debajo de, entre...','preposiciones-de-lugar-es-jogo.html','Espanhol'),
+ J('fr','📍','Prépositions de lieu','dans, sur, sous, entre, devant...','prepositions-de-lieu-fr-jogo.html','Francês'),
+ J('it','📍','Preposizioni di luogo','dentro, su, sotto, tra, davanti a...','preposizioni-di-luogo-it-jogo.html','Italiano')
+];
+const matOf={};TEMAS.forEach(t=>matOf[t.id]=t.mat);
+const SERIES=['6º','7º','8º','9º','3ª série'];
+function anos(s){const r=[];const m=s.match(/(\d)º ao (\d)º/);
+ if(m){for(let i=+m[1];i<=+m[2];i++)r.push(i+'º')}else{(s.match(/\dº/g)||[]).forEach(x=>r.push(x))}
+ if(/3ª série/.test(s))r.push('3ª série');return r}
+let fm='todos',fs='todas';
+const mats=document.getElementById('mats'),bar=document.getElementById('bar'),out=document.getElementById('out'),empty=document.getElementById('empty');
+function drawMats(){
+ mats.innerHTML='';
+ [{id:'todos',nome:'Tudo',ic:'<span>🎲</span>',cor:'#6a3df0',sub:'Todos os jogos'}].concat(MATS).forEach(m=>{
+  const n=m.id==='todos'?JOGOS.length:JOGOS.filter(j=>matOf[j.tema]===m.id).length;
+  const b=document.createElement('button');b.className='mat'+(m.cls?' '+m.cls:'')+(fm===m.id?' on':'');b.style.setProperty('--c',m.cor);
+  b.innerHTML='<div class="ic">'+m.ic+'</div>'+m.nome+'<small>'+m.sub+' · '+n+(n===1?" jogo":" jogos")+'</small>';
+  b.onclick=()=>{fm=m.id;fs='todas';drawMats();chips();draw();if(fm!=='todos')bar.scrollIntoView({behavior:'smooth',block:'start'})};mats.appendChild(b)})}
+function chips(){
+ bar.innerHTML='<span class="lab">Série:</span>';
+ ['todas'].concat(SERIES).forEach(x=>{
+  const b=document.createElement('button');b.className='chip'+(fs===x?' on':'');b.textContent=x==='todas'?'Todas':x==='3ª série'?'3ª série EM':x+' ano';
+  b.onclick=()=>{fs=x;chips();draw()};bar.appendChild(b)})}
+function draw(){
+ out.innerHTML='';let n=0;
+ TEMAS.forEach(t=>{
+  if(fm!=='todos'&&t.mat!==fm)return;
+  const mt=MATS.find(m=>m.id===t.mat);
+  const js=JOGOS.filter(j=>j.tema===t.id&&(fs==='todas'||anos(j.serie).includes(fs)||/Espanhol|Francês|Italiano/.test(j.serie)));
+  if(!js.length)return;
+  const s=document.createElement('section');s.style.setProperty('--c',t.cor);
+  s.innerHTML='<h2><i>'+t.icon+'</i>'+t.nome+'</h2><p>'+t.desc+'</p>';
+  const g=document.createElement('div');g.className='grid';
+  js.forEach(j=>{n++;
+   const c=document.createElement('div');c.className='card';c.style.setProperty('--c',t.cor);
+   c.innerHTML='<div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
+   g.appendChild(c)});
+  s.appendChild(g);out.appendChild(s)});
+ empty.style.display=n?'none':'block'}
+drawMats();chips();draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pet Shop - Compras e Troco</title>
+<style>
+:root{--u:8.4vh;--ink:#1b2440;--brand:#1f4fd8;--ok:#0f9d58;--bad:#d93025}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:1.2vh 1.4vw 1.2vh;gap:1vh}
+.top{display:flex;align-items:center;gap:1.4vw}
+.top h1{margin:0;font-size:4.2vh;line-height:1;color:#1f4fd8}.top h1 span{color:#e8590c}
+.sub{font-size:1.9vh;color:#475569;margin-top:.3vh}
+.coin{margin:0 auto;display:flex;align-items:center;gap:1vh;background:linear-gradient(#ffe27a,#ffbf1f);border:.4vh solid #c98a00;border-radius:99px;padding:.3vh 2.2vh .3vh .8vh;font-weight:900;font-size:3.6vh;color:#6b4300;box-shadow:0 .4vh 1vh #0003}
+.coin i{font-style:normal;width:4.4vh;height:4.4vh;border-radius:50%;background:#fff3b0;border:.3vh solid #c98a00;display:flex;align-items:center;justify-content:center;font-size:2.8vh}
+.btns{display:flex;gap:.8vw;align-items:center}
+.btn{border:0;border-radius:1vh;padding:1vh 1.3vw;font:700 2vh inherit;cursor:pointer;color:#fff;background:#1f3a8a;box-shadow:0 .3vh .8vh #0003}
+.btn.sec{background:#fff;color:#1f3a8a;border:.25vh solid #1f3a8a;box-shadow:none}
+.btn.ok{background:var(--ok);font-size:2.6vh;padding:1.2vh 2.4vw}
+.inst{background:#fff;border:.25vh solid #1f4fd8;border-radius:1vh;padding:.8vh 1vw;font-size:2.3vh}
+.inst b{color:#1f4fd8}
+.main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:1.2vw}
+.card{background:#fff;border:.35vh solid #1f4fd8;border-radius:1.6vh;padding:1.2vh 1.2vw;display:flex;flex-direction:column;min-height:0;position:relative}
+.card h2{margin:0 0 .8vh;font-size:2.4vh;color:#1f4fd8;display:flex;align-items:center;justify-content:space-between;gap:1vw}
+.prods{flex:1;display:flex;flex-wrap:wrap;gap:1.2vh 1vw;align-content:center;justify-content:center}
+.prod{zoom:var(--zm,1);background:#fff8e8;border:.3vh solid #f0b95a;border-radius:1.4vh;padding:1vh 1.2vw;text-align:center;min-width:18vw}
+.prod .e{font-size:11vh;line-height:1}.prod .n{font-size:3vh;font-weight:700;margin-top:.4vh}
+.tag{display:inline-block;margin-top:.6vh;background:#e8590c;color:#fff;border-radius:.8vh;padding:.3vh 1.2vh;font-weight:900;font-size:4.4vh}
+.paid{display:flex;align-items:center;justify-content:center;gap:1.2vw;margin-top:1vh;font-size:2.6vh;font-weight:700}
+.alvo{margin-top:1vh;text-align:center;font-size:3.2vh;font-weight:900}
+.alvo small{display:block;font-size:2vh;font-weight:600;color:#475569}
+.zone{flex:1;min-height:0;border:.4vh dashed #94a3b8;border-radius:1.4vh;background:#f8fafc;padding:1vh;display:flex;flex-wrap:wrap;gap:.8vh .6vw;align-content:flex-start;overflow:hidden;transition:background .15s,border-color .15s}
+.zone.over{background:#e6f9ee;border-color:var(--ok);box-shadow:0 0 0 .4vh #fff,0 0 2vh .6vh #3ddc84}
+.zone .vazio{margin:auto;color:#94a3b8;font-size:2.4vh;text-align:center}
+.zone .m{cursor:pointer}
+.soma{font-size:3.2vh;font-weight:900;color:#0b3d91;margin-right:auto}
+.soma.hide{color:#94a3b8;font-weight:700;font-size:2.2vh}
+.acoes{display:flex;gap:.8vw;align-items:center;margin-top:1vh}
+.msg{flex:1;font-size:2.3vh;font-weight:700;min-height:3vh}
+.msg.bad{color:var(--bad)}.msg.good{color:var(--ok)}
+.tray{background:#fff;border:.35vh solid #94a3b8;border-radius:1.6vh;padding:1vh 1vw;display:flex;flex-direction:column;gap:.8vh}
+.row{display:flex;align-items:center;justify-content:center;gap:1.1vw}
+.row .lbl{font-size:1.7vh;font-weight:800;color:#64748b;width:7vw;text-align:right}
+.m{display:inline-flex;touch-action:none;transition:transform .1s}
+.tray .m{cursor:grab}.tray .m:hover{transform:translateY(-.5vh) scale(1.05);filter:drop-shadow(0 0 .8vh #00e5ff)}
+.m svg{display:block;height:var(--h);width:auto;filter:drop-shadow(0 .2vh .3vh #0004);pointer-events:none}
+.m.drag{position:fixed!important;z-index:999;pointer-events:none;transform:translate(-50%,-50%) scale(1.1)!important;filter:drop-shadow(0 1vh 1vh #0006)}
+.res{position:absolute;inset:0;display:none;align-items:center;justify-content:center;border-radius:1.4vh;z-index:5;background:#ffffffd9;font-size:22vh;font-weight:900;pointer-events:none}
+.res.on{display:flex}.res.ok{color:var(--ok)}.res.bad{color:var(--bad)}
+.shake{animation:sh .4s}@keyframes sh{20%,60%{transform:translateX(-1vh)}40%,80%{transform:translateX(1vh)}}
+.fim{position:fixed;inset:0;background:#0b1630d9;display:none;align-items:center;justify-content:center;z-index:2000}
+.fim.on{display:flex}
+.fim .box{background:#fff;border-radius:2vh;padding:4vh 4vw;text-align:center;max-width:70vw}
+.fim h2{margin:0 0 1vh;font-size:5vh;color:#1f4fd8}.fim p{font-size:2.8vh;margin:.6vh 0 2vh}
+.dots{display:flex;gap:.5vw;align-items:center}
+.dots i{width:1.9vh;height:1.9vh;border-radius:50%;background:#cbd5e1;display:block}
+.dots i.d{background:var(--ok)}.dots i.c{background:#1f4fd8;box-shadow:0 0 0 .4vh #fff,0 0 0 .7vh #1f4fd8}
+.fly{position:fixed;font-weight:900;font-size:5vh;z-index:3000;pointer-events:none;animation:fly 1.1s ease-out forwards}
+@keyframes fly{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-9vh)}}
+#cfg{position:fixed;right:1vw;top:8.5vh;z-index:1500;background:#fff;border:.25vh solid #1f3a8a;border-radius:1.2vh;padding:1.2vh 1.2vw;font-size:1.9vh;display:none;width:22vw;box-shadow:0 1vh 3vh #0005}
+#cfg.on{display:block}#cfg label{display:block;margin:.8vh 0 .2vh;font-weight:700}#cfg input[type=range]{width:100%}
+.prods.many .prod{min-width:12.5vw;padding:.7vh .7vw}.prods.many .e{font-size:8.2vh}.prods.many .n{font-size:2vh}.prods.many .tag{font-size:3.6vh}.prods.many{gap:.9vh .7vw}
+</style>
+<style id="movel">
+@media screen and (max-width:820px){
+ :root{--u:9.6vw}
+ html{height:auto!important;overflow:auto!important}body{height:auto!important;overflow:visible!important}
+ #app{height:auto!important;min-height:100vh;padding:8px!important;gap:8px!important}
+ .top{flex-wrap:wrap;gap:6px 8px}
+ .top h1{font-size:22px!important}.sub{font-size:12px!important}
+ .coin{order:3;margin:0 auto!important;font-size:21px!important;padding:2px 14px 2px 5px!important}
+ .coin i{width:28px!important;height:28px!important;font-size:17px!important}
+ .btns{margin-left:auto;gap:6px}.btn{font-size:13px!important;padding:6px 10px!important}.btn.ok{font-size:16px!important;padding:9px 20px!important}
+ .dots i{width:10px!important;height:10px!important}
+ .inst{font-size:14px!important;padding:6px 8px!important}
+ .main{grid-template-columns:1fr!important;flex:none!important}
+ .card{padding:10px!important}.card h2{font-size:15px!important;flex-wrap:wrap}
+ .prods{gap:8px!important}.prod{min-width:92px!important;padding:6px 10px!important}
+ .prod .e{font-size:46px!important}.prod .n{font-size:16px!important}.tag{font-size:22px!important}
+ .prods.many .prod{min-width:78px!important;padding:5px 6px!important}.prods.many .e{font-size:34px!important}.prods.many .n{font-size:13px!important}.prods.many .tag{font-size:17px!important}
+ .paid{font-size:15px!important;margin-top:8px!important}.alvo{font-size:18px!important}.alvo small{font-size:14px!important}
+ .zone{min-height:120px;flex:none!important;padding:8px!important}.zone .vazio{font-size:15px!important}
+ .soma{font-size:18px!important}.soma.hide{font-size:13px!important}
+ .acoes{flex-wrap:wrap;gap:6px!important}.msg{flex-basis:100%;font-size:14px!important}
+ .tray{position:sticky;bottom:0;z-index:40;padding:6px!important;margin:0 -2px;box-shadow:0 -8px 14px #0003;border-radius:12px 12px 0 0!important}
+ .row{flex-wrap:wrap;gap:6px!important}.row .lbl{width:auto!important;font-size:12px!important;text-align:left!important}
+ #cfg{width:84vw!important;right:8px!important;top:48px!important;font-size:14px!important}
+ .res{font-size:110px!important}
+ .fim .box{max-width:90vw!important;padding:24px 18px!important}.fim h2{font-size:26px!important}.fim p{font-size:16px!important}
+}
+@media screen and (min-width:821px) and (max-height:520px){
+ :root{--u:15vh}
+ html{height:auto!important;overflow:auto!important}body{height:auto!important;overflow:visible!important}
+ #app{height:auto!important;min-height:100vh}
+ .main{flex:none!important}
+ .zone{min-height:34vh}
+ .prod .e{font-size:42px!important}.tag{font-size:20px!important}.prod .n{font-size:15px!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+ <div class="top">
+  <div><h1>🐶 No <span>Pet Shop</span></h1><div class="sub" id="sub"></div></div>
+  <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
+  <div class="btns"><div class="dots" id="dots"></div><button class="btn sec" id="bCfg">⚙ Ajustes</button></div>
+ </div>
+ <div class="inst" id="inst"></div>
+ <div class="main">
+  <div class="card" id="cLoja"><h2>🐶 Pet shop</h2><div class="prods" id="prods"></div><div id="extra"></div><div class="res" id="res1"></div></div>
+  <div class="card" id="cCart"><h2><span id="zt">👛 Sua carteira</span><span class="soma hide" id="soma">soma escondida</span></h2>
+   <div class="zone" id="zone"></div>
+   <div class="acoes"><div class="msg" id="msg"></div><button class="btn sec" id="bLimpar">🗑 Limpar</button><button class="btn sec" id="bSoma">👁 Ver soma</button><button class="btn ok" id="bOk">Conferir ✔</button></div>
+   <div class="res" id="res2"></div></div>
+ </div>
+ <div class="tray" id="tray">
+  <div class="row"><span class="lbl">Moedas</span><span id="rowM" class="row" style="gap:1.1vw"></span></div>
+  <div class="row"><span class="lbl">Cédulas</span><span id="rowC" class="row" style="gap:1.1vw"></span></div>
+ </div>
+</div>
+<div id="cfg"><b>Ajustes</b><label>Tamanho do dinheiro</label><input type="range" id="sz" min="5" max="12" step="0.2" value="8.4"><label>Tamanho das figuras e texto da loja</label><input type="range" id="zm" min="70" max="140" step="2" value="100"><label style="display:flex;gap:1vw;align-items:center"><input type="checkbox" id="snd" checked> Som ligado</label><label style="display:flex;gap:1vw;align-items:center"><input type="checkbox" id="ck"> Mostrar a soma enquanto monta</label></div>
+<div class="fim" id="fim"><div class="box"><h2 id="fT"></h2><p id="fP"></p><button class="btn ok" id="fB"></button></div></div>
+<script>
+(function(){
+/* ---------- dinheiro ---------- */
+const COINS=[5,10,25,50,100], BILLS=[200,500,1000,2000,5000,10000];
+const CS={5:{o:'#b8692b',i:'#d28a4e',t:'5',l:'CENTAVOS',d:.669,e:'#8a4a1c'},10:{o:'#b98a2c',i:'#d9b04f',t:'10',l:'CENTAVOS',d:.608,e:'#8a6414'},25:{o:'#b9892f',i:'#dcb558',t:'25',l:'CENTAVOS',d:.760,e:'#8a6414'},50:{o:'#aab3bf',i:'#d6dce4',t:'50',l:'CENTAVOS',d:.669,e:'#7d8794'},100:{o:'#cf9f26',i:'#cdd1d8',t:'1',l:'REAL',d:.821,e:'#9a7414',bi:1}};
+const BS={200:['#5f7f95','#cfdde6','🐢',1.86],500:['#7b4fa3','#e7dcf3','🦢',1.97],1000:['#c8323c','#f6d9db','🦜',2.08],2000:['#d9a21b','#fbefc4','🐒',2.18],5000:['#b8702a','#f3dfc9','🐆',2.29],10000:['#2f86b8','#d6ecf7','🐟',2.40]};
+function fmt(c){return 'R$ '+Math.floor(c/100)+','+String(c%100).padStart(2,'0')}
+function coinSvg(v){const s=CS[v],tc=s.bi?'#4a4f58':'#3b2a12';
+ return `<svg viewBox="0 0 100 100" style="--k:${s.d}"><circle cx="50" cy="50" r="49" fill="${s.e}"/><circle cx="50" cy="50" r="47" fill="none" stroke="#fff6" stroke-width="1.2" stroke-dasharray="1.6 1.6"/><circle cx="50" cy="50" r="45" fill="${s.o}"/><circle cx="50" cy="50" r="${s.bi?30:37}" fill="${s.i}" stroke="${s.e}" stroke-width="1.4"/><path d="M22 28 A40 40 0 0 1 60 12" fill="none" stroke="#fff8" stroke-width="3" stroke-linecap="round"/><text x="50" y="${s.bi?60:57}" text-anchor="middle" font-size="${s.t.length>1?31:40}" font-weight="900" fill="${tc}" font-family="Arial">${s.t}</text><text x="50" y="${s.bi?74:73}" text-anchor="middle" font-size="${s.bi?9:10}" font-weight="800" fill="${tc}" font-family="Arial">${s.l}</text>${s.bi?'':'<text x="50" y="29" text-anchor="middle" font-size="9" fill="'+tc+'">★</text>'}</svg>`}
+function billSvg(v){const [a,b,an,r]=BS[v];const W=Math.round(r*100),n=v/100,id='b'+v;
+ return `<svg viewBox="0 0 ${W} 100"><defs><linearGradient id="${id}" x1="0" x2="1"><stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${a}"/></linearGradient></defs><rect x="1.5" y="1.5" width="${W-3}" height="97" rx="6" fill="url(#${id})" stroke="#0005" stroke-width="2"/><rect x="6" y="6" width="${W-12}" height="88" rx="3" fill="none" stroke="${a}" stroke-width="1.6" stroke-dasharray="2.5 1.8"/><path d="M8 78 Q ${W*.25} 60 ${W*.5} 78 T ${W-8} 78 M8 86 Q ${W*.25} 68 ${W*.5} 86 T ${W-8} 86" fill="none" stroke="${a}" stroke-width="1" opacity=".5"/><circle cx="${W*.27}" cy="50" r="27" fill="${b}" stroke="${a}" stroke-width="2"/><circle cx="${W*.27}" cy="50" r="21" fill="${a}" opacity=".25"/><path d="M${W*.27-9} 66 Q${W*.27-12} 46 ${W*.27-2} 34 Q${W*.27+8} 30 ${W*.27+10} 42 Q${W*.27+14} 50 ${W*.27+8} 54 Q${W*.27+10} 62 ${W*.27+6} 68 Z" fill="${a}" opacity=".75"/><text x="${W*.66}" y="50" text-anchor="middle" font-size="42" font-family="Segoe UI Emoji,Noto Color Emoji,sans-serif">${an}</text><rect x="${W*.5}" y="8" width="${W*.5-9}" height="11" rx="2" fill="${a}"/><text x="${W*.75-4}" y="16.5" text-anchor="middle" font-size="7.4" font-weight="800" fill="#fff" font-family="Arial">BANCO CENTRAL DO BRASIL</text><text x="11" y="25" font-size="21" font-weight="900" fill="${a}" font-family="Arial" stroke="#fff" stroke-width=".8">${n}</text><text x="${W-12}" y="92" text-anchor="end" font-size="${n>=100?33:38}" font-weight="900" fill="${a}" font-family="Arial" stroke="#fff" stroke-width="1.2">${n}</text><text x="${W*.5}" y="68" text-anchor="middle" font-size="9" font-weight="800" fill="${a}" font-family="Arial" letter-spacing="1">REAIS</text><rect x="${W*.5-1.5}" y="22" width="3" height="40" fill="${a}" opacity=".18"/></svg>`}
+function mny(v,mini){const e=document.createElement('div');e.className='m';e.dataset.v=v;const b=!!BS[v];
+ const k=b?1:CS[v].d;e.style.setProperty('--h',(b?'calc(var(--u)*0.95)':`calc(var(--u)*${(k*0.95).toFixed(2)})`));
+ if(mini)e.style.setProperty('--h',b?'calc(var(--u)*.95)':`calc(var(--u)*${(k*.95).toFixed(2)})`);
+ e.innerHTML=b?billSvg(v):coinSvg(v);return e}
+/* ---------- tarefas ---------- */
+const STORE=[["🦴", "Ração (1 kg)", 1800], ["🐕", "Coleira", 2500], ["🥎", "Brinquedo", 1500], ["🧴", "Shampoo pet", 2000], ["🥣", "Comedouro", 2200], ["🍖", "Petisco", 1200], ["🧺", "Areia sanitária", 1500], ["🏠", "Casinha", 12000], ["🐠", "Ração de peixe", 900], ["🐱", "Arranhador", 4500], ["🧶", "Bolinha de lã", 600]];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[rnd(0,a.length-1)];
+function prods(n){const a=[];while(a.length<n){const p=pick(PROD);if(!a.includes(p))a.push(p)}return a}
+const mk=(arr,fn)=>{const out=[],seen=new Set();let g=0;while(out.length<8&&g++<500){const t=fn(out.length);if(seen.has(t.total+'|'+(t.paid||0)))continue;seen.add(t.total+'|'+(t.paid||0));out.push(t)}return out};
+const pay=(pp,paid)=>{const it=prods(pp.length).map((p,i)=>({e:p[0],n:p[1],p:pp[i]}));const total=pp.reduce((a,b)=>a+b,0);return {items:it,total,paid:paid||0,target:paid?paid-total:total}};
+const m5=(a,b)=>rnd(a/5,b/5)*5, q25=(a,b)=>rnd(a/25,b/25)*25;
+const buy=(k,paid)=>{const cap=paid?9900:30000;for(let g=0;g<300;g++){const sel=[];while(sel.length<k){const p=pick(STORE);if(!sel.includes(p))sel.push(p)}
+ const items=sel.map(p=>{const b=p[2],st=b>=1000?100:25;const v=Math.max(st,Math.round(b*(0.9+Math.random()*0.2)/st)*st);return {e:p[0],n:p[1],p:v}});
+ const total=items.reduce((a,b)=>a+b.p,0);if(total>cap)continue;let pd=0;
+ if(paid){const bs=[200,500,1000,2000,5000,10000].filter(x=>x>total);if(!bs.length)continue;pd=bs[0];if(k===1&&bs[1]&&Math.random()<.4)pd=bs[1]}
+ return {items,total,paid:pd,target:pd?pd-total:total}}return buy(1,0)};
+const FASES=[
+ {t:'Um produto',s:'Fase 1 — pague o valor exato',i:'<b>Você é o cliente em: Pet Shop.</b> Arraste as cédulas e moedas para pagar <b>exatamente</b> o preço do produto.',gen:()=>mk(0,()=>buy(1,0))},
+ {t:'Dois produtos',s:'Fase 2 — some e pague',i:'<b>Some os preços dos dois produtos</b> e pague o total exato na carteira.',gen:()=>mk(0,()=>buy(2,0))},
+ {t:'Três produtos',s:'Fase 3 — some três preços',i:'<b>Some os três preços</b> e monte o valor certinho.',gen:()=>mk(0,()=>buy(3,0))},
+ {t:'Receba o troco',s:'Fase 4 — um produto, pagou com cédula',i:'<b>O cliente pagou com a cédula mostrada.</b> Entregue o <b>troco</b>: troco = pagou − preço.',gen:()=>mk(0,()=>buy(1,1))},
+ {t:'Dois produtos e troco',s:'Fase 5 — some e dê o troco',i:'<b>Some os dois produtos</b>, veja com que cédula o cliente pagou e <b>entregue o troco</b>.',gen:()=>mk(0,()=>buy(2,1))},
+ {t:'Compra grande',s:'Fase 6 — três produtos e troco',i:'<b>Três produtos!</b> Some tudo, depois calcule o troco da cédula usada.',gen:()=>mk(0,()=>buy(3,1))}
+];
+
+/* ---------- sons ---------- */
+let AC=null,mute=false;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,t0,d,type,v){const a=ac();if(!a||mute)return;const o=a.createOscillator(),g=a.createGain(),t=a.currentTime+t0;o.type=type||'sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(v||.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.03)}
+function noise(t0,d,v,fq){const a=ac();if(!a||mute)return;const n=Math.floor(a.sampleRate*d),b=a.createBuffer(1,n,a.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=(Math.random()*2-1)*(1-i/n);const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=b;f.type='bandpass';f.frequency.value=fq||3000;g.gain.value=v||.12;s.connect(f);f.connect(g);g.connect(a.destination);s.start(a.currentTime+t0)}
+function clink(v){if(v>=100&&window.BILLSET&&window.BILLSET.has(v)){noise(0,.12,.10,1800);return}const f=2400+Math.random()*900;tone(f,0,.09,'triangle',.10);tone(f*1.5,.02,.07,'sine',.05)}
+function bip(i){tone(1500+(i%3)*120,0,.08,'square',.07)}
+function kaching(){noise(0,.18,.14,900);tone(1568,.1,.5,'sine',.13);tone(2093,.2,.7,'sine',.11);tone(3136,.28,.5,'sine',.05)}
+function buzz(){tone(150,0,.32,'sawtooth',.10);tone(110,.05,.3,'square',.05)}
+window.BILLSET=new Set(BILLS);
+/* ---------- estado ---------- */
+const $=id=>document.getElementById(id);
+let fi=0,ti=0,pts=0,tasks=[],zone=[],showSum=false,tries=0,lock=false;
+const zoneEl=$('zone');
+function setPts(d){pts=Math.max(0,pts+d);$('pts').textContent=pts+' pontos';if(d){const f=document.createElement('div');f.className='fly';f.textContent=(d>0?'+':'')+d;f.style.color=d>0?'#0f9d58':'#d93025';const r=$('pts').getBoundingClientRect();f.style.left=(r.left+r.width/2)+'px';f.style.top=(r.bottom+4)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1100)}}
+function dots(){const d=$('dots');d.innerHTML='';tasks.forEach((_,i)=>{const x=document.createElement('i');x.className=i<ti?'d':i===ti?'c':'';d.appendChild(x)})}
+function sum(){return zone.reduce((a,b)=>a+b,0)}
+function renderZone(){zoneEl.innerHTML='';if(!zone.length){zoneEl.innerHTML='<div class="vazio">Arraste as moedas e cédulas até aqui<br>(ou clique nelas)</div>'}
+ [...zone].sort((a,b)=>b-a).forEach(v=>{const e=mny(v,1);e.title='Clique para tirar';e.addEventListener('click',()=>{if(lock)return;zone.splice(zone.indexOf(v),1);renderZone()});zoneEl.appendChild(e)});
+ const s=$('soma');if(showSum){s.className='soma';s.textContent='soma: '+fmt(sum())}else{s.className='soma hide';s.textContent='soma escondida'}}
+function task(){lock=false;const t=tasks[ti];zone=[];tries=0;$('msg').textContent='';$('msg').className='msg';$('res1').className='res';$('res2').className='res';
+ $('zt').textContent=t.paid?'👛 Troco a entregar':'👛 Sua carteira';
+ $('prods').className='prods'+(t.items.length>2?' many':'');$('prods').innerHTML=t.items.map(i=>`<div class="prod"><div class="e">${i.e}</div><div class="n">${i.n}</div><div class="tag">${fmt(i.p)}</div></div>`).join('');
+ const x=$('extra');x.innerHTML='';
+ if(t.paid){const pd=document.createElement('div');pd.className='paid';pd.innerHTML='O cliente pagou com:';const b=mny(t.paid);b.style.setProperty('--h','calc(var(--u)*1.1)');b.style.pointerEvents='none';pd.appendChild(b);x.appendChild(pd);x.insertAdjacentHTML('beforeend','<div class="alvo"><small>Quanto é o troco?</small></div>')}
+ else if(t.items.length>1)x.innerHTML='<div class="alvo"><small>Some os dois preços e pague o total</small></div>';
+ else x.innerHTML='<div class="alvo"><small>Pague o valor do produto</small></div>';
+ renderZone();dots();$('sub').textContent=FASES[fi].s+' · tarefa '+(ti+1)+'/'+tasks.length}
+function fase(){tasks=FASES[fi].gen();ti=0;$('inst').innerHTML=FASES[fi].i;task()}
+function conferir(){if(lock||!zone.length){if(!zone.length){$('msg').textContent='Coloque dinheiro na carteira primeiro.';$('msg').className='msg bad'}return}
+ const t=tasks[ti],s=sum();tries++;const r=$('res2'),r1=$('res1');
+ if(s===t.target){lock=true;setPts(15);kaching();r.textContent=r1.textContent='✔';r.className=r1.className='res on ok';$('msg').textContent='Muito bem! '+fmt(t.target)+(t.paid?' de troco.':' certinho.');$('msg').className='msg good';
+  setTimeout(()=>{ti++;if(ti>=tasks.length)fimFase();else task()},1500)}
+ else{setPts(-10);buzz();r.textContent='✘';r.className='res on bad';zoneEl.classList.add('shake');setTimeout(()=>{r.className='res';zoneEl.classList.remove('shake')},900);
+  $('msg').textContent=s<t.target?'Ainda falta dinheiro. Confira a conta!':'Passou do valor. Tire alguma coisa!';$('msg').className='msg bad'}}
+function fimFase(){const f=$('fim');$('fT').textContent=fi<FASES.length-1?'Fase '+(fi+1)+' concluída! 🎉':'Parabéns! Terminou todas as fases! 🏆';$('fP').textContent='Você tem '+pts+' pontos.';
+ $('fB').textContent=fi<FASES.length-1?'Próxima fase ▶':'Jogar de novo ↺';f.classList.add('on');$('fB').onclick=()=>{f.classList.remove('on');if(fi<FASES.length-1)fi++;else{fi=0;pts=0;setPts(0)}fase()}}
+/* ---------- bandeja e arrastar ---------- */
+function bandeja(){COINS.forEach(v=>$('rowM').appendChild(tray(v)));BILLS.forEach(v=>$('rowC').appendChild(tray(v)))}
+function tray(v){const e=mny(v);let st=null,clone=null;
+ e.addEventListener('pointerdown',ev=>{if(lock)return;ev.preventDefault();e.setPointerCapture(ev.pointerId);st={x:ev.clientX,y:ev.clientY,moved:0}});
+ e.addEventListener('pointermove',ev=>{if(!st)return;const dx=ev.clientX-st.x,dy=ev.clientY-st.y;
+  if(!st.moved&&Math.hypot(dx,dy)>6){st.moved=1;clone=e.cloneNode(true);clone.classList.add('drag');document.body.appendChild(clone)}
+  if(clone){clone.style.left=ev.clientX+'px';clone.style.top=ev.clientY+'px';const r=zoneEl.getBoundingClientRect();zoneEl.classList.toggle('over',ev.clientX>r.left&&ev.clientX<r.right&&ev.clientY>r.top&&ev.clientY<r.bottom)}});
+ const end=ev=>{if(!st)return;const r=zoneEl.getBoundingClientRect();const inside=ev.clientX>r.left&&ev.clientX<r.right&&ev.clientY>r.top&&ev.clientY<r.bottom;
+  if(clone){clone.remove();clone=null;zoneEl.classList.remove('over');if(inside){zone.push(v);clink(v);renderZone()}}
+  else{zone.push(v);clink(v);renderZone()}st=null};
+ e.addEventListener('pointerup',end);e.addEventListener('pointercancel',()=>{if(clone){clone.remove();clone=null}zoneEl.classList.remove('over');st=null});
+ return e}
+/* ---------- ajustes ---------- */
+$('bOk').onclick=conferir;$('bLimpar').onclick=()=>{if(lock)return;zone=[];renderZone();$('msg').textContent=''};
+$('bSoma').onclick=()=>{showSum=!showSum;$('ck').checked=showSum;$('bSoma').textContent=showSum?'🙈 Esconder soma':'👁 Ver soma';renderZone()};
+$('ck').onchange=()=>{showSum=$('ck').checked;$('bSoma').textContent=showSum?'🙈 Esconder soma':'👁 Ver soma';renderZone()};
+$('snd').onchange=()=>{mute=!$('snd').checked;if(!mute){ac();kaching()}};
+$('bCfg').onclick=()=>$('cfg').classList.toggle('on');
+$('sz').oninput=()=>document.documentElement.style.setProperty('--u',$('sz').value+'vh');
+$('zm').oninput=()=>document.documentElement.style.setProperty('--zm',$('zm').value/100);
+bandeja();fase();
+})();
+</script>
+</body>
+</html>
