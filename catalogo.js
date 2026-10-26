@@ -78,3 +78,8 @@ const JOGOS=[
  J('fr','📍','Prépositions de lieu','dans, sur, sous, entre, devant...','prepositions-de-lieu-fr-jogo.html','Francês'),
  J('it','📍','Preposizioni di luogo','dentro, su, sotto, tra, davanti a...','preposizioni-di-luogo-it-jogo.html','Italiano')
 ];
+
+/* Código de 4 dígitos por jogo (estável: vem do nome do arquivo). Aluno digita no hub e entra direto. */
+(function(){var used={};JOGOS.forEach(function(j){var h=0;for(var i=0;i<j.href.length;i++)h=(h*31+j.href.charCodeAt(i))>>>0;
+ var n=1000+h%9000;while(used[n])n=n>=9999?1000:n+1;used[n]=1;j.cod=String(n)})})();
+function jogoPorCodigo(c){c=String(c||'').replace(/\D/g,'');return JOGOS.filter(function(j){return j.cod===c})[0]||null}
