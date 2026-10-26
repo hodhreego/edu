@@ -53,7 +53,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 .cod input:focus{outline:none;border-color:var(--brand)}
 .cod button{font:800 20px "Segoe UI",Roboto,Arial,sans-serif;background:var(--brand);color:#fff;border:0;border-radius:14px;padding:12px 26px;cursor:pointer}
 .cod .err{color:#d93025;font-weight:700;order:4;flex-basis:100%;display:none}
-.kod{display:flex;align-items:center;justify-content:center;gap:8px;background:color-mix(in srgb,var(--c) 10%,var(--surface));border:2px dashed var(--c);border-radius:12px;padding:6px 10px;font-weight:700;color:var(--c)}.kod b{font:900 24px "Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.14em;color:var(--ink)}
+.kod{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--c);border-radius:12px;padding:8px 12px;font-weight:800;font-size:13px;color:#fff;cursor:pointer;box-shadow:0 3px 10px #0002}.kod b{font:900 28px "Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.08em;color:#fff;background:#0000002e;border-radius:8px;padding:2px 10px}.kod:hover{filter:brightness(1.1)}
 </style>
 </head>
 <body>
@@ -65,7 +65,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <span class="sym" style="left:4%;top:20px">+</span><span class="sym" style="right:6%;top:30px;font-size:120px">÷</span><span class="sym" style="left:46%;bottom:-18px;font-size:110px">×</span><span class="sym" style="right:30%;top:-10px">−</span>
 </div>
 <main>
-<form class="cod" id="cod" autocomplete="off"><b>🔑 Tem um código?</b><input id="codv" maxlength="7" placeholder="xus0000" autocapitalize="off" aria-label="Código da atividade"><button>Entrar ▶</button><span>O professor informa o código da atividade. Digite aqui e o jogo abre na hora.</span><div class="err" id="coderr">Código não encontrado. Confira os 4 números.</div></form>
+<form class="cod" id="cod" autocomplete="off"><b>🔑 Tem um código?</b><input id="codv" inputmode="numeric" maxlength="4" placeholder="0000" aria-label="Código da atividade"><button>Entrar ▶</button><span>O professor informa o código da atividade. Digite aqui e o jogo abre na hora.</span><div class="err" id="coderr">Código não encontrado. Confira os 4 números.</div></form>
 <div class="mats" id="mats"></div>
 <div class="bar" id="bar"></div>
 <div id="out"></div>
@@ -107,13 +107,14 @@ function draw(){
   const g=document.createElement('div');g.className='grid';
   js.forEach(j=>{n++;
    const c=document.createElement('div');c.className='card';c.style.setProperty('--c',t.cor);
-   c.innerHTML='<div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><div class="kod" title="Digite este código na caixa do topo">🔑 Código <b>'+j.cod+'</b></div><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
+   c.innerHTML='<div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><div class="kod" title="Clique para usar este código" onclick="usar(\''+j.cod+'\')">🔑 Código <b>'+j.cod+'</b></div><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
    g.appendChild(c)});
   s.appendChild(g);out.appendChild(s)});
  empty.style.display=n?'none':'block'}
+function usar(c){var i=document.getElementById('codv');i.value=c;i.scrollIntoView({behavior:'smooth',block:'center'});i.focus()}
 function entrar(c){var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
 document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=document.getElementById('codv').value;document.getElementById('coderr').style.display=entrar(v)?'none':'block'};
-var q=(location.search.match(/[?&]c=(\w+)/)||location.hash.match(/#(xus\d+)/i)||[])[1];if(q)entrar(q);
+var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
 drawMats();chips();draw();
 </script>
 </body>

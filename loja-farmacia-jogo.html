@@ -176,7 +176,12 @@ function setPts(d){pts=Math.max(0,pts+d);$('pts').textContent=pts+' pontos';if(d
 function dots(){const d=$('dots');d.innerHTML='';tasks.forEach((_,i)=>{const x=document.createElement('i');x.className=i<ti?'d':i===ti?'c':'';d.appendChild(x)})}
 function sum(){return zone.reduce((a,b)=>a+b,0)}
 function renderZone(){zoneEl.innerHTML='';if(!zone.length){zoneEl.innerHTML='<div class="vazio">Arraste as moedas e cédulas até aqui<br>(ou clique nelas)</div>'}
- [...zone].sort((a,b)=>b-a).forEach(v=>{const e=mny(v,1);e.title='Clique para tirar';e.addEventListener('click',()=>{if(lock)return;zone.splice(zone.indexOf(v),1);renderZone()});zoneEl.appendChild(e)});
+ [...zone].sort((a,b)=>b-a).forEach(v=>{const e=mny(v,1);e.title='Clique ou arraste para fora para tirar';{let st=null,cl=null;const out=ev=>{const r=zoneEl.getBoundingClientRect();return!(ev.clientX>r.left&&ev.clientX<r.right&&ev.clientY>r.top&&ev.clientY<r.bottom)};
+ e.style.touchAction='none';e.addEventListener('pointerdown',ev=>{if(lock)return;ev.preventDefault();e.setPointerCapture(ev.pointerId);st={x:ev.clientX,y:ev.clientY,m:0}});
+ e.addEventListener('pointermove',ev=>{if(!st)return;if(!st.m&&Math.hypot(ev.clientX-st.x,ev.clientY-st.y)>6){st.m=1;cl=e.cloneNode(true);cl.classList.add('drag');document.body.appendChild(cl);e.style.opacity='.3'}
+  if(cl){cl.style.left=ev.clientX+'px';cl.style.top=ev.clientY+'px'}});
+ e.addEventListener('pointerup',ev=>{if(!st)return;const mv=st.m;st=null;if(cl){cl.remove();cl=null}if(!mv||out(ev)){zone.splice(zone.indexOf(v),1);renderZone()}else e.style.opacity=''});
+ e.addEventListener('pointercancel',()=>{if(cl){cl.remove();cl=null}e.style.opacity='';st=null})}zoneEl.appendChild(e)});
  const s=$('soma');if(showSum){s.className='soma';s.textContent='soma: '+fmt(sum())}else{s.className='soma hide';s.textContent='soma escondida'}}
 function task(){lock=false;const t=tasks[ti];zone=[];tries=0;$('msg').textContent='';$('msg').className='msg';$('res1').className='res';$('res2').className='res';
  $('zt').textContent=t.paid?'👛 Troco a entregar':'👛 Sua carteira';
