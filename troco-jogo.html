@@ -137,12 +137,13 @@ function mny(v,mini){const e=document.createElement('div');e.className='m';e.dat
  if(mini)e.style.setProperty('--h',b?'calc(var(--u)*.95)':`calc(var(--u)*${(k*.95).toFixed(2)})`);
  e.innerHTML=b?billSvg(v):coinSvg(v);return e}
 /* ---------- tarefas ---------- */
-const PROD=[["🍚", "Arroz", 2800], ["🫘", "Feijão", 800], ["🥛", "Leite", 600], ["🥚", "Ovos (dúzia)", 1400], ["🍌", "Bananas", 600], ["🍎", "Maçãs", 900], ["🍅", "Tomates", 800], ["🍝", "Macarrão", 500], ["🍬", "Açúcar", 500], ["🍗", "Frango", 1800], ["🥩", "Carne moída", 3500], ["🧻", "Papel higiênico", 2000], ["🥤", "Refrigerante", 900], ["🧼", "Sabão", 700], ["🍪", "Biscoito", 400], ["🍫", "Chocolate", 800], ["🧃", "Suco", 700], ["🍞", "Pão de forma", 900], ["🧀", "Queijo", 1600], ["🥕", "Cenouras", 500]];
+const PROD=[["🍚", "Arroz", 2800], ["🫘", "Feijão", 800], ["🥛", "Leite", 600], ["🥚", "Ovos (dúzia)", 1400], ["🍌", "Bananas", 600], ["🍎", "Maçãs", 900], ["🍅", "Tomates", 800], ["🍝", "Macarrão", 500], ["🍬", "Açúcar", 500], ["🍗", "Frango", 1800], ["🥩", "Carne moída", 3500], ["🧻", "Papel higiênico", 2000], ["🥤", "Refrigerante", 900], ["🧼", "Sabão", 700], ["🍪", "Biscoito", 400], ["🍫", "Chocolate", 800], ["🧃", "Suco", 700], ["🍞", "Pão de forma", 900], ["🧀", "Queijo", 1600], ["🥕", "Cenouras", 500],["🍬","Bala (pacote)",300],["🧃","Suco de caixinha",350],["🍭","Pirulito",200],["✏️","Lápis",250],["🧽","Borracha",200],["🥖","Pão francês (5 un.)",400]];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[rnd(0,a.length-1)];
 function prods(n){const a=[];while(a.length<n){const p=pick(PROD);if(!a.includes(p))a.push(p)}return a}
 const mk=(arr,fn)=>{const out=[],seen=new Set();let g=0;while(out.length<8&&g++<500){const t=fn(out.length);if(seen.has(t.total+'|'+(t.paid||0)))continue;seen.add(t.total+'|'+(t.paid||0));out.push(t)}return out};
-const pay=(pp,paid)=>{const ps=[...pp].sort((a,b)=>a-b),pr=prods(pp.length).sort((a,b)=>a[2]-b[2]);const it=pr.map((p,i)=>({e:p[0],n:p[1],p:ps[i]}));const total=pp.reduce((a,b)=>a+b,0);return {items:it,total,paid:paid||0,target:paid?paid-total:total}};
+const pay=(pp,paid)=>{const used=[];const it=pp.map(p=>{let c=PROD.filter(x=>!used.includes(x)&&x[2]>=p*.75&&x[2]<=p*1.33),q=p;if(!c.length){const s=PROD.filter(x=>!used.includes(x)).sort((a,b)=>Math.abs(a[2]-p)-Math.abs(b[2]-p));c=[s[rnd(0,2)]];q=Math.max(5,Math.round(c[0][2]*(.9+Math.random()*.2)/5)*5)}const x=pick(c);used.push(x);return {e:x[0],n:x[1],p:q}});
+ const total=it.reduce((a,b)=>a+b.p,0);let pd=paid||0;if(pd&&pd<=total)pd=[500,1000,2000,5000,10000,20000].filter(b=>b>total)[0];return {items:it.sort((a,b)=>a.p-b.p),total,paid:pd,target:pd?pd-total:total}};
 const m5=(a,b)=>rnd(a/5,b/5)*5, q25=(a,b)=>rnd(a/25,b/25)*25;
 const FASES=[
  {t:'Troco de R$ 5',s:'Fase 1 — o cliente pagou com R$ 5,00',i:'<b>O cliente pagou com a cédula mostrada.</b> Arraste o <b>troco</b> até a carteira: troco = pagou − preço.',gen:()=>mk(0,()=>pay([m5(55,495)],500))},

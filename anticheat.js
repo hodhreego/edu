@@ -22,7 +22,7 @@
  document.body.appendChild(box);
  function campo(re){var r='';var els=document.querySelectorAll('input');for(var i=0;i<els.length;i++){var e=els[i];var ph=(e.placeholder||'')+(e.name||'')+(e.id||'')+(e.getAttribute('aria-label')||'');if(re.test(ph)&&e.value){r=e.value;break}}return r}
  function enviar(tipo){
-  var d={tipo:tipo,jogo:jogo,contagem:cont,nome:campo(/nome|name/i),turma:campo(/turma|class/i),quando:new Date().toLocaleString('pt-BR'),aparelho:navigator.userAgent};
+  var d={tipo:tipo,jogo:jogo,contagem:cont,nome:(window.EDU_ALUNO&&EDU_ALUNO().nome)||campo(/nome|name/i),turma:(window.EDU_ALUNO&&EDU_ALUNO().turma)||campo(/turma|class/i),quando:new Date().toLocaleString('pt-BR'),aparelho:navigator.userAgent};
   try{var a=JSON.parse(localStorage.getItem('edu_alertas')||'[]');a.push(d);localStorage.setItem('edu_alertas',JSON.stringify(a.slice(-50)))}catch(e){}
   if(!REPORT_URL)return;
   var body=JSON.stringify({_subject:'ALERTA anti-cola: '+tipo+' — '+(d.nome||'aluno sem nome')+' — '+jogo,tipo:tipo,jogo:jogo,aluno:d.nome,turma:d.turma,tentativas:cont,quando:d.quando,aparelho:d.aparelho});
