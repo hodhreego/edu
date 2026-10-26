@@ -12,10 +12,11 @@
  'html,body{-webkit-touch-callout:none!important;-webkit-user-select:none!important;user-select:none!important}'+
  'input,textarea,[contenteditable]{-webkit-user-select:text!important;user-select:text!important}'+
  'img,svg,canvas{-webkit-user-drag:none;user-drag:none}'+
- '#ac-aviso{position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:2147483600;width:min(94vw,820px);background:#d00000;color:#fff;border:5px solid #fff;border-radius:22px;'+
- 'padding:18px 24px;text-align:center;font:900 clamp(22px,4.6vw,44px)/1.15 "Segoe UI",Roboto,Arial,sans-serif;box-shadow:0 0 0 6px #d00000,0 18px 50px rgba(0,0,0,.55);display:none;animation:ac-sacode .45s infinite}'+
- '#ac-aviso small{display:block;font:700 clamp(13px,2vw,18px)/1.3 "Segoe UI",Roboto,Arial,sans-serif;margin-top:8px;opacity:.95}'+
- '@keyframes ac-sacode{0%,100%{transform:translateX(-50%) rotate(0)}15%{transform:translateX(calc(-50% - 12px)) rotate(-2deg)}30%{transform:translateX(calc(-50% + 12px)) rotate(2deg)}45%{transform:translateX(calc(-50% - 9px)) rotate(-1.5deg)}60%{transform:translateX(calc(-50% + 9px)) rotate(1.5deg)}80%{transform:translateX(calc(-50% - 4px))}}'+
+ '#ac-aviso{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483600;width:80vw;height:80vh;background:#d00000;color:#fff;border:8px solid #fff;border-radius:28px;'+
+ 'padding:3vh 3vw;text-align:center;font:900 clamp(30px,7vw,84px)/1.12 "Segoe UI",Roboto,Arial,sans-serif;box-shadow:0 0 0 10px #d00000,0 0 0 9999px rgba(0,0,0,.55),0 24px 70px rgba(0,0,0,.7);display:none;flex-direction:column;align-items:center;justify-content:center;gap:2vh;animation:ac-sacode .4s infinite;cursor:pointer}'+
+ '#ac-aviso small{display:block;font:700 clamp(16px,2.6vw,30px)/1.3 "Segoe UI",Roboto,Arial,sans-serif;opacity:.97}'+
+ '#ac-aviso em{display:block;font:800 clamp(14px,2vw,22px) "Segoe UI",Roboto,Arial,sans-serif;font-style:normal;background:#fff;color:#d00000;border-radius:99px;padding:6px 22px}'+
+ '@keyframes ac-sacode{0%,100%{transform:translate(-50%,-50%) rotate(0)}12%{transform:translate(calc(-50% - 22px),calc(-50% + 6px)) rotate(-2.2deg)}25%{transform:translate(calc(-50% + 22px),calc(-50% - 6px)) rotate(2.2deg)}38%{transform:translate(calc(-50% - 16px),calc(-50% - 8px)) rotate(-1.6deg)}50%{transform:translate(calc(-50% + 16px),calc(-50% + 8px)) rotate(1.6deg)}65%{transform:translate(calc(-50% - 10px),-50%) rotate(-1deg)}80%{transform:translate(calc(-50% + 10px),-50%) rotate(1deg)}}'+
  '@media print{#ac-aviso{display:none!important}}';
  document.head.appendChild(css);
  var box=document.createElement('div');box.id='ac-aviso';box.setAttribute('role','alert');
@@ -28,12 +29,20 @@
   var body=JSON.stringify({_subject:'ALERTA anti-cola: '+tipo+' — '+(d.nome||'aluno sem nome')+' — '+jogo,tipo:tipo,jogo:jogo,aluno:d.nome,turma:d.turma,tentativas:cont,quando:d.quando,aparelho:d.aparelho});
   try{fetch(REPORT_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:body,keepalive:true})}catch(e){}
  }
+ box.addEventListener('click',function(){box.style.display='none'});
+ var AC=null;
+ function alarme(){
+  try{if(navigator.vibrate)navigator.vibrate([300,120,300,120,500])}catch(e){}
+  try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
+   for(var i=0;i<6;i++){var t=AC.currentTime+i*.32,o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(i%2?620:880,t);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.32)}}catch(e){}
+ }
  function aviso(tipo,titulo){
   cont++;
-  box.innerHTML='⚠️ '+titulo+'<small>Isso foi registrado e o professor será avisado. Tentativas nesta página: '+cont+'.</small>';
-  box.style.display='block';
+  box.innerHTML='⚠️ '+titulo+'<small>Isso foi registrado e o professor será avisado. Tentativas nesta página: '+cont+'.</small><em>Toque aqui para fechar</em>';
+  box.style.display='flex';alarme();
   box.style.animation='none';void box.offsetWidth;box.style.animation='';
-  clearTimeout(tAviso);tAviso=setTimeout(function(){box.style.display='none'},7000);
+  clearTimeout(tAviso);tAviso=setTimeout(function(){box.style.display='none'},9000);
   enviar(tipo);
  }
  var LENS='TENTATIVA DE USAR O GOOGLE LENS DETECTADA!';
