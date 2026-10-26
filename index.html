@@ -64,87 +64,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <div class="empty" id="empty">Nada por aqui ainda.</div>
 </main>
 <footer>Prof. Rodrigo · Novos jogos entram aqui a cada atualização.</footer>
+<script src="catalogo.js"></script>
 <script>
 /* ===== COMO ATUALIZAR =====
    Jogo novo: acrescente um J(...) em JOGOS no tema certo (TEMAS). Cada tema pertence a uma matéria (MATS). */
-const FUS='<svg viewBox="0 0 38 20"><rect width="38" height="20" fill="#fff"/>'+[0,3.08,6.16,9.24,12.32,15.4,18.48].map(y=>'<rect y="'+y+'" width="38" height="1.54" fill="#b22234"/>').join('')+'<rect width="15.2" height="10.77" fill="#3c3b6e"/></svg>';
-const FES='<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/></svg>';
-const FFR='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>';
-const FIT='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>';
-const sm=s=>s.replace('<svg','<svg width="24" height="14" style="border-radius:2px"');
-const MATS=[
- {id:'mat',nome:'Matemática',ic:'<span>➗</span>',cor:'#1f4fd8',sub:'6º, 7º e 9º ano'},
- {id:'fin',nome:'Educação Financeira',ic:'<span>💰</span>',cor:'#0f9d58',sub:'Dinheiro, lojas e juros'},
- {id:'en',nome:'English',ic:FUS,cor:'#c62828',sub:'6º e 8º ano',cls:'eng',play:'Play'},
- {id:'es',nome:'Español',ic:FES,cor:'#c2410c',sub:'Preposiciones',play:'Jugar'},
- {id:'fr',nome:'Français',ic:FFR,cor:'#1d4ed8',sub:'Prépositions',play:'Jouer'},
- {id:'it',nome:'Italiano',ic:FIT,cor:'#15803d',sub:'Preposizioni',play:'Gioca'}
-];
-const TEMAS=[
- {id:'inteiros',mat:'mat',nome:'Números inteiros',icon:'➕',cor:'#1f4fd8',desc:'Sinais, adição, subtração e multiplicação com números positivos e negativos.'},
- {id:'fracoes',mat:'mat',nome:'Frações',icon:'🍕',cor:'#e8590c',desc:'Da figura pintada às contas com frações.'},
- {id:'porcentagem',mat:'mat',nome:'Porcentagem',icon:'🔟',cor:'#c2185b',desc:'50%, 10% e 25%: metade, décima parte e um quarto, até os descontos da loja.'},
- {id:'algebra',mat:'mat',nome:'Álgebra',icon:'🔤',cor:'#7c3aed',desc:'Letras, expressões e produtos notáveis.'},
- {id:'geometria',mat:'mat',nome:'Geometria e Trigonometria',icon:'📐',cor:'#0891b2',desc:'Pitágoras, trigonometria, área do círculo e volumes dos sólidos.'},
- {id:'dinheiro',mat:'fin',nome:'Dinheiro: pagar, somar e dar troco',icon:'💰',cor:'#0f9d58',desc:'Moedas e cédulas do real em proporção real: pague o valor exato, some compras e entregue o troco.'},
- {id:'lojas',mat:'fin',nome:'Lojas e comércios',icon:'🏪',cor:'#e11d48',desc:'Cada loja com os seus produtos: compre, some e dê o troco como um verdadeiro caixa.'},
- {id:'trabalho',mat:'fin',nome:'Salário e compras',icon:'💼',cor:'#0d9488',desc:'Folha de pagamento dos funcionários e lista de compras.'},
- {id:'financeira',mat:'fin',nome:'Juros, investimentos e conceitos',icon:'📈',cor:'#4338ca',desc:'Juros simples e compostos, siglas da renda fixa e vocabulário de educação financeira (3ª série).'},
- {id:'ingles',mat:'en',nome:'Vocabulary and Grammar',icon:sm(FUS),cor:'#c62828',desc:'Ligue a frase ou o número à figura certa. Clique na palavra para ouvir.'},
- {id:'es',mat:'es',nome:'Español',icon:sm(FES),cor:'#c2410c',desc:'Preposiciones de lugar.'},
- {id:'fr',mat:'fr',nome:'Français',icon:sm(FFR),cor:'#1d4ed8',desc:'Prépositions de lieu.'},
- {id:'it',mat:'it',nome:'Italiano',icon:sm(FIT),cor:'#15803d',desc:'Preposizioni di luogo.'}
-];
-const J=(tema,emoji,titulo,desc,href,serie,fases)=>({tema,emoji,titulo,desc,href,serie,fases});
-const JOGOS=[
- J('inteiros','🧮','Soma de Inteiros','8 fases: somas, subtrações, três termos, letras (álgebra), contas com frutas, vezes e tabuada com sinais.','soma-de-inteiros-jogo.html','6º e 7º ano',8),
- J('fracoes','🍰','Frações','6 fases: fração em figuras, soma e subtração, fração de um número, simplificação e frações com frutas.','fracoes-jogo.html','6º ano',6),
- J('porcentagem','🔟','Porcentagem Fácil','50% (metade), 10% e 25%, misturas e descontos em reais.','porcentagem-jogo.html','6º ano',6),
- J('algebra','🔤','Álgebra com letras','Termos semelhantes, valor numérico e expressões com letras.','algebra-letras-jogo.html','7º ano'),
- J('algebra','✖️','Produtos Notáveis','Quadrado da soma, quadrado da diferença e produto da soma pela diferença.','produtos-notaveis-jogo.html','9º ano'),
- J('geometria','📐','Teorema de Pitágoras','Ache a hipotenusa e os catetos de triângulos retângulos.','pitagoras-jogo.html','9º ano'),
- J('geometria','📏','Trigonometria','Seno, cosseno e tangente no triângulo retângulo.','trigonometria-jogo.html','9º ano'),
- J('geometria','⭕','Área do Círculo','Calcule a área do círculo a partir do raio ou do diâmetro.','area-do-circulo-jogo.html','9º ano'),
- J('geometria','🧊','Volume do Cubo','Volume do cubo a partir da aresta.','volume-do-cubo-jogo.html','9º ano'),
- J('geometria','🔵','Volume: Esfera, Cilindro e Cone','Escolha a fórmula certa e calcule o volume.','volume-esfera-cilindro-jogo.html','9º ano'),
- J('geometria','🔺','Volume da Pirâmide','Área da base vezes altura, dividido por 3.','volume-da-piramide-jogo.html','9º ano'),
- J('dinheiro','💰','Contagem de Dinheiro','Arraste moedas e cédulas para pagar o valor exato, somar dois produtos e dar o troco.','contagem-dinheiro-jogo.html','6º ano',6),
- J('dinheiro','🏪','Mercadinho','Você é o caixa! Produtos no leitor, soma e troco, com som de caixa registradora.','mercadinho-jogo.html','6º ano',5),
- J('dinheiro','⚡','Mercadinho 2 — Caixa Rápido','Dois a cinco produtos, só moedas e troco de R$ 20, 50 e 100.','mercadinho-caixa-rapido-jogo.html','6º ano',6),
- J('dinheiro','🪙','Troco com Cédulas','Troco de R$ 5 até R$ 100, um passo de cada vez.','troco-cedulas-jogo.html','6º ano',6),
- J('dinheiro','🪙','Dando o Troco','Troco de R$ 5, 10, 20, 50 e 100, até compras com dois produtos.','troco-jogo.html','6º ano',6),
- J('dinheiro','💵','Contagem de Dólares','Moedas (cents) e notas (bills) americanas: pagar, somar e dar o troco.','contagem-dolares-jogo.html','6º ao 8º ano',6),
- J('lojas','🥖','Padaria','Pão, café, bolo e salgados.','loja-padaria-jogo.html','6º ano',6),
- J('lojas','🛒','Mercadinho (produtos)','Arroz, feijão, leite, carne e mais.','loja-mercadinho-jogo.html','6º ano',6),
- J('lojas','✏️','Papelaria','Caderno, lápis, caneta, mochila.','loja-papelaria-jogo.html','6º ano',6),
- J('lojas','🧴','Loja de Higiene','Shampoo, sabonete, escova de dente.','loja-farmacia-jogo.html','6º ano',6),
- J('lojas','🍔','Lanchonete','Hambúrguer, batata, suco e sorvete.','loja-lanchonete-jogo.html','6º ano',6),
- J('lojas','🧸','Loja de Brinquedos','Bola, boneca, quebra-cabeça.','loja-brinquedos-jogo.html','6º ano',6),
- J('lojas','👕','Loja de Roupas','Camiseta, calça, tênis, boné.','loja-roupas-jogo.html','6º ano',6),
- J('lojas','📱','Loja de Celular','Capinha, fone, carregador, película.','loja-celular-jogo.html','6º ano',6),
- J('lojas','💻','Loja de Informática','Mouse, teclado, pendrive, webcam.','loja-informatica-jogo.html','6º ano',6),
- J('lojas','🐶','Pet Shop','Ração, coleira, brinquedo, areia.','loja-petshop-jogo.html','6º ano',6),
- J('lojas','🥬','Feira Livre','Frutas, verduras, ovos e mel.','loja-feira-jogo.html','6º ano',6),
- J('trabalho','💼','Folha de Pagamento','Pague o salário dos funcionários da escola e ganhe bônus. Seu nome fica travado no holerite.','salarios-funcionarios-jogo.html','6º ao 9º ano',6),
- J('trabalho','🛍️','Lista de Compras','Some os preços de dois produtos da lista.','lista-de-compras-jogo.html','6º ano',3),
- J('financeira','📈','Juros e Montante','Juros simples e compostos, montante e descontos.','juros-simples-compostos-jogo.html','3ª série EM',4),
- J('financeira','🏦','Renda Fixa e Siglas','CDB, LCI, Tesouro Selic, FGC, IOF e outros.','renda-fixa-siglas-jogo.html','3ª série EM',1),
- J('financeira','📚','Termos Financeiros','Orçamento, inflação, reserva de emergência, crédito.','educacao-financeira-termos-jogo.html','3ª série EM',1),
- J('ingles','🏃','Phrasal Verbs','Ligue cada phrasal verb à figura que o representa.','phrasal-verbs-jogo.html','8º ano'),
- J('ingles','📍','Prepositions of Place','in, on, under, next to, between...','preposicoes-de-lugar-jogo.html','6º ano'),
- J('ingles','🔢','English Numbers','Números cardinais e ordinais em inglês.','numbers-ingles-jogo.html','6º ano'),
- J('ingles','🐶','Animals','Animais de estimação, da fazenda e selvagens.','animals-ingles-jogo.html','6º ano',2),
- J('ingles','🍎','Food and Drinks','Frutas, vegetais, comidas e bebidas.','food-drinks-ingles-jogo.html','6º ano',2),
- J('ingles','👕','Clothes','Roupas e acessórios.','clothes-ingles-jogo.html','6º ano',1),
- J('ingles','🧑‍🏫','Jobs','Profissões: teacher, doctor, pilot...','jobs-ingles-jogo.html','6º ao 8º ano',1),
- J('ingles','☀️','Weather and Sports','Clima, natureza e esportes.','weather-sports-ingles-jogo.html','6º ano',2),
- J('ingles','🧍','Body and Family','Partes do corpo e família.','body-family-ingles-jogo.html','6º ano',1),
- J('ingles','🏠','House and School','Casa, objetos e material escolar.','house-school-ingles-jogo.html','6º ano',2),
- J('ingles','🚗','Transport and Actions','Meios de transporte e verbos de ação.','transport-verbs-ingles-jogo.html','6º ano',2),
- J('es','📍','Preposiciones de lugar','dentro de, sobre, debajo de, entre...','preposiciones-de-lugar-es-jogo.html','Espanhol'),
- J('fr','📍','Prépositions de lieu','dans, sur, sous, entre, devant...','prepositions-de-lieu-fr-jogo.html','Francês'),
- J('it','📍','Preposizioni di luogo','dentro, su, sotto, tra, davanti a...','preposizioni-di-luogo-it-jogo.html','Italiano')
-];
 const matOf={};TEMAS.forEach(t=>matOf[t.id]=t.mat);
 const SERIES=['6º','7º','8º','9º','3ª série'];
 function anos(s){const r=[];const m=s.match(/(\d)º ao (\d)º/);
