@@ -30,6 +30,7 @@
  '@media(max-width:900px){#edu-nav label span{display:none}#edu-nav .brand span{display:none}#edu-nav select{max-width:150px}#edu-nav .tag{display:none}}'+
  '@media(max-width:640px){#edu-nav{overflow-x:auto;gap:7px;padding:0 8px}#edu-nav select{max-width:118px;font-size:12px;padding:5px 24px 5px 9px}#edu-nav .sep{display:none}}'+
  '@media(prefers-color-scheme:dark){#edu-nav{background:rgba(24,32,58,.92);border-color:#2a3558;color:#eef2fc}#edu-nav a.b{color:#eef2fc}#edu-nav a.b:hover{background:#222c4c}#edu-nav select{background-color:#18203a;color:#eef2fc;border-color:#2a3558}#edu-nav label{color:#a3afcf}#edu-nav .sep{background:#2a3558}}'+
+ '@media screen and (min-width:821px) and (min-height:521px){body>#app{height:calc(100vh - var(--eh))!important}}'+
  '@media print{#edu-nav{display:none!important}body{padding-top:0!important}}';
  document.head.appendChild(css);
  function opt(v,t,sel){return '<option value="'+v+'"'+(sel?' selected':'')+'>'+t+'</option>'}
