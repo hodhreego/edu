@@ -46,6 +46,15 @@ body{padding-top:var(--eh)!important}
 #edu-ac.on{display:block}#edu-ac h4{margin:0 0 8px;font-size:15px}#edu-ac .r{display:flex;gap:6px;margin-bottom:8px}
 #edu-ac button{flex:1;border:2px solid #cfd8ec;background:#f4f7fc;color:#16213a;border-radius:10px;padding:7px 4px;font:800 14px "Segoe UI",Arial,sans-serif;cursor:pointer}
 #edu-ac button.on{background:#1f4fd8;border-color:#1f4fd8;color:#fff}
+body>*:not(#edu-nav):not(#edu-ac):not(script):not(style):not(#ac-aviso){zoom:var(--ezz,1)}
+html.edu-hc body,html.edu-hc body *:not(svg):not(svg *):not(img):not(#edu-nav):not(#edu-nav *):not(#edu-ac):not(#edu-ac *){background:#000!important;background-image:none!important;color:#fff!important;border-color:#ffeb3b!important;text-shadow:none!important;box-shadow:none!important;-webkit-text-stroke:0!important}
+html.edu-hc body button,html.edu-hc body .btn,html.edu-hc body a,html.edu-hc body select,html.edu-hc body input:not([type=checkbox]),html.edu-hc body [contenteditable]{background:#ffeb3b!important;color:#000!important;border:2px solid #fff!important;font-weight:800!important}
+html.edu-hc body input.g,html.edu-hc body .ok,html.edu-hc body .good{background:#00e676!important;color:#000!important}
+html.edu-hc body input.r,html.edu-hc body .bad{background:#ff1744!important;color:#fff!important}
+html.edu-hc body svg text{fill:#fff!important;stroke:none!important;paint-order:normal!important;-webkit-text-stroke:0!important}
+html.edu-hc body svg polygon,html.edu-hc body svg rect:not([fill]),html.edu-hc body svg path:not([fill]){stroke:#ffeb3b!important}
+html.edu-hc body .hx polygon{fill:#000!important;stroke-width:2!important}
+html.edu-hc body img{filter:contrast(1.4) saturate(1.2)}
 html.edu-hc #edu-nav{background:#000!important;color:#fff!important;border-bottom:3px solid #ffeb3b}
 html.edu-hc #edu-nav .tag.k{background:#ffeb3b!important;color:#000!important}
 html.edu-hc #edu-nav .sels,html.edu-hc #edu-nav form.cod{background:#fff!important;border-color:#ffeb3b!important}
@@ -68,7 +77,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  #edu-nav select{color:#eef2fc}#edu-nav select option{background:#18203a;color:#eef2fc}#edu-nav select:hover,#edu-nav select:focus{background-color:#18203a}
  #edu-nav form.cod{background:#18203a}#edu-nav form.cod input{color:#eef2fc}
 }
-@media screen and (min-width:821px) and (min-height:521px){body>#app{height:calc(100vh - var(--eh))!important;height:calc(100dvh - var(--eh))!important}}
+@media screen and (min-width:821px) and (min-height:521px){body>#app{height:calc((100vh - var(--eh))/var(--ezz,1))!important;height:calc((100dvh - var(--eh))/var(--ezz,1))!important}}
 @media print{#edu-nav{display:none!important}body{padding-top:0!important}}
 `;
  document.head.appendChild(css);
@@ -98,10 +107,10 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   '<div class="pn"><a class="n'+(prev?'':' off')+'" href="'+(prev?prev.href:'#')+'" title="Jogo anterior">◀</a>'+
   '<a class="n nx'+(next?'':' off')+'" href="'+(next?next.href:'#')+'" title="Próximo jogo">Próximo ▶</a></div>';
  document.body.insertBefore(nav,document.body.firstChild);
- var ac=document.createElement('div');ac.id='edu-ac';ac.innerHTML='<h4>♿ Acessibilidade</h4><div class="r"><button data-z="1">Texto normal</button><button data-z="1.25">Grande</button><button data-z="1.5">Enorme</button></div><div class="r"><button id="en-hc">◐ Alto contraste</button></div>';
+ var ac=document.createElement('div');ac.id='edu-ac';ac.innerHTML='<h4>♿ Acessibilidade</h4><div class="r"><button data-z="1">Texto normal</button><button data-z="1.25">Grande</button><button data-z="1.5">Enorme</button><button data-z="1.75">Gigante</button></div><div class="r"><button id="en-hc">◐ Alto contraste</button></div>';
  document.body.appendChild(ac);
  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}}
- function aplica(){var z=ls('edu_ez')||'1';nav.style.setProperty('--ez',z);nav.style.zoom=z>1?1+(z-1)*.5:1;document.documentElement.classList.toggle('edu-hc',ls('edu_hc')==='1');
+ function aplica(){var z=ls('edu_ez')||'1';nav.style.setProperty('--ez',z);nav.style.zoom=z>1?1+(z-1)*.5:1;document.documentElement.style.setProperty('--ezz',z);document.documentElement.classList.toggle('edu-hc',ls('edu_hc')==='1');
   [].forEach.call(ac.querySelectorAll('[data-z]'),function(b){b.classList.toggle('on',b.dataset.z===z)});document.getElementById('en-hc').classList.toggle('on',ls('edu_hc')==='1');setH()}
  ac.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.z)ls('edu_ez',b.dataset.z);else ls('edu_hc',ls('edu_hc')==='1'?'0':'1');aplica()});
  document.getElementById('en-a').onclick=function(){ac.classList.toggle('on')};
