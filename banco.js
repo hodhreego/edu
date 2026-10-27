@@ -14,7 +14,7 @@ var $=function(i){return document.getElementById(i)};
 function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function pick(a){return a[rnd(0,a.length-1)]}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(0,i),t=a[i];a[i]=a[j];a[j]=t}return a}
-function fmt(c){return 'R$ '+Math.floor(c/100).toLocaleString('pt-BR')+','+String(c%100).padStart(2,'0')}
+function fmt(c){var n=c<0;c=Math.abs(c);return (n?'− ':'')+'R$ '+Math.floor(c/100).toLocaleString('pt-BR')+','+String(c%100).padStart(2,'0')}
 function parse(s){s=String(s||'').replace(/R\$|\s/g,'');if(!s)return NaN;
  if(s.indexOf(',')>=0)s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
  var n=Number(s);return isNaN(n)?NaN:Math.round(n*100)}
@@ -91,6 +91,12 @@ var GEN={
    var t='Você é o lojista. O cliente levou:'+lista+'Total da compra: <b>'+fmt(v)+'</b>. Ele vai pagar '+desc+'. <b>Cobre na maquininha</b> (o valor certo, já com o desconto se houver) e <b>deixe o cliente escolher a forma de pagamento</b> na tela dele.'+tab;
    return {txt:t,modo:'pos',todos:true,venda:{valor:val,forma:forma,parc:pc},pin:'0000',fields:fields}}
   return GEN.compra(L,hard)},
+ contas:function(L,hard){var B=[['Energia elétrica','Copel','⚡'],['Água e esgoto','Sanepar','💧'],['Internet fibra','Vivo Fibra','🌐'],['Fatura do celular','Claro','📱'],['Gás encanado','Compagas','🔥'],['Condomínio','Edifício Aurora','🏢']],b=pick(B),
+   base=L===1?rnd(6,60)*500:rnd(4,40)*5000,mes=L===1?0:(L===2?1:2),multa=0,jur=0,tot,cod='8'+rnd(1000,9999)+rnd(10000,99999)+rnd(10000,99999)+rnd(10000,99999)+rnd(1000,9999),pn=pin(),venc=rnd(5,25);
+   if(mes){multa=base*2/100;jur=base*mes/100;tot=base+multa+jur}else tot=base;
+   var cod2=cod.replace(/(\d{5})(?=\d)/g,'$1 ').trim(),nome=b[2]+' '+b[1];
+   var t='Você recebeu a conta de <b>'+b[0].toLowerCase()+'</b> ('+b[1]+'). Valor do documento: <b>'+fmt(base)+'</b>, vencimento dia <b>'+venc+'</b>.'+(mes?' A conta está <b>vencida há '+mes+' mês'+(mes>1?'es':'')+'</b>: cobra-se <b>multa de 2%</b> e <b>juros de 1% ao mês</b>. Calcule o <b>valor total a pagar</b>.':' Pague o valor do documento.')+' Abra o app do banco, vá em <b>Pagar</b>, cole o código de barras e confirme. '+pinTxt(pn);
+   return {txt:t,modo:'pix',bill:{nome:nome,base:base,mes:mes},contacts:[{nome:nome,banco:'Boleto',chave:cod2}],target:{nome:nome,valor:tot},pin:pn}},
  parcela:function(L){var P,n,j,t,f=[],ch=null;
   for(var g=0;g<200;g++){
    if(L===1){P=rnd(3,15)*10000;n=pick([2,3,4,5,10]);if(P%n)continue;t='Uma geladeira custa <b>'+fmt(P)+'</b> no cartão de crédito, em <b>'+n+' parcelas iguais, sem juros</b>.';f=[{q:'Valor de cada parcela',a:P/n},{q:'Total pago no fim',a:P}];break}
@@ -110,7 +116,7 @@ var GEN={
 
 var ITENS=[['🌽','pamonha','pamonhas'],['🥟','pastel','pastéis'],['🍗','coxinha','coxinhas'],['🥤','suco','sucos'],['🍰','fatia de bolo','fatias de bolo'],['🧀','pão de queijo','pães de queijo'],['🍨','açaí','açaís'],['🍫','brigadeiro','brigadeiros'],['☕','café','cafés'],['🥖','pão francês','pães franceses'],['🥪','sanduíche','sanduíches'],['🍦','sorvete','sorvetes']];
 var TIPOS=['cel','cpf','mail','ale','cnpj'];
-function hora(i){var m=14*60+rnd(0,30)+i;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+var HB=rnd(0,30);function hora(i){var m=14*60+HB+i*3;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
 function zap(L,modo){
  var tp=pick(TIPOS),p=pessoa(tp),pn=pin(),its=shuffle(ITENS),l=[],v=0,calc;
  var m=modo==='mix'?pick(['soma','mult']):modo;
@@ -124,17 +130,45 @@ function zap(L,modo){
   calc='Multiplique e some'}
  var linhas=l.map(function(x){return x.i[0]+' '+(x.q>1?x.q+' '+x.i[2]+' de '+fmt(x.p)+' cada':x.i[1].charAt(0).toUpperCase()+x.i[1].slice(1)+' — '+fmt(x.p))});
  var lab=({cel:'celular',cpf:'CPF',mail:'e-mail',ale:'chave aleatória',cnpj:'CNPJ'})[tp];
- var nm=p.nome,bubbles=['Oi! 👋 Aqui é '+(tp==='cnpj'?'da <b>'+nm+'</b>':'a <b>'+nm+'</b>')+'. Seu pedido ficou assim:',linhas.join('<br>'),'Faz o Pix pra mim? 🙏 Minha chave Pix é o <b>'+lab+'</b>:'];
+ var nm=p.nome,cn=tp==='cnpj',B=cn?'<b>'+nm+'</b>':'<b>'+nm+'</b>',ST=[
+  ['Boa tarde! Aqui é '+(cn?'da ':'')+B+'. Segue o seu pedido:',null,'Quando puder, faça o Pix, por gentileza. Muito obrigado! 🙏'],
+  ['😍🛍️ Oiee! '+B+' aqui!! Olha o seu pedido:',null,'Faz o Pixzinho? 🙏🙏🙏💸✨'],
+  ['Ei. Cadê o dinheiro do pedido?',null,'Paga logo, tô esperando faz tempo. 😒'],
+  ['Oi, sou '+(cn?'da ':'')+B+'. Pedido fechado:',null,'<span class="stk">E O PIX?? 💸😤</span>'],
+  ['pedido de hoje:',null,'pix pls 🫶'],
+  ['Gente, fecha logo que eu preciso pagar o fornecedor hoje!! ⏰ '+B,null,'Manda o Pix assim que puder, é urgente 🚨'],
+  ['E aí, mano! Fechou o rolê, bora acertar? 😎 ('+B+')',null,'Manda o Pix aí que tô sem grana kkkkk 😂'],
+  ['Prezado cliente, '+(cn?'a ':'')+B+' agradece a preferência. Resumo do pedido:',null,'Solicitamos o pagamento via Pix, pela chave abaixo. Atenciosamente.'],
+  ['Oi! 👋 Tudo bem? Aqui é '+(cn?'da ':'')+B+'. Seu pedido ficou assim:',null,'Pode mandar o Pix? 🙏 Minha chave é o <b>'+lab+'</b>:'],
+  ['Bom dia, flor ☀️🌷 '+B+' falando!',null,'Quando puder, me manda o Pix, tá? Beijo 😘']],
+  sx=pick(cn?[0,1,5,7,8]:[0,1,2,3,4,5,6,8,9]),sy=ST[sx],bubbles=[sy[0],linhas.join('<br>'),sy[2]];
  return {txt:'Calcule o total do pedido e envie o Pix para '+nm+'. '+pinTxt(pn),chat:{nome:nm,msgs:bubbles,chave:p.chave,calc:calc},contacts:cts(tp,p,3),target:{nome:nm,valor:v},pin:pn,modo:'pix'}}
 GEN.zapsoma=function(L){return zap(L,'soma')};GEN.zapmult=function(L){return zap(L,'mult')};GEN.zapmix=function(L){return zap(L,'mix')};
 /* ---------- jogo ---------- */
 window.BANK={run:function(cfg){
  var BK=null;try{BK=localStorage.getItem('edu_banco')}catch(e){}if(!BANKS[BK])BK=null;
- var fi=0,ti=0,pts=0,tasks=[],T=null,ph={},lock=false,pt=0,SAL={},SAL0={},LEDGER=[],L0=0,AC=null;
+ var fi=0,ti=0,pts=0,tasks=[],T=null,ph={},lock=false,pt=0,SAL={},SAL0={},LEDGER=[],L0=0,AC=null,INC=null,CHESP=null,BLOQ={},GRUPOS=[],LIVE={};
  var app=$('app');
  app.innerHTML='<div class="top"><div><h1>'+cfg.titulo+'</h1><div class="sub" id="sub"></div></div><div class="coin"><i>$</i><span id="pts">0 pontos</span></div><div class="btns"><div class="dots" id="dots"></div><select id="nivel" class="ndiv"><option value="1">6º ano</option><option value="2">7º ano</option><option value="3">8º ano</option><option value="4">9º ano</option></select><button class="btn sec" id="bBanco">🏦 Banco</button></div></div><div class="inst" id="inst"></div><div id="bkbar"></div><div class="main"><div class="card" id="ped"><h2>📋 Pedido</h2><div id="txt" class="stm"></div><div id="qrs"></div></div><div class="card" id="stage"><div class="phone" id="phone"></div><div class="msg" id="msg"></div></div></div><div class="card" id="dash"></div><div class="fim" id="fim"><div class="box"><h2 id="fT"></h2><p id="fP"></p><div id="ext"></div><button class="btn ok" id="fB"></button></div></div><div id="bpick"></div><div id="notif"></div><div id="exm"></div>';
- function iniSal(){var v=[125000,98050,210075,56030,342010,87500,150025,73540];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
- function sal(){return SAL[BK]||0}
+ function iniSal(){BLOQ={};var v=[125000,98050,210075,56030,342010,87500,150025,73540];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
+ var OKEY={};
+ function uu(){var h='0123456789abcdef',o='';for(var i=0;i<32;i++){o+=h[rnd(0,15)];if(i===7||i===11||i===15||i===19)o+='-'}return o}
+ function iniKeys(){Object.keys(BANKS).forEach(function(k){OKEY[k]=uu()})}
+ iniKeys();
+ function ownC(k){return {nome:'Você (Aluno)',banco:BANKS[k].n,chave:OKEY[k],own:k}}
+ function scarce(){var need=0,pix=false;tasks.forEach(function(t){if(t.target&&t.modo!=='pos'){need+=t.target.valor;pix=true}});if(!pix){iniSal();return}
+  var tot=Math.ceil(need*1.6/10000)*10000,w=[.03,.05,.08,.12,.15,.17,.2,.2],ks=Object.keys(BANKS),i,a=[],sum=0;
+  for(i=w.length-1;i>0;i--){var j=rnd(0,i),t=w[i];w[i]=w[j];w[j]=t}
+  for(i=0;i<ks.length;i++){var v=Math.round(tot*w[i%w.length]/500)*500;a.push(v);sum+=v}
+  var mx=0;a.forEach(function(v,i){if(v>a[mx])mx=i});a[mx]+=tot-sum;var ng=(mx+1+rnd(0,ks.length-2))%ks.length,dv=rnd(3,12)*1000,exc=a[ng]+dv;a[ng]=-dv;a[mx]+=exc;CHESP={bk:ks[ng],dv:dv};BLOQ={};var ot=[];ks.forEach(function(k,i){if(i!==mx&&i!==ng)ot.push(i)});for(var q=ot.length-1;q>0;q--){var r2=rnd(0,q),t2=ot[q];ot[q]=ot[r2];ot[r2]=t2}
+  var z1=ot[0],z2=ot[1],bl=ot[2];[[z1,1],[z2,0],[bl,rnd(8,40)*1000]].forEach(function(p2){a[mx]+=a[p2[0]]-p2[1];a[p2[0]]=p2[1]});BLOQ[ks[bl]]=true;
+  ks.forEach(function(k,i){SAL[k]=a[i];SAL0[k]=a[i]});
+  var rb=ks[rnd(0,ks.length-1)],iv=rnd(2,20)*1000,real=Math.random()<.6;INC={nome:pick(['Tia Marta','Seu João','Carla (colega)','Dona Rosa','Pedro (primo)']),v:iv,real:real,bk:rb,ans:null,id:eid(),h:nowS()};
+  if(real){SAL[rb]+=iv;LEDGER.push({f:fi,bk:rb,cr:1,n:INC.nome,b:'recebido',v:iv,ok:true,h:INC.h,id:INC.id})}}
+ function nowS(){return new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}
+ function eid(){var h='0123456789ABCDEF',o='E18236120';for(var i=0;i<23;i++)o+=h[rnd(0,15)];return o}
+ function sal(){return BLOQ[BK]?0:(SAL[BK]||0)}
+ function sdo(){return BLOQ[BK]?'🔒 Bloqueado':fmt(sal())}
  iniSal();
  var MONO={nubank:'Nu',bb:'BB',itau:'itaú',bradesco:'B',caixa:'✕',inter:'inter',mp:'mp',santander:'S'};
  function bicon(k,sz){var b=BANKS[k];return '<span class="bi" style="--c:'+b.h+';--t:'+b.f+(sz?';--z:'+sz+'px':'')+'"><i>'+(MONO[k]||b.n.charAt(0))+'</i></span>'}
@@ -151,34 +185,51 @@ window.BANK={run:function(cfg){
  function setPts(d){pts=Math.max(0,pts+d);$('pts').textContent=pts+' pontos'}
  function dots(){var d=$('dots');d.innerHTML='';tasks.forEach(function(_,i){var x=document.createElement('i');x.className=i<ti?'d':i===ti?'c':'';d.appendChild(x)})}
  function msg(t,c){$('msg').textContent=t;$('msg').className='msg '+(c||'')}
- function fase(){var L=cfg.niveis[fi];var hard=L>3;if(hard)L=3;tasks=[];var seen={};for(var g=0;g<80&&tasks.length<6;g++){var t=GEN[cfg.gen](L,hard);if(seen[t.txt])continue;seen[t.txt]=1;tasks.push(t)}ti=0;task()}
+ function fase(){var L=cfg.niveis[fi];var hard=L>3;if(hard)L=3;tasks=[];var seen={};for(var g=0;g<80&&tasks.length<6;g++){var t=GEN[cfg.gen](L,hard);if(seen[t.txt])continue;seen[t.txt]=1;tasks.push(t)}ti=0;scarce();task()}
  function isTab(){try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)>=600}catch(e){return false}}
  function ftxt(x){return x.forma==='debito'?'Débito':x.forma==='pix'?'Pix':x.forma==='dinheiro'?'Dinheiro':'Crédito '+(x.parc>1?x.parc+'x':'à vista')}
  var GN=[1,2,3,4,5,6,7,8,9,10,11,12];
  function tabHtml(op,n){var l=[];for(var i=1;i<=10;i++)l.push('<span>'+n+' '+op+' '+i+' = <b>'+(op==='×'?n*i:n+i)+'</b></span>');return '<div class="tbl2 '+(op==='×'?'tx':'tp')+'">'+l.join('')+'</div>'}
  function tabCard(op,n){return '<div class="tcard" data-op="'+op+'"><b>📸 Tabuada '+(op==='×'?'da multiplicação':'da adição')+' do <u>'+n+'</u></b><div class="tch">'+GN.map(function(k){return '<button type="button" data-w="tab" data-op="'+op+'" data-n="'+k+'" class="'+(k===n?'on':'')+'">'+k+'</button>'}).join('')+'</div>'+tabHtml(op,n)+'<small>Toque num número para ver a tabuada dele</small></div>'}
- function groupHtml(){var m=[
-   ['👋 Bem-vindos ao <b>Matemática no Zap</b>! Aqui eu mando dicas rápidas para você <b>calcular de cabeça</b> e usar o Pix sem erro.',0],
-   ['➕ <b>Somar por partes:</b> 38 + 27 → 30 + 20 = 50 e 8 + 7 = 15 → <b>65</b>.',1],
-   [tabCard('+',7),2],
-   ['✖️ <b>Multiplicar:</b> 7 × 6 = 7 × 5 + 7 = 35 + 7 = <b>42</b>. Truque do 9: 9 × 7 = 70 − 7 = <b>63</b>.',3],
-   [tabCard('×',6),4],
-   ['💠 <b>Pix em 4 passos:</b><br>1️⃣ Copie a chave<br>2️⃣ Abra o app do banco → Pix<br>3️⃣ Cole a chave e <b>confira o nome</b><br>4️⃣ Digite o valor, confirme com a senha.',5],
-   ['⚠️ <b>Golpe:</b> o banco nunca pede sua senha por mensagem. Confira sempre o nome de quem recebe!',6],
-   ['🧮 <b>Troco:</b> pagou R$ 50 numa compra de R$ 37? Conte para cima: 37 → 40 (+3) → 50 (+10) = <b>R$ 13</b>.',7]];
-  var h='<div class="wa wg"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><i data-w="list" class="wbk">‹</i><span class="av gp">📚</span><div class="wn"><b>Matemática no Zap 📚</b><small>Grupo · só administradores enviam</small></div><span class="wi">⋮</span></div><div class="wb"><div class="wd">HOJE</div>';
-  m.forEach(function(x,i){h+='<div class="bub'+(i===0?' first':'')+(x[0].indexOf('tcard')>=0?' img':'')+'"><span>'+x[0]+'</span><small>'+hora(i)+'</small></div>'});
+ function loadGrupos(){fetch('grupos/grupos.json?v='+Date.now()).then(function(r){return r.json()}).then(function(j){GRUPOS=j.grupos||[]}).catch(function(){GRUPOS=[{id:'z',icone:'📚',nome:'Matemática no Zap 📚',desc:'Grupo',prev:'',n:0,msgs:[{t:'txt',h:'Sem conexão com o repositório de grupos. Tente de novo mais tarde.'}]}]});
+  fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL').then(function(r){return r.json()}).then(function(j){LIVE.usd=j.USDBRL}).catch(function(){});
+  fetch('https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/12?formato=json').then(function(r){return r.json()}).then(function(j){LIVE.selic=j}).catch(function(){});
+  var d=new Date();fetch('https://pt.wikipedia.org/api/rest_v1/feed/onthisday/events/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')).then(function(r){return r.json()}).then(function(j){LIVE.hoje=(j.events||[]).filter(function(e){return e.text&&e.text.length<170}).slice(0,3)}).catch(function(){})}
+ loadGrupos();
+ function vbr(x){return Number(x).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+ function liveMsg(t){
+  if(t==='usd'){var u=LIVE.usd;return u?'💵 <b>Dólar hoje</b><br>1 dólar = <b>R$ '+vbr(u.bid)+'</b><br>'+(+u.pctChange>=0?'🔺 subiu ':'🔻 caiu ')+vbr(Math.abs(u.pctChange))+'% hoje (variação de R$ '+vbr(Math.abs(u.varBid))+')<br><small>Fonte: AwesomeAPI · agora</small><br>🧮 US$ 50 hoje custam ≈ <b>R$ '+vbr(50*u.bid)+'</b>.':'💵 <b>Dólar hoje</b>: cotação indisponível sem internet.'}
+  if(t==='selic'){var a=LIVE.selic;if(!a||!a.length)return '🏛️ <b>Taxa Selic</b>: indisponível sem internet.';var c=a[a.length-1],q=null,i;for(i=a.length-2;i>=0;i--)if(a[i].valor!==c.valor){q=a[i];break}
+   return '🏛️ <b>Taxa Selic (meta)</b><br>Hoje: <b>'+String(c.valor).replace('.',',')+'% ao ano</b>'+(q?'<br>Antes: '+String(q.valor).replace('.',',')+'% ('+(+c.valor>+q.valor?'🔺 subiu':'🔻 caiu')+' '+vbr(Math.abs(c.valor-q.valor))+' ponto'+(Math.abs(c.valor-q.valor)>1?'s':'')+')':'')+'<br><small>Fonte: Banco Central · desde '+c.data+'</small>'}
+  if(t==='hoje'){var e=LIVE.hoje;return e&&e.length?'📰 <b>Hoje na história</b><br>'+e.map(function(x){return '• <b>'+x.year+':</b> '+x.text}).join('<br>')+'<br><small>Fonte: Wikipédia</small>':'📰 <b>Hoje na história</b>: indisponível sem internet.'}
+  if(t==='banco'){var h=[],neg=Object.keys(SAL).filter(function(k){return SAL[k]<0});
+   neg.forEach(function(k){var d=-SAL[k],j=Math.round(d*8/100);h.push('🔔 <b>'+BANKS[k].n+' · Aviso de saldo</b><br>Sua conta está <b>negativa em '+fmt(d)+'</b>. Você está usando o <b>cheque especial</b>.<br>Juros: <b>8% ao mês</b>. Se ficar 30 dias assim, os juros serão <b>'+fmt(j)+'</b> e a dívida vai para <b>'+fmt(d+j)+'</b>.<br>💡 Faça um Pix de outro banco seu para cobrir.')});
+   h.push('💳 <b>Cartão · Juros do rotativo</b><br>Se você pagar só o mínimo da fatura, o restante entra no <b>rotativo</b>, com juros de cerca de <b>14% ao mês</b>. Fatura de R$ 1.000 pagando R$ 150 → sobra R$ 850 × 14% = <b>R$ 119</b> de juros no mês seguinte.');
+   h.push('📈 <b>Dica do banco</b><br>Juros do cheque especial (até 8% a.m.) e do rotativo (≈ 14% a.m.) são os mais caros. Evite ficar no negativo e pague a fatura inteira!');return h.join('<div class="bsep"></div>')}
+  return ''}
+ function msgHtml(m,i){var x='',cls='bub'+(i===0?' first':'');
+  if(m.t==='txt')x=m.h;else if(m.t==='tab'){x=tabCard(m.op,m.n);cls+=' img'}
+  else if(m.t==='pdf'){x='<div class="pdfc"><div class="pdfi">PDF</div><div class="pdft"><b>'+m.nome+'</b><small>'+m.info+'</small></div></div><div class="pdfb"><a href="'+m.arq+'" target="_blank" rel="noopener" data-nodl>👁 Abrir</a><a href="'+m.arq+'" download>⬇ Baixar</a></div>';cls+=' img'}
+  else x=liveMsg(m.t);return '<div class="'+cls+'"><span>'+x+'</span><small>'+hora(i)+'</small></div>'}
+ function groupHtml(id){var g=GRUPOS.filter(function(z){return z.id===id})[0];if(!g)return chatList();
+  var h='<div class="wa wg"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><i data-w="list" class="wbk">‹</i><span class="av gp'+(g.oficial?' of':'')+'">'+g.icone+'</span><div class="wn"><b>'+g.nome+'</b><small>'+g.desc+'</small></div><span class="wi">⋮</span></div><div class="wb"><div class="wd">HOJE</div>';
+  g.msgs.forEach(function(m,i){h+=msgHtml(m,i)});
   return h+'</div><div class="wf wro">Somente administradores podem enviar mensagens</div></div>'}
+ function incHtml(){var I=INC;var x={bk:I.bk,cr:1,n:I.nome,v:I.v,h:I.h,id:I.id};
+  return '<div class="wa wg"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><i data-w="list" class="wbk">‹</i><span class="av">'+I.nome.charAt(0)+'</span><div class="wn"><b>'+I.nome+'</b><small>online</small></div><span class="wi">⋮</span></div><div class="wb"><div class="wd">HOJE</div><div class="bub first"><span>Oi! Acabei de te mandar <b>'+fmt(I.v)+'</b> por Pix. Olha o comprovante 👇</span><small>'+hora(0)+'</small></div><div class="bub img"><span>'+recHtml({bk:I.bk,cr:0,n:'Você (Aluno)',b:BANKS[I.bk].n,v:I.v,h:I.h,id:I.id}).replace('Você (Aluno)','Você (Aluno)').replace('<dt>Quem pagou</dt><dd>Você (Aluno)<small>'+BANKS[I.bk].n+'</small></dd>','<dt>Quem pagou</dt><dd>'+I.nome+'</dd>')+'</span><small>'+hora(1)+'</small></div><div class="bub"><span>⚠️ <b>Confira no extrato</b> do seu banco ('+BANKS[I.bk].n+') se o dinheiro chegou. Comprovante sozinho não prova nada!<div class="ians"><button type="button" data-w="ia" data-v="1">✅ O Pix caiu no extrato</button><button type="button" data-w="ia" data-v="0">❌ Não apareceu no extrato</button></div><div class="iares">'+(I.ans===null?'':incRes())+'</div></span><small>'+hora(2)+'</small></div></div><div class="wf wro">Abra o extrato (painel embaixo) e confira.</div></div>'}
+ function incRes(){var ok=(INC.ans===INC.real);return (ok?'🎉 <b>Certo!</b> ':'⚠️ <b>Confira de novo.</b> ')+(INC.real?'Esse Pix era verdadeiro: aparece <b>+ '+fmt(INC.v)+'</b> no extrato do '+BANKS[INC.bk].n+'.':'Esse comprovante era <b>falso</b>: nada entrou no extrato. Esse é o <b>golpe do comprovante falso</b>!')}
  var noNot=false;
  function waShow(h){if(swOn()){$('phone').innerHTML=h;dockAdd()}else $('txt').innerHTML=h}
  function txtHtml(){if(swOn())return '<p class="swp">📱 Leia a conversa no <b>WhatsApp</b> do celular ao lado, <b>copie a chave</b> e depois toque no ícone do <b>seu banco</b> (embaixo do celular) para fazer o Pix.</p><div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>';return T.chat?chatHtml(T.chat)+'<div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>':T.txt+chaveBtn()}
  function chatList(){var h='<div class="wa wl"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><b class="wt">WhatsApp</b><span class="wi">📷 ⋮</span></div><div class="wsr">🔍 Pesquisar</div><div class="wab"><span>Todas</span><span>Não lidas</span><span>Cobranças</span></div><div class="wlst">',n=0;
-  h+='<button type="button" class="wch grp" data-w="group"><span class="av gp">📚</span><span class="wcb"><b>Matemática no Zap 📚</b><em>📸 Tabuada da multiplicação e da adição</em></span><span class="wct"><small>agora</small><i>3</i></span></button>';tasks.forEach(function(t,k){if(k<ti||!t.chat)return;n++;var c=t.chat,last=String(c.msgs[c.msgs.length-1]).replace(/<[^>]+>/g,'');h+='<button type="button" class="wch" data-w="open" data-i="'+k+'"><span class="av">'+c.nome.charAt(0)+'</span><span class="wcb"><b>'+c.nome+'</b><em>'+last+'</em></span><span class="wct"><small>'+hora(k)+'</small><i>1</i></span></button>'});
+  if(INC)h+='<button type="button" class="wch" data-w="inc"><span class="av">'+INC.nome.charAt(0)+'</span><span class="wcb"><b>'+INC.nome+'</b><em>🧾 Comprovante de Pix</em></span><span class="wct"><small>agora</small>'+(INC.ans===null?'<i>1</i>':'')+'</span></button>';
+  GRUPOS.forEach(function(g){h+='<button type="button" class="wch grp" data-w="group" data-g="'+g.id+'"><span class="av gp'+(g.oficial?' of':'')+'">'+g.icone+'</span><span class="wcb"><b>'+g.nome+'</b><em>'+(g.prev||'')+'</em></span><span class="wct"><small>hoje</small>'+(g.n?'<i>'+g.n+'</i>':'')+'</span></button>'});
+  tasks.forEach(function(t,k){if(k<ti||!t.chat)return;n++;var c=t.chat,last=String(c.msgs[c.msgs.length-1]).replace(/<[^>]+>/g,'');h+='<button type="button" class="wch" data-w="open" data-i="'+k+'"><span class="av">'+c.nome.charAt(0)+'</span><span class="wcb"><b>'+c.nome+'</b><em>'+last+'</em></span><span class="wct"><small>'+hora(k)+'</small><i>1</i></span></button>'});
   if(!n)h+='<p class="wem">Nenhuma cobrança pendente. 🎉</p>';return h+'</div></div><div class="pnote">💰 Cobranças pendentes: <b>'+n+'</b> · saldo do banco: <b>'+fmt(sal())+'</b></div>'}
  function task(){T=tasks[ti];lock=false;ph={s:T.modo==='pos'?'pos-valor':'home',buf:'',pb:'',vals:[],sale:{},rot:isTab(),app:(cfg.appswitch&&T.chat)?'wa':'bank'};msg('');
   $('txt').innerHTML=txtHtml();$('ped').querySelector('h2').textContent=T.chat?'💬 WhatsApp':'📋 Pedido';var q=$('qrs');q.innerHTML='';
   if(T.qrs)q.innerHTML='<div class="qrl">'+T.qrs.map(function(x,i){return '<div class="qrc"><div class="qrimg"></div><b>QR Code '+x.letra+'</b><span>'+x.nome+'</span><span class="qv">'+fmt(x.valor)+'</span><button class="btn sec" data-qr="'+i+'">📷 Escanear</button></div>'}).join('')+'</div>';
-  if(!noNot)notify();noNot=false;$('inst').innerHTML=cfg.instrucao;$('sub').textContent='Fase '+(fi+1)+'/4 · questão '+(ti+1)+'/'+tasks.length;dots();draw()}
+  if(!noNot)notify();noNot=false;$('inst').innerHTML=cfg.instrucao+((T.target&&T.modo!=='pos')?'<div class="tipx">💡 <b>Atenção:</b> nem todo banco tem saldo para todos os pagamentos. Se faltar, transfira dinheiro de <b>outro banco seu</b>: no app do banco que vai receber, abra <b>Pix → Minhas chaves</b>, copie a chave e cole no app do banco que vai enviar.</div>':'');$('sub').textContent='Fase '+(fi+1)+'/4 · questão '+(ti+1)+'/'+tasks.length;dots();draw()}
  /* ----- desenho do celular ----- */
 
  var clip='',sel=null;
@@ -197,8 +248,8 @@ window.BANK={run:function(cfg){
   document.body.appendChild(o);var inp=o.querySelector('#tabuIn');setTimeout(function(){inp.focus()},50);
   function conf(){if(+inp.value.replace(/\D/g,'')===Q.r){o.remove();ok()}else{o.querySelector('#tabuM').textContent='❌ Errou! Tente outra conta.';Q=tq();o.querySelector('.tq').textContent=Q.t+' = ?';inp.value='';inp.focus()}}
   o.querySelector('#tabuOk').onclick=conf;inp.onkeydown=function(e){if(e.key==='Enter')conf()};o.querySelector('#tabuNo').onclick=function(){o.remove()}}
- function chaveBtn(){if(T.modo!=='pix'||!T.contacts||!T.target)return '';var c=T.contacts.filter(function(x){return x.nome===T.target.nome})[0];if(!c||!c.chave)return '';return '<div class="cpbox"><span>Chave Pix: <b>'+c.chave+'</b></span><button class="cp" data-w="copykey2" data-k="'+String(c.chave).replace(/"/g,'')+'" type="button">📋 Copiar</button></div>'}
- function backFor(x){var k=(BANKS[BK]||BANKS.nubank).kind;if(k==='caixa')return x==='chave'?'cx-conta':'cx-pix';if(k==='mp')return x==='chave'?'mp-transf':'mp-pagar';return 'menu'}
+ function chaveBtn(){if(T.modo!=='pix'||!T.contacts||!T.target)return '';var c=T.contacts.filter(function(x){return x.nome===T.target.nome})[0];if(!c||!c.chave)return '';return '<div class="cpbox"><span>'+(T.bill?'Código de barras':'Chave Pix')+': <b>'+c.chave+'</b></span><button class="cp" data-w="copykey2" data-k="'+String(c.chave).replace(/"/g,'')+'" type="button">📋 Copiar</button></div>'}
+ function backFor(x){var k=(BANKS[BK]||BANKS.nubank).kind;if(x==='minhas')return k==='caixa'?'cx-pix':k==='mp'?'mp-transf':'menu';if(k==='caixa')return x==='chave'?'cx-conta':'cx-pix';if(k==='mp')return x==='chave'?'mp-transf':'mp-pagar';return 'menu'}
 
  function beep2(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=180;g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+.35);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
  function beep(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var t=AC.currentTime;[880,1175].forEach(function(f,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.15,t+i*.14);g.gain.exponentialRampToValueAtTime(.0001,t+i*.14+.25);o.connect(g);g.connect(AC.destination);o.start(t+i*.14);o.stop(t+i*.14+.3)})}catch(e){}}
@@ -206,21 +257,26 @@ window.BANK={run:function(cfg){
   var nm=(T.chat&&T.chat.nome)||T.target.nome,tx=pick(['Oi! Você ainda não me pagou 😅','Ei, lembra do Pix que ficou pendente? 🙏','Você esqueceu de me pagar! 😬','Oi, tudo bem? Cadê o meu Pix? 💸','Preciso que você me pague, por favor 🙏']);
   n.innerHTML='<div class="nt"><span class="ni">💬</span><div><small>WHATSAPP · agora</small><b>'+nm+'</b><span>'+tx+'</span></div></div>';n.className='on';pd.classList.add('lock');beep()}
  $('notif').addEventListener('click',function(){$('notif').className='';$('ped').classList.remove('lock')});
- function extrato(){var L=LEDGER.slice(L0),ok=L.filter(function(x){return x.ok}).length,pago=L.reduce(function(a,x){return a+x.v},0);
-  return '<div class="ex"><h3>🧾 Extrato Pix</h3>'+(L.length?'<table>'+L.map(function(x){return '<tr class="'+(x.ok?'o':'e')+'"><td>'+x.h+'</td><td>Pix para '+x.n+'<small>'+x.b+' · via '+(BANKS[x.bk]||{n:''}).n+'</small></td><td>− '+fmt(x.v)+'</td><td>'+(x.ok?'✔':'✘')+'</td></tr>'}).join('')+'</table>':'<p>Nenhum Pix nesta fase.</p>')+'<div class="sm"><span>Pix certos: <b>'+ok+'/'+L.length+'</b></span><span>Total enviado: <b>'+fmt(pago)+'</b></span><span>Saldo na conta: <b>'+fmt(sal())+'</b></span></div></div>'}
+ function extrato(){var L=LEDGER.slice(L0).filter(function(x){return !x.tr&&!x.cr}),ok=L.filter(function(x){return x.ok}).length,pago=L.reduce(function(a,x){return a+x.v},0);
+  return '<div class="ex"><h3>🧾 Extrato Pix</h3>'+(L.length?'<table>'+L.map(function(x){return '<tr class="'+(x.ok?'o':'e')+'"><td>'+x.h+'</td><td>'+(x.bl?'Conta paga: ':'Pix para ')+x.n+'<small>'+x.b+' · via '+(BANKS[x.bk]||{n:''}).n+'</small></td><td>− '+fmt(x.v)+'</td><td>'+(x.ok?'✔':'✘')+'</td></tr>'}).join('')+'</table>':'<p>Nenhum Pix nesta fase.</p>')+'<div class="sm"><span>Pix certos: <b>'+ok+'/'+L.length+'</b></span><span>Total enviado: <b>'+fmt(pago)+'</b></span><span>Saldo na conta: <b>'+fmt(sal())+'</b></span></div></div>'}
+ function recHtml(x){x.id=x.id||eid();var cr=!!x.cr,de=cr?x.n:'Você (Aluno)',pa=cr?'Você (Aluno)':x.n,bo=cr?'—':BANKS[x.bk].n,bd=cr?BANKS[x.bk].n:x.b;
+  return '<div class="rec"><div class="rh">'+bicon(x.bk,38)+'<div><b>Comprovante de Pix</b><small>'+(cr?'Você recebeu':'Transferência realizada')+'</small></div></div><div class="rv">'+fmt(x.v)+'</div><dl><dt>Data e hora</dt><dd>'+x.h+'</dd><dt>Quem pagou</dt><dd>'+de+(cr?'':'<small>'+BANKS[x.bk].n+'</small>')+'</dd><dt>Quem recebeu</dt><dd>'+pa+'<small>'+(cr?BANKS[x.bk].n:bd)+'</small></dd><dt>ID da transação</dt><dd class="mk">'+x.id+'</dd></dl><p class="rn">Guarde este comprovante e confira se o valor aparece no <b>extrato</b>.</p></div>'}
+ function cpOpen(i){var x=LEDGER[i];if(!x)return;var m=$('exm');m.innerHTML='<div class="box ex">'+recHtml(x)+'<button class="btn" type="button" id="cpD">⬇ Baixar comprovante</button> <button class="btn ok" type="button" id="exX">Fechar</button></div>';m.className='on';$('exX').onclick=function(){m.className=''};$('cpD').onclick=function(){cpDown(x)}}
+ function cpDown(x){var css=document.querySelector('link[href*="banco.css"]'),h='<!doctype html><meta charset="utf-8"><title>Comprovante Pix</title><style>body{font-family:Arial;background:#eee;padding:20px}.rec{max-width:360px;margin:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 10px #0003}.rh{display:flex;gap:10px;align-items:center}.rh small,dd small{display:block;color:#667}.rv{font:800 30px Arial;margin:12px 0;color:#0a7a3d}dt{font-size:12px;color:#667;margin-top:8px}dd{margin:0;font-weight:700}.mk{font:700 12px monospace;word-break:break-all}.rn{font-size:12px;color:#556}.bi{display:inline-flex;width:38px;height:38px;border-radius:10px;background:var(--c);color:var(--t);align-items:center;justify-content:center;font-weight:900}</style>'+recHtml(x),b=new Blob([h],{type:'text/html'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='comprovante-pix-'+(x.id||'').slice(-6)+'.html';document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)}
  function dash(){var d=$('dash');if(!d)return;var tot=0;
-  d.innerHTML='<h2>📊 Painel — saldo de cada banco</h2><div class="dg">'+Object.keys(BANKS).map(function(k){var b=BANKS[k];tot+=SAL[k];var n=LEDGER.filter(function(x){return x.bk===k}).length;
-   return '<div class="db'+(k===BK?' cur':'')+'" style="--c:'+b.h+';--t:'+b.f+'"><b>'+b.n+'</b><span>'+fmt(SAL[k])+'</span><small>'+n+' Pix</small><button type="button" data-ex="'+k+'">🧾 Extrato</button></div>'}).join('')+'</div><div class="dt"><span>Total em todos os bancos: <b>'+fmt(tot)+'</b></span><button type="button" class="btn sec" data-ex="*">🧾 Extrato geral (pago e não pago)</button></div>'}
- function exRows(L){return L.map(function(x){return '<tr class="'+(x.ok?'o':'e')+'"><td>'+x.h+'</td><td>Pix para '+x.n+'<small>'+x.b+' · via '+(BANKS[x.bk]||{n:''}).n+'</small></td><td>− '+fmt(x.v)+'</td><td>'+(x.ok?'✔ Pago certo':'✘ Pago errado')+'</td></tr>'}).join('')}
+  d.innerHTML='<h2>📊 Painel — saldo de cada banco</h2><div class="dg">'+Object.keys(BANKS).map(function(k){var b=BANKS[k];tot+=SAL[k];var n=LEDGER.filter(function(x){return x.bk===k&&!x.tr&&!x.cr}).length;
+   return '<div class="db'+(k===BK?' cur':'')+'" style="--c:'+b.h+';--t:'+b.f+'"><b>'+b.n+'</b><span class="'+(SAL[k]<0||BLOQ[k]?'neg':'')+'">'+fmt(SAL[k])+'</span><small>'+(BLOQ[k]?'<em class="chq">🔒 bloqueado</em>':SAL[k]<0?'<em class="chq">cheque especial</em>':SAL[k]<100?'<em class="chq">sem saldo</em>':'')+'</small><small>'+n+' Pix</small><button type="button" data-ex="'+k+'">🧾 Extrato</button></div>'}).join('')+'</div><div class="dt"><span>Total em todos os bancos: <b>'+fmt(tot)+'</b></span><button type="button" class="btn sec" data-ex="*">🧾 Extrato geral (pago e não pago)</button></div>'}
+ function cpBtn(x){return ' <button type="button" class="cpb" data-cp="'+LEDGER.indexOf(x)+'">🧾 Comprovante</button>'}
+ function exRows(L,kk){return L.map(function(x){if(x.cr)return '<tr class="o cr"><td>'+x.h+'</td><td>Pix recebido de '+x.n+'<small>via '+BANKS[x.bk].n+'</small>'+cpBtn(x)+'</td><td>+ '+fmt(x.v)+'</td><td>⬇ Recebido</td></tr>';if(x.tr)return '<tr class="o"><td>'+x.h+'</td><td>Transferência entre seus bancos<small>'+BANKS[x.bk].n+' → '+BANKS[x.tr].n+'</small></td><td>'+(kk===x.tr?'+ ':'− ')+fmt(x.v)+'</td><td>↔ Própria</td></tr>';return '<tr class="'+(x.ok?'o':'e')+'"><td>'+x.h+'</td><td>'+(x.bl?'Conta paga: ':'Pix para ')+x.n+'<small>'+x.b+' · via '+(BANKS[x.bk]||{n:''}).n+'</small>'+cpBtn(x)+'</td><td>− '+fmt(x.v)+'</td><td>'+(x.ok?'✔ Pago certo':'✘ Pago errado')+'</td></tr>'}).join('')}
  function exOpen(k){var m=$('exm'),h;
   if(k==='*'){var pend=tasks.length-ti-(lock?0:0);pend=Math.max(0,tasks.length-LEDGER.filter(function(x){return x.f===fi}).length);
-   var ok=LEDGER.filter(function(x){return x.ok}).length;
-   h='<h3>🧾 Extrato geral — todos os bancos</h3>'+(LEDGER.length?'<table>'+exRows(LEDGER)+'</table>':'<p>Nenhum Pix feito ainda.</p>')
-    +'<div class="sm"><span>✔ Pagos certos: <b>'+ok+'</b></span><span>✘ Pagos errados: <b>'+(LEDGER.length-ok)+'</b></span><span>⏳ Ainda não pagos (nesta fase): <b>'+(T&&T.modo!=='pos'?Math.max(0,tasks.length-ti-(ph.s==='rec'?1:0)):0)+'</b></span></div>'}
-  else{var b=BANKS[k],L=LEDGER.filter(function(x){return x.bk===k}),gasto=L.reduce(function(a,x){return a+x.v},0);
-   h='<h3>🧾 Extrato — '+b.n+'</h3><div class="sm"><span>Saldo inicial: <b>'+fmt(SAL0[k])+'</b></span></div>'+(L.length?'<table>'+exRows(L)+'</table>':'<p>Nenhum Pix feito por este banco.</p>')+'<div class="sm"><span>Total enviado: <b>'+fmt(gasto)+'</b></span><span>Saldo atual: <b>'+fmt(SAL[k])+'</b></span></div>'}
+   var LT=LEDGER.filter(function(x){return !x.tr&&!x.cr}),ok=LT.filter(function(x){return x.ok}).length;
+   h='<h3>🧾 Extrato geral — todos os bancos</h3>'+(LEDGER.length?'<table>'+exRows(LEDGER,'*')+'</table>':'<p>Nenhum Pix feito ainda.</p>')
+    +'<div class="sm"><span>✔ Pagos certos: <b>'+ok+'</b></span><span>✘ Pagos errados: <b>'+(LT.length-ok)+'</b></span><span>⏳ Ainda não pagos (nesta fase): <b>'+(T&&T.modo!=='pos'?Math.max(0,tasks.length-ti-(ph.s==='rec'?1:0)):0)+'</b></span></div>'}
+  else{var b=BANKS[k],L=LEDGER.filter(function(x){return x.bk===k||x.tr===k}),gasto=L.filter(function(x){return x.bk===k&&!x.cr}).reduce(function(a,x){return a+x.v},0);
+   h='<h3>🧾 Extrato — '+b.n+'</h3><div class="sm"><span>Saldo inicial: <b>'+fmt(SAL0[k])+'</b></span></div>'+(L.length?'<table>'+exRows(L,k)+'</table>':'<p>Nenhum Pix feito por este banco.</p>')+'<div class="sm"><span>Total enviado: <b>'+fmt(gasto)+'</b></span><span>Saldo atual: <b>'+fmt(SAL[k])+'</b></span></div>'}
   m.innerHTML='<div class="box ex">'+h+'<button class="btn ok" type="button" id="exX">Fechar</button></div>';m.className='on';$('exX').onclick=function(){m.className=''}}
- document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-ex]');if(b&&$('dash')&&$('dash').contains(b))exOpen(b.dataset.ex)});
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-ex]');if(b&&$('dash')&&$('dash').contains(b))exOpen(b.dataset.ex);var c=e.target.closest&&e.target.closest('[data-cp]');if(c)cpOpen(+c.dataset.cp)});
  function hd(t,back){var b=BANKS[BK]||BANKS.nubank;return '<div class="hd '+b.style+'">'+(back?'<button class="bk" data-a="'+back+'">‹</button>':'')+'<span>'+t+'</span></div>'}
  function toast(t){var e=$('phone').querySelector('.toast');if(e)e.remove();var d=document.createElement('div');d.className='toast';d.textContent=t;$('phone').appendChild(d);setTimeout(function(){d.remove()},2600)}
  function keypad(){return '<div class="kp">'+[1,2,3,4,5,6,7,8,9,'⌫',0,'OK'].map(function(k){return '<button data-k="'+k+'">'+k+'</button>'}).join('')+'</div>'}
@@ -228,18 +284,21 @@ window.BANK={run:function(cfg){
  function draw(){var P=$('phone'),b=BANKS[BK]||BANKS.nubank,s=ph.s,h='';theme();if(!BK){pickBank(1);return}
   if(swOn()&&ph.app==='wa'){P.innerHTML=chatHtml(T.chat);dockAdd();dash();return}
   if(s==='load')h='<div class="ld"><div class="sp"></div><p>Aguarde...</p></div>';
-  else if(s==='home'&&b.kind==='row')h=hd('Olá, Aluno')+'<div class="sal">Conta<b>'+fmt(sal())+'</b></div><div class="rw">'+[['💠','Pix','menu',1],['📄','Pagar','off'],['🔁','Transferir','off'],['💳','Cartão','cartao'],['📱','Recarga','off']].map(function(x){return '<button data-a="'+(x[2]||'off')+'" class="'+(x[3]?'hot':'')+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div><div class="ls"><button data-a="off"><i>💰</i>Rendimento<small>Seu dinheiro rende todo dia</small></button><button data-a="cartao"><i>🧾</i>Fatura atual<small>Ver fatura do cartão</small></button></div>';
-  else if(s==='home'&&b.kind==='grid')h=hd(b.n)+'<div class="sal">Saldo disponível<b>'+fmt(sal())+'</b></div><div class="gr">'+[['🏠','Início','off'],['📄','Pagar','off'],['🔁','Transferir','off'],['💳','Cartões','cartao'],['💠','Pix','menu'],['⋯','Mais','off']].map(function(x){return '<button class="gb" data-a="'+x[2]+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div>';
-  else if(s==='home'&&b.kind==='caixa')h=hd('Caixa Tem')+'<div class="sal">Poupança Social Digital<b>'+fmt(sal())+'</b></div><div class="ls">'+[['👤','Meu perfil','off'],['🧾','Pagar contas e boletos','off'],['💳','Cartão de crédito','cartao'],['🏦','Poupança Social Digital','off'],['🎁','Benefícios','off'],['💠','Pix','cx-pix'],['❓','Ajuda','off']].map(function(x){return '<button data-a="'+x[2]+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div>';
+  else if(s==='home'&&b.kind==='row')h=hd('Olá, Aluno')+'<div class="sal">Conta<b>'+fmt(sal())+'</b></div><div class="rw">'+[['💠','Pix','menu',1],['📄','Pagar','boleto'],['🔁','Transferir','off'],['💳','Cartão','cartao'],['📱','Recarga','off']].map(function(x){return '<button data-a="'+(x[2]||'off')+'" class="'+(x[3]?'hot':'')+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div><div class="ls"><button data-a="off"><i>💰</i>Rendimento<small>Seu dinheiro rende todo dia</small></button><button data-a="cartao"><i>🧾</i>Fatura atual<small>Ver fatura do cartão</small></button></div>';
+  else if(s==='home'&&b.kind==='grid')h=hd(b.n)+'<div class="sal">Saldo disponível<b>'+sdo()+'</b></div><div class="gr">'+[['🏠','Início','off'],['📄','Pagar','boleto'],['🔁','Transferir','off'],['💳','Cartões','cartao'],['💠','Pix','menu'],['⋯','Mais','off']].map(function(x){return '<button class="gb" data-a="'+x[2]+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div>';
+  else if(s==='home'&&b.kind==='caixa')h=hd('Caixa Tem')+'<div class="sal">Poupança Social Digital<b>'+fmt(sal())+'</b></div><div class="ls">'+[['👤','Meu perfil','off'],['🧾','Pagar contas e boletos','boleto'],['💳','Cartão de crédito','cartao'],['🏦','Poupança Social Digital','off'],['🎁','Benefícios','off'],['💠','Pix','cx-pix'],['❓','Ajuda','off']].map(function(x){return '<button data-a="'+x[2]+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div>';
   else if(s==='home'&&b.kind==='mp')h=hd('Mercado Pago')+'<div class="mpc"><small>Dinheiro disponível</small><b>'+fmt(sal())+'</b><span>Rendendo 100% do CDI</span></div><div class="rw mpr">'+[['⬆️','Transferir','mp-transf'],['🧾','Pagar serviços','mp-pagar'],['💳','Cartão','cartao'],['💸','Cobrar','off'],['🛍️','Mercado Livre','off']].map(function(x){return '<button data-a="'+x[2]+'"><i>'+x[0]+'</i>'+x[1]+'</button>'}).join('')+'</div><div class="ls"><button data-a="off"><i>🎁</i>Promoções<small>Cupons e descontos</small></button></div>';
-  else if(s==='cx-pix')h=hd('Pix','home')+'<div class="ls"><button data-a="cx-aviso:q"><i>📷</i>Pagar com QR Code</button><button data-a="cx-aviso:t"><i>📤</i>Pagar / Transferir com chave</button><button data-a="off"><i>📥</i>Receber</button><button data-a="off"><i>🔑</i>Minhas chaves</button><button data-a="off"><i>⚙️</i>Limites</button></div>';
+  else if(s==='cx-pix')h=hd('Pix','home')+'<div class="ls"><button data-a="cx-aviso:q"><i>📷</i>Pagar com QR Code</button><button data-a="cx-aviso:t"><i>📤</i>Pagar / Transferir com chave</button><button data-a="off"><i>📥</i>Receber</button><button data-a="minhas"><i>🔑</i>Minhas chaves</button><button data-a="off"><i>⚙️</i>Limites</button></div>';
   else if(s==='cx-aviso')h=hd('Atenção','cx-pix')+'<div class="bd"><div class="av2">⚠️<b>Cuidado com golpes!</b><p>A Caixa nunca pede sua senha por telefone, mensagem ou aplicativo. Confira sempre o nome de quem vai receber.</p></div><button class="pb" data-a="cx-next">Entendi, continuar</button></div>';
   else if(s==='cx-conta')h=hd('Conta de origem','cx-aviso')+'<div class="bd"><label>De qual conta sai o dinheiro?</label><button class="pb sec" data-a="chave">Poupança Social Digital<br><small>Ag 0001 · Conta ••••4821</small></button></div>';
   else if(s==='cx-rev')h=hd('Revisar e aceitar','conf')+'<div class="bd"><div class="cf"><span>Você está transferindo</span><b class="big">'+fmt(ph.v)+'</b><span>Para</span><b>'+ph.c.nome+'</b><span>Conta de origem</span><b>Poupança Social ••••4821</b></div><p class="hint">Ao continuar você aceita os termos do Pix.</p><button class="pb" data-a="cx-ok">Aceitar e continuar</button></div>';
-  else if(s==='mp-transf')h=hd('Transferir','home')+'<div class="ls"><button data-a="off"><i>🟦</i>Para uma conta do Mercado Pago</button><button data-a="off"><i>🏦</i>Para uma conta bancária (TED)</button><button data-a="chave"><i>💠</i>Pix<small>Com CPF, celular, e-mail ou chave</small></button></div>';
-  else if(s==='mp-pagar')h=hd('Pagar serviços','home')+'<div class="ls"><button data-a="off"><i>🧾</i>Boleto ou conta de consumo</button><button data-a="off"><i>🚌</i>Transporte</button><button data-a="cam"><i>📷</i>Escanear QR Code<small>Pix e outros pagamentos</small></button></div>';
+  else if(s==='mp-transf')h=hd('Transferir','home')+'<div class="ls"><button data-a="off"><i>🟦</i>Para uma conta do Mercado Pago</button><button data-a="off"><i>🏦</i>Para uma conta bancária (TED)</button><button data-a="chave"><i>💠</i>Pix<small>Com CPF, celular, e-mail ou chave</small></button><button data-a="minhas"><i>🔑</i>Minhas chaves Pix</button></div>';
+  else if(s==='mp-pagar')h=hd('Pagar serviços','home')+'<div class="ls"><button data-a="boleto"><i>🧾</i>Boleto ou conta de consumo</button><button data-a="off"><i>🚌</i>Transporte</button><button data-a="cam"><i>📷</i>Escanear QR Code<small>Pix e outros pagamentos</small></button></div>';
   else if(s==='home')h=hd(b.n)+'<div class="sal">Saldo</div>';
-  else if(s==='menu')h=hd('Área Pix','home')+'<div class="ls"><button data-a="chave"><i>📤</i>Transferir<small>Por chave: CPF, celular, e-mail...</small></button><button data-a="cam"><i>📷</i>Pagar com QR Code<small>Aponte a câmera</small></button><button data-a="off"><i>📥</i>Receber</button><button data-a="off"><i>🔑</i>Minhas chaves</button></div>';
+  else if(s==='boleto')h=hd('Pagar conta','home')+'<div class="bd"><label>Código de barras do boleto</label><input id="inChave" type="text" autocomplete="off" placeholder="Digite ou cole o código" value="'+(ph.chave||'')+'"><button class="pb sec" data-a="colar">📋 Colar</button><button class="pb" data-a="bol-ok">Continuar</button><p class="hint">Copie o código de barras da conta (na tela do pedido).</p></div>';
+  else if(s==='bol-val')h=hd('Dados da conta','boleto')+'<div class="bd"><div class="cf"><span>Beneficiário</span><b>'+ph.c.nome+'</b><span>Valor do documento</span><b class="big">'+fmt(T.bill.base)+'</b>'+(T.bill.mes?'<span>Situação</span><b>⚠️ Vencida há '+T.bill.mes+' mês'+(T.bill.mes>1?'es':'')+'</b>':'<span>Situação</span><b>No prazo</b>')+'</div><label>'+(T.bill.mes?'Valor a pagar (com multa e juros)':'Valor a pagar')+'</label><input id="inVal" type="text" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00" value="'+(T.bill.mes?'':fmt(T.bill.base).replace('R$ ',''))+'"><button class="pb" data-a="bol-val-ok">Continuar</button></div>';
+  else if(s==='minhas')h=hd('Minhas chaves',backFor('minhas'))+'<div class="bd"><div class="cf"><span>Banco</span><b>'+b.n+'</b><span>Chave aleatória</span><b class="mk">'+OKEY[BK]+'</b></div><button class="pb" data-a="mykey">📋 Copiar chave</button><p class="hint">Use esta chave para receber dinheiro de outro banco seu.</p></div>';
+  else if(s==='menu')h=hd('Área Pix','home')+'<div class="ls"><button data-a="chave"><i>📤</i>Transferir<small>Por chave: CPF, celular, e-mail...</small></button><button data-a="cam"><i>📷</i>Pagar com QR Code<small>Aponte a câmera</small></button><button data-a="off"><i>📥</i>Receber</button><button data-a="minhas"><i>🔑</i>Minhas chaves</button></div>';
   else if(s==='chave')h=hd('Transferir com Pix',backFor('chave'))+'<div class="bd"><label>Para quem você quer enviar?</label><input id="inChave" type="text" autocomplete="off" placeholder="CPF/CNPJ, celular, e-mail ou chave aleatória" value="'+(ph.chave||'')+'"><button class="pb sec" data-a="colar">📋 Colar</button><button class="pb" data-a="chave-ok">Continuar</button><p class="hint">Digite a chave exatamente como está no pedido.</p></div>';
   else if(s==='valor')h=hd('Valor','chave')+'<div class="bd"><div class="who">Para <b>'+ph.c.nome+'</b></div><label>Qual valor você quer enviar?</label><input id="inVal" type="text" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00"><button class="pb" data-a="valor-ok">Continuar</button></div>';
   else if(s==='cam')h=hd('Pagar com Pix',backFor('cam'))+'<div class="cam"><div class="vf"></div><p>Aponte a câmera para o QR Code<br><small>Toque em <b>📷 Escanear</b> no QR Code certo (lado esquerdo).</small></p></div>';
@@ -270,10 +329,12 @@ window.BANK={run:function(cfg){
  function wrong(m,keep){if(lock)return;setPts(-10);msg(m,'bad');var P=$('phone');P.classList.add('shake');setTimeout(function(){P.classList.remove('shake');if(keep){ph.s='quiz'}else{if(ph.fat&&ph.fat.paid){SAL[BK]+=ph.fat.v;LEDGER.pop();dash()}ph.fat=null;ph.s=T.modo==='pos'?'pos-valor':'home'}ph.buf='';ph.pb='';ph.chave='';ph.sale={};ph.back=false;ph.perr=false;draw()},1400)}
  function right(m){lock=true;setPts(15);msg(m,'good');setTimeout(function(){ti++;if(ti>=tasks.length)fim();else task()},1800)}
  function fim(){var f=$('fim');$('fT').textContent=fi<3?'Fase '+(fi+1)+' concluída! 🎉':'Parabéns! Terminou todas as fases! 🏆';$('fP').textContent='Você tem '+pts+' pontos.';$('fB').textContent=fi<3?'Próxima fase ▶':'Jogar de novo ↺';f.classList.add('on');$('ext').innerHTML=LEDGER.length>L0?extrato():'';$('fB').onclick=function(){f.classList.remove('on');L0=LEDGER.length;if(fi<3)fi++;else{fi=0;pts=0;setPts(0);iniSal();LEDGER=[];L0=0}$('nivel').value=cfg.niveis[fi];fase()}}
- function judge(){var ok=ph.c.nome===T.target.nome&&ph.v===T.target.valor;SAL[BK]-=ph.v;LEDGER.push({f:fi,bk:BK,dep:fmt(SAL[BK]),n:ph.c.nome,b:ph.c.banco,v:ph.v,ok:ok,h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
+ function xfer(){var d=ph.c.own;SAL[BK]-=ph.v;SAL[d]+=ph.v;LEDGER.push({f:fi,bk:BK,tr:d,n:'Você (Aluno)',b:BANKS[d].n,v:ph.v,ok:true,h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});dash();
+  setTimeout(function(){msg('Transferência feita! O saldo do '+BANKS[d].n+' aumentou.','good');setTimeout(function(){if(!lock)msg('')},2600);ph.s='home';ph.c=null;ph.chave='';draw()},1700)}
+ function judge(){var ok=ph.c.nome===T.target.nome&&ph.v===T.target.valor;SAL[BK]-=ph.v;LEDGER.push({f:fi,bk:BK,bl:!!T.bill,dep:fmt(SAL[BK]),n:ph.c.nome,b:ph.c.banco,v:ph.v,ok:ok,h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
   dash();setTimeout(function(){if(ok)right('Pix certo! '+fmt(ph.v)+' para '+ph.c.nome+'.');
-   else if(ph.c.nome!==T.target.nome)wrong('Você enviou o Pix para '+ph.c.nome+', a pessoa errada! Sempre confira o nome antes de confirmar.');
-   else wrong('O valor enviado está errado. Refaça o cálculo do pedido.')},900)}
+   else if(ph.c.nome!==T.target.nome)wrong(T.bill?'Você pagou a conta errada!':'Você enviou o Pix para '+ph.c.nome+', a pessoa errada! Sempre confira o nome antes de confirmar.');
+   else wrong(T.bill?'O valor pago está errado. Confira o valor do documento e calcule a multa (2%) e os juros (1% ao mês).':'O valor enviado está errado. Refaça o cálculo do pedido.')},900)}
  function press(k,pos){
   if(ph.s==='pos-valor'){if(k==='⌫')ph.buf=ph.buf.slice(0,-1);else if(k==='OK'){var v=+ph.buf||0;if(v<=0){toast('Digite o valor');return}ph.sale.valor=v;go('pos-cobrar');if(ph.rot)setTimeout(function(){if(ph.s==='pos-cobrar')go('pos-c-forma')},1600);return}else if(ph.buf.length<8)ph.buf+=k;draw();return}
   if(ph.s==='fat-pin'){if(k==='⌫')ph.pb=ph.pb.slice(0,-1);else if(k==='OK')return;else if(ph.pb.length<4)ph.pb+=k;
@@ -282,7 +343,7 @@ window.BANK={run:function(cfg){
   if(ph.s==='pos-c-pin'){ph.perr=false;if(k==='⌫')ph.pb=ph.pb.slice(0,-1);else if(k==='OK')return;else if(ph.pb.length<4)ph.pb+=k;
    if(ph.pb.length===4){if(+ph.pb%2===0){fimCli();return}ph.pb='';ph.perr=true;beep2()}draw();return}
   if(k==='⌫')ph.pb=ph.pb.slice(0,-1);else if(k==='OK')return;else if(ph.pb.length<4)ph.pb+=k;
-  if(ph.pb.length===4){if(ph.pb===T.pin){var nx=ph.s==='pin'?'rec':'pos-ok';ph.pb='';go(nx);if(nx==='rec')judge();else ph.s='pos-ok',draw();return}else{ph.pb='';toast('Senha incorreta');}}
+  if(ph.pb.length===4){if(ph.pb===T.pin){var nx=ph.s==='pin'?'rec':'pos-ok';ph.pb='';go(nx);if(nx==='rec'){if(ph.c&&ph.c.own)xfer();else judge()}else ph.s='pos-ok',draw();return}else{ph.pb='';toast('Senha incorreta');}}
   draw()}
  $('phone').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||lock||ph.s==='load')return;
   if(t.dataset.d){if(t.dataset.d==='wa')swapTo('wa');else swapTo('bank',t.dataset.d);return}
@@ -297,15 +358,20 @@ window.BANK={run:function(cfg){
   if(a==='cartao'){if(T.modo==='quiz'){return go(T.cart==='fatura'?'fat':'quiz')}return toast('Nesta atividade use o Pix 💠')}
   if(a==='fat-op')return go('fat-op');
   if(a==='fat-opt'){ph.fat={op:par};return go('fat-val')}
-  if(a==='fat-val-ok'){var n=parse($('inVal').value);if(!(n>0))return toast('Digite um valor válido');if(n>T.F)return toast('O valor é maior que a fatura');if(n<T.min)return toast('Valor abaixo do pagamento mínimo da fatura');if(n>sal())return toast('Saldo insuficiente neste banco');ph.fat.v=n;return go('fat-forma')}
+  if(a==='fat-val-ok'){var n=parse($('inVal').value);if(!(n>0))return toast('Digite um valor válido');if(n>T.F)return toast('O valor é maior que a fatura');if(n<T.min)return toast('Valor abaixo do pagamento mínimo da fatura');if(n>sal())return toast(BLOQ[BK]?'🔒 O saldo deste banco está bloqueado. Use outro banco.':'Saldo insuficiente neste banco. Transfira de outro banco seu.');ph.fat.v=n;return go('fat-forma')}
   if(a==='fat-forma'){ph.fat.forma=par;return go('fat-conf')}
   if(a==='fat-copy'){var cc=ph.fat.forma==='pix'?T.code:T.code.replace(/\D/g,'').slice(0,40);return tabu(function(){doCopy(cc)})}
   if(a==='fat-conf-ok'){ph.pb='';return go('fat-pin')}
   if(a==='fat-next')return go('quiz');
   if(a==='off')return toast('Nesta atividade use o Pix 💠');
   if(a==='colar'){if(!clip)return toast('Nada copiado. Copie a chave no WhatsApp.');$('inChave').value=clip;ph.chave=clip;return}
-  if(a==='chave-ok'){var v=$('inChave').value;ph.chave=v;var c=T.contacts.filter(function(x){return norm(x.chave)===norm(v)})[0];if(!c)return toast('Chave Pix não encontrada. Confira os dados.');ph.c=c;go('valor');return}
-  if(a==='valor-ok'){var n=parse($('inVal').value);if(!(n>0))return toast('Digite um valor válido');if(n>sal())return toast('Saldo insuficiente');ph.v=n;go('conf');return}
+  if(a==='boleto'){if(!T.bill)return toast('Nesta atividade use o Pix 💠');ph.chave='';return go('boleto')}
+  if(a==='bol-ok'){var vv=$('inChave').value;ph.chave=vv;var bc=(T.contacts||[]).filter(function(x){return norm(x.chave)===norm(vv)})[0];if(!bc)return toast('Código de barras não encontrado. Confira os números.');ph.c=bc;return go('bol-val')}
+  if(a==='bol-val-ok'){var nb=parse($('inVal').value);if(!(nb>0))return toast('Digite o valor a pagar');if(nb>sal())return toast(BLOQ[BK]?'🔒 O saldo deste banco está bloqueado. Use outro banco.':'Saldo insuficiente neste banco. Transfira dinheiro de outro banco seu.');ph.v=nb;return go('conf')}
+  if(a==='minhas')return go('minhas');
+  if(a==='mykey'){var mk=OKEY[BK];return tabu(function(){doCopy(mk)})}
+  if(a==='chave-ok'){var v=$('inChave').value;ph.chave=v;var c=null;Object.keys(BANKS).forEach(function(k){if(norm(OKEY[k])===norm(v)){if(k===BK)c='mesmo';else c=ownC(k)}});if(c==='mesmo')return toast('Esta chave é deste mesmo banco. Use a chave do OUTRO banco.');if(!c)c=T.contacts.filter(function(x){return norm(x.chave)===norm(v)})[0];if(!c)return toast('Chave Pix não encontrada. Confira os dados.');ph.c=c;go('valor');return}
+  if(a==='valor-ok'){var n=parse($('inVal').value);if(!(n>0))return toast('Digite um valor válido');if(n>sal())return toast(BLOQ[BK]?'🔒 O saldo deste banco está bloqueado. Use outro banco.':'Saldo insuficiente neste banco. Transfira dinheiro de outro banco seu.');ph.v=n;go('conf');return}
   if(a==='conf-ok'){ph.pb='';if((BANKS[BK]||{}).kind==='caixa'){go('cx-rev');return}go('pin');return}
   if(a==='cancel'){ph.c=null;toast('Pix cancelado');go('home');return}
   if(a==='pos-vira'){go('pos-c-forma');return}
@@ -327,7 +393,7 @@ window.BANK={run:function(cfg){
  function toast2(t){msg(t,'bad');setTimeout(function(){if(!lock)msg('')},2600)}
 
  $('txt').addEventListener('contextmenu',function(e){e.preventDefault()});
- var waH=function(e){var bb=e.target.closest('.bub'),w=e.target.closest('[data-w]');var bar=$('wbar');if(w&&w.dataset.w==='list'){waShow(chatList());return}if(w&&w.dataset.w==='group'){waShow(groupHtml());return}if(w&&w.dataset.w==='tab'){var cd=w.closest('.tcard'),op=w.dataset.op,nn=+w.dataset.n;cd.outerHTML=tabCard(op,nn);return}if(w&&w.dataset.w==='open'){var k=+w.dataset.i;if(k!==ti){var tmp=tasks[ti];tasks[ti]=tasks[k];tasks[k]=tmp;noNot=true;task()}else{waShow(swOn()?chatHtml(T.chat):txtHtml())}return}if(w&&w.dataset.w==='copykey2'){var kk=w.dataset.k;tabu(function(){doCopy(kk)});return}if(w&&w.dataset.w==='copykey'){sel=w.parentNode.querySelector('span').innerText;var k2=sel;tabu(function(){doCopy(k2)});return}
+ var waH=function(e){var bb=e.target.closest('.bub'),w=e.target.closest('[data-w]');var bar=$('wbar');if(w&&w.dataset.w==='list'){waShow(chatList());return}if(w&&w.dataset.w==='group'){waShow(groupHtml(w.dataset.g));var wb=document.querySelector('.wg .wb');if(wb)wb.scrollTop=0;return}if(w&&w.dataset.w==='inc'){waShow(incHtml());return}if(w&&w.dataset.w==='ia'){INC.ans=w.dataset.v==='1';var rs=document.querySelector('.iares');if(rs)rs.innerHTML=incRes();if(INC.ans===INC.real)setPts(5);return}if(w&&w.dataset.w==='tab'){var cd=w.closest('.tcard'),op=w.dataset.op,nn=+w.dataset.n;cd.outerHTML=tabCard(op,nn);return}if(w&&w.dataset.w==='open'){var k=+w.dataset.i;if(k!==ti){var tmp=tasks[ti];tasks[ti]=tasks[k];tasks[k]=tmp;noNot=true;task()}else{waShow(swOn()?chatHtml(T.chat):txtHtml())}return}if(w&&w.dataset.w==='copykey2'){var kk=w.dataset.k;tabu(function(){doCopy(kk)});return}if(w&&w.dataset.w==='copykey'){sel=w.parentNode.querySelector('span').innerText;var k2=sel;tabu(function(){doCopy(k2)});return}
   if(w){if(w.dataset.w==='copy'&&sel){var k3=sel;tabu(function(){doCopy(k3)})}if(bar)bar.classList.remove('on');[].forEach.call(document.querySelectorAll('.bub.sel'),function(x){x.classList.remove('sel')});return}
   if(bb){[].forEach.call(document.querySelectorAll('.bub.sel'),function(x){x.classList.remove('sel')});bb.classList.add('sel');sel=bb.querySelector('span').innerText;if(bar)bar.classList.add('on')}};
  $('txt').addEventListener('click',waH);$('phone').addEventListener('click',function(e){if(swOn()&&ph.app==='wa'&&e.target.closest('.wa'))waH(e)});

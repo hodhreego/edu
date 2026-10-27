@@ -1,0 +1,38 @@
+{"grupos":[
+{"id":"zap","icone":"📚","nome":"Matemática no Zap 📚","desc":"Grupo · só administradores enviam","prev":"📸 Tabuada da multiplicação e da adição","n":3,"msgs":[
+ {"t":"txt","h":"👋 Bem-vindos ao <b>Matemática no Zap</b>! Aqui eu mando dicas rápidas para você <b>calcular de cabeça</b> e usar o Pix sem erro."},
+ {"t":"txt","h":"➕ <b>Somar por partes:</b> 38 + 27 → 30 + 20 = 50 e 8 + 7 = 15 → <b>65</b>."},
+ {"t":"tab","op":"+","n":7},
+ {"t":"txt","h":"✖️ <b>Multiplicar:</b> 7 × 6 = 7 × 5 + 7 = 35 + 7 = <b>42</b>. Truque do 9: 9 × 7 = 70 − 7 = <b>63</b>."},
+ {"t":"tab","op":"×","n":6},
+ {"t":"txt","h":"🧮 <b>Troco:</b> pagou R$ 50 numa compra de R$ 37? Conte para cima: 37 → 40 (+3) → 50 (+10) = <b>R$ 13</b>."}]},
+{"id":"downloads","icone":"📥","nome":"Material para baixar 📥","desc":"Grupo · PDFs para guardar no celular","prev":"📄 Tabuada da multiplicação (PDF)","n":4,"msgs":[
+ {"t":"txt","h":"📥 Aqui ficam os <b>PDFs</b>. Toque em <b>Abrir</b> para ler ou em <b>Baixar</b> para guardar no celular."},
+ {"t":"pdf","nome":"Tabuada da multiplicação (1 a 12)","arq":"downloads/tabuada-multiplicacao.pdf","info":"1 página · PDF"},
+ {"t":"pdf","nome":"Tabuada da adição (1 a 12)","arq":"downloads/tabuada-adicao.pdf","info":"1 página · PDF"},
+ {"t":"pdf","nome":"Fórmulas de geometria","arq":"downloads/formulas-geometria.pdf","info":"1 página · PDF"},
+ {"t":"pdf","nome":"Guia do Pix seguro","arq":"downloads/guia-pix-seguro.pdf","info":"1 página · PDF"}]},
+{"id":"geometria","icone":"📐","nome":"Geometria 📐","desc":"Grupo · figuras, áreas e volumes","prev":"📄 Fórmulas de geometria (PDF)","n":2,"msgs":[
+ {"t":"txt","h":"📐 <b>Perímetro</b> é a soma dos lados (o contorno). <b>Área</b> é o espaço dentro da figura (m²). <b>Volume</b> é o espaço ocupado por um sólido (m³)."},
+ {"t":"txt","h":"🟦 <b>Quadrado de lado 5 cm:</b> perímetro 4 × 5 = <b>20 cm</b> · área 5 × 5 = <b>25 cm²</b>."},
+ {"t":"txt","h":"🔺 <b>Triângulo:</b> área = base × altura ÷ 2. Base 10 e altura 6 → 60 ÷ 2 = <b>30</b>."},
+ {"t":"txt","h":"⭕ <b>Círculo de raio 3:</b> área = π × r² ≈ 3,14 × 9 = <b>28,26</b> · comprimento = 2 × π × r ≈ <b>18,84</b>."},
+ {"t":"txt","h":"🧊 <b>Cubo de aresta 4:</b> volume = 4 × 4 × 4 = <b>64</b>. Um piso de 3 m × 4 m tem <b>12 m²</b>: dá para saber quanto custa a cerâmica!"},
+ {"t":"pdf","nome":"Fórmulas de geometria","arq":"downloads/formulas-geometria.pdf","info":"1 página · PDF"}]},
+{"id":"economia","icone":"💵","nome":"Economia Hoje 💵","desc":"Grupo · números do dia (dados reais)","prev":"💵 Cotação do dólar e Selic","n":3,"msgs":[
+ {"t":"txt","h":"📊 <b>Economia Hoje</b>: os números que mexem com o seu bolso. Os valores abaixo são buscados <b>agora</b> na internet."},
+ {"t":"usd"},{"t":"selic"},
+ {"t":"txt","h":"🧠 <b>Para pensar:</b> se o dólar sobe, o que vem de fora (celular, jogo, tênis importado) tende a ficar <b>mais caro</b>. Se a Selic sobe, os <b>juros</b> do cartão e dos empréstimos tendem a subir, e a poupança rende mais."},
+ {"t":"txt","h":"💡 <b>Conta rápida:</b> um produto de US$ 20 com dólar a R$ 5,00 custa 20 × 5 = <b>R$ 100</b>."}]},
+{"id":"banco","icone":"🏦","nome":"Banco (app oficial) 🏦","desc":"Avisos do banco · mensagens automáticas","prev":"🔔 Avisos sobre sua conta","n":2,"oficial":true,"msgs":[
+ {"t":"banco"}]},
+{"id":"ciencia","icone":"🔭","nome":"Ciência e Curiosidades 🔭","desc":"Grupo · matemática, astronomia e tecnologia","prev":"🔭 A luz do Sol leva 8 min até a Terra","n":3,"msgs":[
+ {"t":"hoje"},
+ {"t":"txt","h":"☀️ <b>Astronomia:</b> a luz do Sol leva cerca de <b>8 minutos e 20 segundos</b> para chegar à Terra. Se o Sol sumisse, só perceberíamos 8 min depois!"},
+ {"t":"txt","h":"🚀 <b>Voyager 1</b> (lançada em 1977) é o objeto humano mais distante: já passou de <b>24 bilhões de km</b> da Terra."},
+ {"t":"txt","h":"🌙 A Lua está a cerca de <b>384 mil km</b> da Terra. A 100 km/h de carro, seriam mais de <b>160 dias</b> de viagem (384.400 ÷ 100 ÷ 24)."},
+ {"t":"txt","h":"🔢 <b>Matemática:</b> 0,999... (infinitos noves) é exatamente igual a <b>1</b>. Prova: 1/3 = 0,333... e 3 × 0,333... = 0,999... = 3 × 1/3 = 1."},
+ {"t":"txt","h":"🌀 <b>Fibonacci:</b> 1, 1, 2, 3, 5, 8, 13, 21... cada número é a soma dos dois anteriores. Aparece em girassóis, conchas e pinhas."},
+ {"t":"txt","h":"💻 <b>Tecnologia:</b> 1 byte tem 8 bits. Um celular de 128 GB guarda mais de <b>100 bilhões</b> de bytes. E o <b>Pix</b> foi lançado em novembro de 2020."},
+ {"t":"txt","h":"🧪 <b>Ciência:</b> o corpo humano adulto tem cerca de 60% de água. Uma pessoa de 50 kg tem uns <b>30 kg</b> de água."}]}
+]}
