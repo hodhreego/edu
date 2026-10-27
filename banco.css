@@ -547,3 +547,8 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 /* celular real: fontes menores nos apps de mensagem e no texto do pedido */
 @media screen and (max-width:900px){#txt{font-size:15px}#txt>.wa{zoom:.82}.pnote,.swp{font-size:13px}#ped #txt .wch b{font-size:15px}}
 @media screen and (max-width:430px){#txt>.wa{zoom:.78}}
+
+#txt>.wa{zoom:var(--appz,1)}
+@media screen and (max-width:900px){#txt>.wa{zoom:calc(.82*var(--appz,1))}}
+@media screen and (max-width:430px){#txt>.wa{zoom:calc(.78*var(--appz,1))}}
+#txt.tgm .cp,#txt.msm .cp,#txt.smsm .cp{background:transparent!important}

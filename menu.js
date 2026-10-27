@@ -118,6 +118,10 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  (function(){var c=document.querySelector('.coin,.jcoin');if(!c)return;var k=nav.querySelector('.tag.k')||nav.querySelector('form.cod');
   c.classList.add('en-coin');nav.insertBefore(c,k);})();
  var ac=document.createElement('div');ac.id='edu-ac';ac.innerHTML='<h4>♿ Acessibilidade</h4><div class="r"><button data-z="1">Texto normal</button><button data-z="1.25">Grande</button><button data-z="1.5">Enorme</button><button data-z="1.75">Gigante</button></div><div class="r"><button id="en-hc">◐ Alto contraste</button></div>';
+ if(document.getElementById('txt')){var az=1;try{az=parseFloat(localStorage.getItem('edu_appz'))||1}catch(e){}
+  var rz=document.createElement('div');rz.className='r';rz.style.cssText='flex-direction:column;align-items:stretch;gap:4px';rz.innerHTML='<label style="font:700 13px Arial">💬 Texto do app aberto à esquerda: <b id="az-v"></b></label><input type="range" id="az-r" min="0.6" max="1.6" step="0.05">';ac.appendChild(rz);
+  var zr=rz.querySelector('#az-r'),zv=rz.querySelector('#az-v'),aplz=function(v){document.documentElement.style.setProperty('--appz',v);zv.textContent=Math.round(v*100)+'%';try{localStorage.setItem('edu_appz',v)}catch(e){}};
+  zr.value=az;aplz(az);zr.addEventListener('input',function(){aplz(parseFloat(zr.value))});}
  document.body.appendChild(ac);
  if(document.getElementById('painel')&&document.getElementById('toggle')&&!/[?&]imp=1/.test(location.search)){
   var ajst=document.createElement('style');ajst.textContent='@media screen{html:not(.edu-print-ok) body:not(.edu-aj-on) #painel,html:not(.edu-print-ok) body:not(.edu-aj-on) #toggle{display:none!important}html:not(.edu-print-ok) body:not(.edu-aj-on).painel-on{padding-right:0!important}}';document.head.appendChild(ajst);
