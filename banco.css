@@ -513,3 +513,6 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .xapp.clkapp .clkbig{font-size:3.2em;font-weight:300;font-variant-numeric:tabular-nums;color:#1f2430}
 .xapp.clkapp .row{display:flex;gap:.8em}.xapp.clkapp .row button{border:0;background:#1a56db;color:#fff;border-radius:2em;padding:.7em 1.4em;font:700 1em Arial;cursor:pointer}
 .xapp.clkapp .tabs{display:flex;gap:.4em;padding:.4em .8em}
+
+.lnc .gridl button,.lnc .gdock button{position:relative}
+.lnc .bdg{position:absolute;top:-5px;left:calc(50% + .75em);min-width:1.5em;height:1.5em;padding:0 .3em;box-sizing:border-box;border-radius:1em;background:#ff3b30;color:#fff;font:700 .78em Arial,sans-serif;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:3;line-height:1}

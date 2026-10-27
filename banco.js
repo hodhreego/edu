@@ -531,13 +531,13 @@ var ACT=[],ACTN=0,T0=Date.now();
   return '<div class="wgt and" data-l="sys:clima"><div class="w1"><b>'+w.t+'°</b><div><span>'+w.e+' '+w.c+'</span><small>'+w.loc+' · '+w.min+'° / '+w.max+'°</small></div></div><div class="w2">'+w.days.map(function(x){return '<div><small>'+x.d+'</small><span>'+x.e+'</span><small>'+x.max+'°</small></div>'}).join('')+'</div></div>'}
  function launcherHtml(wide){var ios=NAV==='ios',hm=hmNow(),ap=[],dk=[];
   sysList().forEach(function(a){ap.push({k:'sys:'+a[0],n:a[1],ic:sysIc2(a),d:ios?/web|cam|store|note/.test(a[0]):/web|cam|gal|store/.test(a[0])})});
-  if(swOn())ap.push({k:'wa',n:appNm(),ic:appIc()});
+  if(swOn()){var nd=0;try{GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&!PRIZE[x.id])nd++})})}catch(e){}ap.push({k:'wa',n:appNm(),ic:appIc(),bd:nd})}
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi sy svgic">'+calcSvg(ios)+'</span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
-  INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2])})});
+  INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:(SCI[k]&&!PRIZE['sci-'+k])?1:0})});
   var dt=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
   dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});
-  function bt(a){return '<button type="button" data-l="'+a.k+'">'+a.ic+'<em>'+a.n+'</em></button>'}
+  function bt(a){return '<button type="button" data-l="'+a.k+'">'+a.ic+(a.bd?'<b class="bdg">'+a.bd+'</b>':'')+'<em>'+a.n+'</em></button>'}
   var clk='',top=wide?'<div class="wtop">'+wgtHtml(ios)+'</div>':(FOLD()?'<div class="fhint">👆 Escolha o app deste lado · arraste a divisória para mudar a largura</div>':'')+clk+wgtHtml(ios);
   return '<div class="lnc '+(ios?'ios':'and')+(wide?' wide':'')+'"><div class="stt" data-q="shade"><span>'+hm+'</span><span>5G ▂▄▆ 🔋</span></div>'+top+'<div class="gridl">'+ap.map(bt).join('')+'</div>'+(ios?'<div class="idots"><i class="on"></i><i></i></div>':'<div class="gsrch"><b>G</b><span>Pesquisar</span><span>🎤</span></div>')+'<div class="gdock">'+dk.map(bt).join('')+'</div></div>'}
  function calcHtml(){var ios=NAV==='ios',K=[['C','C'],['B','⌫'],['%','%'],['/','÷'],['7','7'],['8','8'],['9','9'],['*','×'],['4','4'],['5','5'],['6','6'],['-','−'],['1','1'],['2','2'],['3','3'],['+','+'],['00','00'],['0','0'],['.',','],['=','=']];
