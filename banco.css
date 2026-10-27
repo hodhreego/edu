@@ -195,3 +195,5 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 .bkmini .bkb{position:relative;display:flex;border:2px solid transparent;border-radius:12px;background:transparent;padding:2px;min-width:0;cursor:pointer}.bkmini .bkb.on{border-color:#1f4fd8;background:#e6ecff}.bkmini .bkb:hover{background:#eef2ff}
 .bkmini .bd{position:absolute;right:-3px;top:-4px;font:900 10px Arial;text-decoration:none;border-radius:99px;min-width:15px;height:15px;display:flex;align-items:center;justify-content:center;background:#b91c1c;color:#fff}.bkmini .bd.lk{background:#444}
 @media(max-width:700px){#bkbar.bkmini{order:9;width:100%;overflow-x:auto}}
+
+.gabp{background:#fff3cd;border:2px dashed #b8860b;border-radius:10px;padding:6px 10px;margin-bottom:8px;font-size:15px}

@@ -9,7 +9,9 @@ var BANKS={
  caixa:{n:'Caixa Tem',h:'#005CA9',f:'#fff',b:'#F39200',bt:'#fff',bg:'#eef4fa',style:'bar',kind:'caixa'},
  inter:{n:'Inter',h:'#FF7A00',f:'#fff',b:'#FF7A00',bt:'#fff',bg:'#fff',style:'tall',kind:'row'},
  mp:{n:'Mercado Pago',h:'#FFE600',f:'#2D3277',b:'#009EE3',bt:'#fff',bg:'#ededed',style:'tall',kind:'mp'},
- santander:{n:'Santander',h:'#EC0000',f:'#fff',b:'#EC0000',bt:'#fff',bg:'#fff',style:'bar',kind:'grid'}};
+ santander:{n:'Santander',h:'#EC0000',f:'#fff',b:'#EC0000',bt:'#fff',bg:'#fff',style:'bar',kind:'grid'},
+ picpay:{n:'PicPay',h:'#11C76F',f:'#fff',b:'#11C76F',bt:'#fff',bg:'#effaf4',style:'tall',kind:'row'},
+ c6:{n:'C6 Bank',h:'#2B2B2B',f:'#fff',b:'#2B2B2B',bt:'#fff',bg:'#f0f0f0',style:'bar',kind:'grid'}};
 var $=function(i){return document.getElementById(i)};
 function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
 function pick(a){return a[rnd(0,a.length-1)]}
@@ -38,21 +40,21 @@ function dados(p){return '<div class="dd"><span>'+p.tipo+'</span><b>'+p.chave+'<
 function pinTxt(p){return 'A senha do seu app é <b>'+p+'</b>.'}
 /* ---------- geradores de questão ---------- */
 var GEN={
- celular:function(L){var p=pessoa('cel'),s=pick(SERV),v,t,pn=pin();
-  if(L===1){v=rnd(2,12)*500;t='Você vai pagar <b>'+p.nome+'</b> pelo '+s+': <b>'+fmt(v)+'</b>. A chave Pix dela é o <b>celular</b> '+'<b>'+p.chave+'</b>.'}
-  else if(L===2){var a=rnd(4,12)*500+pick([50,90,150,250,75]),b=rnd(3,9)*500+pick([50,90,150,250,25]);v=a+b;t='Você deve a <b>'+p.nome+'</b> dois serviços: '+s+' ('+fmt(a)+') e '+pick(SERV.filter(function(x){return x!==s}))+' ('+fmt(b)+'). Pague <b>os dois de uma vez</b> no Pix para o celular <b>'+p.chave+'</b>.'}
-  else{var dv=rnd(80,200)*100+pick([50,90,25]),jp=rnd(20,60)*100+pick([50,25,75]);v=dv-jp;t='Você deve <b>'+fmt(dv)+'</b> a <b>'+p.nome+'</b>, mas já entregou <b>'+fmt(jp)+'</b> em dinheiro. Faça o Pix do <b>que falta</b> para o celular <b>'+p.chave+'</b>.'}
-  return {txt:t+' '+pinTxt(pn),contacts:cts('cel',p,3),target:{nome:p.nome,valor:v},pin:pn,modo:'pix'}},
- cpf:function(L){var p=pessoa('cpf'),pn=pin(),h=rnd(2,5),vh=(L===1?rnd(4,9)*500:rnd(8,24)*250),v,t;
-  if(L===1){v=h*vh;t='<b>'+p.nome+'</b> trabalhou <b>'+h+' horas</b> na sua casa, cobrando <b>'+fmt(vh)+' por hora</b>. Pague o total no Pix pelo <b>CPF</b> <b>'+p.chave+'</b>.'}
-  else if(L===2){var ds=rnd(1,4)*1000+pick([50,250,500]);v=h*vh+ds;t='<b>'+p.nome+'</b> trabalhou <b>'+h+' horas</b> a <b>'+fmt(vh)+'</b> a hora e cobra <b>'+fmt(ds)+'</b> de deslocamento. Pague tudo no Pix pelo <b>CPF</b> <b>'+p.chave+'</b>.'}
-  else{vh=rnd(16,40)*250;v=Math.round(h*vh*.9);t='<b>'+p.nome+'</b> cobra <b>'+fmt(vh)+' por hora</b> e trabalhou <b>'+h+' horas</b>. Como o pagamento é <b>no Pix</b>, ela dá <b>10% de desconto</b> no total. Pague pelo <b>CPF</b> <b>'+p.chave+'</b>.'}
-  return {txt:t+' '+pinTxt(pn),contacts:cts('cpf',p,3),target:{nome:p.nome,valor:v},pin:pn,modo:'pix'}},
- email:function(L){var p=pessoa('mail'),pn=pin(),n=pick([3,4,5,6]),v,t;
-  if(L===1){var pt=rnd(8,30)*100;t='A conta do restaurante foi <b>'+fmt(pt*n)+'</b>, dividida igualmente entre <b>'+n+' amigos</b>. <b>'+p.nome+'</b> pagou tudo no cartão. Mande no Pix a <b>sua parte</b> para o e-mail <b>'+p.chave+'</b>.';v=pt}
-  else if(L===2){var b0=rnd(5,20)*500;t='A conta foi <b>'+fmt(b0*n)+'</b> mais <b>10% de gorjeta</b>, dividida igualmente entre <b>'+n+' amigos</b>. <b>'+p.nome+'</b> pagou. Mande a <b>sua parte</b> no Pix para o e-mail <b>'+p.chave+'</b>.';v=Math.round(b0*1.1)}
-  else{var pc=rnd(6,16)*500,cv=pick([250,750,1250,1500]);t='A conta foi <b>'+fmt(pc*n)+'</b> (dividida igualmente entre <b>'+n+' amigos</b>) e cada um paga ainda um <b>couvert artístico de '+fmt(cv)+'</b>. <b>'+p.nome+'</b> pagou. Mande a <b>sua parte</b> (conta + couvert) pelo e-mail <b>'+p.chave+'</b>.';v=pc+cv}
-  return {txt:t+' '+pinTxt(pn),contacts:cts('mail',p,3),target:{nome:p.nome,valor:v},pin:pn,modo:'pix'}},
+ celular:function(L){var p=pessoa('cel'),s=pick(SERV),s2=pick(SERV.filter(function(x){return x!==s})),v,t,pn=pin(),cm;
+  if(L===1){v=rnd(2,12)*500;t='Você vai pagar <b>'+p.nome+'</b> pelo '+s+': <b>'+fmt(v)+'</b>. A chave Pix dela é o <b>celular</b> '+'<b>'+p.chave+'</b>.';cm=['Ficou <b>'+fmt(v)+'</b> pelo '+s+'. Meu Pix é o <b>celular</b>:']}
+  else if(L===2){var a=rnd(4,12)*500+pick([50,90,150,250,75]),b=rnd(3,9)*500+pick([50,90,150,250,25]);v=a+b;t='Você deve a <b>'+p.nome+'</b> dois serviços: '+s+' ('+fmt(a)+') e '+s2+' ('+fmt(b)+'). Pague <b>os dois de uma vez</b> no Pix para o celular <b>'+p.chave+'</b>.';cm=['Fechamos dois serviços: '+s+' (<b>'+fmt(a)+'</b>) e '+s2+' (<b>'+fmt(b)+'</b>).','Faz tudo num Pix só pro meu <b>celular</b>:']}
+  else{var dv=rnd(80,200)*100+pick([50,90,25]),jp=rnd(20,60)*100+pick([50,25,75]);v=dv-jp;t='Você deve <b>'+fmt(dv)+'</b> a <b>'+p.nome+'</b>, mas já entregou <b>'+fmt(jp)+'</b> em dinheiro. Faça o Pix do <b>que falta</b> para o celular <b>'+p.chave+'</b>.';cm=['Você me deve <b>'+fmt(dv)+'</b>, mas já me deu <b>'+fmt(jp)+'</b> em dinheiro.','Faz o Pix só do que falta, no meu <b>celular</b>:']}
+  return {txt:t+' '+pinTxt(pn),chat:mkc(p,cm,'Calcule o valor'),contacts:cts('cel',p,3),target:{nome:p.nome,valor:v},pin:pn,modo:'pix'}},
+ cpf:function(L){var p=pessoa('cpf'),pn=pin(),h=rnd(2,5),vh=(L===1?rnd(4,9)*500:rnd(8,24)*250),v,t,cm;
+  if(L===1){v=h*vh;t='<b>'+p.nome+'</b> trabalhou <b>'+h+' horas</b> na sua casa, cobrando <b>'+fmt(vh)+' por hora</b>. Pague o total no Pix pelo <b>CPF</b> <b>'+p.chave+'</b>.';cm=['Terminei o serviço! Trabalhei <b>'+h+' horas</b> e cobro <b>'+fmt(vh)+' por hora</b>.','Meu Pix é o <b>CPF</b>:']}
+  else if(L===2){var ds=rnd(1,4)*1000+pick([50,250,500]);v=h*vh+ds;t='<b>'+p.nome+'</b> trabalhou <b>'+h+' horas</b> a <b>'+fmt(vh)+'</b> a hora e cobra <b>'+fmt(ds)+'</b> de deslocamento. Pague tudo no Pix pelo <b>CPF</b> <b>'+p.chave+'</b>.';cm=['Terminei! Foram <b>'+h+' horas</b> a <b>'+fmt(vh)+'</b> a hora, mais <b>'+fmt(ds)+'</b> de deslocamento.','Pode mandar tudo junto no <b>CPF</b>:']}
+  else{vh=rnd(16,40)*250;v=Math.round(h*vh*.9);t='<b>'+p.nome+'</b> cobra <b>'+fmt(vh)+' por hora</b> e trabalhou <b>'+h+' horas</b>. Como o pagamento é <b>no Pix</b>, ela dá <b>10% de desconto</b> no total. Pague pelo <b>CPF</b> <b>'+p.chave+'</b>.';cm=['Trabalhei <b>'+h+' horas</b> a <b>'+fmt(vh)+'</b> a hora.','Se pagar no Pix, faço <b>10% de desconto</b> no total! Meu <b>CPF</b>:']}
+  return {txt:t+' '+pinTxt(pn),chat:mkc(p,cm,'Calcule o valor'),contacts:cts('cpf',p,3),target:{nome:p.nome,valor:v},pin:pn,modo:'pix'}},
+ email:function(L){var p=pessoa('mail'),pn=pin(),n=pick([3,4,5,6]),v,t,cm;
+  if(L===1){var pt=rnd(8,30)*100;t='A conta do restaurante foi <b>'+fmt(pt*n)+'</b>, dividida igualmente entre <b>'+n+' amigos</b>. <b>'+p.nome+'</b> pagou tudo no cartão. Mande no Pix a <b>sua parte</b> para o e-mail <b>'+p.chave+'</b>.';v=pt;cm=['A conta do restaurante deu <b>'+fmt(pt*n)+'</b>, dividida igualmente entre <b>'+n+' amigos</b>. Eu paguei tudo no cartão.','Manda a <b>sua parte</b> no Pix pro meu <b>e-mail</b>:']}
+  else if(L===2){var b0=rnd(5,20)*500;t='A conta foi <b>'+fmt(b0*n)+'</b> mais <b>10% de gorjeta</b>, dividida igualmente entre <b>'+n+' amigos</b>. <b>'+p.nome+'</b> pagou. Mande a <b>sua parte</b> no Pix para o e-mail <b>'+p.chave+'</b>.';v=Math.round(b0*1.1);cm=['A conta deu <b>'+fmt(b0*n)+'</b> mais <b>10% de gorjeta</b>, dividida igualmente entre <b>'+n+' amigos</b>. Eu paguei.','Manda a <b>sua parte</b> no Pix pro meu <b>e-mail</b>:']}
+  else{var pc=rnd(6,16)*500,cv=pick([250,750,1250,1500]);t='A conta foi <b>'+fmt(pc*n)+'</b> (dividida igualmente entre <b>'+n+' amigos</b>) e cada um paga ainda um <b>couvert artístico de '+fmt(cv)+'</b>. <b>'+p.nome+'</b> pagou. Mande a <b>sua parte</b> (conta + couvert) pelo e-mail <b>'+p.chave+'</b>.';v=pc+cv;cm=['A conta deu <b>'+fmt(pc*n)+'</b> (dividida igualmente entre <b>'+n+' amigos</b>) e cada um paga um <b>couvert artístico de '+fmt(cv)+'</b>. Eu paguei tudo.','Manda a <b>sua parte</b> (conta + couvert) no <b>e-mail</b>:']}
+  return {txt:t+' '+pinTxt(pn),chat:mkc(p,cm,'Calcule a sua parte'),contacts:cts('mail',p,3),target:{nome:p.nome,valor:v},pin:pn,modo:'pix'}},
  qrcam:function(L){var C=(window.QRCAT||[]).filter(function(x){return x.valor<=(L===1?10000:L===2?30000:90000)}),it=pick(C),pn=pin();
   return {txt:'Pegue o <b>QR Code nº '+it.id+'</b> da folha, abra <b>Pix → Pagar com QR Code</b>, aponte a <b>câmera</b> e pague o valor que aparecer. '+pinTxt(pn),contacts:[],qrcam:true,scan:it,target:{nome:it.nome,valor:it.valor},pin:pn,modo:'qr'}},
  qr:function(L){var pn=pin(),loja=pick(['Padaria Pão Dourado','Livraria Estrela','Pet Shop Amigo Fiel','Papelaria Central','Mercado Bom Preço']),P,d,v,t,w1,w2;
@@ -66,7 +68,7 @@ var GEN={
    falso=pessoa('cnpj',pick(['Joaquim Pereira Ferreira ME','Rosana Lima Comércio','José Carlos Santos Ltda']));
   var c=p.chave,fc=c.slice(0,-2)+(String(rnd(10,99)));if(fc===c)fc=c.slice(0,-2)+'00';falso.chave=fc;
   var t='Você vai pagar a <b>'+emp+'</b> o valor de <b>'+fmt(v)+'</b>. A chave Pix é o <b>CNPJ '+c+'</b>. <b>Antes de confirmar, confira o NOME do destinatário</b> na tela: se for outro, <b>cancele</b> e confira os números da chave.';
-  return {txt:t+' '+pinTxt(pn),contacts:[p,falso],target:{nome:emp,valor:v},pin:pn,modo:'pix'}},
+  return {txt:t+' '+pinTxt(pn),chat:mkc(p,['O valor ficou <b>'+fmt(v)+'</b>. Nossa chave é o <b>CNPJ</b>:'],'Confira o NOME do destinatário antes de confirmar'),contacts:[p,falso],target:{nome:emp,valor:v},pin:pn,modo:'pix'}},
  pos:function(L){var pn=pin(),v=(L===1?rnd(2,15)*2000:rnd(10,150)*200),forma,pc,tx,tabela='<table class="tb"><tr><th>Forma</th><th>Taxa</th></tr><tr><td>Débito</td><td>1,5%</td></tr><tr><td>Crédito à vista</td><td>3%</td></tr><tr><td>Crédito 2 a 6 vezes</td><td>4,5%</td></tr><tr><td>Crédito 7 a 12 vezes</td><td>6%</td></tr></table>';
   if(L===1){forma='debito';pc=1;tx=1.5}else if(L===2){var o=pick([[ 'credito',1,3],['credito',pick([2,3,4,5,6]),4.5],['debito',1,1.5]]);forma=o[0];pc=o[1];tx=o[2]}else{var o2=pick([['credito',rnd(7,12),6],['credito',rnd(2,6),4.5],['credito',1,3]]);forma=o2[0];pc=o2[1];tx=o2[2];v=rnd(15,250)*200}
   var fee=Math.round(v*tx/10)/10;if(fee!==Math.round(fee))return GEN.pos(L);fee=Math.round(fee);
@@ -118,7 +120,8 @@ var GEN={
 
 var ITENS=[['🌽','pamonha','pamonhas'],['🥟','pastel','pastéis'],['🍗','coxinha','coxinhas'],['🥤','suco','sucos'],['🍰','fatia de bolo','fatias de bolo'],['🧀','pão de queijo','pães de queijo'],['🍨','açaí','açaís'],['🍫','brigadeiro','brigadeiros'],['☕','café','cafés'],['🥖','pão francês','pães franceses'],['🥪','sanduíche','sanduíches'],['🍦','sorvete','sorvetes']];
 var TIPOS=['cel','cpf','mail','ale','cnpj'];
-var HB=rnd(0,30);function hora(i){var m=14*60+HB+i*3;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+window.PROF_GAB=function(){try{return /[?&]imp=1/.test(location.search)&&sessionStorage.getItem('edu_prof')==='1'}catch(e){return false}};var HB=rnd(0,30);function hora(i){var m=14*60+HB+i*3;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function mkc(p,m,calc){var o=pick(['Oi! 👋 Aqui é <b>'+p.nome+'</b>.','Oii, tudo bem? Sou <b>'+p.nome+'</b>.','Boa tarde! <b>'+p.nome+'</b> aqui.','E aí! 😊 É a <b>'+p.nome+'</b>.']),c=pick(['Me manda o Pix quando puder? 🙏','Pode fazer o Pix? Obrigado! 🙏','Faz o Pix pra mim? 💸','Aguardo o Pix! 😉']);return {nome:p.nome,msgs:[o].concat(m,[c]),chave:p.chave,calc:calc}}
 function zap(L,modo){
  var tp=pick(TIPOS),p=pessoa(tp),pn=pin(),its=shuffle(ITENS),l=[],v=0,calc;
  var m=modo==='mix'?pick(['soma','mult']):modo;
@@ -149,17 +152,17 @@ GEN.zapsoma=function(L){return zap(L,'soma')};GEN.zapmult=function(L){return zap
 /* ---------- jogo ---------- */
 window.BANK={run:function(cfg){
  var BK=null;try{BK=localStorage.getItem('edu_banco')}catch(e){}if(!BANKS[BK])BK=null;
- var fi=0,ti=0,pts=0,tasks=[],T=null,ph={},lock=false,pt=0,SAL={},SAL0={},LEDGER=[],L0=0,AC=null,INC=null,CHESP=null,BLOQ={},GRUPOS=[],LIVE={},READ={};
+ var fi=0,ti=0,pts=0,tasks=[],T=null,ph={},lock=false,pt=0,SAL={},SAL0={},LEDGER=[],L0=0,AC=null,INC=null,CHESP=null,BLOQ={},GRUPOS=[],LIVE={},READ={},GORD=null;
  var app=$('app');
  app.innerHTML='<div class="top"><div><h1>'+cfg.titulo+'</h1><div class="sub" id="sub"></div></div><div class="coin"><i>$</i><span id="pts">0 pontos</span></div><div class="btns"><div id="bkbar" class="bkmini"></div><div class="dots" id="dots"></div><select id="nivel" class="ndiv"><option value="1">6º ano</option><option value="2">7º ano</option><option value="3">8º ano</option><option value="4">9º ano</option></select></div></div><div class="inst" id="inst"></div><div class="main"><div class="card" id="ped"><h2>📋 Pedido</h2><div id="txt" class="stm"></div><div id="qrs"></div></div><div class="card" id="stage"><div class="phone" id="phone"></div><div class="msg" id="msg"></div></div></div><div class="card" id="dash"></div><div class="fim" id="fim"><div class="box"><h2 id="fT"></h2><p id="fP"></p><div id="ext"></div><button class="btn ok" id="fB"></button></div></div><div id="bpick"></div><div id="notif"></div><div id="exm"></div>';
- function iniSal(){BLOQ={};var v=[125000,98050,210075,56030,342010,87500,150025,73540];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
+ function iniSal(){BLOQ={};var v=[125000,98050,210075,56030,342010,87500,150025,73540,64020,118030];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
  var OKEY={};
  function uu(){var h='0123456789abcdef',o='';for(var i=0;i<32;i++){o+=h[rnd(0,15)];if(i===7||i===11||i===15||i===19)o+='-'}return o}
  function iniKeys(){Object.keys(BANKS).forEach(function(k){OKEY[k]=uu()})}
  iniKeys();
  function ownC(k){return {nome:'Você (Aluno)',banco:BANKS[k].n,chave:OKEY[k],own:k}}
  function scarce(){var need=0,pix=false;tasks.forEach(function(t){if(t.target&&t.modo!=='pos'){need+=t.target.valor;pix=true}});if(!pix){iniSal();return}
-  var tot=Math.ceil(need*1.6/10000)*10000,w=[.03,.05,.08,.12,.15,.17,.2,.2],ks=Object.keys(BANKS),i,a=[],sum=0;
+  var tot=Math.ceil(need*1.6/10000)*10000,w=[.02,.03,.05,.07,.1,.12,.14,.14,.16,.17],ks=Object.keys(BANKS),i,a=[],sum=0;
   for(i=w.length-1;i>0;i--){var j=rnd(0,i),t=w[i];w[i]=w[j];w[j]=t}
   for(i=0;i<ks.length;i++){var v=Math.round(tot*w[i%w.length]/500)*500;a.push(v);sum+=v}
   var mx=0;a.forEach(function(v,i){if(v>a[mx])mx=i});a[mx]+=tot-sum;var ng=(mx+1+rnd(0,ks.length-2))%ks.length,dv=rnd(3,12)*1000,exc=a[ng]+dv;a[ng]=-dv;a[mx]+=exc;CHESP={bk:ks[ng],dv:dv};BLOQ={};var ot=[];ks.forEach(function(k,i){if(i!==mx&&i!==ng)ot.push(i)});for(var q=ot.length-1;q>0;q--){var r2=rnd(0,q),t2=ot[q];ot[q]=ot[r2];ot[r2]=t2}
@@ -172,7 +175,7 @@ window.BANK={run:function(cfg){
  function sal(){return BLOQ[BK]?0:(SAL[BK]||0)}
  function sdo(){return BLOQ[BK]?'🔒 Bloqueado':fmt(sal())}
  iniSal();
- var MONO={nubank:'Nu',bb:'BB',itau:'itaú',bradesco:'B',caixa:'✕',inter:'inter',mp:'mp',santander:'S'};
+ var MONO={nubank:'Nu',bb:'BB',itau:'itaú',bradesco:'B',caixa:'✕',inter:'inter',mp:'mp',santander:'S',picpay:'Pic',c6:'C6'};
  function bicon(k,sz){var b=BANKS[k];return '<span class="bi" style="--c:'+b.h+';--t:'+b.f+(sz?';--z:'+sz+'px':'')+'"><i>'+(MONO[k]||b.n.charAt(0))+'</i></span>'}
  function bkbar(){var bb=$('bkbar');if(!bb)return;if(cfg.appswitch){bb.style.display='none';return}bb.innerHTML=Object.keys(BANKS).map(function(k){var st=BLOQ[k]?'<u class="bd lk">🔒</u>':(SAL[k]<0?'<u class="bd ng">−</u>':'');return '<button type="button" class="bkb'+(k===BK?' on':'')+'" data-bk="'+k+'" title="'+BANKS[k].n+' — ver extrato">'+bicon(k,30)+st+'</button>'}).join('')}
  function setBank(k){if(!BANKS[k])return;BK=k;try{localStorage.setItem('edu_banco',k)}catch(x){}ph.chave='';theme();bkbar();draw()}
@@ -226,14 +229,16 @@ window.BANK={run:function(cfg){
  function waShow(h){if(swOn()){$('phone').innerHTML=h;dockAdd()}else $('txt').innerHTML=h}
  function txtHtml(){if(swOn())return '<p class="swp">📱 Leia a conversa no <b>WhatsApp</b> do celular ao lado, <b>copie a chave</b> e depois toque no ícone do <b>seu banco</b> (embaixo do celular) para fazer o Pix.</p><div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>';return T.chat?chatHtml(T.chat)+'<div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>':T.txt+chaveBtn()}
  function chatList(){var h='<div class="wa wl"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><b class="wt">WhatsApp</b><span class="wi">📷 ⋮</span></div><div class="wsr">🔍 Pesquisar</div><div class="wab"><span>Todas</span><span>Não lidas</span><span>Cobranças</span></div><div class="wlst">',n=0;
-  if(INC)h+='<button type="button" class="wch" data-w="inc"><span class="av">'+INC.nome.charAt(0)+'</span><span class="wcb"><b>'+INC.nome+'</b><em>🧾 Comprovante de Pix</em></span><span class="wct"><small>agora</small>'+(INC.ans===null&&!READ.inc?'<i>1</i>':'')+'</span></button>';
-  GRUPOS.forEach(function(g){h+='<button type="button" class="wch grp" data-w="group" data-g="'+g.id+'"><span class="av gp'+(g.oficial?' of':'')+'">'+g.icone+'</span><span class="wcb"><b>'+g.nome+'</b><em>'+(g.prev||'')+'</em></span><span class="wct"><small>hoje</small>'+(g.n&&!READ[g.id]?'<i>'+g.n+'</i>':'')+'</span></button>'});
-  tasks.forEach(function(t,k){if(k<ti||!t.chat)return;n++;var c=t.chat,last=String(c.msgs[c.msgs.length-1]).replace(/<[^>]+>/g,'');h+='<button type="button" class="wch" data-w="open" data-i="'+k+'"><span class="av">'+c.nome.charAt(0)+'</span><span class="wcb"><b>'+c.nome+'</b><em>'+last+'</em></span><span class="wct"><small>'+hora(k)+'</small>'+(READ['t'+c.nome]?'':'<i>1</i>')+'</span></button>'});
+  var IN=[],GR=[],CH=[];if(INC)IN.push('<button type="button" class="wch" data-w="inc"><span class="av">'+INC.nome.charAt(0)+'</span><span class="wcb"><b>'+INC.nome+'</b><em>🧾 Comprovante de Pix</em></span><span class="wct"><small>agora</small>'+(INC.ans===null&&!READ.inc?'<i>1</i>':'')+'</span></button>');
+  GRUPOS.forEach(function(g){GR.push('<button type="button" class="wch grp" data-w="group" data-g="'+g.id+'"><span class="av gp'+(g.oficial?' of':'')+'">'+g.icone+'</span><span class="wcb"><b>'+g.nome+'</b><em>'+(g.prev||'')+'</em></span><span class="wct"><small>hoje</small>'+(g.n&&!READ[g.id]?'<i>'+g.n+'</i>':'')+'</span></button>')});
+  tasks.forEach(function(t,k){if(k<ti||!t.chat)return;n++;var c=t.chat,last=String(c.msgs[c.msgs.length-1]).replace(/<[^>]+>/g,'');CH.push('<button type="button" class="wch" data-w="open" data-i="'+k+'"><span class="av">'+c.nome.charAt(0)+'</span><span class="wcb"><b>'+c.nome+'</b><em>'+last+'</em></span><span class="wct"><small>'+hora(k)+'</small>'+(READ['t'+c.nome]?'':'<i>1</i>')+'</span></button>')});
+  if(!GORD||GORD.length!==GRUPOS.length)GORD=shuffle(GR.map(function(x,i){return i}));var gq=GORD.map(function(i){return GR[i]}),pat='ccigcgcgcg',q={c:CH,g:gq,i:IN},idx={c:0,g:0,i:0},tot=CH.length+gq.length+IN.length,pi=0;
+  while(tot>0){var ch=pat[pi%pat.length];pi++;if(idx[ch]>=q[ch].length){var alt=['c','g','i'].filter(function(z){return idx[z]<q[z].length})[0];ch=alt}h+=q[ch][idx[ch]++];tot--}
   if(!n)h+='<p class="wem">Nenhuma cobrança pendente. 🎉</p>';return h+'</div></div><div class="pnote">💰 Cobranças pendentes: <b>'+n+'</b> · saldo do banco: <b>'+fmt(sal())+'</b></div>'}
  function task(){T=tasks[ti];lock=false;ph={s:T.modo==='pos'?'pos-valor':'home',buf:'',pb:'',vals:[],sale:{},rot:isTab(),app:(cfg.appswitch&&T.chat)?'wa':'bank'};msg('');
   $('txt').innerHTML=txtHtml();$('ped').querySelector('h2').textContent=T.chat?'💬 WhatsApp':'📋 Pedido';var q=$('qrs');q.innerHTML='';
   if(T.qrs)q.innerHTML='<div class="qrl">'+T.qrs.map(function(x,i){return '<div class="qrc"><div class="qrimg"></div><b>QR Code '+x.letra+'</b><span>'+x.nome+'</span><span class="qv">'+fmt(x.valor)+'</span><button class="btn sec" data-qr="'+i+'">📷 Escanear</button></div>'}).join('')+'</div>';
-  if(!noNot)notify();noNot=false;$('inst').innerHTML=cfg.instrucao+((T.target&&T.modo!=='pos')?'<div class="tipx">💡 <b>Atenção:</b> nem todo banco tem saldo para todos os pagamentos. Se faltar, transfira dinheiro de <b>outro banco seu</b>: no app do banco que vai receber, abra <b>Pix → Minhas chaves</b>, copie a chave e cole no app do banco que vai enviar.</div>':'');$('sub').textContent='Fase '+(fi+1)+'/4 · questão '+(ti+1)+'/'+tasks.length;dots();draw()}
+  if(!noNot)notify();noNot=false;$('inst').innerHTML=(window.PROF_GAB&&window.PROF_GAB()&&T.target?'<div class="gabp">🔑 <b>Gabarito (professor):</b> Pix de <b>'+fmt(T.target.valor)+'</b> para <b>'+T.target.nome+'</b>'+(T.pin?' · senha do app <b>'+T.pin+'</b>':'')+'</div>':'')+cfg.instrucao+((T.target&&T.modo!=='pos')?'<div class="tipx">💡 <b>Atenção:</b> nem todo banco tem saldo para todos os pagamentos. Se faltar, transfira dinheiro de <b>outro banco seu</b>: no app do banco que vai receber, abra <b>Pix → Minhas chaves</b>, copie a chave e cole no app do banco que vai enviar.</div>':'');$('sub').textContent='Fase '+(fi+1)+'/4 · questão '+(ti+1)+'/'+tasks.length;dots();draw()}
  /* ----- desenho do celular ----- */
 
  var clip='',sel=null;
