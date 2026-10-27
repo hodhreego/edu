@@ -365,7 +365,8 @@ var ACT=[],ACTN=0,T0=Date.now();
  function paneOf(el){var q=el.closest('.pane');return q&&q.classList.contains('pb')?'b':'a'}
  function xHome(el){if(FOLD())FP[paneOf(el)]='home';else ph.app='home'}
  function fopen(pn,k){var o=pn==='a'?'b':'a',st,prev=FP[pn];if(k==='calc'){st='calc';CAL={e:'',r:null}}else if(k==='wa')st='wa';else if(/^(sys|ins):/.test(k)){st='x:'+k;XS={}}else{st='bank';if(k!==BK){BK=k;try{localStorage.setItem('edu_banco',k)}catch(x){}ph.s='home';ph.chave='';ph.c=null}}if(FP[o]===st)FP[o]=prev;FP[pn]=st;FPF=pn;draw()}
- function foldB(){var PH=$('phone');['a','b'].forEach(function(pn){var el=PH.querySelector('.pane.p'+pn);if(!el)return;var st=FP[pn];if(st==='wa'&&!swOn())st='home';el.classList.toggle('bkp',st==='bank');if(st==='bank'){el.insertAdjacentHTML('beforeend','<button type="button" class="phm" data-p="home" title="Início">⌂</button>');return}
+ function foldB(){var PH=$('phone'),both=FP.a==='home'&&FP.b==='home';PH.classList.toggle('fhome',both);if(both){var ea=PH.querySelector('.pane.pa'),eb=PH.querySelector('.pane.pb');if(ea){ea.classList.remove('bkp');ea.innerHTML=launcherHtml(true)}if(eb)eb.innerHTML='';return}
+  ['a','b'].forEach(function(pn){var el=PH.querySelector('.pane.p'+pn);if(!el)return;var st=FP[pn];if(st==='wa'&&!swOn())st='home';el.classList.toggle('bkp',st==='bank');if(st==='bank'){el.insertAdjacentHTML('beforeend','<button type="button" class="phm" data-p="home" title="Início">⌂</button>');return}
    el.innerHTML=st==='home'?launcherHtml():st==='wa'?(ph.view==='chat'?chatHtml(T.chat):chatList()):st==='calc'?calcHtml():appHtml(st.slice(2));if(st!=='home')el.insertAdjacentHTML('beforeend','<button type="button" class="phm" data-p="home" title="Início">⌂</button>')});calcShow()}
  function FIN(k){var n=0,i=0;Object.keys(BANKS).forEach(function(x,j){if(x===k)i=j});n=(4821+i*1357)%10000;return ('0000'+n).slice(-4)}
 
@@ -408,8 +409,8 @@ var ACT=[],ACTN=0,T0=Date.now();
  function wgtHtml(ios){var w=wxData();
   if(ios)return '<div class="wgt ios" data-l="sys:clima"><div class="w1"><small>'+w.loc+'</small><b>'+w.t+'°</b><span>'+w.e+'</span><small>'+w.c+'<br>Máx '+w.max+'° Mín '+w.min+'°</small></div><div class="w2">'+w.days.slice(0,4).map(function(x){return '<div><small>'+x.d+'</small><span>'+x.e+'</span><b>'+x.max+'°</b></div>'}).join('')+'</div></div>';
   return '<div class="wgt and" data-l="sys:clima"><div class="w1"><b>'+w.t+'°</b><div><span>'+w.e+' '+w.c+'</span><small>'+w.loc+' · '+w.min+'° / '+w.max+'°</small></div></div><div class="w2">'+w.days.map(function(x){return '<div><small>'+x.d+'</small><span>'+x.e+'</span><small>'+x.max+'°</small></div>'}).join('')+'</div></div>'}
- function launcherHtml(){var ios=NAV==='ios',hm=hmNow(),ap=[],dk=[];
-  sysList().forEach(function(a){ap.push({k:'sys:'+a[0],n:a[1],ic:sysIc(a[2],a[3],a[4]),d:ios&&/web|cam|store|note/.test(a[0])})});
+ function launcherHtml(wide){var ios=NAV==='ios',hm=hmNow(),ap=[],dk=[];
+  sysList().forEach(function(a){ap.push({k:'sys:'+a[0],n:a[1],ic:sysIc(a[2],a[3],a[4]),d:ios?/web|cam|store|note/.test(a[0]):/web|cam|gal|store/.test(a[0])})});
   if(swOn())ap.push({k:'wa',n:'WhatsApp',ic:'<span class="bi wapp"><i>💬</i></span>'});
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi cl"><i>±</i></span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
@@ -417,7 +418,8 @@ var ACT=[],ACTN=0,T0=Date.now();
   var dt=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
   dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});
   function bt(a){return '<button type="button" data-l="'+a.k+'">'+a.ic+'<em>'+a.n+'</em></button>'}
-  return '<div class="lnc '+(ios?'ios':'and')+'"><div class="stt" data-q="shade"><span>'+hm+'</span><span>5G ▂▄▆ 🔋</span></div>'+(ios?'':'<div class="clk"><b>'+hm+'</b><small>'+dt+'</small></div>')+(FOLD()?'<div class="fhint">👆 Escolha o app deste lado · arraste a divisória para mudar a largura</div>':'')+wgtHtml(ios)+'<div class="gridl">'+ap.map(bt).join('')+'</div>'+(ios?'<div class="idots"><i class="on"></i><i></i></div><div class="gdock">'+dk.map(bt).join('')+'</div>':'<div class="gsrch"><b>G</b><span>Pesquisar</span><span>🎤</span></div>')+'</div>'}
+  var clk=ios?'':'<div class="clk"><b>'+hm+'</b><small>'+dt+'</small></div>',top=wide?'<div class="wtop">'+(ios?'':'<div class="wclk"><b>'+hm+'</b><small>'+dt+'</small></div>')+wgtHtml(ios)+'</div>':(FOLD()?'<div class="fhint">👆 Escolha o app deste lado · arraste a divisória para mudar a largura</div>':'')+clk+wgtHtml(ios);
+  return '<div class="lnc '+(ios?'ios':'and')+(wide?' wide':'')+'"><div class="stt" data-q="shade"><span>'+hm+'</span><span>5G ▂▄▆ 🔋</span></div>'+top+'<div class="gridl">'+ap.map(bt).join('')+'</div>'+(ios?'<div class="idots"><i class="on"></i><i></i></div>':'<div class="gsrch"><b>G</b><span>Pesquisar</span><span>🎤</span></div>')+'<div class="gdock">'+dk.map(bt).join('')+'</div></div>'}
  function calcHtml(){var ios=NAV==='ios',K=[['C','C'],['B','⌫'],['%','%'],['/','÷'],['7','7'],['8','8'],['9','9'],['*','×'],['4','4'],['5','5'],['6','6'],['-','−'],['1','1'],['2','2'],['3','3'],['+','+'],['00','00'],['0','0'],['.',','],['=','=']];
   return '<div class="cal '+(ios?'ios':'and')+'"><div class="stt" data-q="shade"><span>Calculadora</span><span>5G ▂▄▆ 🔋</span></div><div class="cdp"><div id="cE"></div><div id="cR"></div></div><div class="ckp">'+K.map(function(k){return '<button type="button" data-c="'+k[0]+'" class="'+(/[0-9.]|00/.test(k[0])?'n':k[0]==='='?'eq':'o')+'">'+k[1]+'</button>'}).join('')+'</div></div>'}
  function calcShow(){var e=document.getElementById('cE'),r=document.getElementById('cR');if(!e)return;e.textContent=CAL.e.replace(/\*/g,'×').replace(/\//g,'÷').replace(/-/g,'−').replace(/\./g,',');r.textContent=CAL.r===null?'':(CAL.r==='Erro'?'Erro':Number(CAL.r).toLocaleString('pt-BR',{maximumFractionDigits:10}))}
@@ -519,6 +521,14 @@ var ACT=[],ACTN=0,T0=Date.now();
   P.addEventListener('pointerdown',function(e){var c=REC&&e.target.closest('.rcd');if(c)rg={id:c.dataset.id,y:e.clientY,x:e.clientX,el:c}},true);
   window.addEventListener('pointermove',function(e){if(!rg)return;var dy=Math.min(0,e.clientY-rg.y);rg.el.style.transform='translateY('+dy+'px)';rg.el.style.opacity=String(1+dy/200)});
   window.addEventListener('pointerup',function(e){if(!rg)return;var o=rg;rg=null;var dy=e.clientY-o.y,dx=e.clientX-o.x;if(dy<-60){RECS=RECS.filter(function(x){return x!==o.id});recSet(true)}else if(Math.abs(dy)<10&&Math.abs(dx)<10){recSet(false);openApp(o.id)}else{o.el.style.transform='';o.el.style.opacity=''}});
+ })();
+
+ (function(){var P=$('phone'),d=null,sw=false;
+  function scr(el){while(el&&el!==P){if(el.scrollHeight>el.clientHeight+2||el.scrollWidth>el.clientWidth+2){var o=getComputedStyle(el);if(/(auto|scroll)/.test(o.overflowY+o.overflowX))return el}el=el.parentElement}return null}
+  P.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('input,textarea,select,.fdiv,.nvb,.rcd,.shade .tiles'))return;var el=scr(e.target);if(el)d={el:el,x:e.clientX,y:e.clientY,st:el.scrollTop,sl:el.scrollLeft,m:false}},true);
+  window.addEventListener('pointermove',function(e){if(!d)return;var dx=e.clientX-d.x,dy=e.clientY-d.y;if(!d.m&&Math.abs(dx)<6&&Math.abs(dy)<6)return;d.m=true;d.el.scrollTop=d.st-dy;d.el.scrollLeft=d.sl-dx});
+  window.addEventListener('pointerup',function(){if(d&&d.m){sw=true;setTimeout(function(){sw=false},0)}d=null});
+  window.addEventListener('click',function(e){if(sw){e.stopPropagation();e.preventDefault();sw=false}},true);
  })();
  function hd(t,back){var b=BANKS[BK]||BANKS.nubank;return '<div class="hd '+b.style+'">'+(back?'<button class="bk" data-a="'+back+'">‹</button>':'')+'<span>'+t+'</span></div>'}
  function toast(t){var e=$('phone').querySelector('.toast');if(e)e.remove();var d=document.createElement('div');d.className='toast';d.textContent=t;$('phone').appendChild(d);setTimeout(function(){d.remove()},2600)}
