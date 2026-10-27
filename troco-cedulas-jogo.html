@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Troco com Cédulas - Jogo</title>
 <style>
-:root{--u:8.4vh;--ink:#1b2440;--brand:#1f4fd8;--ok:#0f9d58;--bad:#d93025}
+:root{--u:5vh;--zm:.7;--ink:#1b2440;--brand:#1f4fd8;--ok:#0f9d58;--bad:#d93025}
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none}
 html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
 #app{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:1.2vh 1.4vw 1.2vh;gap:1vh}
@@ -119,7 +119,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"S
   <div class="row"><span class="lbl">Cédulas</span><span id="rowC" class="row" style="gap:1.1vw"></span></div>
  </div>
 </div>
-<div id="cfg"><b>Ajustes</b><label>Tamanho do dinheiro</label><input type="range" id="sz" min="5" max="12" step="0.2" value="8.4"><label>Tamanho das figuras e texto da loja</label><input type="range" id="zm" min="70" max="140" step="2" value="100"><label style="display:flex;gap:1vw;align-items:center"><input type="checkbox" id="snd" checked> Som ligado</label><label style="display:flex;gap:1vw;align-items:center"><input type="checkbox" id="ck"> Mostrar a soma enquanto monta</label></div>
+<div id="cfg"><b>Ajustes</b><label>Tamanho do dinheiro</label><input type="range" id="sz" min="5" max="12" step="0.2" value="5"><label>Tamanho das figuras e texto da loja</label><input type="range" id="zm" min="70" max="140" step="2" value="70"><label style="display:flex;gap:1vw;align-items:center"><input type="checkbox" id="snd" checked> Som ligado</label><label style="display:flex;gap:1vw;align-items:center"><input type="checkbox" id="ck"> Mostrar a soma enquanto monta</label></div>
 <div class="fim" id="fim"><div class="box"><h2 id="fT"></h2><p id="fP"></p><button class="btn ok" id="fB"></button></div></div>
 <script>
 (function(){
@@ -215,7 +215,7 @@ $('ck').onchange=()=>{showSum=$('ck').checked;$('bSoma').textContent=showSum?'�
 $('snd').onchange=()=>{mute=!$('snd').checked;if(!mute){ac();kaching()}};
 $('bCfg').onclick=()=>$('cfg').classList.toggle('on');
 $('sz').oninput=()=>document.documentElement.style.setProperty('--u',$('sz').value+'vh');
-$('zm').oninput=()=>document.documentElement.style.setProperty('--zm',$('zm').value/100);
+$('zm').oninput=()=>document.documentElement.style.setProperty('--zm',$('zm').value/100);document.documentElement.style.setProperty('--zm',$('zm').value/100);
 bandeja();fase();
 })();
 </script>

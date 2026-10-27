@@ -5,8 +5,8 @@
  var root=document.documentElement,busy=false,limite=null;
  function baseU(){
   var sz=document.getElementById('sz'),w=innerWidth,h=innerHeight;
-  if(w<=820)return w*0.11;
-  var v=sz?parseFloat(sz.value):8.4;
+  var v=sz?parseFloat(sz.value):5;
+  if(w<=820)return w*0.11*(v/8.4);
   return (h<=520?15:v*1.35)*h/100;
  }
  function maxH(){return innerHeight*(innerWidth<=820?0.42:0.55)}
