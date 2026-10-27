@@ -161,9 +161,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"S
 <script>
 (function(){
 /* ---------- dinheiro ---------- */
-const COINS=[1,5,10,25,50,100], BILLS=[200,500,1000,2000,5000,10000];
+const COINS=[1,5,10,25,50,100], BILLS=[200,500,1000,2000,5000,10000,20000];
 const CS={1:{o:'#b3622a',i:'#cf8548',t:'1',l:'CENTAVO',d:.52,e:'#7a3d14'},5:{o:'#b8692b',i:'#d28a4e',t:'5',l:'CENTAVOS',d:.669,e:'#8a4a1c'},10:{o:'#b98a2c',i:'#d9b04f',t:'10',l:'CENTAVOS',d:.608,e:'#8a6414'},25:{o:'#b9892f',i:'#dcb558',t:'25',l:'CENTAVOS',d:.760,e:'#8a6414'},50:{o:'#aab3bf',i:'#d6dce4',t:'50',l:'CENTAVOS',d:.669,e:'#7d8794'},100:{o:'#cf9f26',i:'#cdd1d8',t:'1',l:'REAL',d:.821,e:'#9a7414',bi:1}};
-const BS={200:['#5f7f95','#cfdde6','🐢',1.86],500:['#7b4fa3','#e7dcf3','🦢',1.97],1000:['#c8323c','#f6d9db','🦜',2.08],2000:['#d9a21b','#fbefc4','🐒',2.18],5000:['#b8702a','#f3dfc9','🐆',2.29],10000:['#2f86b8','#d6ecf7','🐟',2.40]};
+const BS={200:['#5f7f95','#cfdde6','🐢',1.86],500:['#7b4fa3','#e7dcf3','🦢',1.97],1000:['#c8323c','#f6d9db','🦜',2.08],2000:['#d9a21b','#fbefc4','🐒',2.18],5000:['#b8702a','#f3dfc9','🐆',2.29],10000:['#2f86b8','#d6ecf7','🐟',2.40],20000:['#7a5a2e','#ecdcb9','🐺',2.5]};
 function fmt(c){return 'R$ '+Math.floor(c/100).toLocaleString('pt-BR')+','+String(c%100).padStart(2,'0')}
 function coinSvg(v){if(window.DR)return DR.coin(v);const s=CS[v],tc=s.bi?'#4a4f58':'#3b2a12';
  return `<svg viewBox="0 0 100 100" style="--k:${s.d}"><circle cx="50" cy="50" r="49" fill="${s.e}"/><circle cx="50" cy="50" r="47" fill="none" stroke="#fff6" stroke-width="1.2" stroke-dasharray="1.6 1.6"/><circle cx="50" cy="50" r="45" fill="${s.o}"/><circle cx="50" cy="50" r="${s.bi?30:37}" fill="${s.i}" stroke="${s.e}" stroke-width="1.4"/><path d="M22 28 A40 40 0 0 1 60 12" fill="none" stroke="#fff8" stroke-width="3" stroke-linecap="round"/><text x="50" y="${s.bi?60:57}" text-anchor="middle" font-size="${s.t.length>1?31:40}" font-weight="900" fill="${tc}" font-family="Arial">${s.t}</text><text x="50" y="${s.bi?74:73}" text-anchor="middle" font-size="${s.bi?9:10}" font-weight="800" fill="${tc}" font-family="Arial">${s.l}</text>${s.bi?'':'<text x="50" y="29" text-anchor="middle" font-size="9" fill="'+tc+'">★</text>'}</svg>`}
@@ -182,8 +182,8 @@ const mk=(arr,fn)=>{const out=[],seen=new Set();let g=0;while(out.length<8&&g++<
 const pay=(pp,paid)=>{const it=prods(pp.length).map((p,i)=>({e:p[0],n:p[1],p:pp[i]}));const total=pp.reduce((a,b)=>a+b,0);return {items:it,total,paid:paid||0,target:paid?paid-total:total}};
 const m5=(a,b)=>rnd(a/5,b/5)*5, q25=(a,b)=>rnd(a/25,b/25)*25;
 const FASES=[
- {t:'Vale-transporte',s:'Fase 1 — adiantamento para um funcionário',i:'<b>Você é o setor de pagamento!</b> Arraste as cédulas e moedas para pagar <b>exatamente</b> o valor do adiantamento.',gen:()=>mk(0,()=>pay([rnd(4,16)*2500+pick([0,5000,0])]))},
- {t:'Salário de um funcionário',s:'Fase 2 — salários redondos',i:'<b>Pague o salário</b> do funcionário. Dica: use cédulas de R$ 100 e R$ 50 e conte de 100 em 100.',gen:()=>mk(0,()=>pay([rnd(10,20)*10000+pick([0,0,5000])]))},
+ {t:'Vale-transporte',s:'Fase 1 — adiantamento para um funcionário',i:'<b>Você é o setor de pagamento!</b> Arraste as cédulas e moedas para pagar <b>exatamente</b> o valor do adiantamento.',gen:()=>mk(0,()=>{const t=pay([rnd(2,8)*2500+pick([0,5000,0])]);t.items.forEach(i=>i.n='Vale-transporte — '+i.n);return t})},
+ {t:'Salário de um funcionário',s:'Fase 2 — salários redondos',i:'<b>Pague o salário</b> do funcionário. Dica: use cédulas de R$ 200, R$ 100 e R$ 50 e conte de 100 em 100.',gen:()=>mk(0,()=>pay([rnd(10,20)*10000+pick([0,0,5000])]))},
  {t:'Salário com centavos',s:'Fase 3 — salário com horas extras',i:'<b>Salário + horas extras:</b> o valor tem centavos. Pague tudo certinho.',gen:()=>mk(0,()=>pay([rnd(10,20)*10000+pick([0,5000,10000])+pick([25,50,75,10,30,90])]))},
  {t:'Quinzena de dois',s:'Fase 4 — dois funcionários',i:'<b>Pagamento da quinzena:</b> some os dois valores e monte o total na carteira.',gen:()=>mk(0,()=>pay([rnd(10,15)*5000+pick([0,2500]),rnd(10,15)*5000+pick([0,2500])]))},
  {t:'Quinzena de três',s:'Fase 5 — três funcionários',i:'<b>Folha da equipe:</b> some os três valores e pague o total.',gen:()=>mk(0,()=>pay([rnd(8,12)*5000+pick([0,2500]),rnd(8,12)*5000+pick([0,2500]),rnd(8,12)*5000+pick([0,2500])]))},
