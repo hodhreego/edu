@@ -1,0 +1,36 @@
+# Jogos de Pix / banco / WhatsApp (edu) — guia de referência
+
+Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=32; subir N a cada mudança com `sed -i`).
+
+## Como funciona
+- 10 bancos (`BANKS`): Nubank, BB, Itaú, Bradesco, Caixa Tem, Inter, Mercado Pago, Santander, PicPay (verde), C6 (cinza).
+- Cada banco tem saldo próprio (`SAL`). Só fica **bloqueada para Pix a conta NEGATIVA** (cheque especial 8% a.m.); bancos com R$ 0,01 e R$ 0,00 também existem. Dá para pagar tudo somando bancos e transferindo (Pix → Minhas chaves, chave aleatória por banco).
+- Cabeçalho: ícones dos bancos → janelinha de extrato com "Usar este banco". Painel embaixo: saldos, extrato por banco e geral.
+- Copiar chave Pix exige conta de cabeça (× de 3–12, + ou −).
+- WhatsApp realista: lista de conversas **intercalada** (cobranças, comprovantes recebidos, grupos), não borra; notificação aparece e some; conversa aberta deixa de ser "não lida"; **lembrete** automático (~45 s) se não pagou ("Você viu minha mensagem?").
+- Cobranças com 10 estilos (educado, emoji, grosso, figurinha, formal...). Atividades CPF/celular/e-mail/golpe também viram chat.
+- Depois de pagar: botão "📤 Enviar comprovante" → aparece no chat. A pessoa responde: certo / faltou diferença (aluno paga a diferença) / pagou a mais (devolve, entra no extrato) / pessoa errada.
+- Pix recebidos: 3 por fase (verdadeiro, falso e/ou valor diferente) com horário; o aluno confere no extrato (comprovante + horário).
+- **Missão final** (última fase de atividade com Pix): juntar todo o dinheiro numa só conta (à escolha do aluno, ou definida pelo professor com `&dest=prof`) e informar o saldo.
+- **Desafio R$ 100**: mensagem `desafio` no `grupos/grupos.json` (grupo Matemática Curiosa): resposta + chave Pix → cai R$ 100 no banco da chave, com comprovante e notificação.
+- QR Code com câmera real (`qrcatalogo.js`, `jsQR.js`, folha `qrcodes-pix-impressao.html` com senha do professor).
+
+## Grupos do WhatsApp (editar sem mexer no código)
+`grupos/grupos.json` → `{grupos:[{id,icone,nome,desc,prev,n,msgs:[...]}]}`. Tipos de mensagem: `txt` (h), `tab` (op,n), `pdf` (nome,arq,info), `usd`, `selic`, `space`, `hoje`, `banco`, `desafio` (id,pergunta,resp[],premio em centavos). PDFs em `downloads/`.
+
+## Gabarito do professor
+Abrir a atividade com `?imp=1` e digitar a senha da área do professor. Mostra a resposta de cada questão e o botão **📋 Gabarito completo**: saldos iniciais de cada banco por fase, Pix recebidos (verdadeiro/falso/diferente), total final esperado na missão final. O cenário é reproduzível pelo número: `?imp=1&c=NÚMERO` (o aluno recebe um número aleatório; o professor pode fixar `?c=7`). `&dest=prof` define o banco final pelo professor.
+
+## Códigos por série
+Cada atividade de Pix/cartão/maquininha tem versão 6º, 8º, 9º, 1ª, 2ª e 3ª série EM, cada uma com código próprio (catálogo `catalogo.js`, mapa `COD`). Níveis por série: 6º [1,1,1,2], 8º [1,2,2,3], 9º [2,2,3,3], 1ª [2,3,3,4], 2ª [3,3,4,4], 3ª [3,4,4,4].
+O restante do site (colmeias etc.) ainda tem um código por atividade, não por série.
+
+## Pendências
+- Pix recebido com a chave do aluno digitada no WhatsApp (+ notificação).
+- Recarga de celular (número fictício, sem crédito, Wi-Fi livre).
+- Versões para imprimir dos jogos de Pix/cartão.
+- Testar a câmera ao vivo no tablet (https://hodhreego.github.io/edu/).
+- Erro antigo: `colmeia-his-6-ano-povos-pre-colombianos-jogo.html`.
+
+## Cuidados
+Não reexecutar scripts geradores antigos (duplicam códigos). Windows: usar `PYTHONIOENCODING=utf-8`; heredocs com aspas complexas falham no Bash — gravar scripts com a ferramenta Write.

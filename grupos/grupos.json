@@ -220,7 +220,7 @@
    "icone": "🔢",
    "nome": "Matemática Curiosa 🔢",
    "desc": "Grupo · truques e curiosidades",
-   "prev": "🔢 0,999... é igual a 1",
+   "prev": "🎁 Desafio: ganhe R$ 100 no Pix",
    "n": 3,
    "msgs": [
     {
@@ -242,6 +242,16 @@
     {
      "t": "txt",
      "h": "🎲 Somando 1+2+3+...+100 = <b>5.050</b>. Truque: 100 + 1 = 101, e há 50 pares assim → 50 × 101."
+    },
+    {
+     "t": "desafio",
+     "id": "d1",
+     "pergunta": "Quanto é <b>25% de 480</b>? Responda e cole a sua chave Pix para receber o prêmio.",
+     "resp": [
+      "120",
+      "120,00"
+     ],
+     "premio": 10000
     }
    ]
   },

@@ -197,3 +197,6 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 @media(max-width:700px){#bkbar.bkmini{order:9;width:100%;overflow-x:auto}}
 
 .gabp{background:#fff3cd;border:2px dashed #b8860b;border-radius:10px;padding:6px 10px;margin-bottom:8px;font-size:15px}
+
+.wa input{-webkit-user-select:text;user-select:text}.des input{display:block;width:100%;box-sizing:border-box;margin:5px 0;padding:7px;border:1px solid #bbb;border-radius:8px;font-size:14px}.des button{width:100%;border:0;border-radius:8px;background:#25d366;color:#fff;font:800 14px Arial;padding:8px;cursor:pointer}.dmsg{margin-top:6px;font-size:13px}.rbox{margin-top:6px}
+.gabbox{max-height:80vh;overflow:auto;text-align:left}.gabbox table{border-collapse:collapse;font-size:13px}.gabbox td,.gabbox th{border:1px solid #999;padding:2px 8px}.gtot{background:#fff3cd;border:2px dashed #b8860b;border-radius:8px;padding:6px 10px}
