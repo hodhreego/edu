@@ -93,15 +93,26 @@ function paraPainel_(ss, x, carimbo) {
 }
 
 // Reconstrói todos os painéis a partir da aba Todos (use depois de mudar colunas).
-function reconstruirPaineis() {
-  var lock = LockService.getScriptLock(); lock.waitLock(100000);
-  try { reconstruir_(); } finally { lock.releaseLock(); }
-}
+function reconstruirPaineis() { reconstruir_(); }
 function reconstruir_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), t = ss.getSheetByName('Todos');
   if (!t || t.getLastRow() <= HR) return;
-  var v = t.getRange(HR + 1, 1, t.getLastRow() - HR, DET.length).getValues();
-  v.forEach(function (x) { paraPainel_(ss, x, stamp_(x)); });
+  var v = t.getRange(HR + 1, 1, t.getLastRow() - HR, DET.length).getValues(), grupos = {};
+  v.forEach(function (x) {
+    var turma = String(x[3] || 'Sem turma').substring(0, 30), nome = turma.indexOf('(') === 0 ? 'Sem turma' : turma;
+    (grupos[nome] = grupos[nome] || []).push(x);
+  });
+  Object.keys(grupos).forEach(function (nome) {
+    var p = painel_(ss, nome), xs = grupos[nome], soma = {};
+    xs.forEach(function (x) { soma[x[2]] = (soma[x[2]] || 0) + (Number(x[11]) || 0); });
+    var rows = xs.map(function (x) {
+      return [x[2], x[0], x[1], x[7], x[8], x[9], x[11], x[12], x[13], x[14], x[15], x[17], x[18], x[19], soma[x[2]], stamp_(x), x[22]];
+    }).sort(function (a, b) { return b[15] - a[15]; });
+    var falta = HR + rows.length - p.getMaxRows();
+    if (falta > 0) p.insertRowsAfter(p.getMaxRows(), falta);
+    p.getRange(HR + 1, 1, p.getMaxRows() - HR, PAI.length).clearContent();
+    p.getRange(HR + 1, 1, rows.length, PAI.length).setValues(rows);
+  });
 }
 
 function doGet() { return ok_('Planilha do professor ativa.'); }
