@@ -1,3 +1,4 @@
+window.EDU_COD=function(){var f=decodeURIComponent(location.pathname.split('/').pop()),r='';if(typeof JOGOS!=='undefined')JOGOS.forEach(function(j){if(j.href===f)r=j.cod});return r};
 /* Menu superior dos jogos (Prof. Rodrigo). Depende de catalogo.js (MATS, TEMAS, JOGOS, jogoPorCodigo). */
 (function(){
  var HUB='https://hodhreego.github.io/edu/';
@@ -186,10 +187,10 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   var o=document.createElement('div');o.id='eduId';
   o.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(20,28,50,.82);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Segoe UI,Arial,sans-serif';
   o.innerHTML='<form style="background:#fff;border-radius:18px;padding:22px 22px 18px;width:min(420px,100%);box-shadow:0 10px 40px #0008"><h2 style="margin:0 0 4px;color:#16213a;font-size:22px">👋 Antes de começar</h2><p style="margin:0 0 14px;color:#555;font-size:14px">Preencha seus dados para o professor identificar a sua atividade.</p>'
-  +['nome|Nome completo|edu_nome','turma|Turma (ex.: 8º A)|edu_turma','escola|Escola|edu_escola'].map(function(x){var p=x.split('|');return '<label style="display:block;font:700 13px Arial;color:#16213a;margin:8px 0 3px">'+p[1]+'</label><input data-k="'+p[2]+'" id="eid_'+p[0]+'" autocomplete="off" style="width:100%;box-sizing:border-box;font:16px Arial;padding:10px;border:2px solid #c9d3e8;border-radius:10px" value="'+ls(p[2]).replace(/"/g,'&quot;')+'">'}).join('')
+  +['nome|Nome completo|edu_nome','turma|Turma (ex.: 8º A)|edu_turma','escola|Escola|edu_escola'].map(function(x){var p=x.split('|');if(p[0]==='escola'){var v=ls('edu_escola');return '<label style="display:block;font:700 13px Arial;color:#16213a;margin:8px 0 3px">Escola</label><select data-k="edu_escola" id="eid_escola" style="width:100%;box-sizing:border-box;font:16px Arial;padding:10px;border:2px solid #c9d3e8;border-radius:10px;background:#fff"><option value="">Selecione sua escola…</option>'+['Schuster','Clarito','Outros'].map(function(e){return '<option'+(v===e?' selected':'')+'>'+e+'</option>'}).join('')+'</select>'}return '<label style="display:block;font:700 13px Arial;color:#16213a;margin:8px 0 3px">'+p[1]+'</label><input data-k="'+p[2]+'" id="eid_'+p[0]+'" autocomplete="off" style="width:100%;box-sizing:border-box;font:16px Arial;padding:10px;border:2px solid #c9d3e8;border-radius:10px" value="'+ls(p[2]).replace(/"/g,'&quot;')+'">'}).join('')
   +'<button type="submit" style="margin-top:16px;width:100%;font:800 17px Arial;padding:12px;border:0;border-radius:12px;background:#0f9d58;color:#fff;cursor:pointer">▶ Começar</button></form>';
   document.body.appendChild(o);
-  var f=o.querySelector('form');f.onsubmit=function(e){e.preventDefault();var n=o.querySelector('#eid_nome');if(!n.value.trim()){n.style.borderColor='#d93025';n.focus();return}
-   o.querySelectorAll('input').forEach(function(i){ls(i.dataset.k,i.value.replace(/\s+/g,' ').trim())});ss(1);o.remove();if(window.EDU_IDOK)window.EDU_IDOK()};
+  var f=o.querySelector('form');f.onsubmit=function(e){e.preventDefault();var n=o.querySelector('#eid_nome');if(!n.value.trim()){n.style.borderColor='#d93025';n.focus();return}var es=o.querySelector('#eid_escola');if(!es.value){es.style.borderColor='#d93025';es.focus();return}
+   o.querySelectorAll('input,select').forEach(function(i){ls(i.dataset.k,i.value.replace(/\s+/g,' ').trim())});ss(1);o.remove();if(window.EDU_IDOK)window.EDU_IDOK()};
   setTimeout(function(){var n=o.querySelector('#eid_nome');if(n)n.focus()},50)}
  if(document.body)abrir();else document.addEventListener('DOMContentLoaded',abrir)})();

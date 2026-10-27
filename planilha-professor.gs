@@ -12,6 +12,7 @@
  *  - Aba "Todos": uma linha por jogo jogado (recebe tudo).
  *  - Uma aba por TURMA (ex.: "8º A"), com os alunos daquela turma.
  *  - Cada MATÉRIA tem uma cor própria; nota/pontos ficam verde, amarelo ou vermelho.
+ *  - Só Schuster e Clarito (aba Config) salvam direto; as demais escolas ficam na aba "Retidos (outros)" até liberar.
  *  - Aba "Resumo": por aluno, total de jogos, pontos somados e melhor pontuação.
  */
 var CABEC = ['Data', 'Hora', 'Aluno', 'Turma', 'Escola', 'Matéria', 'Série do jogo', 'Jogo', 'Código', 'Aula', 'Pontos', 'Acertos', 'Erros', '% acerto', 'Dinheiro final (R$)', 'Tempo (min)', 'ID'];
@@ -32,10 +33,49 @@ function doPost(e) {
     (d.certas == null || (d.certas + d.erradas) === 0) ? '' : Math.round(100 * d.certas / (d.certas + d.erradas)),
     d.dinheiro == null ? '' : Number(d.dinheiro), Math.round((Number(d.segundos) || 0) / 6) / 10, d.sid || ''
   ];
+  if (!liberada_(ss, d.escola)) {            // escola não liberada: só guarda em "Retidos", fora das notas
+    gravar_(aba_(ss, 'Retidos (outros)'), linha, d.sid);
+    return ok_('retido');
+  }
   gravar_(aba_(ss, 'Todos'), linha, d.sid);
   gravar_(aba_(ss, String(d.turma || 'Sem turma').substring(0, 30)), linha, d.sid);
   resumo_(ss);
   return ok_('ok');
+}
+
+// ---- Escolas liberadas: Schuster e Clarito salvam direto; qualquer outra fica retida até o professor liberar. ----
+function norm_(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); }
+function liberadas_(ss) {
+  var sh = ss.getSheetByName('Config');
+  if (!sh) {
+    sh = ss.insertSheet('Config');
+    sh.getRange(1, 1).setValue('Escolas liberadas (uma por linha)').setFontWeight('bold');
+    sh.getRange(2, 1, 2, 1).setValues([['Schuster'], ['Clarito']]);
+    sh.setColumnWidth(1, 280);
+  }
+  var n = Math.max(sh.getLastRow() - 1, 1);
+  return sh.getRange(2, 1, n, 1).getValues().map(function (r) { return norm_(r[0]); }).filter(String);
+}
+function liberada_(ss, escola) {
+  var e = norm_(escola);
+  return liberadas_(ss).some(function (l) { return e === l || e.indexOf(l) === 0; });
+}
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Professor').addItem('Liberar escolas da aba Config', 'liberarRetidos').addToUi();
+}
+// Depois de acrescentar uma escola na aba Config, este menu move os resultados retidos dela para as notas.
+function liberarRetidos() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('Retidos (outros)');
+  if (!sh || sh.getLastRow() < 2) return;
+  var v = sh.getRange(2, 1, sh.getLastRow() - 1, CABEC.length).getValues(), mov = 0;
+  for (var i = v.length - 1; i >= 0; i--) {
+    if (!liberada_(ss, v[i][4])) continue;
+    gravar_(aba_(ss, 'Todos'), v[i], v[i][16]);
+    gravar_(aba_(ss, String(v[i][3] || 'Sem turma').substring(0, 30)), v[i], v[i][16]);
+    sh.deleteRow(i + 2); mov++;
+  }
+  resumo_(ss);
+  SpreadsheetApp.getUi().alert(mov + ' resultado(s) liberado(s).');
 }
 
 function doGet() { return ok_('Planilha do professor ativa.'); }

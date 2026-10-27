@@ -39,7 +39,7 @@ css.textContent+='@media print{#cfg,#bCfg,#bLimpar,#bSoma,#bOk,#dots,.dots,#pain
   var chips=[].slice.call(document.querySelectorAll('.jbank div.ch,.jbank .ch')).filter(function(c){return c.dataset&&c.dataset.n});
   if(chips.length){
    var rows=chips.slice().sort(function(a,b){return (+a.dataset.n)-(+b.dataset.n)}).map(function(c){var L=c.dataset.l||'',t=c.textContent.replace(/\s+/g,' ').trim();if(L&&t.indexOf(L)===0)t=t.slice(L.length).trim();return '<li value="'+(+c.dataset.n+1)+'"><b>'+esc(c.dataset.l||'')+'</b> — '+esc(t)+'</li>'}).join('');
-   var g=document.createElement('div');g.id='imp-gab';g.innerHTML='<h2>GABARITO — uso do professor</h2><p>Cartão nº → letra da resposta correta</p><ol>'+rows+'</ol>';
+   var g=document.createElement('div');g.id='imp-gab';g.innerHTML='<h2>GABARITO — uso do professor'+(window.EDU_COD&&EDU_COD()?' · código '+EDU_COD():'')+'</h2><p>Cartão nº → letra da resposta correta</p><ol>'+rows+'</ol>';
    var st=document.createElement('style');st.textContent='#imp-gab{break-before:page;page-break-before:always;background:#fff;color:#000;font-family:"Segoe UI",Arial,sans-serif;padding:10mm;max-width:794px;margin:12px auto}#imp-gab h2{margin:0 0 4px;font-size:20px}#imp-gab p{margin:0 0 8px;font-size:13px}#imp-gab ol{columns:2;column-gap:10mm;font-size:14px;line-height:1.6;padding-left:28px}#imp-gab li{break-inside:avoid}#imp-gab b{display:inline-block;min-width:1.6em;text-align:center;border:1.5px solid #000;border-radius:50%;margin-right:4px}';
    document.head.appendChild(st);document.body.appendChild(g);
   }
@@ -69,7 +69,7 @@ css.textContent+='@media print{#cfg,#bCfg,#bLimpar,#bSoma,#bOk,#dots,.dots,#pain
    sh.innerHTML='<h1>🐝 '+esc(t)+'</h1><div class="id"><span>Nome:</span><span>Turma:</span><span>Data:</span></div>'+
     '<p style="font-size:12.5px;margin:4px 0 8px">Encontre as palavras na colmeia (em qualquer direção, de frente para trás ou de trás para frente), pinte cada uma com uma cor e escreva-a ao lado da dica.</p>'+
     board(false)+'<ol>'+cl+'</ol>'+
-    '<div class="pg key"><h1>Gabarito — '+esc(t)+'</h1>'+board(true)+'<ol>'+gab+'</ol></div>';
+    '<div class="pg key"><h1>Gabarito — '+esc(t)+(window.EDU_COD&&EDU_COD()?' · código '+EDU_COD():'')+'</h1>'+board(true)+'<ol>'+gab+'</ol></div>';
    app.style.display='none';document.body.appendChild(sh);
   }
  });
