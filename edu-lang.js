@@ -5,14 +5,15 @@
   en:'the a an of to in on at is are was were be you i he she it we they my your his her this that with for and what where how many please',
   es:'el la los las un una de del en que es son está estás con por para tu mi su yo nosotros qué dónde cómo muy encima debajo',
   fr:'le la les un une des du de en que est sont avec pour sur sous dans vous je tu il elle nous qui où comment très devant derrière',
+  de:'der die das und ist sind nicht ein eine mit von zu im auf dem den ich du wir ball kiste',
   it:'il lo la gli le un una di del della in che è sono con per su sotto sopra dentro voi io tu lui lei noi dove come molto davanti dietro'};
- var L={pt:'pt-BR',en:'en-US',es:'es-ES',fr:'fr-FR',it:'it-IT'},SET={};
+ var L={pt:'pt-BR',en:'en-US',es:'es-ES',fr:'fr-FR',it:'it-IT',de:'de-DE'},SET={};
  Object.keys(W).forEach(function(k){SET[k]={};W[k].split(' ').forEach(function(w){SET[k][w]=1})});
- var CH={pt:/[ãõç]/,es:/[ñ¿¡]/,fr:/[àèùâêîôûœ]|ç(?!ã)/,it:/[ìò]/};
+ var CH={pt:/[ãõç]/,es:/[ñ¿¡]/,fr:/[àèùâêîôûœ]|ç(?!ã)/,it:/[ìò]/,de:/[äöüß]/};
  window.EDU_LANG=function(t,def){
   var d=(def||'en-US').slice(0,2).toLowerCase(),w=String(t).toLowerCase().match(/[a-zà-ÿ¿¡]+/g)||[];
   if(!w.length)return def;
-  var sc={pt:0,en:0,es:0,fr:0,it:0};
+  var sc={pt:0,en:0,es:0,fr:0,it:0,de:0};
   w.forEach(function(x){Object.keys(sc).forEach(function(k){if(SET[k][x])sc[k]++})});
   Object.keys(CH).forEach(function(k){if(CH[k].test(t))sc[k]+=1.5});
   var best=d,bs=sc[d]||0;

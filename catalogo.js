@@ -12,6 +12,7 @@ const FUS='<svg viewBox="0 0 38 20"><rect width="38" height="20" fill="#fff"/>'+
 const FES='<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#aa151b"/><rect y="5" width="30" height="10" fill="#f1bf00"/></svg>';
 const FFR='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#0055a4"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ef4135"/></svg>';
 const FIT='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>';
+const FDE='<svg viewBox="0 0 30 20"><rect width="30" height="7" fill="#000"/><rect y="7" width="30" height="6.5" fill="#dd0000"/><rect y="13.5" width="30" height="6.5" fill="#ffce00"/></svg>';
 const sm=s=>s.replace('<svg','<svg width="24" height="14" style="border-radius:2px"');
 const MATS=[
  {id:'mat',nome:'Matemática',ic:'<span>➗</span>',cor:'#1f4fd8',sub:'6º, 7º e 9º ano'},
@@ -22,7 +23,8 @@ const MATS=[
  {id:'en',nome:'English',ic:FUS,cor:'#c62828',sub:'6º e 8º ano',cls:'eng',play:'Play'},
  {id:'es',nome:'Español',ic:FES,cor:'#c2410c',sub:'Preposiciones',play:'Jugar'},
  {id:'fr',nome:'Français',ic:FFR,cor:'#1d4ed8',sub:'Prépositions',play:'Jouer'},
- {id:'it',nome:'Italiano',ic:FIT,cor:'#15803d',sub:'Preposizioni',play:'Gioca'}
+ {id:'it',nome:'Italiano',ic:FIT,cor:'#15803d',sub:'Preposizioni',play:'Gioca'},
+ {id:'de',nome:'Deutsch',ic:FDE,cor:'#374151',sub:'Präpositionen',play:'Spielen'}
 ];
 const TEMAS=[
  {id:'inteiros',mat:'mat',nome:'Números inteiros',icon:'➕',cor:'#1f4fd8',desc:'Sinais, adição, subtração e multiplicação com números positivos e negativos.'},
@@ -48,7 +50,8 @@ const TEMAS=[
  {id:'ingles',mat:'en',nome:'Vocabulary and Grammar',icon:sm(FUS),cor:'#c62828',desc:'Ligue a frase ou o número à figura certa. Clique na palavra para ouvir.'},
  {id:'es',mat:'es',nome:'Español',icon:sm(FES),cor:'#c2410c',desc:'Preposiciones de lugar.'},
  {id:'fr',mat:'fr',nome:'Français',icon:sm(FFR),cor:'#1d4ed8',desc:'Prépositions de lieu.'},
- {id:'it',mat:'it',nome:'Italiano',icon:sm(FIT),cor:'#15803d',desc:'Preposizioni di luogo.'}
+ {id:'it',mat:'it',nome:'Italiano',icon:sm(FIT),cor:'#15803d',desc:'Preposizioni di luogo.'},
+ {id:'de',mat:'de',nome:'Deutsch',icon:sm(FDE),cor:'#374151',desc:'Präpositionen des Ortes.'}
 ];
 const J=(tema,emoji,titulo,desc,href,serie,fases,aula)=>({tema,emoji,titulo,desc,href,serie,fases,aula});
 const JOGOS=[
@@ -116,6 +119,7 @@ const JOGOS=[
  J('es','📍','Preposiciones de lugar','dentro de, sobre, debajo de, entre...','preposiciones-de-lugar-es-jogo.html','Espanhol'),
  J('fr','📍','Prépositions de lieu','dans, sur, sous, entre, devant...','prepositions-de-lieu-fr-jogo.html','Francês'),
  J('it','📍','Preposizioni di luogo','dentro, su, sotto, tra, davanti a...','preposizioni-di-luogo-it-jogo.html','Italiano'),
+ J('de','📍','Präpositionen des Ortes','in, auf, unter, neben, hinter, vor...','praepositionen-des-ortes-de-jogo.html','Alemão'),
  J('en6t3','🌎','English in Daily Life','Palavras em inglês do dia a dia, músicas, filmes e jogos.','english-daily-life-jogo.html','6º ano',2,'35–36'),
  J('en6t3','🙋','Personal Information','Perguntas e respostas sobre você e sobre outras pessoas.','personal-information-jogo.html','6º ano',2,'39–40'),
  J('en6t3','📣','The Imperative','Ordens e pedidos da sala de aula: Open your book! Do not run!','imperative-jogo.html','6º ano',1,'41–42'),
@@ -193,6 +197,6 @@ const JOGOS=[
 ];
 
 /* Código de 4 números por jogo (fixo: jogo novo ganha um código livre, os antigos nunca mudam). */
-const COD={'volume-da-esfera-jogo.html':5140,'volume-do-cone-jogo.html':6339,'volume-do-paralelepipedo-jogo.html':4232,'circunferencia-jogo.html':4940,'soma-de-inteiros-jogo.html':7953,'fracoes-jogo.html':2182,'porcentagem-jogo.html':6904,'algebra-letras-jogo.html':6453,'produtos-notaveis-jogo.html':4241,'pitagoras-jogo.html':1333,'trigonometria-jogo.html':2649,'area-do-circulo-jogo.html':1030,'volume-do-cubo-jogo.html':1861,'volume-esfera-cilindro-jogo.html':8467,'volume-da-piramide-jogo.html':2457,'contagem-dinheiro-jogo.html':9348,'mercadinho-jogo.html':8327,'mercadinho-caixa-rapido-jogo.html':1456,'troco-cedulas-jogo.html':9938,'troco-carteira-jogo.html':3716,'compra-formas-jogo.html':7242,'pix-whatsapp-soma-jogo.html':5749,'pix-whatsapp-multiplicacao-jogo.html':2368,'pix-whatsapp-misto-jogo.html':1279,'pix-celular-jogo.html':8411,'pix-cpf-jogo.html':8629,'pix-dividir-conta-jogo.html':8402,'pix-qrcode-jogo.html':9320,'pix-seguro-jogo.html':4111,'maquininha-taxas-jogo.html':4025,'cartao-parcelado-jogo.html':9387,'cartao-fatura-jogo.html':8794,'troco-jogo.html':2812,'contagem-dolares-jogo.html':8290,'loja-padaria-jogo.html':2080,'loja-mercadinho-jogo.html':7570,'loja-papelaria-jogo.html':6907,'loja-farmacia-jogo.html':7314,'loja-lanchonete-jogo.html':6843,'loja-brinquedos-jogo.html':2286,'loja-roupas-jogo.html':5652,'loja-celular-jogo.html':6726,'loja-informatica-jogo.html':1927,'loja-petshop-jogo.html':2953,'loja-feira-jogo.html':8997,'salarios-funcionarios-jogo.html':1798,'lista-de-compras-jogo.html':4946,'juros-simples-compostos-jogo.html':8102,'renda-fixa-siglas-jogo.html':2248,'educacao-financeira-termos-jogo.html':7438,'phrasal-verbs-jogo.html':7013,'preposicoes-de-lugar-jogo.html':3597,'numbers-ingles-jogo.html':9346,'animals-ingles-jogo.html':6501,'food-drinks-ingles-jogo.html':4770,'clothes-ingles-jogo.html':9804,'jobs-ingles-jogo.html':9878,'weather-sports-ingles-jogo.html':6700,'body-family-ingles-jogo.html':4125,'house-school-ingles-jogo.html':1155,'transport-verbs-ingles-jogo.html':9756,'preposiciones-de-lugar-es-jogo.html':7653,'prepositions-de-lieu-fr-jogo.html':7453,'preposizioni-di-luogo-it-jogo.html':4287};
+const COD={'praepositionen-des-ortes-de-jogo.html':5185,'volume-da-esfera-jogo.html':5140,'volume-do-cone-jogo.html':6339,'volume-do-paralelepipedo-jogo.html':4232,'circunferencia-jogo.html':4940,'soma-de-inteiros-jogo.html':7953,'fracoes-jogo.html':2182,'porcentagem-jogo.html':6904,'algebra-letras-jogo.html':6453,'produtos-notaveis-jogo.html':4241,'pitagoras-jogo.html':1333,'trigonometria-jogo.html':2649,'area-do-circulo-jogo.html':1030,'volume-do-cubo-jogo.html':1861,'volume-esfera-cilindro-jogo.html':8467,'volume-da-piramide-jogo.html':2457,'contagem-dinheiro-jogo.html':9348,'mercadinho-jogo.html':8327,'mercadinho-caixa-rapido-jogo.html':1456,'troco-cedulas-jogo.html':9938,'troco-carteira-jogo.html':3716,'compra-formas-jogo.html':7242,'pix-whatsapp-soma-jogo.html':5749,'pix-whatsapp-multiplicacao-jogo.html':2368,'pix-whatsapp-misto-jogo.html':1279,'pix-celular-jogo.html':8411,'pix-cpf-jogo.html':8629,'pix-dividir-conta-jogo.html':8402,'pix-qrcode-jogo.html':9320,'pix-seguro-jogo.html':4111,'maquininha-taxas-jogo.html':4025,'cartao-parcelado-jogo.html':9387,'cartao-fatura-jogo.html':8794,'troco-jogo.html':2812,'contagem-dolares-jogo.html':8290,'loja-padaria-jogo.html':2080,'loja-mercadinho-jogo.html':7570,'loja-papelaria-jogo.html':6907,'loja-farmacia-jogo.html':7314,'loja-lanchonete-jogo.html':6843,'loja-brinquedos-jogo.html':2286,'loja-roupas-jogo.html':5652,'loja-celular-jogo.html':6726,'loja-informatica-jogo.html':1927,'loja-petshop-jogo.html':2953,'loja-feira-jogo.html':8997,'salarios-funcionarios-jogo.html':1798,'lista-de-compras-jogo.html':4946,'juros-simples-compostos-jogo.html':8102,'renda-fixa-siglas-jogo.html':2248,'educacao-financeira-termos-jogo.html':7438,'phrasal-verbs-jogo.html':7013,'preposicoes-de-lugar-jogo.html':3597,'numbers-ingles-jogo.html':9346,'animals-ingles-jogo.html':6501,'food-drinks-ingles-jogo.html':4770,'clothes-ingles-jogo.html':9804,'jobs-ingles-jogo.html':9878,'weather-sports-ingles-jogo.html':6700,'body-family-ingles-jogo.html':4125,'house-school-ingles-jogo.html':1155,'transport-verbs-ingles-jogo.html':9756,'preposiciones-de-lugar-es-jogo.html':7653,'prepositions-de-lieu-fr-jogo.html':7453,'preposizioni-di-luogo-it-jogo.html':4287};
 (function(){var u={},k;for(k in COD)u[COD[k]]=1;JOGOS.forEach(function(j){var n=COD[j.href];if(!n){var h=0;for(var i=0;i<j.href.length;i++)h=(h*31+j.href.charCodeAt(i))>>>0;n=1000+h%9000;while(u[n])n=n>=9999?1000:n+1;u[n]=1;COD[j.href]=n}j.cod=String(n)})})();
 function jogoPorCodigo(c){c=String(c||'').replace(/\D/g,'');return JOGOS.filter(function(j){return j.cod===c})[0]||null}

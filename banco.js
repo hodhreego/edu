@@ -142,16 +142,27 @@ window.BANK={run:function(cfg){
  function isTab(){try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)>=600}catch(e){return false}}
  function ftxt(x){return x.forma==='debito'?'Débito':x.forma==='pix'?'Pix':x.forma==='dinheiro'?'Dinheiro':'Crédito '+(x.parc>1?x.parc+'x':'à vista')}
  function task(){T=tasks[ti];lock=false;ph={s:T.modo==='pos'?'pos-valor':'home',buf:'',pb:'',vals:[],sale:{},rot:isTab()};msg('');
-  $('txt').innerHTML=T.chat?chatHtml(T.chat)+'<div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>':T.txt;$('ped').querySelector('h2').textContent=T.chat?'💬 WhatsApp':'📋 Pedido';var q=$('qrs');q.innerHTML='';
+  $('txt').innerHTML=T.chat?chatHtml(T.chat)+'<div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>':T.txt+chaveBtn();$('ped').querySelector('h2').textContent=T.chat?'💬 WhatsApp':'📋 Pedido';var q=$('qrs');q.innerHTML='';
   if(T.qrs)q.innerHTML='<div class="qrl">'+T.qrs.map(function(x,i){return '<div class="qrc"><div class="qrimg"></div><b>QR Code '+x.letra+'</b><span>'+x.nome+'</span><span class="qv">'+fmt(x.valor)+'</span><button class="btn sec" data-qr="'+i+'">📷 Escanear</button></div>'}).join('')+'</div>';
   notify();$('inst').innerHTML=cfg.instrucao;$('sub').textContent='Fase '+(fi+1)+'/4 · questão '+(ti+1)+'/'+tasks.length;dots();draw()}
  /* ----- desenho do celular ----- */
 
  var clip='',sel=null;
- function chatHtml(c){var h='<div class="wa"><div class="wh"><i>‹</i><span class="av">'+c.nome.charAt(0)+'</span><div><b>'+c.nome+'</b><small>online</small></div></div><div class="wbar" id="wbar"><button data-w="x">✕</button><span>1 selecionada</span><button data-w="copy">📋 Copiar</button></div><div class="wb">';
-  c.msgs.forEach(function(m,i){h+='<div class="bub"><span>'+m+'</span><small>'+hora(i)+'</small></div>'});
-  h+='<div class="bub key" data-chave="1"><span>'+c.chave+'</span><button class="cp" data-w="copykey" type="button">📋 Copiar chave</button><small>'+hora(5)+'</small></div></div><div class="wf"><span>Mensagem</span> 🎤</div></div>';return h}
+ function chatHtml(c){var ic='<svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M15 8v8H5V8h10m1-2H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4V7a1 1 0 0 0-1-1z"/></svg>',
+   ph='<svg viewBox="0 0 24 24" width="21" height="21" fill="#fff"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11 11 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.6 3.6a1 1 0 0 1-.25 1z"/></svg>',
+   dots='<svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
+   tk='<svg class="tk" viewBox="0 0 16 11" width="16" height="11"><path d="M1 6l3 3L11 1M6 9l1 1L14 1" fill="none" stroke="#53bdeb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var h='<div class="wa"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><i>‹</i><span class="av">'+c.nome.charAt(0)+'</span><div class="wn"><b>'+c.nome+'</b><small>online</small></div><span class="wi">'+ic+ph+dots+'</span></div><div class="wbar" id="wbar"><button data-w="x">✕</button><span>1 selecionada</span><button data-w="copy">📋 Copiar</button></div><div class="wb"><div class="wd">HOJE</div><div class="wlock">🔒 As mensagens são protegidas com a criptografia de ponta a ponta.</div>';
+  c.msgs.forEach(function(m,i){h+='<div class="bub'+(i===0?' first':'')+'"><span>'+m+'</span><small>'+hora(i)+'</small></div>'});
+  h+='<div class="bub key" data-chave="1"><span>'+c.chave+'</span><button class="cp" data-w="copykey" type="button">📋 Copiar chave</button><small>'+hora(5)+'</small></div></div><div class="wf"><span class="wif"><i>😊</i><em>Mensagem</em><i>📎</i><i>📷</i></span><span class="wmic">🎤</span></div></div>';return h}
 
+ function doCopy(k){clip=k;try{navigator.clipboard.writeText(k)}catch(x){}msg('Chave copiada! Agora cole no Pix 📋','good');setTimeout(function(){if(!lock)msg('')},2600)}
+ function tabu(ok){var o=document.getElementById('tabu');if(o)o.remove();var a=rnd(1,10),b=rnd(1,12);o=document.createElement('div');o.id='tabu';
+  o.innerHTML='<div class="tbx"><b>🔐 Para copiar a chave, responda a tabuada:</b><div class="tq">'+a+' × '+b+' = ?</div><input id="tabuIn" type="text" inputmode="numeric" autocomplete="off" placeholder="resposta"><div class="tbm" id="tabuM"></div><button type="button" class="pb" id="tabuOk">Confirmar</button><button type="button" class="pb sec" id="tabuNo">Prefiro digitar a chave à mão</button></div>';
+  document.body.appendChild(o);var inp=o.querySelector('#tabuIn');setTimeout(function(){inp.focus()},50);
+  function conf(){if(+inp.value.replace(/\D/g,'')===a*b){o.remove();ok()}else{o.querySelector('#tabuM').textContent='❌ Errou! Tente outra conta.';a=rnd(1,10);b=rnd(1,12);o.querySelector('.tq').textContent=a+' × '+b+' = ?';inp.value='';inp.focus()}}
+  o.querySelector('#tabuOk').onclick=conf;inp.onkeydown=function(e){if(e.key==='Enter')conf()};o.querySelector('#tabuNo').onclick=function(){o.remove()}}
+ function chaveBtn(){if(T.modo!=='pix'||!T.contacts||!T.target)return '';var c=T.contacts.filter(function(x){return x.nome===T.target.nome})[0];if(!c||!c.chave)return '';return '<div class="cpbox"><span>Chave Pix: <b>'+c.chave+'</b></span><button class="cp" data-w="copykey2" data-k="'+String(c.chave).replace(/"/g,'')+'" type="button">📋 Copiar</button></div>'}
  function backFor(x){var k=(BANKS[BK]||BANKS.nubank).kind;if(k==='caixa')return x==='chave'?'cx-conta':'cx-pix';if(k==='mp')return x==='chave'?'mp-transf':'mp-pagar';return 'menu'}
 
  function beep2(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=180;g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+.35);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
@@ -247,8 +258,8 @@ window.BANK={run:function(cfg){
  function toast2(t){msg(t,'bad');setTimeout(function(){if(!lock)msg('')},2600)}
 
  $('txt').addEventListener('contextmenu',function(e){e.preventDefault()});
- $('txt').addEventListener('click',function(e){var bb=e.target.closest('.bub'),w=e.target.closest('[data-w]');var bar=$('wbar');if(w&&w.dataset.w==='copykey'){sel=w.parentNode.querySelector('span').innerText;clip=sel;try{navigator.clipboard.writeText(sel)}catch(x){}msg('Chave copiada! Agora cole no Pix 📋','good');setTimeout(function(){if(!lock)msg('')},2600);return}
-  if(w){if(w.dataset.w==='copy'&&sel){clip=sel;try{navigator.clipboard.writeText(sel)}catch(x){}msg('Chave copiada! Agora cole no Pix 📋','good');setTimeout(function(){if(!lock)msg('')},2600)}if(bar)bar.classList.remove('on');[].forEach.call(document.querySelectorAll('.bub.sel'),function(x){x.classList.remove('sel')});return}
+ $('txt').addEventListener('click',function(e){var bb=e.target.closest('.bub'),w=e.target.closest('[data-w]');var bar=$('wbar');if(w&&w.dataset.w==='copykey2'){var kk=w.dataset.k;tabu(function(){doCopy(kk)});return}if(w&&w.dataset.w==='copykey'){sel=w.parentNode.querySelector('span').innerText;var k2=sel;tabu(function(){doCopy(k2)});return}
+  if(w){if(w.dataset.w==='copy'&&sel){var k3=sel;tabu(function(){doCopy(k3)})}if(bar)bar.classList.remove('on');[].forEach.call(document.querySelectorAll('.bub.sel'),function(x){x.classList.remove('sel')});return}
   if(bb){[].forEach.call(document.querySelectorAll('.bub.sel'),function(x){x.classList.remove('sel')});bb.classList.add('sel');sel=bb.querySelector('span').innerText;if(bar)bar.classList.add('on')}});
  $('nivel').onchange=function(){fi=cfg.niveis.indexOf(+$('nivel').value);if(fi<0)fi=0;fase()};
  $('nivel').value=cfg.niveis[0];
