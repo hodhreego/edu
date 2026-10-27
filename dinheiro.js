@@ -37,3 +37,11 @@ document.addEventListener('DOMContentLoaded',function(){
  +'#zone .m img,#zone .m svg{filter:drop-shadow(0 0 2px #c04dff) drop-shadow(0 0 7px #b026ff) drop-shadow(0 0 14px #9d00ff)!important}'
  +'#zone{box-shadow:inset 0 0 12px #b026ff55}';
  document.head.appendChild(st)})();
+/* rolagem do mouse nas áreas do centro */
+(function(){var st=document.createElement('style');
+ st.textContent='@media screen{#app>.main>.card{overflow-y:auto!important;overscroll-behavior:contain}#app #zone{overflow-y:auto!important;overscroll-behavior:contain}#app #prods{overflow:visible}}';
+ document.head.appendChild(st)})();
+/* baixa visão: tamanhos grandes rolam a página inteira; bandeja fixa embaixo */
+(function(){var st=document.createElement('style');
+ st.textContent='@media screen and (min-width:701px){#app{overflow-y:auto!important;overflow-x:hidden}#app>.main{flex:1 0 auto!important;min-height:52vh;overflow:visible!important}#app>.main>.card{overflow:visible!important}#app>.tray{max-height:46vh;overflow-y:auto;flex:none!important}}';
+ document.head.appendChild(st)})();
