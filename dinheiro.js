@@ -23,3 +23,11 @@ window.DRQ=function(t,fmt){
  }
  el.innerHTML=h;
 };
+/* enunciado + produto + carteira num único espaço */
+document.addEventListener('DOMContentLoaded',function(){
+ var i=document.getElementById('inst'),m=document.querySelector('#app>.main');
+ if(!i||!m)return;m.insertBefore(i,m.firstChild);i.classList.add('inst-in');
+ var st=document.createElement('style');
+ st.textContent='@media screen{#app>.main>.inst-in{grid-column:1/-1;border:0!important;border-bottom:.3vh dashed #94a3b8!important;border-radius:0!important;background:transparent!important;margin:0 0 .8vh;padding:.4vh 1vw .9vh!important}}';
+ document.head.appendChild(st);
+});
