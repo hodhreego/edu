@@ -1,3 +1,4 @@
+(function(){if(/-(?:6|7|8|9)ano-jogo|-(?:1|2|3)em-jogo/.test(location.pathname)){var st=document.createElement('style');st.textContent='#nivel{display:none!important}';document.head.appendChild(st)}})();
 /* Atividades de Pix, maquininha e cartão de crédito: celular imitando o app do banco escolhido pelo aluno */
 (function(){
 'use strict';
