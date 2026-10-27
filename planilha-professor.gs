@@ -15,7 +15,7 @@
  */
 var DET = ['Data', 'Hora', 'Aluno', 'Turma', 'Escola', 'Matéria', 'Série do jogo', 'Jogo', 'Código', 'Cenário', 'Fase',
   'Pontos', 'Acertos', 'Erros', '% acerto', 'Nota (0-10)', 'Peso', 'Gasto (R$)', 'Dinheiro final (R$)', 'Tempo (min)',
-  'Senhas dos apps', 'Detalhe dos gastos', 'ID'];
+  'Senhas dos apps', 'Detalhe das ações', 'ID'];
 var PAI = ['Aluno', 'Data', 'Hora', 'Jogo', 'Código', 'Cenário', 'Pontos', 'Acertos', 'Erros', '% acerto', 'Nota (0-10)',
   'Gasto (R$)', 'Dinheiro final (R$)', 'Tempo (min)', 'Pontuação final (acumulada)', 'Carimbo', 'ID'];
 var RES = ['Turma', 'Aluno', 'Escola', 'Jogos', 'Pontos somados', 'Melhor pontuação', 'Média da nota', 'Gasto total (R$)'];
@@ -48,7 +48,7 @@ function gravaResultado_(d) {
     Number(d.pontos) || 0, d.certas == null ? '' : Number(d.certas), d.erradas == null ? '' : Number(d.erradas),
     pct, pct === '' ? '' : pct / 10, 1, d.gasto == null ? '' : Number(d.gasto),
     d.dinheiro == null ? '' : Number(d.dinheiro), Math.round((Number(d.segundos) || 0) / 6) / 10,
-    d.senhas || '', d.itens || '', d.sid || ''
+    d.senhas || '', d.acoes || d.itens || '', d.sid || ''
   ];
   if (!liberada_(ss, d.escola)) {
     gravar_(det_(ss, 'Retidos (outros)'), linha, d.sid, DET.length, 17);
@@ -172,7 +172,7 @@ function regras_(rgNota, rgPct) {
 
 function base_(ss, nome, cab, titulo) {
   var sh = ss.getSheetByName(nome), ok = false;
-  if (sh) { try { ok = sh.getRange(HR, 1, 1, cab.length).getValues()[0].join('|') === cab.join('|'); } catch (e) { ok = false; } }
+  if (sh) { try { var atual = sh.getRange(HR, 1, 1, cab.length).getValues()[0]; ok = atual.length === cab.length && atual[0] === cab[0] && atual[cab.length - 1] === cab[cab.length - 1]; if (ok && atual.join('|') !== cab.join('|')) sh.getRange(HR, 1, 1, cab.length).setValues([cab]); } catch (e) { ok = false; } }
   if (ok) return { sh: sh, novo: false };
   if (!sh) sh = ss.insertSheet(nome); else { sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).breakApart(); sh.clear(); sh.clearConditionalFormatRules(); sh.setFrozenColumns(0); sh.setFrozenRows(0); }
   if (sh.getMaxColumns() < cab.length) sh.insertColumnsAfter(sh.getMaxColumns(), cab.length - sh.getMaxColumns());
