@@ -17,6 +17,7 @@
 (function(){
  if(!/[?&]imp=1/.test(location.search))return;
  if(!EDU_PROF_OK()){document.documentElement.style.visibility='hidden';addEventListener('DOMContentLoaded',function(){document.documentElement.style.visibility='visible';EDU_PROF_ASK(function(ok){if(ok)location.reload();else location.href=location.pathname})});return}
+ try{sessionStorage.removeItem('edu_prof')}catch(e){}
  window.EDU_IMP=true;document.documentElement.classList.add('edu-print-ok');
  var css=document.createElement('style');
  css.textContent='#edu-nav,#ac-aviso,.coin,.jcoin,#edu-ac{display:none!important}body{padding-top:0!important}'+

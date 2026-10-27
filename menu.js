@@ -150,3 +150,12 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(b&&b===btn()){setTimeout(function(){if(aberto(b))arma();else clearTimeout(tm)},50)}},true);
  ['input','change','pointerdown','keydown'].forEach(function(ev){document.addEventListener(ev,function(e){var b=btn();if(b&&aberto(b)&&e.target.closest&&e.target.closest('#cfg,[id*=cfg],[class*=cfg],[class*=painel],[class*=ajust]'))arma()},true)});
 })();
+/* contas/números nos cartões de combinar: não encostar nas bordas */
+(function(){
+ var st=document.createElement('style');
+ st.textContent='@media screen{html:not(.edu-print-ok) .jc>svg.cena.cena-txt{width:72%!important;max-height:62%!important;margin:auto!important}}';
+ document.head.appendChild(st);
+ function mark(){[].forEach.call(document.querySelectorAll('.jc>svg.cena:not([data-m])'),function(s){s.dataset.m=1;if(/[0-9]/.test(s.textContent)&&s.querySelector('text')&&!s.querySelector('path,circle,ellipse,polygon,image,line,polyline'))s.classList.add('cena-txt')})}
+ var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(mark,30)}).observe(document.documentElement,{childList:true,subtree:true});
+ addEventListener('load',mark);mark();
+})();
