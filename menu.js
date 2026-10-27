@@ -153,9 +153,9 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
 /* contas/números nos cartões de combinar: não encostar nas bordas */
 (function(){
  var st=document.createElement('style');
- st.textContent='@media screen{html:not(.edu-print-ok) .jc>svg.cena.cena-txt{width:72%!important;max-height:62%!important;margin:auto!important}.jc .jn{width:clamp(16px,2.4vh,26px)!important;height:clamp(16px,2.4vh,26px)!important;line-height:clamp(16px,2.4vh,26px)!important;font-size:clamp(9px,1.4vh,14px)!important;left:.5vh!important;top:.5vh!important}}';
+ st.textContent='@media screen{html:not(.edu-print-ok) .jc>svg.cena.cena-txt{position:absolute!important;left:2%!important;bottom:3%!important;width:96%!important;height:60%!important;max-height:none!important;margin:0!important}.jc .jn{width:20px!important;height:20px!important;line-height:20px!important;font-size:10px!important;left:-3px!important;top:-3px!important;box-shadow:0 1px 3px #0004}}}';
  document.head.appendChild(st);
- function mark(){[].forEach.call(document.querySelectorAll('.jc>svg.cena:not([data-m])'),function(s){s.dataset.m=1;if(/[0-9]/.test(s.textContent)&&s.querySelector('text')&&!s.querySelector('path,circle,ellipse,polygon,image,line,polyline'))s.classList.add('cena-txt')})}
+ function mark(){[].forEach.call(document.querySelectorAll('.jc>svg.cena:not([data-m])'),function(s){s.dataset.m=1;if(/[0-9]/.test(s.textContent)&&s.querySelector('text')&&!s.querySelector('path,circle,ellipse,polygon,image,line,polyline')){s.classList.add('cena-txt');try{var bb=s.getBBox();if(bb.width>0&&bb.height>0){var pw=bb.width*.06,ph=bb.height*.1;s.setAttribute('viewBox',(bb.x-pw)+' '+(bb.y-ph)+' '+(bb.width+2*pw)+' '+(bb.height+2*ph))}}catch(e){}}})}
  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(mark,30)}).observe(document.documentElement,{childList:true,subtree:true});
  addEventListener('load',mark);mark();
 })();
