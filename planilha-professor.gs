@@ -189,7 +189,7 @@ function det_(ss, nome) {
     sh.getRange(HR + 1, 20, m, 1).setNumberFormat('0.0');
     sh.getRange(HR + 1, 21, m, 2).setHorizontalAlignment('left').setWrap(true).setFontSize(10);
     sh.getRange(HR + 1, 17, m, 1).setBackground('#fff7d6');          // peso: célula editável pelo professor
-    sh.setFrozenColumns(3);
+    try { sh.setFrozenColumns(3); } catch (e) {}
     tamanho_(sh, DET.length, [21, 22]);   // só na criação da aba; depois a largura é do professor
     sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 16, m, 1), sh.getRange(HR + 1, 15, m, 1)));
   }
@@ -212,7 +212,7 @@ function painel_(ss, nome) {
     sh.getRange(HR + 1, 11, m, 1).setNumberFormat('0.0');
     sh.getRange(HR + 1, 12, m, 2).setNumberFormat('R$ #,##0.00');
     sh.getRange(HR + 1, 14, m, 1).setNumberFormat('0.0');
-    sh.setFrozenColumns(1);
+    try { sh.setFrozenColumns(1); } catch (e) {}
     sh.hideColumns(PAI.length - 1, 2);
     tamanho_(sh, PAI.length, []);
     sh.setColumnWidth(15, 110);
