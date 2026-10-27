@@ -122,6 +122,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"S
 #walH{position:absolute;top:2vh;right:-62px;width:62px;height:96px;border-radius:0 14px 14px 0;cursor:ew-resize;touch-action:none;background:linear-gradient(90deg,#d6dce4,#8e99a6 70%,#c7ced7);border:1.5px solid #5b6674;border-left:0;box-shadow:4px 4px 10px #0007,inset 0 1px 0 #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 10px Arial;color:#2f3a46;gap:2px;user-select:none}
 #walH i{font-style:normal;font-size:24px}
 #walH::before{content:"";width:5px;height:34px;border-radius:5px;background:linear-gradient(#fff,#6c7785);box-shadow:0 1px 2px #0006;order:-1;margin-bottom:3px}
+.acoes{margin:0 0 .8vh!important;flex-wrap:wrap}.zn.pg{flex:.55}.zn.tr{flex:1.5}.zn.pg .zb{min-height:7vh}#cCart{overflow-y:auto}
 @media screen and (max-width:820px){.main{grid-template-columns:1fr!important}#wal{width:84vw;top:56px}#walH{right:-54px;width:54px}}
 </style>
 <script src="dinheiro.js"></script></head>
@@ -136,9 +137,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"S
  <div class="main">
   <div class="card" id="cLoja"><h2>🛒 Loja</h2><div class="prods" id="prods"></div><div id="extra"></div><div class="res" id="res1"></div></div>
   <div class="card" id="cCart"><h2><span>🧾 Mesa do caixa</span><span class="soma hide" id="soma">soma escondida</span></h2>
-   <div class="zn pg"><h3><span>💵 Pagamento do cliente</span></h3><div class="zb" id="zPay"></div></div>
+   <div class="acoes"><div class="msg" id="msg"></div><button class="btn sec" id="bLimpar">🗑 Limpar</button><button class="btn sec" id="bSoma">👁 Ver soma</button><button class="btn ok" id="bOk">Conferir ✔</button></div><div class="zn pg"><h3><span>💵 Pagamento do cliente</span></h3><div class="zb" id="zPay"></div></div>
    <div class="zn tr"><h3><span>🔁 Troco que você entrega</span></h3><div class="zb" id="zChg"></div></div>
-   <div class="acoes"><div class="msg" id="msg"></div><button class="btn sec" id="bLimpar">🗑 Limpar</button><button class="btn sec" id="bSoma">👁 Ver soma</button><button class="btn ok" id="bOk">Conferir ✔</button></div>
+   
    <div class="res" id="res2"></div></div>
  </div>
  <div class="tray" id="tray">
@@ -236,7 +237,7 @@ function render(){
  const zp=$('zPay'),zc=$('zChg');zp.innerHTML='';zc.innerHTML='';
  if(!pay.length)zp.innerHTML='<div class="vazio">Abra a 👛 carteira (puxador à esquerda)<br>e arraste a nota de pagamento até aqui</div>';
  if(!chg.length)zc.innerHTML='<div class="vazio">Abra a gaveta (embaixo) e arraste o troco até aqui</div>';
- pay.forEach(p=>{const e=mny(p.v,1);zp.appendChild(e);takeout(e,zp,()=>{pay.splice(pay.indexOf(p),1);wal[p.i].used=0;render();rWal()})});
+ pay.forEach(p=>{const e=mny(p.v,1);e.style.zoom='.7';zp.appendChild(e);takeout(e,zp,()=>{pay.splice(pay.indexOf(p),1);wal[p.i].used=0;render();rWal()})});
  chg.forEach((v,k)=>{const e=mny(v,1);zc.appendChild(e);takeout(e,zc,()=>{chg.splice(k,1);render()})});
  const s=$('soma'),t=tasks[ti];if(showSum){s.className='soma';s.textContent='pago '+fmt(sm(pay))+' · troco '+fmt(sm(chg))}else{s.className='soma hide';s.textContent='soma escondida'}}
 function rWal(){const w=$('wItems');w.innerHTML='';wal.forEach((x,i)=>{const e=mny(x.v);if(x.used)e.classList.add('used');w.appendChild(e);
@@ -263,7 +264,8 @@ function bandeja(){COINS.forEach(v=>$('rowM').appendChild(tray(v)));BILLS.forEac
 function tray(v){const e=mny(v);drag(e,$('zChg'),()=>{if(chg.length>=40)return;chg.push(v);clink(v);render()});return e}
 /* carteira: puxador da esquerda para a direita */
 (function(){const w=$('wal'),h=$('walH');let x0=0,mv=0,dr=0,open=false;
- const set=o=>{open=o;w.classList.toggle('on',o)};
+ let tm=null;const arm=()=>{clearTimeout(tm);if(open)tm=setTimeout(()=>{if(!dr&&!document.querySelector('.m.drag'))set(false);else arm()},3000)};
+ const set=o=>{open=o;w.classList.toggle('on',o);arm()};w.addEventListener('pointerdown',arm);w.addEventListener('pointermove',()=>{if(open)arm()});
  h.addEventListener('pointerdown',e=>{dr=1;mv=0;x0=e.clientX;h.setPointerCapture(e.pointerId);e.preventDefault()});
  h.addEventListener('pointermove',e=>{if(!dr)return;const dx=e.clientX-x0;if(Math.abs(dx)>8){mv=1;set(dx>0?true:false);x0=e.clientX}});
  h.addEventListener('pointerup',()=>{dr=0;if(!mv)set(!open)});
