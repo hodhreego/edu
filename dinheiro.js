@@ -1,3 +1,4 @@
+(function(){function f(){var c=window.EDU_COD?EDU_COD():'';[].forEach.call(document.querySelectorAll('.gcod'),function(e){e.textContent=c})}addEventListener('load',f);setTimeout(f,600);setTimeout(f,2000)})();
 /* cédulas e moedas reais do Real (fotos, com tarja SEM VALOR) */
 (function(){
  var st=document.createElement('style');st.textContent='.m img{display:block;height:var(--h);width:auto;filter:drop-shadow(0 .2vh .3vh #0004);pointer-events:none;-webkit-user-drag:none}';
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded',function(){
   });
   wrap.innerHTML='<div id="dm-sheet"><h1>'+esc(ttl.replace(/[^\wÀ-ú ]/g,'').trim())+'</h1><div class="id"><span>Nome:</span><span style="max-width:90px">Data:</span><span style="max-width:90px">Turma:</span><span>Escola:</span></div>'
    +'<p style="margin:0 0 6px"><b>✂️ Como fazer:</b> recorte cada problema (linha pontilhada) e <b>cole no caderno</b>. Recorte o <b>dinheirinho</b> da última folha, cole no caderno ao lado do problema e <b>resolva ali</b>, mostrando as cédulas e moedas que você usou.</p><style>.dmg{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}.dmg .q{border:1px dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}.dmg .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}.dmg .r{margin-top:4px;font-weight:700}.dmg .r u{display:inline-block;min-width:60px;border-bottom:1px solid #000;text-decoration:none}.dmg img{height:var(--dm-i,9mm);width:auto;vertical-align:middle}</style>'+q
-   +cut()+'<div id="dm-gab"><h2>GABARITO — uso do professor'+(window.EDU_COD&&EDU_COD()?' · código '+EDU_COD():'')+'</h2><ol>'+gab+'</ol></div></div>';
+   +cut()+'<div id="dm-gab"><h2>GABARITO — uso do professor · código <b class="gcod"></b></h2><ol>'+gab+'</ol></div></div>';
   document.body.appendChild(wrap);
  }
  var bar=document.createElement('div');bar.id='dm-bar';

@@ -1,3 +1,4 @@
+(function(){function f(){var c=window.EDU_COD?EDU_COD():'';[].forEach.call(document.querySelectorAll('.gcod'),function(e){e.textContent=c})}addEventListener('load',f);setTimeout(f,600);setTimeout(f,2000)})();
 (function(){if(/-(?:6|7|8|9)ano-jogo|-(?:1|2|3)em-jogo/.test(location.pathname)){var st=document.createElement('style');st.textContent='#nivel{display:none!important}';document.head.appendChild(st)}})();
 /* Atividades de Pix, maquininha e cartão de crédito: celular imitando o app do banco escolhido pelo aluno */
 (function(){
@@ -443,7 +444,7 @@ function startFinal(){var ks=Object.keys(BANKS).filter(function(k){return SAL0[k
   if(t.venda)h+=(h?'<br>':'')+'Venda de <b>'+fmt(t.venda.valor)+'</b> no '+t.venda.forma+(t.venda.parc>1?' em '+t.venda.parc+'x':'');
   (t.fields||[]).forEach(function(f){h+=(h?'<br>':'')+f.q+': <b>'+(typeof f.a==='number'?fmt(f.a):f.a)+'</b>'});
   if(t.choose)h+=(h?'<br>':'')+t.choose.q+' <b>'+t.choose.opts[t.choose.a]+'</b>';return h||'—'}
- function gabBody(n){var old=SEED,sv={t:tasks,S:Object.assign({},SAL),S0:Object.assign({},SAL0),B:BLOQ,I:INCS,L:LEDGER,C:CHESP,f:fi},h='<div class="gsec"><h2>'+cfg.titulo+' · '+(window.EDU_COD&&EDU_COD()?'código <b>'+EDU_COD()+'</b> · ':'')+'cenário nº '+n+'</h2><p class="gl">Link do aluno: <b>?c='+n+'</b> · Para este gabarito: <b>?imp=1&amp;gab=1&amp;c='+n+'</b> · Banco final definido pelo professor: acrescente <b>&amp;dest=prof</b></p>';
+ function gabBody(n){var old=SEED,sv={t:tasks,S:Object.assign({},SAL),S0:Object.assign({},SAL0),B:BLOQ,I:INCS,L:LEDGER,C:CHESP,f:fi},h='<div class="gsec"><h2>'+cfg.titulo+' · código <b class="gcod"></b> · cenário nº '+n+'</h2><p class="gl">Link do aluno: <b>?c='+n+'</b> · Para este gabarito: <b>?imp=1&amp;gab=1&amp;c='+n+'</b> · Banco final definido pelo professor: acrescente <b>&amp;dest=prof</b></p>';
   SEED=n;
   try{for(var f=0;f<4;f++){seedFase(f);fi=f;var L=cfg.niveis[f],hard=L>3;if(hard)L=3;var ts=[],seen={};for(var g=0;g<80&&ts.length<6;g++){var t=GEN[cfg.gen](L,hard);if(seen[t.txt])continue;seen[t.txt]=1;ts.push(t)}
     tasks=ts;LEDGER=[];INCS=[];scarce();unseed();
@@ -457,7 +458,7 @@ function startFinal(){var ks=Object.keys(BANKS).filter(function(k){return SAL0[k
   return h+'</div>'}
  function gabFull(){var m=$('exm');m.innerHTML='<div class="box ex gabbox">'+gabBody(SEED)+'<button class="btn ok" type="button" id="exX">Fechar</button></div>';m.className='on';$('exX').onclick=function(){m.className=''}}
  function gabPage(){var r=/[?&]c=(\d+)(?:-(\d+))?/.exec(location.search),a=r?+r[1]:1,b=r?(r[2]?Math.min(+r[2],a+39):a):3,h='';for(var n=a;n<=b;n++)h+=gabBody(n);
-  document.title='Gabarito do professor - '+cfg.titulo;$('app').innerHTML='<div class="gabpage"><div class="gnote">🔒 GABARITO DO PROFESSOR — não distribuir aos alunos'+(window.EDU_COD&&EDU_COD()?' · CÓDIGO DA ATIVIDADE '+EDU_COD():'')+'</div>'+h+'</div>'}
+  document.title='Gabarito do professor - '+cfg.titulo;$('app').innerHTML='<div class="gabpage"><div class="gnote">🔒 GABARITO DO PROFESSOR — não distribuir aos alunos · CÓDIGO DA ATIVIDADE <b class="gcod"></b></div>'+h+'</div>'}
  function fim(){if(fi===2&&INCS.length&&!FINALOK){startFinal();return}var f=$('fim');$('fT').textContent=fi<2?'Fase '+(fi+1)+' concluída! 🎉':'Parabéns! Terminou todas as fases! 🏆';$('fP').textContent='Você tem '+pts+' pontos.';$('fB').textContent=fi<2?'Próxima fase ▶':'Jogar de novo ↺';f.classList.add('on');$('ext').innerHTML=LEDGER.length>L0?extrato():'';$('fB').onclick=function(){f.classList.remove('on');L0=LEDGER.length;if(fi<2)fi++;else{fi=0;pts=0;setPts(0);iniSal();LEDGER=[];L0=0;FINALOK=false}$('nivel').value=cfg.niveis[fi];fase()}}
  function xfer(){var d=ph.c.own;SAL[BK]-=ph.v;SAL[d]+=ph.v;LEDGER.push({f:fi,bk:BK,tr:d,n:'Você (Aluno)',b:BANKS[d].n,v:ph.v,ok:true,h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});dash();
   setTimeout(function(){msg('Transferência feita! O saldo do '+BANKS[d].n+' aumentou.','good');setTimeout(function(){if(!lock)msg('')},2600);ph.s='home';ph.c=null;ph.chave='';draw()},1700)}
