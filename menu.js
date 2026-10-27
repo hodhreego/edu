@@ -59,7 +59,7 @@ html.edu-zoomed body>#app,html.edu-zoomed body>.folha.jogo,html.edu-zoomed #folh
 @media screen{.folha.jogo h1,#folhaJogo h1,#app h1,.jogo .topo h1{font-size:14pt!important;line-height:1.15!important}}
 /* gabarito manuscrito aposentado: cobria as figuras */
 .folha.gab,.jgab{display:none!important}
-@media print{html,body{max-width:100%!important}.listas ol{column-width:27ch!important}.listas .pal{overflow-wrap:anywhere}}
+@media print{html:not(.edu-print-ok) body>*{display:none!important}html:not(.edu-print-ok) body::before{content:'🔒 Impressão disponível apenas para o professor. Use o botão 🖨️ do cabeçalho e digite a senha.';display:block;font:700 26px Arial,sans-serif;text-align:center;padding:60mm 12mm;color:#000}html,body{max-width:100%!important}.listas ol{column-width:27ch!important}.listas .pal{overflow-wrap:anywhere}}
 #edu-nav .en-coin{position:static!important;transform:none!important;margin:0!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;zoom:.62;flex:none;order:0;z-index:auto!important}
 html.edu-hc #edu-nav{background:#000!important;color:#fff!important;border-bottom:3px solid #ffeb3b}
 html.edu-hc #edu-nav .tag.k{background:#ffeb3b!important;color:#000!important}
@@ -123,6 +123,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  ac.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.z)ls('edu_ez',b.dataset.z);else ls('edu_hc',ls('edu_hc')==='1'?'0':'1');aplica()});
  document.getElementById('en-a').onclick=function(){ac.classList.toggle('on')};
  var pb=document.getElementById('en-p');if(pb)pb.addEventListener('click',function(e){/*en-p-click*/if(window.EDU_PROF_OK&&EDU_PROF_OK())return;e.preventDefault();if(window.EDU_PROF_ASK)EDU_PROF_ASK(function(ok){if(ok)location.href=pb.href})});
+ document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&(e.key||'').toLowerCase()==='p'&&!document.documentElement.classList.contains('edu-print-ok')){e.preventDefault();e.stopPropagation()}},true);
  function setH(){document.documentElement.style.setProperty('--eh',nav.offsetHeight+'px')}
  aplica();addEventListener('resize',setH);addEventListener('load',setH);
  if(window.ResizeObserver)new ResizeObserver(setH).observe(nav);

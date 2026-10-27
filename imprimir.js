@@ -17,7 +17,7 @@
 (function(){
  if(!/[?&]imp=1/.test(location.search))return;
  if(!EDU_PROF_OK()){document.documentElement.style.visibility='hidden';addEventListener('DOMContentLoaded',function(){document.documentElement.style.visibility='visible';EDU_PROF_ASK(function(ok){if(ok)location.reload();else location.href=location.pathname})});return}
- window.EDU_IMP=true;
+ window.EDU_IMP=true;document.documentElement.classList.add('edu-print-ok');
  var css=document.createElement('style');
  css.textContent='#edu-nav,#ac-aviso,.coin,.jcoin,#edu-ac{display:none!important}body{padding-top:0!important}'+
  '#imp-bar{position:sticky;top:0;z-index:2147483500;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 14px;font:700 14px "Segoe UI",Arial,sans-serif}'+
@@ -33,6 +33,15 @@
  var bar=document.createElement('div');bar.id='imp-bar';
  bar.innerHTML='<span>🖨️ Versão para imprimir</span><button onclick="window.print()">Imprimir / Salvar PDF</button><a href="'+location.pathname.split('/').pop()+'">▶ Jogar na tela</a>';
  document.body.insertBefore(bar,document.body.firstChild);
+ addEventListener('load',function(){
+  var chips=[].slice.call(document.querySelectorAll('.jbank div.ch,.jbank .ch')).filter(function(c){return c.dataset&&c.dataset.n});
+  if(chips.length){
+   var rows=chips.slice().sort(function(a,b){return (+a.dataset.n)-(+b.dataset.n)}).map(function(c){var L=c.dataset.l||'',t=c.textContent.replace(/\s+/g,' ').trim();if(L&&t.indexOf(L)===0)t=t.slice(L.length).trim();return '<li value="'+(+c.dataset.n+1)+'"><b>'+esc(c.dataset.l||'')+'</b> — '+esc(t)+'</li>'}).join('');
+   var g=document.createElement('div');g.id='imp-gab';g.innerHTML='<h2>GABARITO — uso do professor</h2><p>Cartão nº → letra da resposta correta</p><ol>'+rows+'</ol>';
+   var st=document.createElement('style');st.textContent='#imp-gab{break-before:page;page-break-before:always;background:#fff;color:#000;font-family:"Segoe UI",Arial,sans-serif;padding:10mm;max-width:794px;margin:12px auto}#imp-gab h2{margin:0 0 4px;font-size:20px}#imp-gab p{margin:0 0 8px;font-size:13px}#imp-gab ol{columns:2;column-gap:10mm;font-size:14px;line-height:1.6;padding-left:28px}#imp-gab li{break-inside:avoid}#imp-gab b{display:inline-block;min-width:1.6em;text-align:center;border:1.5px solid #000;border-radius:50%;margin-right:4px}';
+   document.head.appendChild(st);document.body.appendChild(g);
+  }
+ });
  function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
  addEventListener('load',function(){
   var jb=document.getElementById('jbank')||document.querySelector('.jbank');
