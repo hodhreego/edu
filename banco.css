@@ -252,3 +252,6 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 .cpb,button[data-a="sendcomp"]{display:inline-flex;align-items:center;gap:6px;margin-top:6px;border:0!important;background:linear-gradient(#2f6df0,#1d4ed8)!important;color:#fff!important;border-radius:10px;font:800 13px Arial;padding:8px 14px;cursor:pointer;box-shadow:0 3px 0 #14389a,0 4px 8px #0003;transition:transform .08s,box-shadow .08s}
 .cpb:active,button[data-a="sendcomp"]:active{transform:translateY(3px);box-shadow:0 0 0 #14389a,0 1px 3px #0003}
 button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gradient(#25d366,#128c4a)!important;box-shadow:0 3px 0 #0b6a35,0 4px 8px #0003}
+@media screen and (max-width:900px){:root{--pw:clamp(230px,min(92vw,380px,calc((100vh - 230px)/2)),380px)}}
+@media screen and (max-width:360px){:root{--pw:clamp(220px,min(94vw,300px,calc((100vh - 200px)/2)),300px)}.top h1{font-size:15px}.sub{font-size:11px}#app{padding:4px!important}.dg{grid-template-columns:repeat(2,1fr)!important}.box{padding:16px 14px}}
+@media screen and (max-width:500px){#dash{max-height:42vh!important}}
