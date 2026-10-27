@@ -174,3 +174,22 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(mark,30)}).observe(document.documentElement,{childList:true,subtree:true});
  addEventListener('load',mark);mark();
 })();
+
+/* Identificação do aluno antes de começar: nome, turma e escola (mesmas chaves do ident.js) */
+(function(){
+ if(/[?&]imp=1/.test(location.search))return;
+ function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){return ''}}
+ var ss=function(v){try{if(v===undefined)return sessionStorage.getItem('edu_idok');sessionStorage.setItem('edu_idok','1')}catch(e){}};
+ if(!window.EDU_ALUNO)window.EDU_ALUNO=function(){return{nome:ls('edu_nome'),turma:ls('edu_turma'),data:ls('edu_data')||new Date().toLocaleDateString('pt-BR'),escola:ls('edu_escola')}};
+ if(ss())return;
+ function abrir(){
+  var o=document.createElement('div');o.id='eduId';
+  o.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(20,28,50,.82);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Segoe UI,Arial,sans-serif';
+  o.innerHTML='<form style="background:#fff;border-radius:18px;padding:22px 22px 18px;width:min(420px,100%);box-shadow:0 10px 40px #0008"><h2 style="margin:0 0 4px;color:#16213a;font-size:22px">👋 Antes de começar</h2><p style="margin:0 0 14px;color:#555;font-size:14px">Preencha seus dados para o professor identificar a sua atividade.</p>'
+  +['nome|Nome completo|edu_nome','turma|Turma (ex.: 8º A)|edu_turma','escola|Escola|edu_escola'].map(function(x){var p=x.split('|');return '<label style="display:block;font:700 13px Arial;color:#16213a;margin:8px 0 3px">'+p[1]+'</label><input data-k="'+p[2]+'" id="eid_'+p[0]+'" autocomplete="off" style="width:100%;box-sizing:border-box;font:16px Arial;padding:10px;border:2px solid #c9d3e8;border-radius:10px" value="'+ls(p[2]).replace(/"/g,'&quot;')+'">'}).join('')
+  +'<button type="submit" style="margin-top:16px;width:100%;font:800 17px Arial;padding:12px;border:0;border-radius:12px;background:#0f9d58;color:#fff;cursor:pointer">▶ Começar</button></form>';
+  document.body.appendChild(o);
+  var f=o.querySelector('form');f.onsubmit=function(e){e.preventDefault();var n=o.querySelector('#eid_nome');if(!n.value.trim()){n.style.borderColor='#d93025';n.focus();return}
+   o.querySelectorAll('input').forEach(function(i){ls(i.dataset.k,i.value.replace(/\s+/g,' ').trim())});ss(1);o.remove();if(window.EDU_IDOK)window.EDU_IDOK()};
+  setTimeout(function(){var n=o.querySelector('#eid_nome');if(n)n.focus()},50)}
+ if(document.body)abrir();else document.addEventListener('DOMContentLoaded',abrir)})();

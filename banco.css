@@ -247,3 +247,5 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 
 .pwk{color:#fff;font-size:14px;margin:6px 0;animation:pws .25s linear infinite}.pwk b{letter-spacing:2px}@keyframes pws{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 #bkbar,#bkbar.bkmini{overflow:hidden!important}.bkb .bd{display:none!important}
+.pwk{display:block;width:fit-content;margin:8px auto;text-align:center;background:#111;color:#fff;border:2px solid #fff;border-radius:8px;padding:6px 14px;font-size:14px;box-shadow:0 0 0 2px #0006}
+.pwk b{font-size:16px;letter-spacing:3px}
