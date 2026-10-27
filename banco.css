@@ -544,3 +544,6 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 #txt.msm .wct small{color:#7b3ff2}
 #txt.msm .wct i{background:#7b3ff2}
 #txt.smsm .wh,#txt.smsm .wst{background:#1fae48!important}
+/* celular real: fontes menores nos apps de mensagem e no texto do pedido */
+@media screen and (max-width:900px){#txt{font-size:15px}#txt>.wa{zoom:.82}.pnote,.swp{font-size:13px}#ped #txt .wch b{font-size:15px}}
+@media screen and (max-width:430px){#txt>.wa{zoom:.78}}
