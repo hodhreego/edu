@@ -129,3 +129,12 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 #tabu .tbx{background:#fff;border-radius:16px;padding:18px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:10px;text-align:center;font-family:Arial,sans-serif}
 #tabu .tq{font:900 38px Arial;color:#1d4ed8}#tabu input{font:800 26px Arial;text-align:center;padding:8px;border:3px solid #1d4ed8;border-radius:10px}
 #tabu .tbm{color:#c62828;font-weight:700;min-height:1.2em}#tabu .pb{padding:12px;border:0;border-radius:10px;background:#16a34a;color:#fff;font:800 17px Arial;cursor:pointer}#tabu .pb.sec{background:#e2e8f0;color:#334155;font-size:14px}
+
+#dash{margin-top:14px}#dash h2{margin:0 0 8px;font-size:18px}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.db{border-radius:12px;padding:8px 10px;background:var(--c);color:var(--t);display:flex;flex-direction:column;gap:2px;border:3px solid transparent}.db.cur{border-color:#111;box-shadow:0 0 0 3px #fff inset}
+.db b{font-size:14px}.db span{font:900 19px Arial}.db small{opacity:.85;font-size:11px}.db button{margin-top:4px;border:0;border-radius:8px;padding:5px;font:800 12px Arial;cursor:pointer;background:#fff;color:#1f2a44}
+.dt{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:15px}
+#exm{display:none;position:fixed;inset:0;background:#000a;z-index:2147483400;align-items:center;justify-content:center;padding:12px}#exm.on{display:flex}
+#exm .box{background:#fff;border-radius:16px;padding:16px;max-width:560px;width:100%;max-height:88vh;overflow:auto;text-align:left}
+#exm h3{margin:0 0 8px}
