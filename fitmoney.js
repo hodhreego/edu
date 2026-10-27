@@ -53,7 +53,7 @@
   w.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#000a;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif';
   w.innerHTML='<div style="background:#fff;border-radius:14px;padding:20px 26px;text-align:center;max-width:90vw"><div style="font-size:18px;margin-bottom:8px">Para ver a soma, resolva:</div><div style="font-size:34px;font-weight:900;margin:6px 0">'+a+' × '+b+' = ?</div><input type="number" inputmode="numeric" style="font-size:28px;width:110px;text-align:center;padding:4px;border:2px solid #1f4fd8;border-radius:8px"><div id="tbm" style="min-height:22px;color:#d93025;font-weight:700;margin:6px 0"></div><button id="tbo" style="font-size:18px;padding:6px 18px;border:0;border-radius:8px;background:#0f9d58;color:#fff;font-weight:800">Responder</button> <button id="tbc" style="font-size:18px;padding:6px 14px;border:0;border-radius:8px;background:#e2e8f0;font-weight:700">Cancelar</button></div>';
   document.body.appendChild(w);var i=w.querySelector('input');i.focus();
-  function go(){if(parseInt(i.value,10)===a*b){ok=true;w.remove();done()}else{w.querySelector('#tbm').textContent='Errou! Tente outra tabuada.';w.remove();ask(done)}}
+  function go(){if(parseInt(i.value,10)===a*b){w.remove();done()}else{w.querySelector('#tbm').textContent='Errou! Tente outra tabuada.';w.remove();ask(done)}}
   w.querySelector('#tbo').onclick=go;w.querySelector('#tbc').onclick=function(){w.remove();busy=false};
   i.onkeydown=function(e){if(e.key==='Enter')go()};
  }
@@ -63,7 +63,7 @@
   if(!abrindo)return;
   e.stopImmediatePropagation();e.preventDefault();
   if(t.id==='ck')t.checked=false;
-  busy=true;ask(function(){busy=false;t.id==='ck'?(t.checked=true,t.dispatchEvent(new Event('change'))):t.click()});
+  busy=true;ask(function(){ok=true;t.id==='ck'?(t.checked=true,t.dispatchEvent(new Event('change'))):t.click();ok=false;busy=false;setTimeout(function(){var b=document.getElementById('bSoma');if(b&&/Esconder/.test(b.textContent))b.click();else{var c=document.getElementById('ck');if(c&&c.checked){c.checked=false;c.dispatchEvent(new Event('change'))}}},2000)});
  }
  document.addEventListener('click',function(e){if(e.target.id==='bSoma')gate(e)},true);
  document.addEventListener('change',function(e){if(e.target.id==='ck')gate(e)},true);
