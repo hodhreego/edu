@@ -89,17 +89,18 @@
  svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',function(){drag=null;showPv([])});
  /* ---- quadrinhos para escrever a palavra (verde = certa, vermelho = errada) ---- */
  var fill=document.getElementById('jg-fill');
- items.forEach(function(it,i){
-  var d=document.createElement('div');d.className='jg-card';d.style.borderLeftColor=it.col;
+ var ord=items.map(function(_,i){return i});for(var q=ord.length-1;q>0;q--){var r2=Math.floor(Math.random()*(q+1)),tm=ord[q];ord[q]=ord[r2];ord[r2]=tm}
+ ord.forEach(function(i,pos){var it=items[i];
+  var d=document.createElement('div');d.className='jg-card';d.dataset.i=i;d.style.borderLeftColor=it.col;
   var def=(window.JG_DEFS&&window.JG_DEFS[it.w])||'';
-  d.innerHTML='<b style="background:'+it.col+'">'+(i+1)+'</b><span class="df">'+(def||'Palavra de '+it.w.length+' letras')+'</span><div class="bx"></div>';
+  d.innerHTML='<b style="background:'+it.col+'">'+(pos+1)+'</b><span class="df">'+(def||'Palavra de '+it.w.length+' letras')+'</span><div class="bx"></div>';
   var bx=d.querySelector('.bx');it.box=bx;
   it.w.split('').forEach(function(_,j){var n=document.createElement('input');n.maxLength=1;n.autocomplete='off';n.setAttribute('autocapitalize','characters');n.dataset.j=j;n.setAttribute('aria-label','letra '+(j+1));bx.appendChild(n)});
   fill.appendChild(d);
  });
  fill.style.setProperty('--minw',(Math.max.apply(null,items.map(function(x){return x.w.length}))*29+34)+'px');
  fill.addEventListener('input',function(e){
-  var n=e.target;if(n.tagName!=='INPUT')return;var bx=n.parentNode,i=[].indexOf.call(fill.children,bx.parentNode),it=items[i],j=+n.dataset.j;
+  var n=e.target;if(n.tagName!=='INPUT')return;var bx=n.parentNode,i=+bx.parentNode.dataset.i,it=items[i],j=+n.dataset.j;
   var v=(n.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(-1);n.value=v;if(!v){n.className='';return}
   var ok=v===it.w[j];n.className=ok?'g':'r';
   if(ok){tone(660,.07,.1,'triangle');var nx=bx.querySelector('input[data-j="'+(j+1)+'"]');if(nx)nx.focus()}else{tone(180,.16,.1,'sawtooth');setPts(pts-1)}
