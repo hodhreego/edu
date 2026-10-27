@@ -153,7 +153,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
 /* contas/números nos cartões de combinar: não encostar nas bordas */
 (function(){
  var st=document.createElement('style');
- st.textContent='@media screen{html:not(.edu-print-ok) .jc>svg.cena.cena-txt{width:72%!important;max-height:62%!important;margin:auto!important}}';
+ st.textContent='@media screen{html:not(.edu-print-ok) .jc>svg.cena.cena-txt{width:72%!important;max-height:62%!important;margin:auto!important}.jc .jn{width:clamp(16px,2.4vh,26px)!important;height:clamp(16px,2.4vh,26px)!important;line-height:clamp(16px,2.4vh,26px)!important;font-size:clamp(9px,1.4vh,14px)!important;left:.5vh!important;top:.5vh!important}}';
  document.head.appendChild(st);
  function mark(){[].forEach.call(document.querySelectorAll('.jc>svg.cena:not([data-m])'),function(s){s.dataset.m=1;if(/[0-9]/.test(s.textContent)&&s.querySelector('text')&&!s.querySelector('path,circle,ellipse,polygon,image,line,polyline'))s.classList.add('cena-txt')})}
  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(mark,30)}).observe(document.documentElement,{childList:true,subtree:true});
