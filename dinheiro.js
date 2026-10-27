@@ -31,3 +31,9 @@ document.addEventListener('DOMContentLoaded',function(){
  st.textContent='@media screen{#app>.main{grid-template-rows:auto 1fr!important}#app>.main>.inst-in{align-self:start;grid-column:1/-1;border:0!important;border-bottom:.3vh dashed #94a3b8!important;border-radius:0!important;background:transparent!important;margin:0 0 .8vh;padding:.4vh 1vw .9vh!important}}';
  document.head.appendChild(st);
 });
+/* neon: verde = dinheiro que o cliente pagou; roxo = troco / dinheiro montado */
+(function(){var st=document.createElement('style');
+ st.textContent='.paid .m img,.paid .m svg{filter:drop-shadow(0 0 2px #39ff14) drop-shadow(0 0 7px #39ff14) drop-shadow(0 0 14px #1aff00)!important}'
+ +'#zone .m img,#zone .m svg{filter:drop-shadow(0 0 2px #c04dff) drop-shadow(0 0 7px #b026ff) drop-shadow(0 0 14px #9d00ff)!important}'
+ +'#zone{box-shadow:inset 0 0 12px #b026ff55}';
+ document.head.appendChild(st)})();
