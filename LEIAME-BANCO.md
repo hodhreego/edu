@@ -1,6 +1,6 @@
 # Jogos de Pix / banco / WhatsApp (edu) — guia de referência
 
-Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=33; subir N a cada mudança com `sed -i`).
+Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=34; subir N a cada mudança com `sed -i`).
 
 ## Como funciona
 - 10 bancos (`BANKS`): Nubank, BB, Itaú, Bradesco, Caixa Tem, Inter, Mercado Pago, Santander, PicPay (verde), C6 (cinza).
@@ -27,7 +27,7 @@ Cada link é `<atividade>-jogo.html?imp=1&gab=1&c=N` (ou `c=A-B`): gera uma pág
 
 ## Códigos por série
 Cada atividade de Pix/cartão/maquininha tem versão 6º, 8º, 9º, 1ª, 2ª e 3ª série EM, cada uma com código próprio (catálogo `catalogo.js`, mapa `COD`). Níveis por série: 6º [1,1,1,2], 8º [1,2,2,3], 9º [2,2,3,3], 1ª [2,3,3,4], 2ª [3,3,4,4], 3ª [3,4,4,4].
-O restante do site (colmeias etc.) ainda tem um código por atividade, não por série.
+Também têm versão por série (`<jogo>-6ano|8ano|9ano|1em|2em|3em-jogo.html`, ano=6/8/9/9/9/9 fixo, seletor escondido, código próprio) os 19 jogos de dinheiro (troco, contagem, lojas, mercadinho, salários…), criados com `p49.py` (não reexecutar). Colmeias já são por série pelo nome. Ainda com 1 código para várias séries: contagem-dolares, jobs-ingles, loja-miami, loja-paraguai, soma-de-inteiros. As versões gerais antigas continuam no catálogo.
 
 ## Pendências
 - Pix recebido com a chave do aluno digitada no WhatsApp (+ notificação).
@@ -37,3 +37,9 @@ O restante do site (colmeias etc.) ainda tem um código por atividade, não por 
 
 ## Cuidados
 Não reexecutar scripts geradores antigos (duplicam códigos). Windows: usar `PYTHONIOENCODING=utf-8`; heredocs com aspas complexas falham no Bash — gravar scripts com a ferramenta Write.
+
+## Layout WhatsApp
+Todas as atividades de Pix (cpf, celular, e-mail, golpe, whatsapp-*, contas/boleto, QR, QR câmera) abrem conversa no WhatsApp; contas traz o código de barras (Copiar código); QR/câmera trazem a mensagem da loja sem chave.
+
+## Jogos de dinheiro (dinheiro.js)
+Moedas/cédulas ficam no canto superior esquerdo das zonas; fontes reduzidas com min(vh,px); puxador GAVETA centralizado no alto da bandeja.
