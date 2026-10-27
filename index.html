@@ -68,7 +68,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <span class="sym" style="left:4%;top:20px">+</span><span class="sym" style="right:6%;top:30px;font-size:120px">÷</span><span class="sym" style="left:46%;bottom:-18px;font-size:110px">×</span><span class="sym" style="right:30%;top:-10px">−</span>
 </div>
 <main>
-<form class="cod" id="cod" autocomplete="off"><b>🔑 Tem um código?</b><input id="codv" inputmode="numeric" maxlength="4" placeholder="0000" aria-label="Código da atividade"><button>Entrar ▶</button><span>O professor informa o código da atividade. Digite aqui e o jogo abre na hora.</span><div class="err" id="coderr">Código não encontrado. Confira os 4 números.</div></form>
+<form class="cod" id="cod" autocomplete="off"><b>🔑 Tem um código?</b><input id="codv" inputmode="numeric" maxlength="4" placeholder="0000" aria-label="Código da atividade"><button>Entrar ▶</button><button type="button" id="codp" title="Abrir a versão para imprimir (PDF) deste código" style="background:#ffd24d;color:#16213a">🖨️ Imprimir</button><span>O professor informa o código da atividade. Digite aqui e o jogo abre na hora.</span><div class="err" id="coderr">Código não encontrado. Confira os 4 números.</div></form>
 <div class="mats" id="mats"></div>
 <div class="bar" id="bar"></div>
 <div id="out"></div>
@@ -116,6 +116,7 @@ function draw(){
  empty.style.display=n?'none':'block'}
 function usar(c){var i=document.getElementById('codv');i.value=c;i.scrollIntoView({behavior:'smooth',block:'center'});i.focus()}
 function entrar(c){var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
+document.getElementById('codp').onclick=function(){var j=jogoPorCodigo(document.getElementById('codv').value);if(j)location.href=j.href+'?imp=1';else document.getElementById('coderr').style.display='block'};
 document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=document.getElementById('codv').value;document.getElementById('coderr').style.display=entrar(v)?'none':'block'};
 var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
 document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();

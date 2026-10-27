@@ -3,6 +3,7 @@
    e avisa em vermelho (tremendo) quando detecta tentativa de busca por imagem, captura de tela ou saída da página.
    Limite técnico: o Google Lens do Android/Chrome roda fora da página; só dá para detectar os sinais acima. */
 (function(){
+ if(/[?&]imp=1/.test(location.search))return;
  /* Endereço que recebe o relatório (ex.: formulário do Formspree que encaminha para o seu e-mail). Vazio = só avisa e guarda no aparelho. */
  var REPORT_URL='';
  var jogo=decodeURIComponent(location.pathname.split('/').pop()||'jogo');

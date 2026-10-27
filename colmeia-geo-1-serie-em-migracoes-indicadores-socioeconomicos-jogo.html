@@ -185,10 +185,10 @@ $('bDica').onclick=()=>{
  const e=hexEl[w.cells[0]];e.classList.add('hint');setTimeout(()=>e.classList.remove('hint'),2600);setPts(pts-5);msg('💡 A palavra “'+w.c+'” começa no hexágono piscando.');
 };
 $('bNovo').onclick=start;$('fB').onclick=start;
-window.EDU_DBG=function(){return words};
+window.EDU_DBG=function(){return words};window.EDU_PRINT=function(){return{words:words}};
 start();
 })();
 </script>
-<script src="config.js?v=3"></script><script src="ident.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="anticheat.js?v=3"></script>
+<script src="config.js?v=3"></script><script src="ident.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
 </body>
 </html>
