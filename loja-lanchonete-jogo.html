@@ -124,8 +124,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:#eef3fb;font-family:"S
 <script>
 (function(){
 /* ---------- dinheiro ---------- */
-const COINS=[5,10,25,50,100], BILLS=[200,500,1000,2000,5000,10000];
-const CS={5:{o:'#b8692b',i:'#d28a4e',t:'5',l:'CENTAVOS',d:.669,e:'#8a4a1c'},10:{o:'#b98a2c',i:'#d9b04f',t:'10',l:'CENTAVOS',d:.608,e:'#8a6414'},25:{o:'#b9892f',i:'#dcb558',t:'25',l:'CENTAVOS',d:.760,e:'#8a6414'},50:{o:'#aab3bf',i:'#d6dce4',t:'50',l:'CENTAVOS',d:.669,e:'#7d8794'},100:{o:'#cf9f26',i:'#cdd1d8',t:'1',l:'REAL',d:.821,e:'#9a7414',bi:1}};
+const COINS=[1,5,10,25,50,100], BILLS=[200,500,1000,2000,5000,10000];
+const CS={1:{o:'#b3622a',i:'#cf8548',t:'1',l:'CENTAVO',d:.52,e:'#7a3d14'},5:{o:'#b8692b',i:'#d28a4e',t:'5',l:'CENTAVOS',d:.669,e:'#8a4a1c'},10:{o:'#b98a2c',i:'#d9b04f',t:'10',l:'CENTAVOS',d:.608,e:'#8a6414'},25:{o:'#b9892f',i:'#dcb558',t:'25',l:'CENTAVOS',d:.760,e:'#8a6414'},50:{o:'#aab3bf',i:'#d6dce4',t:'50',l:'CENTAVOS',d:.669,e:'#7d8794'},100:{o:'#cf9f26',i:'#cdd1d8',t:'1',l:'REAL',d:.821,e:'#9a7414',bi:1}};
 const BS={200:['#5f7f95','#cfdde6','🐢',1.86],500:['#7b4fa3','#e7dcf3','🦢',1.97],1000:['#c8323c','#f6d9db','🦜',2.08],2000:['#d9a21b','#fbefc4','🐒',2.18],5000:['#b8702a','#f3dfc9','🐆',2.29],10000:['#2f86b8','#d6ecf7','🐟',2.40]};
 function fmt(c){return 'R$ '+Math.floor(c/100)+','+String(c%100).padStart(2,'0')}
 function coinSvg(v){if(window.DR)return DR.coin(v);const s=CS[v],tc=s.bi?'#4a4f58':'#3b2a12';
