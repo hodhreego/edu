@@ -216,3 +216,4 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 
 @media screen{.gabp{display:none!important}}
 .rw{display:grid!important;grid-template-columns:repeat(4,1fr);gap:.5em .3em;overflow:visible!important}.rw button{width:auto!important;min-width:0}
+@media screen{#dash .dh{left:16px!important;transform:none!important;width:min(300px,70%)}}
