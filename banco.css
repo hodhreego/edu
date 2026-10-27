@@ -517,3 +517,9 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .lnc .gridl button,.lnc .gdock button{position:relative}
 .lnc .bdg{position:absolute;top:-5px;left:calc(50% + .75em);min-width:1.5em;height:1.5em;padding:0 .3em;box-sizing:border-box;border-radius:1em;background:#ff3b30;color:#fff;font:700 .78em Arial,sans-serif;display:flex;align-items:center;justify-content:center;border:2px solid #fff;z-index:3;line-height:1}
 .xapp.zp .wb{background:#fff;color:#1f2430;font-family:Arial,sans-serif;text-align:center;padding-top:2em}
+
+.phone.msm .wh,.phone.msm .wst,.phone.msm .wbar{background:linear-gradient(90deg,#0099ff,#a033ff)!important}
+.phone.msm .av{color:#7b3ff2}.phone.msm .bub.me{background:#e9ddff!important}
+.phone.msm .wb{background-color:#f3eefc!important;background-image:none!important}
+.phone.msm .cp,.phone.msm button[data-a="sendcomp"]{background:#7b3ff2!important}
+.phone.msm .wct small{color:#7b3ff2}.phone.msm .wct i{background:#7b3ff2}
