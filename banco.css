@@ -85,3 +85,15 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 .rw{display:flex;gap:.6em;padding:.8em;overflow-x:auto}.rw button{flex:none;width:4.6em;background:transparent;border:0;display:flex;flex-direction:column;align-items:center;gap:.3em;font-size:.85em;font-weight:700;color:inherit;cursor:pointer}.rw button i{font-style:normal;font-size:1.6em;width:2.1em;height:2.1em;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px #0003}.rw button.hot i{background:var(--bb);color:#fff;box-shadow:0 0 0 .2em #fff,0 0 0 .35em var(--bb)}
 .mpc{background:#fff;margin:.8em;border-radius:1em;padding:1em;display:flex;flex-direction:column;gap:.2em;box-shadow:0 1px 3px #0002}.mpc b{font-size:1.8em;color:#222}.mpc span{color:#00a650;font-size:.85em;font-weight:700}.mpr{background:#fff;margin:0 .8em;border-radius:1em}
 .av2{background:#fff7e0;border:2px solid #f5a623;border-radius:1em;padding:1em;display:flex;flex-direction:column;gap:.5em;font-size:1.05em}
+
+#notif{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2147483600;width:min(94vw,420px);display:none;cursor:pointer}
+#notif.on{display:block;animation:ndrop .45s ease-out,npisca 1s ease-in-out .45s infinite}
+.nt{display:flex;gap:10px;align-items:center;background:#fff;border-left:8px solid #25d366;border-radius:14px;padding:10px 14px;box-shadow:0 8px 28px #0006}
+.nt .ni{font-size:30px;background:#25d366;border-radius:50%;width:46px;height:46px;display:flex;align-items:center;justify-content:center;flex:none}
+.nt small{display:block;color:#667;font-size:11px;font-weight:700;letter-spacing:.5px}.nt b{display:block;font-size:17px}.nt span:last-child{font-size:15px;color:#333}
+@keyframes ndrop{from{transform:translate(-50%,-120%)}to{transform:translate(-50%,0)}}
+@keyframes npisca{0%,100%{filter:none;transform:translateX(-50%) scale(1)}50%{filter:drop-shadow(0 0 14px #25d366) brightness(1.06);transform:translateX(-50%) scale(1.04)}}
+#ped.lock #txt,#ped.lock #qrs{filter:blur(9px);pointer-events:none;user-select:none}
+#ped.lock h2::after{content:" — toque na notificação 🔔";color:#25a244;font-size:14px}
+.ex{text-align:left;margin:10px 0;max-height:46vh;overflow:auto;min-width:min(80vw,460px)}.ex h3{margin:0 0 6px;font-size:18px}.ex table{width:100%;border-collapse:collapse;font-size:14px}.ex td{padding:5px 6px;border-bottom:1px solid #e3e6ee}.ex td small{display:block;color:#778;font-size:11px}.ex tr.e{background:#fff0f0;color:#b3261e}.ex tr.o td:last-child{color:#0f9d58;font-weight:900}
+.ex .sm{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:14px;background:#f4f7fc;border-radius:10px;padding:8px 10px}
