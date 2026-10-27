@@ -14,7 +14,8 @@
  'input,textarea,[contenteditable]{-webkit-user-select:text!important;user-select:text!important}'+
  'img,svg,canvas{-webkit-user-drag:none;user-drag:none}'+
  '#ac-aviso{position:fixed!important;left:10vw!important;top:10vh!important;right:auto!important;bottom:auto!important;margin:0!important;z-index:2147483600;width:80vw!important;height:80vh!important;height:80dvh!important;max-width:none!important;background:#d00000;color:#fff;border:8px solid #fff;border-radius:28px;'+
- 'padding:3vh 3vw;text-align:center;font:900 clamp(30px,7vw,84px)/1.12 "Segoe UI",Roboto,Arial,sans-serif;box-shadow:0 0 0 10px #d00000,0 0 0 9999px rgba(0,0,0,.55),0 24px 70px rgba(0,0,0,.7);display:none;flex-direction:column;align-items:center;justify-content:center;gap:2vh;animation:ac-sacode .4s infinite;cursor:pointer}'+
+ 'padding:3vh 3vw;text-align:center;font:900 clamp(30px,7vw,84px)/1.12 "Segoe UI",Roboto,Arial,sans-serif;box-shadow:0 0 0 10px #d00000,0 0 0 9999px rgba(0,0,0,.55),0 24px 70px rgba(0,0,0,.7);display:none;flex-direction:column;align-items:center;justify-content:center;gap:2vh;animation:ac-sacode .4s infinite;cursor:default}'+
+ '#ac-q{display:flex;align-items:center;gap:1.5vw;background:#fff;color:#d00000;border-radius:22px;padding:1.5vh 2.5vw;font:900 clamp(28px,5vw,64px) "Segoe UI",Arial,sans-serif}#ac-q input{width:2.6em;font:inherit;text-align:center;border:4px solid #d00000;border-radius:14px;color:#16213a;background:#fff}#ac-q button{font:inherit;border:0;border-radius:16px;background:#d00000;color:#fff;padding:0 .6em;cursor:pointer}#ac-q.err{animation:ac-no .35s}@keyframes ac-no{25%{transform:translateX(-14px)}75%{transform:translateX(14px)}}#ac-aviso:focus-within{animation-play-state:paused}'+
  '#ac-aviso small{display:block;font:700 clamp(16px,2.6vw,30px)/1.3 "Segoe UI",Roboto,Arial,sans-serif;opacity:.97}'+
  '#ac-aviso em{display:block;font:800 clamp(14px,2vw,22px) "Segoe UI",Roboto,Arial,sans-serif;font-style:normal;background:#fff;color:#d00000;border-radius:99px;padding:6px 22px}'+
  '@keyframes ac-sacode{0%,100%{transform:translate(0,0) rotate(0)}12%{transform:translate(-22px,6px) rotate(-2.2deg)}25%{transform:translate(22px,-6px) rotate(2.2deg)}38%{transform:translate(-16px,-8px) rotate(-1.6deg)}50%{transform:translate(16px,8px) rotate(1.6deg)}65%{transform:translate(-10px,0) rotate(-1deg)}80%{transform:translate(10px,0) rotate(1deg)}}'+
@@ -30,7 +31,7 @@
   var body=JSON.stringify({_subject:'ALERTA anti-cola: '+tipo+' — '+(d.nome||'aluno sem nome')+' — '+jogo,tipo:tipo,jogo:jogo,aluno:d.nome,turma:d.turma,tentativas:cont,quando:d.quando,aparelho:d.aparelho});
   try{fetch(REPORT_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:body,keepalive:true})}catch(e){}
  }
- box.addEventListener('click',function(){box.style.display='none'});
+ 
  var AC=null;
  function alarme(){
   try{if(navigator.vibrate)navigator.vibrate([300,120,300,120,500])}catch(e){}
@@ -38,12 +39,22 @@
    for(var i=0;i<6;i++){var t=AC.currentTime+i*.32,o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(i%2?620:880,t);
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.32)}}catch(e){}
  }
+ var resp=0;
+ function novaConta(){var x=Math.floor(Math.random()*11),y=Math.floor(Math.random()*11),mul=Math.random()<.6;resp=mul?x*y:x+y;var c=document.getElementById('ac-c');if(c)c.textContent=x+(mul?' × ':' + ')+y+' = ';var r=document.getElementById('ac-r');if(r)setTimeout(function(){try{r.focus()}catch(e){}},50)}
  function aviso(tipo,titulo){
   cont++;
-  box.innerHTML='⚠️ '+titulo+'<small>Isso foi registrado e o professor será avisado. Tentativas nesta página: '+cont+'.</small><em>Toque aqui para fechar</em>';
+  var vis=box.style.display==='flex';
+  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Isso foi registrado e o professor será avisado. Tentativas nesta página: '+cont+'.</small><small>Para continuar, resolva a conta:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
+   novaConta();
+   var f=document.getElementById('ac-q'),r=document.getElementById('ac-r');
+   r.addEventListener('keydown',function(e){e.stopPropagation()},true);r.addEventListener('input',function(){r.value=r.value.replace(/\D/g,'')});
+   f.addEventListener('submit',function(e){e.preventDefault();
+    if(+r.value===resp&&r.value!==''){box.style.display='none';box.innerHTML=''}
+    else{r.value='';f.classList.remove('err');void f.offsetWidth;f.classList.add('err');novaConta()}});
+   box.addEventListener('pointerdown',function(e){if(e.target.closest('#ac-q'))box.style.animationPlayState='paused'});
+  }
   box.style.display='flex';alarme();
   box.style.animation='none';void box.offsetWidth;box.style.animation='';
-  clearTimeout(tAviso);tAviso=setTimeout(function(){box.style.display='none'},9000);
   enviar(tipo);
  }
  var LENS='TENTATIVA DE USAR O GOOGLE LENS DETECTADA!';
