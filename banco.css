@@ -234,3 +234,7 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 .ex .xx{position:absolute;top:10px;right:12px;z-index:3;width:32px;height:32px;border-radius:50%;border:0;background:#ffffffcc;color:#111;font:900 16px Arial;cursor:pointer;box-shadow:0 1px 4px #0005}
 #exm .box.ex{position:relative}
 .exapp{max-height:none;overflow:visible;min-width:0;margin:0;background:transparent}.exapp .xh{border-radius:0 0 18px 18px}.exapp .xl{margin:0 8px 10px}
+/* celulares ajustados ao tamanho da tela do aluno */
+:root{--ph:clamp(400px,min(calc(100vh - 250px),calc((100vw - 110px) * .95),780px),780px)}
+@media screen and (max-width:900px){:root{--pw:clamp(230px,min(92vw,480px,calc((100vh - 230px)/2)),480px)}.phone{width:var(--pw)!important;height:calc(var(--pw)*2)!important;font-size:calc(var(--pw)/21)!important}}
+@media screen{#dash{max-height:min(40vh,340px)!important}body:has(#dash.open){padding-bottom:min(42vh,360px)}#dash .dg{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}#dash .db{padding:6px 8px}#dash .db span{font-size:1.15em}}
