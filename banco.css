@@ -217,3 +217,16 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 @media screen{.gabp{display:none!important}}
 .rw{display:grid!important;grid-template-columns:repeat(4,1fr);gap:.5em .3em;overflow:visible!important}.rw button{width:auto!important;min-width:0}
 @media screen{#dash .dh{left:16px!important;transform:none!important;width:min(300px,70%)}}
+
+#exm .box.ex{padding:0;border-radius:20px;max-width:480px;background:#f3f4f8;max-height:90vh;overflow:auto;display:flex;flex-direction:column}
+.ex .xh{background:var(--c,#16213a);color:var(--t,#fff);padding:16px 18px 14px;border-radius:20px 20px 18px 18px;position:relative}.ex .xh.gen{--c:#16213a;--t:#fff}
+.ex .xh .xt{display:flex;align-items:center;gap:10px;margin-bottom:8px}.ex .xh .xt b{font-size:17px}.ex .xh small{display:block;opacity:.85;font-size:12px}
+.ex .xh strong{display:block;font-size:30px;font-weight:900;letter-spacing:.3px;margin:2px 0}.ex .xh strong.neg{text-shadow:0 0 0 #fff}.ex .xh b{display:block;font-size:20px}.ex .xh em{font-style:normal;font-size:12px;opacity:.9}
+.ex .xs{font:800 12px Arial;letter-spacing:1px;text-transform:uppercase;color:#6b7280;padding:12px 18px 4px}
+.ex .xl{background:#fff;margin:0 10px;border-radius:14px;padding:2px 12px 6px;box-shadow:0 1px 3px #0001}
+.ex .xd{font:800 11px Arial;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;padding:10px 0 4px}
+.ex .xi{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #edeff4}.ex .xi:last-child{border-bottom:0}
+.ex .xc{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex:none;background:#fde8e8;color:#b91c1c}.ex .xc.in{background:#e3f7ea;color:#15803d}.ex .xc.out{background:#fde8e8;color:#b91c1c}
+.ex .xm{flex:1;min-width:0}.ex .xm b{display:block;font-size:14px;color:#111827}.ex .xm small{display:block;font-size:11.5px;color:#6b7280}
+.ex .xv{text-align:right;flex:none}.ex .xv b{display:block;font-size:15px}.ex .xv b.in{color:#15803d}.ex .xv b.out{color:#111827}.ex .xv small{font-size:11px;color:#6b7280}
+.ex .xe{text-align:center;color:#6b7280;padding:18px}.ex>.btn{margin:12px 10px 0}.ex>.btn.ok{margin-bottom:14px}
