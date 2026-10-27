@@ -61,7 +61,7 @@
  document.addEventListener('contextmenu',function(e){if(/input|textarea/i.test(e.target.tagName))return;e.preventDefault();aviso('Google Lens / busca por imagem (menu do botão direito)',LENS)},true);
  /* toque longo no celular (abre "Pesquisar imagem com o Lens") */
  var tl=null;
- document.addEventListener('touchstart',function(e){if(e.touches.length>1)return;var t=e.target;if(/input|textarea|button|select/i.test(t.tagName))return;clearTimeout(tl);tl=setTimeout(function(){aviso('Google Lens / busca por imagem (toque longo)',LENS)},650)},{passive:true,capture:true});
+ document.addEventListener('touchstart',function(e){if(e.touches.length>1)return;var t=e.target;if(/input|textarea|button|select/i.test(t.tagName))return;clearTimeout(tl);tl=setTimeout(function(){aviso('Google Lens / busca por imagem (toque longo)',LENS)},2000)},{passive:true,capture:true});
  ['touchend','touchmove','touchcancel'].forEach(function(n){document.addEventListener(n,function(){clearTimeout(tl)},{passive:true,capture:true})});
  document.addEventListener('dragstart',function(e){if(e.target&&e.target.closest&&e.target.closest('.m,.chip,.jchip,[draggable=true]'))return;e.preventDefault()},true);
  document.addEventListener('keydown',function(e){

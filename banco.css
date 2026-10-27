@@ -255,3 +255,16 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 @media screen and (max-width:900px){:root{--pw:clamp(230px,min(92vw,380px,calc((100vh - 230px)/2)),380px)}}
 @media screen and (max-width:360px){:root{--pw:clamp(220px,min(94vw,300px,calc((100vh - 200px)/2)),300px)}.top h1{font-size:15px}.sub{font-size:11px}#app{padding:4px!important}.dg{grid-template-columns:repeat(2,1fr)!important}.box{padding:16px 14px}}
 @media screen and (max-width:500px){#dash{max-height:42vh!important}}
+
+.phone .nvb{flex:none;position:relative;height:2.7em;display:flex;align-items:center;justify-content:space-around;background:#000;touch-action:none;z-index:6}
+.phone .nvb button{background:none;border:0;color:#fff;font-size:1.4em;flex:1;height:100%;cursor:pointer;padding:0}
+.phone .nvb.gst,.phone .nvb.ios{height:1.7em;background:transparent;justify-content:center;cursor:grab}
+.phone .nvb i{display:block;width:36%;height:.38em;border-radius:1em;background:#222;opacity:.8}
+.phone.nvI::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:34%;height:1.2em;background:#111;border-radius:0 0 1em 1em;z-index:7;pointer-events:none}
+#navpick{position:fixed;inset:0;z-index:99999;background:#000a;display:flex;align-items:center;justify-content:center;padding:16px}
+#navpick .nvbox{background:#fff;color:#222;border-radius:16px;max-width:380px;width:100%;padding:18px;display:flex;flex-direction:column;gap:10px;font-family:Nunito,system-ui,sans-serif}
+#navpick h3{margin:0;font-size:20px}#navpick p{margin:0;font-size:14px;color:#555}
+#navpick button{display:grid;grid-template-columns:44px 1fr;align-items:center;text-align:left;gap:0 10px;background:#f3f4f8;border:2px solid #d6d9e5;border-radius:12px;padding:10px;cursor:pointer;font:inherit}
+#navpick button i{grid-row:span 2;font-size:30px;font-style:normal;text-align:center}#navpick button b{font-size:16px}#navpick button small{color:#666;font-size:13px}
+#navpick button.on,#navpick button:hover{border-color:#2a6cf0;background:#eaf1ff}
+.phone .ls button.fatop{background:#fff1f1;border-color:#e44}
