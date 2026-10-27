@@ -552,3 +552,33 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 @media screen and (max-width:900px){#txt>.wa{zoom:calc(.82*var(--appz,1))}}
 @media screen and (max-width:430px){#txt>.wa{zoom:calc(.78*var(--appz,1))}}
 #txt.tgm .cp,#txt.msm .cp,#txt.smsm .cp{background:transparent!important}
+
+.phone{zoom:var(--phs,1)}
+#stage,#ped{position:relative}
+.szb{position:absolute;top:6px;right:8px;z-index:30;display:flex;align-items:center;gap:6px;flex-direction:row-reverse}
+.szb button{width:30px;height:30px;border-radius:50%;border:1px solid #9aa7c7;background:#fff;color:#1d3f9e;font:700 16px Arial;cursor:pointer;box-shadow:0 1px 4px #0003;padding:0}
+.szb input{display:none;width:130px;accent-color:#2563eb;background:#fff;border-radius:12px;padding:4px 6px;box-shadow:0 1px 4px #0003}
+.szb.open input{display:block}
+@media print{.szb{display:none!important}}
+.szb input{position:absolute;top:34px;right:0}
+#stage .szb{top:-4px;right:-4px}
+
+/* smartwatches */
+#stage.wtch{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;min-height:calc(var(--ph)*.95);overflow:hidden}
+#stage.wtch::before,#stage.wtch::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:calc(var(--ph)*.3);height:calc(var(--ph)*.3);background:repeating-linear-gradient(0deg,#2b2b30 0 .6em,#38383e .6em 1.2em);z-index:0}
+#stage.wtch::before{top:0;border-radius:0 0 1.2em 1.2em}#stage.wtch::after{bottom:0;border-radius:1.2em 1.2em 0 0}
+#stage.wtc-gw::before,#stage.wtc-gw::after{width:calc(var(--ph)*.22);background:repeating-linear-gradient(0deg,#3a3f52 0 .6em,#454b60 .6em 1.2em)}
+#stage.wtch .phone{z-index:1;flex:none}
+.phone.dv-aw{width:calc(var(--ph)*.44);height:calc(var(--ph)*.54);font-size:calc(var(--ph)/54);border-width:.8em;border-radius:3.4em;border-color:#18181a}
+.phone.dv-gw{width:calc(var(--ph)*.5);height:calc(var(--ph)*.5);font-size:calc(var(--ph)/54);border-width:.9em;border-radius:50%;border-color:#1d1f27;padding:2.2em 1.4em}
+@media screen and (max-width:900px){.phone.dv-aw{width:min(64vw,260px);height:min(78vw,316px);font-size:calc(min(64vw,260px)/26)}.phone.dv-gw{width:min(74vw,300px);height:min(74vw,300px)}}
+
+.cedz{display:flex;align-items:center;margin:.5em 0 .3em}.ced{width:74px;height:auto;flex:none;filter:drop-shadow(0 1px 2px #0004)}.cedt{margin-left:10px;font:800 1.05em Arial;color:#15803d}
+
+/* Galaxy Pocket: aparelho antigo e lento */
+.phone.dv-pocket{width:calc(var(--ph)*.4);height:calc(var(--ph)*.62);font-size:calc(var(--ph)/62);border-width:.9em;border-radius:1.6em;border-color:#2a2c30;background-color:#111}
+@media screen and (max-width:900px){.phone.dv-pocket{width:min(62vw,250px);height:min(96vw,390px);font-size:calc(min(62vw,250px)/16)}}
+.pkw{position:absolute;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);cursor:progress}
+.pks{width:3.4em;height:3.4em;border:.4em solid #fff8;border-top-color:#fff;border-radius:50%;animation:pks .8s linear infinite}@keyframes pks{to{transform:rotate(360deg)}}
+.pkb{background:#fff;color:#222;border-radius:1em;padding:1em 1.2em;text-align:center;max-width:80%;box-shadow:0 4px 18px #0007}.pkb p{margin:.4em 0}
+.phone.dv-aw{font-size:calc(var(--ph)/72)}.phone.dv-gw{font-size:calc(var(--ph)/78)}
