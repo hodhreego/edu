@@ -60,11 +60,21 @@ document.addEventListener('DOMContentLoaded',function(){
  +'#dm-g{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}'
  +'#dm-g .q{border:1px dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}#dm-g .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}'
  +'#dm-g .q img{height:var(--dm-i,9mm);width:auto;vertical-align:middle;margin:0 3px}#dm-g .r{margin-top:4px;font-weight:700}#dm-g .r u{display:inline-block;min-width:60px;text-decoration:none;border-bottom:1px solid #000}'
+ +'#dm-cut{break-before:page;page-break-before:always}.cutg{display:flex;flex-wrap:wrap;gap:3mm}.ci{display:inline-flex;align-items:center;justify-content:center;border:1px dashed #555;padding:.6mm;box-sizing:content-box}.ci.co{border-radius:50%}.ci .cw{display:flex;align-items:center;justify-content:center}.ci img,.ci svg{height:var(--h)!important;width:auto;display:block;max-width:none}'
  +'#dm-gab{break-before:page;page-break-before:always}#dm-gab ol{columns:3;font-size:.95em}'
  +'#dm-bar{position:sticky;top:0;z-index:2147483500;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 14px;font:700 13px "Segoe UI",Arial,sans-serif}#dm-bar label{display:flex;gap:6px;align-items:center}#dm-bar input[type=range]{width:110px}#dm-bar select,#dm-bar button{font:700 13px Arial;padding:3px 8px;border-radius:8px;border:0}'
  +'@media print{#dm-bar,#imp-bar{display:none!important}#dm-sheet{margin:0;max-width:none}@page{size:A4;margin:8mm}}';
  document.head.appendChild(st);
  function esc(x){return String(x).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+
+ function cut(){
+  var K=+((document.getElementById('dm-k')||{}).value||3),H=+((document.getElementById('dm-s')||{}).value||12);
+  var B=window.BILLSET?Array.from(window.BILLSET).sort(function(x,y){return x-y}):[200,500,1000,2000,5000,10000];
+  var CD={1:.52,5:.669,10:.608,25:.76,50:.669,100:.821},NR={200:1.86,500:1.97,1000:2.08,2000:2.18,5000:2.29,10000:2.4,20000:2.5},o='';
+  B.forEach(function(v){for(var i=0;i<K;i++)o+='<span class="ci" style="width:'+(H*(NR[v]||2.3)).toFixed(1)+'mm;height:'+H+'mm"><span class="cw" style="--h:'+H+'mm">'+DR.bill(v)+'</span></span>'});
+  [1,5,10,25,50,100].forEach(function(v){for(var i=0;i<K*2;i++){var s=H*CD[v];o+='<span class="ci co" style="width:'+s.toFixed(1)+'mm;height:'+s.toFixed(1)+'mm"><span class="cw" style="--h:'+s.toFixed(1)+'mm">'+DR.coin(v)+'</span></span>'}});
+  return '<div id="dm-cut"><h2>✂️ Dinheirinho para recortar (cole no caderno)</h2><p style="margin:0 0 6px;font-size:.9em">Recorte pela linha pontilhada. Imagens ilustrativas, sem valor.</p><div class="cutg">'+o+'</div></div>';
+ }
  function build(){
   var D=window.DRG;if(!D)return;var old=document.getElementById('dm-wrap');if(old)old.remove();
   var wrap=document.createElement('div');wrap.id='dm-wrap';
@@ -80,8 +90,8 @@ document.addEventListener('DOMContentLoaded',function(){
    q+='</div>';gab+='</li>';
   });
   wrap.innerHTML='<div id="dm-sheet"><h1>'+esc(ttl.replace(/[^\wÀ-ú ]/g,'').trim())+'</h1><div class="id"><span>Nome:</span><span style="max-width:90px">Data:</span><span style="max-width:90px">Turma:</span><span>Escola:</span></div>'
-   +'<p style="margin:0 0 6px"><b>Leia com atenção.</b> Calcule e escreva a resposta. Use moedas e cédulas do Real.</p><style>.dmg{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}.dmg .q{border:1px dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}.dmg .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}.dmg .r{margin-top:4px;font-weight:700}.dmg .r u{display:inline-block;min-width:60px;border-bottom:1px solid #000;text-decoration:none}.dmg img{height:var(--dm-i,9mm);width:auto;vertical-align:middle}</style>'+q
-   +'<div id="dm-gab"><h2>GABARITO — uso do professor</h2><ol>'+gab+'</ol></div></div>';
+   +'<p style="margin:0 0 6px"><b>✂️ Como fazer:</b> recorte cada problema (linha pontilhada) e <b>cole no caderno</b>. Recorte o <b>dinheirinho</b> da última folha, cole no caderno ao lado do problema e <b>resolva ali</b>, mostrando as cédulas e moedas que você usou.</p><style>.dmg{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}.dmg .q{border:1px dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}.dmg .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}.dmg .r{margin-top:4px;font-weight:700}.dmg .r u{display:inline-block;min-width:60px;border-bottom:1px solid #000;text-decoration:none}.dmg img{height:var(--dm-i,9mm);width:auto;vertical-align:middle}</style>'+q
+   +cut()+'<div id="dm-gab"><h2>GABARITO — uso do professor</h2><ol>'+gab+'</ol></div></div>';
   document.body.appendChild(wrap);
  }
  var bar=document.createElement('div');bar.id='dm-bar';
@@ -90,13 +100,14 @@ document.addEventListener('DOMContentLoaded',function(){
   +'<label>Questões lado a lado <select id="dm-c"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>'
   +'<label>Letra <input id="dm-f" type="range" min="9" max="18" value="13"></label>'
   +'<label>Margem <input id="dm-m" type="range" min="3" max="20" value="8"></label>'
+  +'<label>Dinheiro recortável (qtd) <input id="dm-k" type="range" min="1" max="6" value="3"></label><label>Tamanho <input id="dm-s" type="range" min="8" max="20" value="12"></label>'
   +'<label>Cédula <input id="dm-i" type="range" min="4" max="16" value="8"></label>'
   +'<button id="dm-n">🔄 Novas questões</button><button onclick="window.print()" style="background:#ffd24d">Imprimir / Salvar PDF</button>';
  addEventListener('load',function(){
   document.body.insertBefore(bar,document.body.firstChild);build();
   var R=document.documentElement.style;
   function ap(){R.setProperty('--dm-c',document.getElementById('dm-c').value);R.setProperty('--dm-f',document.getElementById('dm-f').value+'px');R.setProperty('--dm-m',document.getElementById('dm-m').value+'mm');R.setProperty('--dm-i',document.getElementById('dm-i').value+'mm')}
-  ['dm-c','dm-f','dm-m','dm-i'].forEach(function(i){document.getElementById(i).addEventListener('input',ap)});ap();
+  ['dm-c','dm-f','dm-m','dm-i'].forEach(function(i){document.getElementById(i).addEventListener('input',ap)});['dm-k','dm-s'].forEach(function(i){document.getElementById(i).addEventListener('input',build)});ap();
   document.getElementById('dm-n').onclick=build;document.getElementById('dm-y').onchange=build;
  });
 })();
