@@ -8,6 +8,7 @@
 })();
 /* enunciado claro e direto para cada questão */
 window.DRQT=function(t,fmt){
+ if(t&&t.txt)return t.txt;
  if(!t||!t.items)return '';
  var L=t.items.map(function(i){return (i.e?i.e+' ':'')+'<b>'+i.n+'</b> ('+fmt(i.p)+')'});
  var lista=L.length>1?L.slice(0,-1).join(', ')+' e '+L[L.length-1]:L[0],h;
@@ -68,8 +69,8 @@ document.addEventListener('DOMContentLoaded',function(){
   var wrap=document.createElement('div');wrap.id='dm-wrap';
   var ttl=(document.querySelector('#app h1,h1')||{}).textContent||document.title;
   var q='',gab='',n=0;
-  D.FASES.forEach(function(F,fi){
-   var tasks=F.gen();q+='<h2>'+esc(F.t||'Fase '+(fi+1))+' — '+esc(F.s||'')+'</h2><div id="dm-g'+fi+'" class="dmg">';gab+='<li><b>'+esc(F.t||'Fase '+(fi+1))+'</b><br>';
+  var Y=+((document.getElementById('dm-y')||{}).value||0);D.FASES.forEach(function(F,fi){
+   if(Y&&(F.y||6)!==Y)return;var tasks=F.gen();q+='<h2>'+esc(F.t||'Fase '+(fi+1))+' — '+esc(F.s||'')+'</h2><div id="dm-g'+fi+'" class="dmg">';gab+='<li><b>'+esc(F.t||'Fase '+(fi+1))+'</b><br>';
    tasks.forEach(function(t,k){
     n++;var h=DRQT(t,D.fmt).replace(/ Monte o troco na carteira\./,'').replace(/Monte <b>exatamente [^<]*<\/b> na carteira, com moedas e cédulas\./,'<b>Quais cédulas e moedas você usa para pagar?</b>').replace(/<b>Some os preços<\/b> e monte o total exato na carteira\./,'<b>Some os preços. Qual é o total?</b>');var pay=t.paid?' <span class="img">'+DR.bill(t.paid)+'</span>':'';
     q+='<div class="q"><b class="n">'+(k+1)+'</b>'+h+'<div class="r">'+(t.paid?'Troco: R$ <u>&nbsp;</u>':(t.items.length>1?'Total a pagar: R$ <u>&nbsp;</u>':'Resposta: <u style="min-width:70%">&nbsp;</u>'))+'</div></div>';
@@ -84,6 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){
  }
  var bar=document.createElement('div');bar.id='dm-bar';
  bar.innerHTML='<span>🖨️ Imprimir atividade</span>'
+  +'<label>Ano <select id="dm-y"><option value="0">Todos</option><option value="6">6º</option><option value="7">7º</option><option value="8">8º</option><option value="9">9º</option></select></label>'
   +'<label>Questões lado a lado <select id="dm-c"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>'
   +'<label>Letra <input id="dm-f" type="range" min="9" max="18" value="13"></label>'
   +'<label>Margem <input id="dm-m" type="range" min="3" max="20" value="8"></label>'
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded',function(){
   var R=document.documentElement.style;
   function ap(){R.setProperty('--dm-c',document.getElementById('dm-c').value);R.setProperty('--dm-f',document.getElementById('dm-f').value+'px');R.setProperty('--dm-m',document.getElementById('dm-m').value+'mm');R.setProperty('--dm-i',document.getElementById('dm-i').value+'mm')}
   ['dm-c','dm-f','dm-m','dm-i'].forEach(function(i){document.getElementById(i).addEventListener('input',ap)});ap();
-  document.getElementById('dm-n').onclick=build;
+  document.getElementById('dm-n').onclick=build;document.getElementById('dm-y').onchange=build;
  });
 })();
 /* bandeja de dinheiro como "gaveta" deslizável: puxador elegante na borda de cima */
@@ -103,14 +105,22 @@ document.addEventListener('DOMContentLoaded',function(){
  var st=document.createElement('style');
  st.textContent='@media screen{#app>.tray{overflow:visible!important;max-height:none!important}'
  +'#app>.tray>.tray-in{overflow-y:auto;max-height:calc(54vh / var(--ezz,1));display:flex;flex-direction:column;gap:.8vh;border-radius:1.2vh}'
- +'.tray-h{position:absolute;left:50%;top:-11px;transform:translateX(-50%);width:92px;height:20px;border-radius:99px;background:linear-gradient(#f8fafc,#cbd5e1);border:2px solid #64748b;box-shadow:0 3px 8px #0005,inset 0 1px 0 #fff;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5;display:flex;align-items:center;justify-content:center;gap:5px}'
+ +'.tray-h,.tray-z{position:absolute;top:-11px;width:92px;height:20px;border-radius:99px;background:linear-gradient(#f8fafc,#cbd5e1);border:2px solid #64748b;box-shadow:0 3px 8px #0005,inset 0 1px 0 #fff;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5;display:flex;align-items:center;justify-content:center;gap:5px}'
  +'.tray-h::before,.tray-h::after{content:"";width:22px;height:3px;border-radius:3px;background:#64748b}'
  +'.tray-h i{display:none}.tray-h:before{box-shadow:0 5px 0 #64748b}.tray-h:after{box-shadow:0 5px 0 #64748b}'
- +'.tray-h span{position:absolute;inset:-14px -22px}'
+ +'.tray-h span{position:absolute;inset:-14px -10px}'
+ +'.tray-h{left:16px}.tray-z{right:16px;height:20px;border-radius:99px;background:linear-gradient(#f8fafc,#cbd5e1);border:2px solid #64748b;box-shadow:0 3px 8px #0005,inset 0 1px 0 #fff;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5;display:flex;align-items:center;justify-content:center;font:800 12px Arial;color:#334155;gap:4px}.tray-z span{position:absolute;inset:-14px -10px}'
  +'#app>.tray.dr-col{padding:0!important;height:14px!important;min-height:0!important;border-width:2px!important}#app>.tray.dr-col>.tray-in{display:none!important}}';
  document.head.appendChild(st);
  var inn=document.createElement('div');inn.className='tray-in';while(tr.firstChild)inn.appendChild(tr.firstChild);tr.appendChild(inn);
  var h=document.createElement('div');h.className='tray-h';h.title='Arraste para cima ou para baixo';h.innerHTML='<span></span>';tr.appendChild(h);
+
+ var z=document.createElement('div');z.className='tray-z';z.title='Arraste para aumentar ou diminuir o dinheiro';z.innerHTML='🔍 <b>+ −</b><span></span>';tr.appendChild(z);
+ var sz=document.getElementById('sz'),zy=0,zv=0,zd=false,zm=false;
+ function setSz(v){if(!sz)return;v=Math.max(+sz.min,Math.min(+sz.max,v));sz.value=v;sz.dispatchEvent(new Event('input',{bubbles:true}))}
+ z.addEventListener('pointerdown',function(e){zd=true;zm=false;zy=e.clientY;zv=+(sz&&sz.value)||5;z.setPointerCapture(e.pointerId);e.preventDefault()});
+ z.addEventListener('pointermove',function(e){if(!zd)return;var dy=zy-e.clientY;if(Math.abs(dy)>4)zm=true;if(zm)setSz(zv+dy/22)});
+ z.addEventListener('pointerup',function(){zd=false;if(!zm&&sz){var v=+sz.value;setSz(v<6.5?8.5:v<10?12:5)}});
  function zoom(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ezz'))||1}
  function setH(px){inn.style.setProperty('max-height',px+'px','important');inn.style.setProperty('height',px+'px','important')}
  function clr(){inn.style.removeProperty('max-height');inn.style.removeProperty('height')}
@@ -147,4 +157,65 @@ document.addEventListener('DOMContentLoaded',function(){
  document.addEventListener('pointerdown',function(e){
   if(!ligado())return;var m=e.target.closest&&e.target.closest('.m');if(!m||!m.dataset.v)return;
   if(!m.closest('#tray'))return;var v=+m.dataset.v;v>=200?cedula():moeda(v)},true);
+})();
+
+/* níveis 7º, 8º e 9º ano: mais questões e mais difícil (lojas, mercadinho, troco) */
+(function(){
+ if(!/(loja|mercadinho|troco)/.test(location.pathname))return;
+ function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+ function pick(a){return a[rnd(0,a.length-1)]}
+ function r50(c){return Math.max(50,Math.round(c/50)*50)}
+ function r100(c){return Math.max(100,Math.round(c/100)*100)}
+ function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(0,i),t=a[i];a[i]=a[j];a[j]=t}return a}
+ var CED=[500,1000,2000,5000,10000];
+ function ced(total){for(var i=0;i<CED.length;i++)if(CED[i]>total)return CED[i];return 0}
+ function build(D){
+  var F=D.FASES,fmt=D.fmt,pool={},i,k;
+  F.forEach(function(f){f.y=f.y||6});
+  for(i=0;i<5;i++)for(k=0;k<Math.min(4,F.length);k++){try{F[k].gen().forEach(function(t){t.items.forEach(function(x){if(x.e&&x.n&&!pool[x.n])pool[x.n]={e:x.e,n:x.n,p:x.p}})})}catch(e){}}
+  var P=Object.keys(pool).map(function(n){return pool[n]}).filter(function(x){return x.p>=100&&x.p<=6000});
+  if(P.length<6)return;
+  function money(c){return fmt(c)}
+  function uniq(fn,n){var out=[],seen={},g=0;while(out.length<n&&g++<800){var t=fn();if(!t||seen[t.txt])continue;seen[t.txt]=1;out.push(t)}return out}
+  function mkT(items,total,paid,txt){return {items:items,total:total,paid:paid||0,target:paid?paid-total:total,txt:txt}}
+  function a7(){var it=shuffle(P).slice(0,4).map(function(x){return {e:x.e,n:x.n,p:r50(x.p)}}),tot=it.reduce(function(s,x){return s+x.p},0),pg=ced(tot);if(!pg||tot>9800)return null;
+   return mkT(it.sort(function(a,b){return a.p-b.p}),tot,pg,'Um cliente comprou 4 produtos: '+it.map(function(x){return x.e+' <b>'+x.n+'</b> ('+money(x.p)+')'}).join(', ')+'. Ele pagou com <b>uma cédula de '+money(pg)+'</b>. <b>Qual é o troco?</b>')}
+  function b7(){var n=rnd(2,3),pp=shuffle(P.filter(function(x){return x.p<=2500})).slice(0,n);if(pp.length<n)return null;var it=[],tot=0,parts=[];
+   pp.forEach(function(x){var q=rnd(2,5),u=r50(x.p);it.push({e:x.e,n:q+' × '+x.n,p:q*u});tot+=q*u;parts.push(q+' × '+x.e+' <b>'+x.n+'</b> ('+money(u)+' cada)')});
+   var pg=ced(tot);if(!pg||tot>9800)return null;
+   return mkT(it,tot,pg,'Um cliente comprou: '+parts.join(', ')+'. Ele pagou com <b>uma cédula de '+money(pg)+'</b>. <b>Qual é o troco?</b>')}
+  function a8(){var x=pick(P.filter(function(y){return y.p>=1000})),pc=pick([10,20,25,50]),base=r100(x.p);if(base<1000)base=1000;
+   var fin=base-base*pc/100,pg=ced(fin);if(!pg)return null;
+   return mkT([{e:x.e,n:x.n+' (preço normal)',p:base}],fin,pg,'O produto '+x.e+' <b>'+x.n+'</b> custa '+money(base)+' e está com <b>'+pc+'% de desconto</b>. O cliente pagou com <b>uma cédula de '+money(pg)+'</b>. <b>Qual é o troco?</b>')}
+  function b8(){var x=pick(P.filter(function(y){return y.p<=2500&&y.p>=300})),q=rnd(2,5),u=r100(x.p),pc=pick([10,20,50]);
+   var bruto=q*u,fin=bruto-bruto*pc/100,pg=ced(fin);if(!pg||bruto>20000)return null;
+   return mkT([{e:x.e,n:q+' × '+x.n+' (sem desconto)',p:bruto}],fin,pg,'Um cliente comprou '+q+' × '+x.e+' <b>'+x.n+'</b> a '+money(u)+' cada. A compra toda tem <b>'+pc+'% de desconto</b>. Ele pagou com <b>uma cédula de '+money(pg)+'</b>. <b>Qual é o troco?</b>')}
+  function a9(){var it=shuffle(P).slice(0,rnd(2,3)).map(function(x){return {e:x.e,n:x.n,p:r50(x.p)}}),tot=it.reduce(function(s,x){return s+x.p},0),fin=tot+tot/10,pg=ced(fin);if(!pg||fin>9800)return null;
+   return mkT(it,fin,pg,'A conta é: '+it.map(function(x){return x.e+' <b>'+x.n+'</b> ('+money(x.p)+')'}).join(', ')+'. Será cobrada <b>taxa de serviço de 10%</b> sobre o total. O cliente pagou com <b>uma cédula de '+money(pg)+'</b>. <b>Qual é o troco?</b>')}
+  function b9(){var n=pick([2,3,4,5]),a=pick([600,800,950,1200,1500,1800,2250,2500,3000]),tot=n*a;
+   return mkT([{e:'🍽️',n:'Conta da mesa',p:tot}],a,0,'A conta da mesa foi de <b>'+money(tot)+'</b>. Ela será dividida igualmente entre <b>'+n+' amigos</b>. <b>Quanto cada amigo paga?</b> Monte o valor de uma parte.')}
+  function c9(){var xs=shuffle(P.filter(function(y){return y.p>=500})).slice(0,2);if(xs.length<2)return null;var p1=r100(xs[0].p),p2=r100(xs[1].p),d1=pick([10,20,50]),d2=pick([10,25]);
+   var f1=p1-p1*d1/100,f2=p2-p2*d2/100,tot=f1+f2,pg=ced(tot);if(!pg)return null;
+   return mkT([{e:xs[0].e,n:xs[0].n+' (preço normal)',p:p1},{e:xs[1].e,n:xs[1].n+' (preço normal)',p:p2}],tot,pg,'Oferta: '+xs[0].e+' <b>'+xs[0].n+'</b> ('+money(p1)+') com <b>'+d1+'% de desconto</b> e '+xs[1].e+' <b>'+xs[1].n+'</b> ('+money(p2)+') com <b>'+d2+'% de desconto</b>. O cliente pagou com <b>uma cédula de '+money(pg)+'</b>. <b>Qual é o troco?</b>')}
+  var NF=[
+   {y:7,t:'Quatro produtos',s:'Fase 7 — 7º ano · some 4 preços e dê o troco',fn:a7},
+   {y:7,t:'Quantidades',s:'Fase 8 — 7º ano · multiplique e dê o troco',fn:b7},
+   {y:8,t:'Desconto',s:'Fase 9 — 8º ano · porcentagem de desconto',fn:a8},
+   {y:8,t:'Quantidade com desconto',s:'Fase 10 — 8º ano · multiplicação e porcentagem',fn:b8},
+   {y:9,t:'Taxa de serviço',s:'Fase 11 — 9º ano · acréscimo de 10%',fn:a9},
+   {y:9,t:'Dividir a conta',s:'Fase 12 — 9º ano · divisão igual',fn:b9},
+   {y:9,t:'Duas ofertas',s:'Fase 13 — 9º ano · dois descontos diferentes',fn:c9}];
+  NF.forEach(function(n){F.push({y:n.y,t:n.t,s:n.s,i:n.s,gen:function(){return uniq(n.fn,12)}})});
+  D.first=function(y){for(var j=0;j<F.length;j++)if((F[j].y||6)===y)return j;return 0};
+ }
+ document.addEventListener('DOMContentLoaded',function(){
+  var D=window.DRG;if(!D||D.nv)return;D.nv=1;build(D);
+  var btns=document.querySelector('.top .btns');
+  if(!btns||!D.first||/[?&]imp=1/.test(location.search)||!D.go)return;
+  var sel=document.createElement('select');sel.id='nivel';sel.title='Escolha o ano';sel.style.cssText='font:700 12px Arial;padding:4px 6px;border-radius:8px;border:2px solid #1f3a8a;background:#fff;color:#1f3a8a';
+  sel.innerHTML='<option value="6">6º ano</option><option value="7">7º ano</option><option value="8">8º ano</option><option value="9">9º ano</option>';
+  btns.insertBefore(sel,btns.querySelector('#bCfg')||null);
+  sel.onchange=function(){D.go(D.first(+sel.value))};
+  var m=location.search.match(/[?&]ano=(\d)/);if(m&&D.first(+m[1])){sel.value=m[1];D.go(D.first(+m[1]))}
+ });
 })();

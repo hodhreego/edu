@@ -186,7 +186,7 @@ function task(){lock=false;const t=tasks[ti];if(window.DRQ)DRQ(t,fmt);zone=[];tr
  else if(t.items.length>1)x.innerHTML='<div class="alvo"><small>Some os dois preços e pague o total</small></div>';
  else x.innerHTML='<div class="alvo"><small>Pague o valor do produto</small></div>';
  renderZone();dots();$('sub').textContent=FASES[fi].s+' · tarefa '+(ti+1)+'/'+tasks.length}
-window.DRG={FASES:FASES,fmt:fmt};
+window.DRG={FASES:FASES,fmt:fmt,go:function(i){fi=i;fase()}};
 function fase(){tasks=FASES[fi].gen();ti=0;$('inst').innerHTML=FASES[fi].i;task()}
 function conferir(){if(lock||!zone.length){if(!zone.length){$('msg').textContent='Coloque dinheiro na carteira primeiro.';$('msg').className='msg bad'}return}
  const t=tasks[ti],s=sum();tries++;const r=$('res2'),r1=$('res1');
