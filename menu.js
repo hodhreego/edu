@@ -141,3 +141,12 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   else{f.classList.remove('err');void f.offsetWidth;f.classList.add('err');iv.value='';iv.placeholder='Inválido';setTimeout(function(){iv.placeholder='Código';f.classList.remove('err')},1400)}
  });
 })();
+/* janela de Ajustes some sozinha após 3 s sem uso */
+(function(){
+ var tm=0;
+ function btn(){return [].filter.call(document.querySelectorAll('button'),function(b){return /Ajustes|Fechar/.test(b.textContent)&&!b.closest('#edu-nav')&&!b.closest('#edu-ac')})[0]}
+ function aberto(b){var c=document.getElementById('cfg');if(c&&c.classList.contains('on'))return true;return !!b&&/Fechar/.test(b.textContent)}
+ function arma(){clearTimeout(tm);tm=setTimeout(function(){var b=btn();if(b&&aberto(b))b.click()},3000)}
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(b&&b===btn()){setTimeout(function(){if(aberto(b))arma();else clearTimeout(tm)},50)}},true);
+ ['input','change','pointerdown','keydown'].forEach(function(ev){document.addEventListener(ev,function(e){var b=btn();if(b&&aberto(b)&&e.target.closest&&e.target.closest('#cfg,[id*=cfg],[class*=cfg],[class*=painel],[class*=ajust]'))arma()},true)});
+})();
