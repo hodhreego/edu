@@ -172,12 +172,10 @@ function painel_(ss, nome) {
   return sh;
 }
 
-// Larguras automáticas; textos longos ficam com largura fixa.
+// Larguras fixas e estreitas (não mudam a cada gravação); textos longos um pouco mais largos.
 function tamanho_(sh, n, fixas) {
   for (var c = 1; c <= n; c++) {
-    if (fixas && fixas.indexOf(c) >= 0) { sh.setColumnWidth(c, 300); continue; }
-    sh.autoResizeColumn(c);
-    sh.setColumnWidth(c, Math.max(80, Math.min(sh.getColumnWidth(c) + 16, 340)));
+    sh.setColumnWidth(c, (fixas && fixas.indexOf(c) >= 0) ? 200 : 85);
   }
 }
 
