@@ -523,3 +523,24 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .phone.msm .wb{background-color:#f3eefc!important;background-image:none!important}
 .phone.msm .cp,.phone.msm button[data-a="sendcomp"]{background:#7b3ff2!important}
 .phone.msm .wct small{color:#7b3ff2}.phone.msm .wct i{background:#7b3ff2}
+
+#txt.flashw{outline:4px solid #f5b301;outline-offset:2px;animation:flw 2.2s ease}@keyframes flw{0%,60%{box-shadow:0 0 0 8px #f5b30166}100%{box-shadow:none}}
+
+.av svg{width:100%;height:100%;display:block;border-radius:50%}
+
+/* tema nos apps da janela esquerda */
+#txt.tgm .wh,#txt.tgm .wst,#txt.tgm .wbar{background:#2b8fc7!important}
+#txt.tgm .av{color:#2b8fc7}
+#txt.tgm .bub.me{background:#e1f3ff!important}
+#txt.tgm .wb{background-color:#c9dfef!important;background-image:radial-gradient(#b4d0e6 1.2px,transparent 1.4px),radial-gradient(#bcd6ea 1px,transparent 1.2px)!important}
+#txt.tgm .cp,#txt.tgm button[data-a="sendcomp"]{background:#2b8fc7!important}
+#txt.tgm .wct small{color:#2b8fc7}
+#txt.tgm .wct i{background:#2b8fc7}
+#txt.msm .wh,#txt.msm .wst,#txt.msm .wbar{background:linear-gradient(90deg,#0099ff,#a033ff)!important}
+#txt.msm .av{color:#7b3ff2}
+#txt.msm .bub.me{background:#e9ddff!important}
+#txt.msm .wb{background-color:#f3eefc!important;background-image:none!important}
+#txt.msm .cp,#txt.msm button[data-a="sendcomp"]{background:#7b3ff2!important}
+#txt.msm .wct small{color:#7b3ff2}
+#txt.msm .wct i{background:#7b3ff2}
+#txt.smsm .wh,#txt.smsm .wst{background:#1fae48!important}
