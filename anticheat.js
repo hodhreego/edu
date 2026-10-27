@@ -44,7 +44,7 @@
  function aviso(tipo,titulo){
   cont++;
   var vis=box.style.display==='flex';
-  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Fraude registrada ('+cont+'ª vez). O professor foi avisado e a sua atividade poderá ser <b>ANULADA</b> com nota <b>ZERO</b>.</small><small>Para continuar, resolva '+(cont===1?'a conta':cont+' contas')+' <span id="ac-n"></span>:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
+  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Trapaça (cheat) registrada ('+cont+'ª vez). O professor foi avisado e a sua atividade poderá ser <b>ANULADA</b> com nota <b>ZERO</b>.</small><small>Para continuar, resolva '+(cont===1?'a conta':cont+' contas')+' <span id="ac-n"></span>:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
    falta=Math.min(cont,10);novaConta();
    var f=document.getElementById('ac-q'),r=document.getElementById('ac-r');
    r.addEventListener('keydown',function(e){e.stopPropagation()},true);r.addEventListener('input',function(){r.value=r.value.replace(/\D/g,'')});
