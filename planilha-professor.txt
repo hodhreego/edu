@@ -104,9 +104,7 @@ function liberarRetidos() {
 function regras_(rgNota, rgPct) {
   function r(rg, tipo, a, b, bg, fg) {
     var c = SpreadsheetApp.newConditionalFormatRule();
-    if (tipo === 'ge') c.whenNumberGreaterThanOrEqualTo(a);
-    else if (tipo === 'bt') c.whenNumberBetween(a, b);
-    else c.whenNumberLessThan(a);
+    c = tipo === 'ge' ? c.whenNumberGreaterThanOrEqualTo(a) : tipo === 'bt' ? c.whenNumberBetween(a, b) : c.whenNumberLessThan(a);
     return c.setBackground(bg).setFontColor(fg).setBold(true).setRanges([rg]).build();
   }
   var A = '#1a73e8', V = '#1e8e3e', Y = '#fbbc04', R = '#d93025';
@@ -139,6 +137,7 @@ function base_(ss, nome, cab, titulo) {
 function det_(ss, nome) {
   var b = base_(ss, nome, DET, nome === 'Todos' ? '📋 Todos os resultados (professor)' : '⏳ Retidos — escolas ainda não liberadas');
   var sh = b.sh;
+  if (!b.novo) sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 16, sh.getMaxRows() - HR, 1), sh.getRange(HR + 1, 15, sh.getMaxRows() - HR, 1)));
   if (b.novo) {
     var m = sh.getMaxRows() - HR;
     sh.getRange(HR + 1, 3, m, 1).setHorizontalAlignment('left').setFontWeight('bold');
@@ -157,6 +156,7 @@ function det_(ss, nome) {
 function painel_(ss, nome) {
   var b = base_(ss, nome, PAI, '🏆 Painel da turma ' + nome + ' — atualiza ao vivo');
   var sh = b.sh;
+  if (!b.novo) sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 11, sh.getMaxRows() - HR, 1), sh.getRange(HR + 1, 10, sh.getMaxRows() - HR, 1)));
   if (b.novo) {
     var m = sh.getMaxRows() - HR;
     sh.getRange(HR + 1, 1, m, 1).setHorizontalAlignment('left').setFontWeight('bold');
