@@ -7,10 +7,10 @@
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#c62828}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif}
+html,body{margin:0;background:linear-gradient(135deg,#fff3c4,#ffe0f0 45%,#d9ecff);background-attachment:fixed;color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif}
 #app{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:8px 14px 10px;gap:8px}
 .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.top h1{margin:0;font-size:clamp(20px,3vw,32px);line-height:1.05}.top h1 span{color:var(--brand)}
+.top h1{background:linear-gradient(90deg,var(--brand),#e8590c,#c2255c);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0;font-size:clamp(20px,3vw,32px);line-height:1.05}.top h1 span{color:var(--brand)}
 .sub{color:var(--muted);font-size:13px}
 .grow{flex:1}
 .ident{font-size:12px;color:var(--muted);text-align:right;line-height:1.5}
@@ -21,7 +21,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 .main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:12px}
 .board{min-height:0;background:#fff;border:2px solid var(--line);border-radius:18px;padding:8px;display:flex;align-items:center;justify-content:center;touch-action:none;position:relative}
 .board svg{width:100%;height:100%;display:block;touch-action:none;-webkit-user-select:none;user-select:none}
-.hx polygon{fill:#fff7e0;stroke:#d9b45a;stroke-width:1.4;transition:fill .1s}
+.hx polygon{fill:var(--f,#fff7e0);stroke:#d9b45a;stroke-width:1.4;transition:fill .1s}
 .hx text{font:800 15px "Segoe UI",Arial,sans-serif;fill:#3b2a12;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .hx.sel polygon{fill:#ffd24d;stroke:#b98300}
 .hx.ini polygon{fill:#9ad1ff;stroke:#1f4fd8;stroke-width:2.4}
@@ -34,6 +34,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 .clues{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:2px}
 .cl{border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;font-size:14.5px;line-height:1.3;display:flex;gap:8px;align-items:flex-start;cursor:pointer;background:#fafcff}
 .cl b{flex:none;background:var(--brand);color:#fff;border-radius:8px;min-width:22px;text-align:center;font-size:12px;padding:2px 5px;margin-top:1px}
+.cl{flex-wrap:wrap;border-left-width:6px}.bx{flex:1 0 100%;display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}.bx input{width:26px;height:30px;padding:0;text-align:center;font:800 16px 'Segoe UI',Arial,sans-serif;text-transform:uppercase;border:2px solid #b9c3dc;border-radius:7px;background:#fff;color:#16213a;caret-color:#1f4fd8}.bx input:focus{outline:3px solid #9ad1ff}.bx input.g{background:#c9f5d6;border-color:#1f9d55;color:#0b5a2b}.bx input.r{background:#ffc9c9;border-color:#d93025;color:#8a1010;animation:eduShk .25s}@keyframes eduShk{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 .cl em{font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap;margin-left:auto;padding-left:6px}
 .cl.ok{background:#e6f7ec;border-color:#2e9e5b;color:#1d6a3d}.cl.ok span{text-decoration:line-through;text-decoration-color:#2e9e5b88}.cl.ok b{background:#2e9e5b}
 .cl.ok em{color:#1d6a3d;font-weight:800;font-size:13px}
@@ -120,10 +121,10 @@ function draw(){
  for(const k in cells){const [x,y]=pos(k);minx=Math.min(minx,x-W/2);maxx=Math.max(maxx,x+W/2);miny=Math.min(miny,y-S);maxy=Math.max(maxy,y+S);hex.push([k,x,y])}
  const pts=a=>[0,1,2,3,4,5].map(i=>{const an=Math.PI/180*(60*i-30);return (a[1]+S*Math.cos(an)).toFixed(1)+','+(a[2]+S*Math.sin(an)).toFixed(1)}).join(' ');
  let h='<svg id="sv" viewBox="'+(minx-4)+' '+(miny-4)+' '+(maxx-minx+8)+' '+(maxy-miny+8)+'" preserveAspectRatio="xMidYMid meet">';
- for(const a of hex)h+='<g class="hx" data-k="'+a[0]+'"><polygon points="'+pts(a)+'"/><text x="'+a[1].toFixed(1)+'" y="'+(a[2]+1).toFixed(1)+'">'+cells[a[0]]+'</text></g>';
+ for(const a of hex)h+='<g class="hx" data-k="'+a[0]+'"><polygon style="--f:hsl('+(((a[1]*0.9+a[2]*0.55)%360+360)%360).toFixed(0)+',88%,87%)" points="'+pts(a)+'"/><text x="'+a[1].toFixed(1)+'" y="'+(a[2]+1).toFixed(1)+'">'+cells[a[0]]+'</text></g>';
  $('board').innerHTML=h+'</svg>';
  hexEl={};document.querySelectorAll('.hx').forEach(e=>hexEl[e.dataset.k]=e);
- $('clues').innerHTML=words.map((x,i)=>'<div class="cl" data-i="'+i+'"><b>'+(i+1)+'</b><span>'+x.c+'</span><em>'+x.w.length+' letras</em></div>').join('');
+ $('clues').innerHTML=words.map((x,i)=>'<div class="cl" data-i="'+i+'" style="border-left-color:'+COLORS[i%COLORS.length]+'"><b style="background:'+COLORS[i%COLORS.length].replace(/^#/,'#')+';color:#16213a">'+(i+1)+'</b><span>'+x.c+'</span><em>'+x.w.length+' letras</em><div class="bx">'+x.w.split('').map((_,j)=>'<input maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" data-i="'+i+'" data-j="'+j+'" aria-label="letra '+(j+1)+'">').join('')+'</div></div>').join('');
 }
 function line(a,b){
  const [q1,r1]=a.split(',').map(Number),[q2,r2]=b.split(',').map(Number),dq=q2-q1,dr=r2-r1,ds=-(dq+dr);
@@ -145,7 +146,7 @@ function check(ks){
  if(i<0){ks.forEach(k=>hexEl[k].classList.add('bad'));tone(180,.25,.12,'sawtooth');msg('Essa não é uma das palavras. Tente de novo!','bad');setPts(pts-3);setTimeout(clearSel,350);return}
  const w=words[i];w.ok=1;const col=COLORS[i%COLORS.length];
  clearSel();ks.forEach(k=>{const p=hexEl[k].querySelector('polygon');p.style.fill=col;p.style.stroke='#555'});
- const cl=document.querySelector('.cl[data-i="'+i+'"]');cl.classList.add('ok');cl.querySelector('em').textContent=w.w;cl.style.borderColor=col;
+ const cl=document.querySelector('.cl[data-i="'+i+'"]');cl.classList.add('ok');cl.querySelector('em').textContent=w.w;cl.querySelectorAll('.bx input').forEach((n,j)=>{n.value=w.w[j];n.className='g';n.disabled=true});cl.style.borderColor=col;
  tone(660,.12,.14,'triangle');setTimeout(()=>tone(880,.18,.14,'triangle'),90);
  setPts(pts+20);msg('✔ Muito bem! '+w.w,'ok');
  const n=words.filter(x=>x.ok).length;$('prog').textContent=n+' / '+words.length;
@@ -179,12 +180,23 @@ const up=e=>{
  pending=d.a;clearSel();hexEl[d.a].classList.add('ini');msg('Agora toque no último hexágono da palavra.');
 };
 board.addEventListener('pointerup',up);board.addEventListener('pointercancel',()=>{drag=null;clearSel()});
-$('clues').addEventListener('click',e=>{const c=e.target.closest('.cl');if(!c)return;const w=words[+c.dataset.i];if(w.ok)return;msg('Procure uma palavra com '+w.w.length+' letras começando com “'+w.w[0]+'” ou terminando em “'+w.w[w.w.length-1]+'”.')});
+$('clues').addEventListener('click',e=>{if(e.target.tagName==='INPUT')return;const c=e.target.closest('.cl');if(!c)return;const w=words[+c.dataset.i];if(w.ok)return;msg('Procure uma palavra com '+w.w.length+' letras começando com “'+w.w[0]+'” ou terminando em “'+w.w[w.w.length-1]+'”.')});
 $('bDica').onclick=()=>{
  const rest=words.filter(x=>!x.ok);if(!rest.length)return;const w=rest[rnd(0,rest.length-1)];
  const e=hexEl[w.cells[0]];e.classList.add('hint');setTimeout(()=>e.classList.remove('hint'),2600);setPts(pts-5);msg('💡 A palavra “'+w.c+'” começa no hexágono piscando.');
 };
 $('bNovo').onclick=start;$('fB').onclick=start;
+ $('clues').addEventListener('input',e=>{const n=e.target;if(n.tagName!=='INPUT')return;
+ const i=+n.dataset.i,j=+n.dataset.j,w=words[i];let v=(n.value||'').toUpperCase().replace(/[^A-ZÀ-Ý]/g,'').slice(-1);n.value=v;
+ if(!v){n.className='';return}
+ const ok=v===w.w[j];n.className=ok?'g':'r';
+ if(ok){tone(660,.08,.1,'triangle');const nx=n.parentNode.querySelector('input[data-j="'+(j+1)+'"]');if(nx)nx.focus()}else{tone(180,.18,.1,'sawtooth');setPts(pts-1)}
+ const all=[...n.parentNode.querySelectorAll('input')];
+ if(all.every((x,k)=>x.value===w.w[k])&&!w.ok)check(w.cells)});
+$('clues').addEventListener('keydown',e=>{const n=e.target;if(n.tagName!=='INPUT')return;const p=n.parentNode;
+ if(e.key==='Backspace'&&!n.value){const pv=p.querySelector('input[data-j="'+(+n.dataset.j-1)+'"]');if(pv){pv.value='';pv.className='';pv.focus();e.preventDefault()}}
+ if(e.key==='ArrowRight'){const nx=p.querySelector('input[data-j="'+(+n.dataset.j+1)+'"]');if(nx)nx.focus()}
+ if(e.key==='ArrowLeft'){const pv=p.querySelector('input[data-j="'+(+n.dataset.j-1)+'"]');if(pv)pv.focus()}});
 window.EDU_DBG=function(){return words};window.EDU_PRINT=function(){return{words:words}};
 start();
 })();

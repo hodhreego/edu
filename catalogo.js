@@ -167,7 +167,8 @@ const JOGOS=[
  J('colmeia-mat','🐝','Colmeia: Colmeia dos Números Racionais','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-mat-8-ano-numeros-racionais-jogo.html','8º ano',undefined,''),
  J('colmeia-mat','🐝','Colmeia: Caça-Palavras dos Quadriláteros','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-mat-8-ano-quadrilateros-3otri-jogo.html','8º ano',undefined,'3º tri'),
  J('colmeia-mat','🐝','Colmeia: Colmeia das Funções','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-mat-9-ano-funcoes-3otri-jogo.html','9º ano',undefined,'3º tri'),
- J('colmeia-mat','🐝','Colmeia: Caça-Palavras dos Irracionais','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-mat-9-ano-numeros-irracionais-jogo.html','9º ano',undefined,'')
+ J('colmeia-mat','🐝','Colmeia: Caça-Palavras dos Irracionais','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-mat-9-ano-numeros-irracionais-jogo.html','9º ano',undefined,''),
+ J('colmeia-fil','🐝','Colmeia: Filosofia Escolástica','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-fil-1-serie-em-escolastica-jogo.html','1ª série EM',undefined,'')
 ];
 
 /* Código de 4 números por jogo (fixo: jogo novo ganha um código livre, os antigos nunca mudam). */
