@@ -7,6 +7,7 @@ var BANKS={
  itau:{n:'Itaú',h:'#EC7000',f:'#fff',b:'#EC7000',bt:'#fff',bg:'#fff',style:'bar',kind:'grid'},
  bradesco:{n:'Bradesco',h:'#CC092F',f:'#fff',b:'#CC092F',bt:'#fff',bg:'#fff',style:'bar',kind:'grid'},
  caixa:{n:'Caixa Tem',h:'#005CA9',f:'#fff',b:'#F39200',bt:'#fff',bg:'#eef4fa',style:'bar',kind:'caixa'},
+ caixa2:{n:'Caixa',h:'#005CA9',f:'#fff',b:'#F39200',bt:'#fff',bg:'#eef4fa',style:'bar',kind:'grid'},
  inter:{n:'Inter',h:'#FF7A00',f:'#fff',b:'#FF7A00',bt:'#fff',bg:'#fff',style:'tall',kind:'row'},
  mp:{n:'Mercado Pago',h:'#FFE600',f:'#2D3277',b:'#009EE3',bt:'#fff',bg:'#ededed',style:'tall',kind:'mp'},
  santander:{n:'Santander',h:'#EC0000',f:'#fff',b:'#EC0000',bt:'#fff',bg:'#fff',style:'bar',kind:'grid'},
@@ -182,7 +183,7 @@ window.BANK={run:function(cfg){
  function sal(){return SAL[BK]||0}
  function sdo(){return BLOQ[BK]?'🔒 Bloqueado':fmt(sal())}
  iniSal();
- var MONO={nubank:'Nu',bb:'BB',itau:'itaú',bradesco:'B',caixa:'✕',inter:'inter',mp:'mp',santander:'S',picpay:'Pic',c6:'C6'};
+ var MONO={nubank:'Nu',bb:'BB',itau:'itaú',bradesco:'B',caixa:'✕',caixa2:'CAIXA',inter:'inter',mp:'mp',santander:'S',picpay:'Pic',c6:'C6'};
  function bicon(k,sz){var b=BANKS[k];return '<span class="bi" style="--c:'+b.h+';--t:'+b.f+(sz?';--z:'+sz+'px':'')+'"><img src="bancos/'+k+'.png" alt="'+b.n+'" draggable="false" onerror="this.remove()"><i>'+(MONO[k]||b.n.charAt(0))+'</i></span>'}
  function bkbar(){var bb=$('bkbar');if(!bb)return;if(cfg.appswitch){bb.style.display='none';return}bb.innerHTML=Object.keys(BANKS).map(function(k){var st=BLOQ[k]?'<u class="bd lk">🔒</u>':(SAL[k]<0?'<u class="bd ng">−</u>':'');return '<button type="button" class="bkb'+(k===BK?' on':'')+'" data-bk="'+k+'" title="'+BANKS[k].n+' — ver extrato">'+bicon(k,30)+st+'</button>'}).join('')}
  function setBank(k){if(!BANKS[k])return;BK=k;try{localStorage.setItem('edu_banco',k)}catch(x){}ph.chave='';theme();bkbar();draw()}
