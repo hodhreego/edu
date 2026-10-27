@@ -1,6 +1,6 @@
 # Jogos de Pix / banco / WhatsApp (edu) — guia de referência
 
-Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=32; subir N a cada mudança com `sed -i`).
+Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=33; subir N a cada mudança com `sed -i`).
 
 ## Como funciona
 - 10 bancos (`BANKS`): Nubank, BB, Itaú, Bradesco, Caixa Tem, Inter, Mercado Pago, Santander, PicPay (verde), C6 (cinza).
@@ -21,6 +21,10 @@ Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wra
 ## Gabarito do professor
 Abrir a atividade com `?imp=1` e digitar a senha da área do professor. Mostra a resposta de cada questão e o botão **📋 Gabarito completo**: saldos iniciais de cada banco por fase, Pix recebidos (verdadeiro/falso/diferente), total final esperado na missão final. O cenário é reproduzível pelo número: `?imp=1&c=NÚMERO` (o aluno recebe um número aleatório; o professor pode fixar `?c=7`). `&dest=prof` define o banco final pelo professor.
 
+### Gabaritos imprimíveis (só professor)
+Página-índice **`gabaritos-professor.html`** (pede a senha do professor): tabela de todas as atividades de Pix, contas, compra, maquininha e cartão × séries, com link direto. Escolha o(s) cenário(s) (ex.: `7` ou `1-10`, máx. 40) e clique em Gabarito.
+Cada link é `<atividade>-jogo.html?imp=1&gab=1&c=N` (ou `c=A-B`): gera uma página A4 por cenário com **todas as questões das 4 fases e a resposta pronta** (Pix: valor+favorecido+senha; maquininha/compra: venda, taxa e líquido; cartão: parcela/total/opção mais barata), saldos iniciais por banco, Pix recebidos (verdadeiro/falso/diferente) e o total esperado na missão final. Imprimir com Ctrl+P. Aluno com o mesmo `?c=N` vê exatamente esse cenário.
+
 ## Códigos por série
 Cada atividade de Pix/cartão/maquininha tem versão 6º, 8º, 9º, 1ª, 2ª e 3ª série EM, cada uma com código próprio (catálogo `catalogo.js`, mapa `COD`). Níveis por série: 6º [1,1,1,2], 8º [1,2,2,3], 9º [2,2,3,3], 1ª [2,3,3,4], 2ª [3,3,4,4], 3ª [3,4,4,4].
 O restante do site (colmeias etc.) ainda tem um código por atividade, não por série.
@@ -28,7 +32,6 @@ O restante do site (colmeias etc.) ainda tem um código por atividade, não por 
 ## Pendências
 - Pix recebido com a chave do aluno digitada no WhatsApp (+ notificação).
 - Recarga de celular (número fictício, sem crédito, Wi-Fi livre).
-- Versões para imprimir dos jogos de Pix/cartão.
 - Testar a câmera ao vivo no tablet (https://hodhreego.github.io/edu/).
 - Erro antigo: `colmeia-his-6-ano-povos-pre-colombianos-jogo.html`.
 

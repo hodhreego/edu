@@ -200,3 +200,8 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 
 .wa input{-webkit-user-select:text;user-select:text}.des input{display:block;width:100%;box-sizing:border-box;margin:5px 0;padding:7px;border:1px solid #bbb;border-radius:8px;font-size:14px}.des button{width:100%;border:0;border-radius:8px;background:#25d366;color:#fff;font:800 14px Arial;padding:8px;cursor:pointer}.dmsg{margin-top:6px;font-size:13px}.rbox{margin-top:6px}
 .gabbox{max-height:80vh;overflow:auto;text-align:left}.gabbox table{border-collapse:collapse;font-size:13px}.gabbox td,.gabbox th{border:1px solid #999;padding:2px 8px}.gtot{background:#fff3cd;border:2px dashed #b8860b;border-radius:8px;padding:6px 10px}
+
+.gabpage{max-width:900px;margin:0 auto;padding:10px;background:#fff;color:#000;font:14px Segoe UI,Arial,sans-serif}.gnote{background:#b91c1c;color:#fff;font-weight:900;padding:6px 10px;border-radius:8px;text-align:center}
+.gabpage .gsec{break-after:page;padding-bottom:10px}.gabpage h2{font-size:20px;margin:12px 0 4px}.gabpage h4{margin:10px 0 4px}.gabpage .gl{font-size:12px;color:#555;margin:0 0 6px}
+.gabpage table{border-collapse:collapse;width:100%;font-size:12.5px}.gabpage td,.gabpage th{border:1px solid #888;padding:3px 6px;text-align:left;vertical-align:top}.gabpage th{background:#eee}
+@media print{.gabpage{max-width:none;padding:0}@page{size:A4;margin:10mm}}

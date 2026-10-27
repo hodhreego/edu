@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gabaritos do professor - Pix, cartão e maquininha</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:#eef1f7;color:#111}header{background:#16213a;color:#fff;padding:14px 18px}h1{margin:0;font-size:20px}main{max-width:1100px;margin:14px auto;padding:0 14px}
+.bx{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px;box-shadow:0 2px 8px #0002}table{border-collapse:collapse;width:100%;font-size:14px}td,th{border:1px solid #ccd;padding:6px 8px;text-align:center}td:first-child,th:first-child{text-align:left}th{background:#e8ecf8}
+a.g{display:inline-block;background:#1d4ed8;color:#fff;border-radius:8px;padding:3px 10px;text-decoration:none;font-weight:700;font-size:13px}input{font:700 16px Arial;padding:6px;width:110px}</style></head><body>
+<header><h1>🔑 Gabaritos do professor — Pix, TED/transferências, cartão e maquininha</h1><div style="font-size:13px;opacity:.9">Só para professores. Cada link abre o gabarito pronto e imprimível (A4) do cenário escolhido.</div></header>
+<main><div class="bx"><b>Cenários:</b> <input id="cn" value="1-5"> <small>número (ex.: 7) ou faixa (ex.: 1-10, máx. 40). O aluno recebe o cenário pelo link <b>?c=NÚMERO</b> da atividade (ou o número que aparece no jogo).</small></div>
+<div class="bx"><table id="tb"><tr><th>Atividade</th><th>Geral</th><th>6º ano</th><th>8º ano</th><th>9º ano</th><th>1ª EM</th><th>2ª EM</th><th>3ª EM</th></tr></table></div></main>
+<script src="config.js"></script><script src="catalogo.js"></script><script src="imprimir.js"></script>
+<script>
+if(!EDU_PROF_OK()){document.body.style.visibility='hidden';EDU_PROF_ASK(function(ok){if(ok)location.reload();else location.href='index.html'})}
+var RX=/^(pix-|pagar-contas|compra-formas|maquininha|cartao-)/,SU={'6º ano':1,'8º ano':2,'9º ano':3,'1ª série EM':4,'2ª série EM':5,'3ª série EM':6},rows={},ord=[];
+JOGOS.forEach(function(j){if(!RX.test(j.href)||/trocar-app/.test(j.href))return;var base=j.titulo.replace(/ — .*$/,'');if(!rows[base]){rows[base]=[base,'','','','','','',''];ord.push(base)}var col=SU[j.serie]||0;rows[base][col+1]=j.href});
+function build(){var c=encodeURIComponent(document.getElementById('cn').value.trim()||'1');var h='<tr><th>Atividade</th><th>Geral</th><th>6º ano</th><th>8º ano</th><th>9º ano</th><th>1ª EM</th><th>2ª EM</th><th>3ª EM</th></tr>';
+ ord.forEach(function(b){var r=rows[b];h+='<tr><td>'+b+'</td>'+r.slice(1).map(function(x){return '<td>'+(x?'<a class="g" target="_blank" href="'+x+'?imp=1&gab=1&c='+c+'">Gabarito</a>':'—')+'</td>'}).join('')+'</tr>'});document.getElementById('tb').innerHTML=h}
+document.getElementById('cn').oninput=build;build();
+</script></body></html>

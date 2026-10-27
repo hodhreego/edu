@@ -400,17 +400,25 @@ function startFinal(){var ks=Object.keys(BANKS).filter(function(k){return SAL0[k
   var d=ns[0];if(SAL[d]<0)return toast('O banco '+BANKS[d].n+' está negativo. Cubra com um Pix de outro banco.');if(T.dest&&d!==T.dest)return toast('O professor pediu o banco '+BANKS[T.dest].n+'.');
   var m=$('exm');m.innerHTML='<div class="box ex"><h3>🏁 Conferindo</h3><p>Todo o dinheiro está no <b>'+BANKS[d].n+'</b>. Quanto ficou lá?</p><input id="consV" type="text" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00"><br><button class="btn" id="consC" type="button">Confirmar</button> <button class="btn ok" id="consX" type="button">Voltar</button></div>';m.className='on';
   $('consX').onclick=function(){m.className=''};$('consC').onclick=function(){var n=parse($('consV').value);if(n!==SAL[d]){toast('Valor diferente do saldo do banco. Confira o extrato.');return}m.className='';FINALOK=true;right('🏁 Missão cumprida! Tudo em um banco só: '+fmt(n)+' no '+BANKS[d].n+'.')}}
- function gabFull(){var sv={t:tasks,S:Object.assign({},SAL),S0:Object.assign({},SAL0),B:BLOQ,I:INCS,L:LEDGER,C:CHESP,f:fi},h='<h3>📋 Gabarito do professor · cenário nº '+SEED+'</h3><p>Abra o jogo com <b>?imp=1&amp;c='+SEED+'</b> para este mesmo cenário. Acrescente <b>&amp;dest=prof</b> para o banco final ser definido por você.</p>';
+ function ansHtml(t){var h='';if(t.target)h+=(t.bill?'Pagar a conta: ':'Pix de ')+'<b>'+fmt(t.target.valor)+'</b> para <b>'+t.target.nome+'</b>'+(t.scan?' (QR nº '+t.scan.id+')':'')+(t.pin&&t.modo!=='quiz'?' · senha '+t.pin:'');
+  if(t.venda)h+=(h?'<br>':'')+'Venda de <b>'+fmt(t.venda.valor)+'</b> no '+t.venda.forma+(t.venda.parc>1?' em '+t.venda.parc+'x':'');
+  (t.fields||[]).forEach(function(f){h+=(h?'<br>':'')+f.q+': <b>'+(typeof f.a==='number'?fmt(f.a):f.a)+'</b>'});
+  if(t.choose)h+=(h?'<br>':'')+t.choose.q+' <b>'+t.choose.opts[t.choose.a]+'</b>';return h||'—'}
+ function gabBody(n){var old=SEED,sv={t:tasks,S:Object.assign({},SAL),S0:Object.assign({},SAL0),B:BLOQ,I:INCS,L:LEDGER,C:CHESP,f:fi},h='<div class="gsec"><h2>'+cfg.titulo+' · cenário nº '+n+'</h2><p class="gl">Link do aluno: <b>?c='+n+'</b> · Para este gabarito: <b>?imp=1&amp;gab=1&amp;c='+n+'</b> · Banco final definido pelo professor: acrescente <b>&amp;dest=prof</b></p>';
+  SEED=n;
   try{for(var f=0;f<4;f++){seedFase(f);fi=f;var L=cfg.niveis[f],hard=L>3;if(hard)L=3;var ts=[],seen={};for(var g=0;g<80&&ts.length<6;g++){var t=GEN[cfg.gen](L,hard);if(seen[t.txt])continue;seen[t.txt]=1;ts.push(t)}
     tasks=ts;LEDGER=[];INCS=[];scarce();unseed();
-    h+='<h4>Fase '+(f+1)+'</h4><table><tr><th>Questão</th><th>Resposta (Pix)</th></tr>'+ts.map(function(t,i){return '<tr><td>'+(i+1)+'</td><td>'+(t.target?fmt(t.target.valor)+' para <b>'+t.target.nome+'</b>':'—')+'</td></tr>'}).join('')+'</table>';
-    h+='<p><b>Saldos iniciais:</b> '+Object.keys(BANKS).map(function(k){return BANKS[k].n+' <b>'+fmt(SAL0[k])+'</b>'+(SAL0[k]<0?' 🔒negativo':'')}).join(' · ')+'</p>';
-    if(INCS.length)h+='<p><b>Pix recebidos:</b> '+INCS.map(function(I){return I.nome+' disse '+fmt(I.v)+' → <b>'+(I.kind==='real'?'verdadeiro':I.kind==='dif'?'caiu '+fmt(I.vd)+' (diferente)':'FALSO')+'</b> ('+BANKS[I.bk].n+')'}).join(' · ')+'</p>';
+    h+='<h4>Fase '+(f+1)+' (nível '+cfg.niveis[f]+')</h4><table><tr><th>Nº</th><th>Enunciado</th><th>Resposta</th></tr>'+ts.map(function(t,i){var tx=String(t.txt||'').replace(/<[^>]+>/g,'').replace(/A senha d[^.]*\./,'').trim();if(tx.length>150)tx=tx.slice(0,150)+'…';return '<tr><td>'+(i+1)+'</td><td>'+(t.chat?'💬 '+t.chat.msgs.join(' ').replace(/<[^>]+>/g,'').slice(0,150):tx)+'</td><td>'+ansHtml(t)+'</td></tr>'}).join('')+'</table>';
+    if(INCS.length){h+='<p><b>Saldos iniciais:</b> '+Object.keys(BANKS).map(function(k){return BANKS[k].n+' <b>'+fmt(SAL0[k])+'</b>'+(SAL0[k]<0?' 🔒negativo':'')}).join(' · ')+'</p>';
+     h+='<p><b>Pix recebidos:</b> '+INCS.map(function(I){return I.nome+' disse '+fmt(I.v)+' → <b>'+(I.kind==='real'?'verdadeiro':I.kind==='dif'?'caiu '+fmt(I.vd)+' (diferente)':'FALSO')+'</b> ('+BANKS[I.bk].n+')'}).join(' · ')+'</p>'}
     if(f===3&&INCS.length){var av=0,pg=0,cr=0;Object.keys(BANKS).forEach(function(k){av+=SAL0[k]});ts.forEach(function(t){if(t.target&&t.modo!=='pos')pg+=t.target.valor});INCS.forEach(function(I){cr+=I.kind==='real'?I.v:I.kind==='dif'?I.vd:0});
      var ks=Object.keys(BANKS).filter(function(k){return SAL0[k]>=0});
-     h+='<p class="gtot">🏁 <b>Total final esperado (tudo certo):</b> '+fmt(av)+' − '+fmt(pg)+' (pagamentos) + '+fmt(cr)+' (Pix recebidos verdadeiros) = <b>'+fmt(av-pg+cr)+'</b> em <b>qualquer</b> banco que o aluno escolher.<br>Banco definido pelo professor (&amp;dest=prof): <b>'+BANKS[ks[SEED%ks.length]].n+'</b>. Se o aluno ganhou o desafio de R$ 100: somar +R$ 100,00.</p>'}}
-  }finally{unseed();tasks=sv.t;SAL=sv.S;SAL0=sv.S0;BLOQ=sv.B;INCS=sv.I;LEDGER=sv.L;CHESP=sv.C;fi=sv.f}
-  var m=$('exm');m.innerHTML='<div class="box ex gabbox">'+h+'<button class="btn ok" type="button" id="exX">Fechar</button></div>';m.className='on';$('exX').onclick=function(){m.className=''}}
+     h+='<p class="gtot">🏁 <b>Missão final — total esperado (tudo certo):</b> '+fmt(av)+' − '+fmt(pg)+' (pagamentos) + '+fmt(cr)+' (Pix recebidos verdadeiros) = <b>'+fmt(av-pg+cr)+'</b> em <b>qualquer</b> banco que o aluno escolher (na fase 4). Se o professor definir o banco (&amp;dest=prof): <b>'+BANKS[ks[n%ks.length]].n+'</b> com <b>'+fmt(av-pg+cr)+'</b>. Desafio de R$ 100 (se acertou): +R$ 100,00.</p>'}}
+  }finally{SEED=old;unseed();tasks=sv.t;SAL=sv.S;SAL0=sv.S0;BLOQ=sv.B;INCS=sv.I;LEDGER=sv.L;CHESP=sv.C;fi=sv.f}
+  return h+'</div>'}
+ function gabFull(){var m=$('exm');m.innerHTML='<div class="box ex gabbox">'+gabBody(SEED)+'<button class="btn ok" type="button" id="exX">Fechar</button></div>';m.className='on';$('exX').onclick=function(){m.className=''}}
+ function gabPage(){var r=/[?&]c=(\d+)(?:-(\d+))?/.exec(location.search),a=r?+r[1]:SEED,b=r&&r[2]?Math.min(+r[2],a+39):a,h='';for(var n=a;n<=b;n++)h+=gabBody(n);
+  document.title='Gabarito do professor - '+cfg.titulo;$('app').innerHTML='<div class="gabpage"><div class="gnote">🔒 GABARITO DO PROFESSOR — não distribuir aos alunos</div>'+h+'</div>'}
  function fim(){if(fi===3&&INCS.length&&!FINALOK){startFinal();return}var f=$('fim');$('fT').textContent=fi<3?'Fase '+(fi+1)+' concluída! 🎉':'Parabéns! Terminou todas as fases! 🏆';$('fP').textContent='Você tem '+pts+' pontos.';$('fB').textContent=fi<3?'Próxima fase ▶':'Jogar de novo ↺';f.classList.add('on');$('ext').innerHTML=LEDGER.length>L0?extrato():'';$('fB').onclick=function(){f.classList.remove('on');L0=LEDGER.length;if(fi<3)fi++;else{fi=0;pts=0;setPts(0);iniSal();LEDGER=[];L0=0;FINALOK=false}$('nivel').value=cfg.niveis[fi];fase()}}
  function xfer(){var d=ph.c.own;SAL[BK]-=ph.v;SAL[d]+=ph.v;LEDGER.push({f:fi,bk:BK,tr:d,n:'Você (Aluno)',b:BANKS[d].n,v:ph.v,ok:true,h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});dash();
   setTimeout(function(){msg('Transferência feita! O saldo do '+BANKS[d].n+' aumentou.','good');setTimeout(function(){if(!lock)msg('')},2600);ph.s='home';ph.c=null;ph.chave='';draw()},1700)}
@@ -486,5 +494,6 @@ function startFinal(){var ks=Object.keys(BANKS).filter(function(k){return SAL0[k
  $('bkbar').addEventListener('click',function(e){var b=e.target.closest('[data-bk]');if(b)exOpen(b.dataset.bk)});
  $('nivel').onchange=function(){fi=cfg.niveis.indexOf(+$('nivel').value);if(fi<0)fi=0;fase()};
  $('nivel').value=cfg.niveis[0];
+ if(window.PROF_GAB&&window.PROF_GAB()&&/[?&]gab=1/.test(location.search)){gabPage();return}
  theme();bkbar();fase();if(!BK)pickBank(1)}};
 })();
