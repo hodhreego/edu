@@ -38,6 +38,7 @@ section>p{margin:0 0 12px;color:var(--muted);font-size:14.5px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px #16213a22}
+.card .th{display:block;width:calc(100% + 32px);margin:-16px -16px 4px;aspect-ratio:8/5;object-fit:cover;object-position:top;border-radius:9px 9px 0 0;background:#e9eef9;border-bottom:1px solid var(--line)}
 .card .em{font-size:34px;line-height:1}
 .card h3{margin:0;font-size:18px}
 .card p{margin:0;color:var(--muted);font-size:14px;flex:1}
@@ -109,7 +110,7 @@ function draw(){
   const g=document.createElement('div');g.className='grid';
   js.forEach(j=>{n++;
    const c=document.createElement('div');c.className='card';c.style.setProperty('--c',t.cor);
-   c.innerHTML='<div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><div class="kod" title="Clique para usar este código" onclick="usar(\''+j.cod+'\')">🔑 Código <b>'+j.cod+'</b></div><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
+   c.innerHTML='<img class="th" loading="lazy" decoding="async" alt="" src="thumbs/'+j.href.replace('-jogo.html','')+'.jpg" onerror="this.remove()"><div class="em">'+j.emoji+'</div><h3>'+j.titulo+'</h3><div class="tags"><span>'+j.serie+'</span>'+(j.fases?'<span>'+j.fases+(mt.play?' phases':' fases')+'</span>':'')+'</div><p>'+j.desc+'</p><div class="kod" title="Clique para usar este código" onclick="usar(\''+j.cod+'\')">🔑 Código <b>'+j.cod+'</b></div><a class="play" href="'+j.href+'">▶ '+(mt.play||'Jogar')+'</a>';
    g.appendChild(c)});
   s.appendChild(g);out.appendChild(s)});
  empty.style.display=n?'none':'block'}

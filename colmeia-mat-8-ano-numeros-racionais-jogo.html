@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Numeros racionais - Colmeia</title>
+<title>Colmeia dos Números Racionais - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Numeros racionais</h1><div class="sub">Colmeia · Matemática · 8º ano</div></div>
+  <div><h1>🐝 Colmeia dos Números Racionais</h1><div class="sub">Colmeia · Matemática · 8º ano</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["RACIONAL", "numero que pode ser escrito na forma de fracao"], ["FRACAO", "representacao de uma parte de um todo dividido em partes iguais"], ["DECIMAL", "forma de escrever um numero racional usando virgula"], ["NUMERADOR", "termo de cima de uma fracao, indica quantas partes foram tomadas"], ["DENOMINADOR", "termo de baixo de uma fracao, indica em quantas partes o todo foi dividido"], ["RETA", "linha usada para representar e localizar numeros em ordem"], ["PONTO", "posicao exata que representa um numero na reta numerica"], ["ORDEM", "sequencia em que os numeros aparecem, do menor para o maior"], ["COMPARACAO", "acao de verificar qual numero e maior, menor ou igual"], ["EQUIVALENTE", "fracoes diferentes que representam a mesma quantidade"], ["CONJUNTO", "reuniao de numeros que compartilham uma mesma caracteristica"], ["POSITIVO", "numero maior que zero"], ["NEGATIVO", "numero menor que zero"], ["INTEIRO", "numero sem parte fracionaria, positivo, negativo ou zero"], ["NATURAL", "numero usado para contar, sem sinal negativo"], ["REPRESENTACAO", "forma de expressar um numero racional, fracionaria ou decimal"], ["LOCALIZACAO", "posicao de um numero racional na reta numerica"], ["DIVISAO", "operacao que relaciona a fracao ao resultado de repartir uma quantidade"], ["RESULTADO", "valor final obtido a partir de uma divisao entre dois numeros"], ["PARTE", "porcao de um todo, representada pelo numerador de uma fracao"], ["TODO", "quantidade completa que foi dividida em partes iguais"], ["SIMPLIFICACAO", "reducao de uma fracao aos seus termos mais simples"], ["PROPORCAO", "igualdade entre razoes usada para comparar grandezas"], ["MODULO", "distancia de um numero ate o zero na reta numerica"], ["OPOSTO", "numero de mesmo modulo mas sinal contrario"], ["MEDIDA", "valor atribuido a uma grandeza apos ser comparada a uma unidade"]];
+const DATA=[["RACIONAL", "Número que pode ser escrito na forma de fração"], ["FRACAO", "Representação de uma parte de um todo dividido em partes iguais"], ["DECIMAL", "Forma de escrever um número racional usando vírgula"], ["NUMERADOR", "Termo de cima de uma fração, indica quantas partes foram tomadas"], ["DENOMINADOR", "Termo de baixo de uma fração, indica em quantas partes o todo foi dividido"], ["RETA", "Linha usada para representar e localizar números em ordem"], ["PONTO", "Posição exata que representa um número na reta numérica"], ["ORDEM", "Sequência em que os números aparecem, do menor para o maior"], ["COMPARACAO", "Ação de verificar qual número é maior, menor ou igual"], ["EQUIVALENTE", "Frações diferentes que representam a mesma quantidade"], ["CONJUNTO", "Reunião de números que compartilham uma mesma característica"], ["POSITIVO", "Número maior que zero"], ["NEGATIVO", "Número menor que zero"], ["INTEIRO", "Número sem parte fracionária, positivo, negativo ou zero"], ["NATURAL", "Número usado para contar, sem sinal negativo"], ["REPRESENTACAO", "Forma de expressar um número racional, fracionária ou decimal"], ["LOCALIZACAO", "Posição de um número racional na reta numérica"], ["DIVISAO", "Operação que relaciona a fração ao resultado de repartir uma quantidade"], ["RESULTADO", "Valor final obtido a partir de uma divisão entre dois números"], ["PARTE", "Porção de um todo, representada pelo numerador de uma fração"], ["TODO", "Quantidade completa que foi dividida em partes iguais"], ["SIMPLIFICACAO", "Redução de uma fração aos seus termos mais simples"], ["PROPORCAO", "Igualdade entre razões usada para comparar grandezas"], ["MODULO", "Distância de um número até o zero na reta numérica"], ["OPOSTO", "Número de mesmo módulo mas sinal contrário"], ["MEDIDA", "Valor atribuído a uma grandeza após ser comparada à unidade"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

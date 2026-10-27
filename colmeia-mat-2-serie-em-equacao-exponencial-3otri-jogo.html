@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Equacao exponencial 3otri - Colmeia</title>
+<title>Caça-Palavras da Equação Exponencial - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Equacao exponencial 3otri</h1><div class="sub">Colmeia · Matemática · 2ª série EM · 3º trimestre</div></div>
+  <div><h1>🐝 Caça-Palavras da Equação Exponencial</h1><div class="sub">Colmeia · Matemática · 2ª série EM · 3º trimestre</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["EXPONENCIAL", "relativo a expressao em que a incognita aparece no expoente"], ["EQUACAO", "sentenca matematica que expressa uma igualdade entre duas expressoes"], ["POTENCIA", "resultado de multiplicar uma base por ela mesma varias vezes"], ["BASE", "numero que e elevado a um expoente numa potencia"], ["EXPOENTE", "numero que indica quantas vezes a base deve ser multiplicada por si mesma"], ["IGUALDADE", "relacao matematica em que dois valores sao equivalentes"], ["INCOGNITA", "valor desconhecido que se deseja descobrir numa equacao"], ["PROPRIEDADE", "regra que permite simplificar operacoes com potencias"], ["SOLUCAO", "valor que torna verdadeira uma equacao"], ["CONJUNTO", "reuniao de todos os valores que satisfazem uma equacao"], ["RAIZ", "operacao inversa da potenciacao, usada na resolucao de algumas equacoes"], ["VARIAVEL", "simbolo que representa um valor desconhecido ou variavel numa equacao"], ["CALCULO", "processo matematico usado para encontrar a solucao de um problema"], ["RESOLUCAO", "conjunto de passos usados para encontrar a solucao de uma equacao"], ["FUNCAO", "relacao matematica entre duas variaveis, uma das quais pode ser exponencial"], ["CRESCENTE", "caracteristica de uma funcao cujos valores aumentam"], ["DECRESCENTE", "caracteristica de uma funcao cujos valores diminuem"], ["VALOR", "quantidade atribuida a uma variavel numa equacao"], ["NUMERICO", "relativo aos numeros e as suas propriedades"], ["REPRESENTACAO", "forma de expressar uma equacao ou funcao"], ["GRAFICO", "representacao visual de uma funcao no plano cartesiano"], ["ALGEBRICA", "relativo a linguagem matematica usada para expressar relacoes"], ["PROBLEMA", "situacao que exige o uso da matematica para ser resolvida"], ["MATEMATICA", "ciencia que estuda numeros, formas e suas relacoes"]];
+const DATA=[["EXPONENCIAL", "Relativo à expressão em que a incógnita aparece no expoente"], ["EQUACAO", "Sentença matemática que expressa uma igualdade entre duas expressões"], ["POTENCIA", "Resultado de multiplicar uma base por ela mesma várias vezes"], ["BASE", "Número que é elevado a um expoente numa potência"], ["EXPOENTE", "Número que indica quantas vezes a base deve ser multiplicada por si mesma"], ["IGUALDADE", "Relação matemática em que dois valores são equivalentes"], ["INCOGNITA", "Valor desconhecido que se deseja descobrir numa equação"], ["PROPRIEDADE", "Regra que permite simplificar operações com potências"], ["SOLUCAO", "Valor que torna verdadeira uma equação"], ["CONJUNTO", "Reunião de todos os valores que satisfazem uma equação"], ["RAIZ", "Operação inversa da potenciação, usada na resolução de algumas equações"], ["VARIAVEL", "Símbolo que representa um valor desconhecido ou que pode assumir diferentes valores numa equação"], ["CALCULO", "Processo matemático usado para encontrar a solução de um problema"], ["RESOLUCAO", "Conjunto de passos usados para encontrar a solução de uma equação"], ["FUNCAO", "Relação matemática entre duas variáveis, uma das quais pode ser exponencial"], ["CRESCENTE", "Característica de uma função cujos valores aumentam"], ["DECRESCENTE", "Característica de uma função cujos valores diminuem"], ["VALOR", "Quantidade atribuída a uma variável numa equação"], ["NUMERICO", "Relativo aos números e às suas propriedades"], ["REPRESENTACAO", "Forma de expressar uma equação ou função"], ["GRAFICO", "Representação visual de uma função no plano cartesiano"], ["ALGEBRICA", "Relativo à linguagem matemática usada para expressar relações"], ["PROBLEMA", "Situação que exige o uso da matemática para ser resolvida"], ["MATEMATICA", "Ciência que estuda números, formas e suas relações"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

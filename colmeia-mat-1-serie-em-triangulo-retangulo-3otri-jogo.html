@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Triangulo retangulo 3otri - Colmeia</title>
+<title>Caça-Palavras do Triângulo Retângulo - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Triangulo retangulo 3otri</h1><div class="sub">Colmeia · Matemática · 1ª série EM · 3º trimestre</div></div>
+  <div><h1>🐝 Caça-Palavras do Triângulo Retângulo</h1><div class="sub">Colmeia · Matemática · 1ª série EM · 3º trimestre</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["TRIANGULO", "poligono de tres lados e tres angulos"], ["RETANGULO", "que possui um angulo interno de noventa graus"], ["HIPOTENUSA", "lado oposto ao angulo reto num triangulo retangulo, o maior deles"], ["CATETO", "cada um dos dois lados que formam o angulo reto"], ["ALTURA", "segmento perpendicular a hipotenusa, relativo a ela, que a divide em duas partes"], ["PROJECAO", "segmento formado quando a altura divide a hipotenusa em duas partes"], ["SEMELHANCA", "relacao entre figuras que tem a mesma forma, proporcionalmente"], ["RAZAO", "comparacao entre duas grandezas por meio de uma divisao"], ["PROPORCAO", "igualdade entre duas razoes"], ["RELACAO", "ligacao matematica entre os elementos de um triangulo retangulo"], ["METRICA", "relativa as medidas dos lados de uma figura geometrica"], ["ANGULO", "abertura formada por dois lados que se encontram num vertice"], ["RETO", "angulo de noventa graus, caracteristica do triangulo retangulo"], ["AGUDO", "angulo menor que noventa graus"], ["VERTICE", "ponto de encontro entre dois lados de um triangulo"], ["LADO", "cada um dos segmentos que formam o contorno de um triangulo"], ["MEDIDA", "valor atribuido ao comprimento de um lado do triangulo"], ["TEOREMA", "afirmacao matematica comprovada, usada para resolver problemas geometricos"], ["PITAGORAS", "matematico grego associado a famosa relacao entre os lados do triangulo retangulo"], ["QUADRADO", "resultado de multiplicar um numero por ele mesmo, usado no teorema de pitagoras"], ["SOMA", "operacao que relaciona os quadrados dos catetos ao quadrado da hipotenusa"], ["RESOLUCAO", "processo de encontrar a solucao de um problema geometrico"], ["PROBLEMA", "situacao que exige o uso de conhecimentos matematicos para ser resolvida"], ["GEOMETRIA", "area da matematica que estuda as formas, medidas e posicoes das figuras"]];
+const DATA=[["TRIANGULO", "Polígono de três lados e três ângulos"], ["RETANGULO", "Que possui um ângulo interno de noventa graus"], ["HIPOTENUSA", "Lado oposto ao ângulo reto num triângulo retângulo, o maior deles"], ["CATETO", "Cada um dos dois lados que formam o ângulo reto"], ["ALTURA", "Segmento perpendicular à hipotenusa, relativo a ela, que a divide em duas partes"], ["PROJECAO", "Segmento formado quando a altura divide a hipotenusa em duas partes"], ["SEMELHANCA", "Relação entre figuras que têm a mesma forma, proporcionalmente"], ["RAZAO", "Comparação entre duas grandezas por meio de uma divisão"], ["PROPORCAO", "Igualdade entre duas razões"], ["RELACAO", "Ligação matemática entre os elementos de um triângulo retângulo"], ["METRICA", "Relativa às medidas dos lados de uma figura geométrica"], ["ANGULO", "Abertura formada por dois lados que se encontram num vértice"], ["RETO", "Ângulo de noventa graus, característica do triângulo retângulo"], ["AGUDO", "Ângulo menor que noventa graus"], ["VERTICE", "Ponto de encontro entre dois lados de um triângulo"], ["LADO", "Cada um dos segmentos que formam o contorno de um triângulo"], ["MEDIDA", "Valor atribuído ao comprimento de um lado do triângulo"], ["TEOREMA", "Afirmação matemática comprovada, usada para resolver problemas geométricos"], ["PITAGORAS", "Matemático grego associado à famosa relação entre os lados do triângulo retângulo"], ["QUADRADO", "Resultado de multiplicar um número por ele mesmo, usado no teorema de Pitágoras"], ["SOMA", "Operação que relaciona os quadrados dos catetos ao quadrado da hipotenusa"], ["RESOLUCAO", "Processo de encontrar a solução de um problema geométrico"], ["PROBLEMA", "Situação que exige o uso de conhecimentos matemáticos para ser resolvida"], ["GEOMETRIA", "Área da matemática que estuda as formas, medidas e posições das figuras"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

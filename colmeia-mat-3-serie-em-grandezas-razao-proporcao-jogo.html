@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Grandezas razao proporcao - Colmeia</title>
+<title>Colmeia das Grandezas, Razões e Proporções - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Grandezas razao proporcao</h1><div class="sub">Colmeia · Matemática · 3ª série EM</div></div>
+  <div><h1>🐝 Colmeia das Grandezas, Razões e Proporções</h1><div class="sub">Colmeia · Matemática · 3ª série EM</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["GRANDEZA", "tudo o que pode ser medido, como comprimento, tempo ou velocidade"], ["RAZAO", "comparacao entre duas grandezas por meio de uma divisao"], ["PROPORCAO", "igualdade entre duas razoes"], ["PROPORCIONAL", "relacao em que a variacao de uma grandeza acompanha a de outra"], ["INVERSAMENTE", "tipo de proporcao em que uma grandeza aumenta enquanto a outra diminui"], ["DIRETAMENTE", "tipo de proporcao em que as duas grandezas aumentam ou diminuem juntas"], ["UNIDADE", "padrao usado para expressar o valor de uma grandeza"], ["MEDIDA", "resultado da comparacao de uma grandeza com uma unidade"], ["MULTIPLO", "unidade maior que a unidade padrao de uma grandeza"], ["SUBMULTIPLO", "unidade menor que a unidade padrao de uma grandeza"], ["CONVERSAO", "transformacao de uma medida de uma unidade para outra"], ["VELOCIDADE", "grandeza que relaciona a distancia percorrida com o tempo gasto"], ["DENSIDADE", "grandeza que relaciona a massa de um corpo com o seu volume"], ["DEMOGRAFICA", "tipo de densidade que relaciona a populacao com a area de um territorio"], ["REGRA", "metodo de calculo usado para resolver problemas de proporcao, como a regra de tres"], ["VARIACAO", "mudanca no valor de uma grandeza em relacao a outra"], ["ALGEBRICA", "linguagem matematica usada para expressar relacoes entre grandezas"], ["RELACAO", "ligacao existente entre duas ou mais grandezas"], ["CONSTANTE", "valor que nao muda numa relacao de proporcionalidade"], ["ESCALA", "razao entre o tamanho real e o tamanho representado num desenho"], ["QUOCIENTE", "resultado de uma divisao, usado no calculo de razoes"], ["COMPARACAO", "acao de relacionar duas grandezas para saber qual e maior"], ["EQUIVALENCIA", "igualdade de valor entre duas razoes ou proporcoes"], ["TRANSFORMACAO", "mudanca de uma grandeza de uma unidade para outra equivalente"]];
+const DATA=[["GRANDEZA", "Tudo o que pode ser medido, como comprimento, tempo ou velocidade"], ["RAZAO", "Comparação entre duas grandezas por meio de uma divisão"], ["PROPORCAO", "Igualdade entre duas razões"], ["PROPORCIONAL", "Relação em que a variação de uma grandeza acompanha a de outra"], ["INVERSAMENTE", "Tipo de proporção em que uma grandeza aumenta enquanto a outra diminui"], ["DIRETAMENTE", "Tipo de proporção em que as duas grandezas aumentam ou diminuem juntas"], ["UNIDADE", "Padrão usado para expressar o valor de uma grandeza"], ["MEDIDA", "Resultado da comparação de uma grandeza com uma unidade"], ["MULTIPLO", "Unidade maior que a unidade padrão de uma grandeza"], ["SUBMULTIPLO", "Unidade menor que a unidade padrão de uma grandeza"], ["CONVERSAO", "Transformação de uma medida de uma unidade para outra"], ["VELOCIDADE", "Grandeza que relaciona a distância percorrida com o tempo gasto"], ["DENSIDADE", "Grandeza que relaciona a massa de um corpo com o seu volume"], ["DEMOGRAFICA", "Tipo de densidade que relaciona a população com a área de um território"], ["REGRA", "Método de cálculo usado para resolver problemas de proporção, inclusive o de três"], ["VARIACAO", "Mudança no valor de uma grandeza em relação a outra"], ["ALGEBRICA", "Linguagem matemática usada para expressar relações entre grandezas"], ["RELACAO", "Ligação existente entre duas ou mais grandezas"], ["CONSTANTE", "Valor que não muda numa relação de proporcionalidade"], ["ESCALA", "Razão entre o tamanho real e o tamanho representado num desenho"], ["QUOCIENTE", "Resultado de uma divisão, usado no cálculo de razões"], ["COMPARACAO", "Ação de relacionar duas grandezas para saber qual é maior"], ["EQUIVALENCIA", "Igualdade de valor entre duas razões ou proporções"], ["TRANSFORMACAO", "Mudança de uma grandeza de uma unidade para outra equivalente"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

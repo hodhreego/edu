@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Quadrilateros 3otri - Colmeia</title>
+<title>Caça-Palavras dos Quadriláteros - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Quadrilateros 3otri</h1><div class="sub">Colmeia · Matemática · 8º ano · 3º trimestre</div></div>
+  <div><h1>🐝 Caça-Palavras dos Quadriláteros</h1><div class="sub">Colmeia · Matemática · 8º ano · 3º trimestre</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["QUADRILATERO", "poligono de quatro lados"], ["PARALELO", "relativo a lados que nunca se encontram, mantendo a mesma distancia"], ["CONCORRENTE", "relativo a lados que se cruzam em um ponto"], ["PERPENDICULAR", "relativo a lados que se cruzam formando um angulo reto"], ["LADO", "cada um dos segmentos que formam o contorno de um poligono"], ["VERTICE", "ponto de encontro entre dois lados de um poligono"], ["DIAGONAL", "segmento que liga dois vertices nao consecutivos de um poligono"], ["ANGULO", "abertura formada por dois lados que se encontram num vertice"], ["PARALELOGRAMO", "quadrilatero com dois pares de lados paralelos"], ["RETANGULO", "paralelogramo com todos os angulos internos retos"], ["LOSANGO", "paralelogramo com todos os lados de mesma medida"], ["QUADRADO", "quadrilatero com todos os lados e angulos iguais"], ["TRAPEZIO", "quadrilatero com apenas um par de lados paralelos"], ["PROPRIEDADE", "caracteristica que define e diferencia um tipo de figura"], ["CLASSIFICACAO", "organizacao dos quadrilateros de acordo com suas caracteristicas"], ["CONGRUENTE", "que tem a mesma forma e o mesmo tamanho"], ["SIMETRIA", "correspondencia exata de forma entre partes de uma figura"], ["BISSETRIZ", "reta que divide um angulo em duas partes iguais"], ["INTERNO", "relativo aos angulos formados dentro do poligono"], ["POLIGONO", "figura plana fechada formada por segmentos de reta"], ["PLANO", "superficie bidimensional onde as figuras geometricas sao representadas"], ["FIGURA", "forma geometrica representada no plano"], ["CONVEXO", "poligono em que todos os angulos internos sao menores que 180 graus"], ["BASE", "lado usado como referencia para calcular a altura de uma figura"], ["ALTURA", "distancia perpendicular entre a base e o lado oposto de uma figura"]];
+const DATA=[["QUADRILATERO", "Polígono de quatro lados"], ["PARALELO", "Relativo a lados que nunca se encontram, mantendo a mesma distância"], ["CONCORRENTE", "Relativo a lados que se cruzam em um ponto"], ["PERPENDICULAR", "Relativo a lados que se cruzam formando um ângulo reto"], ["LADO", "Cada um dos segmentos que formam o contorno de um polígono"], ["VERTICE", "Ponto de encontro entre dois lados de um polígono"], ["DIAGONAL", "Segmento que liga dois vértices não consecutivos de um polígono"], ["ANGULO", "Abertura formada por dois lados que se encontram num vértice"], ["PARALELOGRAMO", "Quadrilátero com dois pares de lados paralelos"], ["RETANGULO", "Paralelogramo com todos os ângulos internos retos"], ["LOSANGO", "Paralelogramo com todos os lados de mesma medida"], ["QUADRADO", "Quadrilátero com todos os lados e ângulos iguais"], ["TRAPEZIO", "Quadrilátero com apenas um par de lados paralelos"], ["PROPRIEDADE", "Característica que define e diferencia um tipo de figura"], ["CLASSIFICACAO", "Organização dos quadriláteros de acordo com suas características"], ["CONGRUENTE", "Que tem a mesma forma e o mesmo tamanho"], ["SIMETRIA", "Correspondência exata de forma entre partes de uma figura"], ["BISSETRIZ", "Reta que divide um ângulo em duas partes iguais"], ["INTERNO", "Relativo aos ângulos formados dentro do polígono"], ["POLIGONO", "Figura plana fechada formada por segmentos de reta"], ["PLANO", "Superfície bidimensional onde as figuras geométricas são representadas"], ["FIGURA", "Forma geométrica representada no plano"], ["CONVEXO", "Polígono em que todos os ângulos internos são menores que 180 graus"], ["BASE", "Lado usado como referência para calcular a altura de uma figura"], ["ALTURA", "Distância perpendicular entre a base e o lado oposto de uma figura"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

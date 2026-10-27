@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Circulo circunferencia 3otri - Colmeia</title>
+<title>Mistérios da Circunferência - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Circulo circunferencia 3otri</h1><div class="sub">Colmeia · Matemática · 7º ano · 3º trimestre</div></div>
+  <div><h1>🐝 Mistérios da Circunferência</h1><div class="sub">Colmeia · Matemática · 7º ano · 3º trimestre</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["CIRCULO", "regiao plana limitada por uma circunferencia"], ["CIRCUNFERENCIA", "linha curva fechada cujos pontos estao a mesma distancia do centro"], ["RAIO", "segmento que liga o centro a qualquer ponto da circunferencia"], ["DIAMETRO", "segmento que passa pelo centro e liga dois pontos da circunferencia"], ["CORDA", "segmento que liga dois pontos quaisquer da circunferencia"], ["CENTRO", "ponto que fica a mesma distancia de todos os pontos da circunferencia"], ["ARCO", "parte da circunferencia compreendida entre dois de seus pontos"], ["TANGENTE", "reta que toca a circunferencia em um unico ponto"], ["SECANTE", "reta que corta a circunferencia em dois pontos"], ["PERIMETRO", "medida do contorno de uma figura, no circulo chamado comprimento"], ["AREA", "medida da superficie ocupada por uma figura plana"], ["PONTO", "elemento geometrico sem dimensao usado para definir a circunferencia"], ["DISTANCIA", "medida entre dois pontos, usada para definir o raio"], ["LUGAR", "conjunto de pontos que atendem a uma condicao geometrica especifica"], ["GEOMETRICO", "relativo as formas e figuras estudadas na geometria"], ["SETOR", "regiao do circulo limitada por dois raios e um arco"], ["SEGMENTO", "parte de uma reta limitada por dois pontos"], ["ANGULO", "abertura formada por dois raios com origem comum"], ["INTERNO", "relativo ao que esta dentro dos limites de uma figura"], ["EXTERNO", "relativo ao que esta fora dos limites de uma figura"], ["INSCRITO", "poligono cujos vertices estao todos sobre a circunferencia"], ["CIRCUNSCRITO", "figura que envolve completamente outra figura em seu contorno"], ["RELACAO", "ligacao matematica entre dois ou mais elementos geometricos"], ["MEDIDA", "valor atribuido a uma grandeza apos comparacao com uma unidade"], ["CONTORNO", "linha que delimita o formato de uma figura"], ["SUPERFICIE", "extensao plana ocupada por uma figura geometrica"]];
+const DATA=[["CIRCULO", "Região plana limitada por uma circunferência"], ["CIRCUNFERENCIA", "Linha curva fechada cujos pontos estão à mesma distância do centro"], ["RAIO", "Segmento que liga o centro a qualquer ponto da circunferência"], ["DIAMETRO", "Segmento que passa pelo centro e liga dois pontos da circunferência"], ["CORDA", "Segmento que liga dois pontos quaisquer da circunferência"], ["CENTRO", "Ponto que fica à mesma distância de todos os pontos da circunferência"], ["ARCO", "Parte da circunferência compreendida entre dois de seus pontos"], ["TANGENTE", "Reta que toca a circunferência em um único ponto"], ["SECANTE", "Reta que corta a circunferência em dois pontos"], ["PERIMETRO", "Medida do contorno de uma figura, chamada comprimento no círculo"], ["AREA", "Medida da superfície ocupada por uma figura plana"], ["PONTO", "Elemento geométrico sem dimensão usado para definir a circunferência"], ["DISTANCIA", "Medida entre dois pontos, usada para definir o raio"], ["LUGAR", "Conjunto de pontos que atendem a uma condição geométrica específica"], ["GEOMETRICO", "Relativo às formas e figuras estudadas na geometria"], ["SETOR", "Região do círculo limitada por dois raios e um arco"], ["SEGMENTO", "Parte de uma reta limitada por dois pontos"], ["ANGULO", "Abertura formada por dois raios com origem comum"], ["INTERNO", "Relativo ao que está dentro dos limites de uma figura"], ["EXTERNO", "Relativo ao que está fora dos limites de uma figura"], ["INSCRITO", "Polígono cujos vértices estão todos sobre a circunferência"], ["CIRCUNSCRITO", "Figura que envolve completamente outra figura em seu contorno"], ["RELACAO", "Ligação matemática entre dois ou mais elementos geométricos"], ["MEDIDA", "Valor atribuído a uma grandeza após comparação com uma unidade"], ["CONTORNO", "Linha que delimita o formato de uma figura"], ["SUPERFICIE", "Extensão plana ocupada por uma figura geométrica"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

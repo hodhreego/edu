@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Funcoes 3otri - Colmeia</title>
+<title>Colmeia das Funções - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Funcoes 3otri</h1><div class="sub">Colmeia · Matemática · 9º ano · 3º trimestre</div></div>
+  <div><h1>🐝 Colmeia das Funções</h1><div class="sub">Colmeia · Matemática · 9º ano · 3º trimestre</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["FUNCAO", "relacao em que cada elemento de um conjunto corresponde a um unico elemento de outro"], ["DOMINIO", "conjunto de todos os valores que a variavel independente pode assumir"], ["IMAGEM", "conjunto de todos os valores que a variavel dependente pode assumir"], ["VARIAVEL", "simbolo que representa um valor que pode mudar numa funcao"], ["DEPENDENTE", "variavel cujo valor depende do valor de outra variavel"], ["INDEPENDENTE", "variavel que pode assumir valores livremente numa funcao"], ["RELACAO", "ligacao estabelecida entre elementos de dois conjuntos"], ["TABELA", "forma de organizar pares de valores de uma funcao"], ["GRAFICO", "representacao visual de uma funcao no plano cartesiano"], ["ALGEBRICA", "forma de expressar uma funcao por meio de uma formula"], ["REPRESENTACAO", "maneira de expressar uma funcao, numerica, algebrica ou grafica"], ["CONJUNTO", "reuniao de elementos que compartilham uma caracteristica"], ["ELEMENTO", "cada um dos itens que pertencem a um conjunto"], ["CORRESPONDENCIA", "relacao que associa cada elemento do dominio a um da imagem"], ["PAR", "conjunto de dois valores relacionados numa funcao"], ["ORDENADO", "par cujos elementos seguem uma ordem definida, x seguido de y"], ["ENTRADA", "valor atribuido a variavel independente numa funcao"], ["SAIDA", "valor obtido para a variavel dependente numa funcao"], ["LEI", "expressao matematica que define como calcular a saida a partir da entrada"], ["FORMACAO", "regra que determina os valores gerados por uma sequencia ou funcao"], ["VALOR", "numero atribuido a uma variavel numa determinada situacao"], ["NUMERICO", "relativo aos numeros e as suas propriedades"], ["EIXO", "linha de referencia usada para localizar pontos no plano cartesiano"], ["PLANO", "superficie onde se representam graficamente as funcoes"], ["CARTESIANO", "sistema de coordenadas formado por dois eixos perpendiculares"], ["PONTO", "posicao definida por um par ordenado no plano cartesiano"]];
+const DATA=[["FUNCAO", "Relação em que cada elemento de um conjunto corresponde a um único elemento de outro"], ["DOMINIO", "Conjunto de todos os valores que a variável independente pode assumir"], ["IMAGEM", "Conjunto de todos os valores que a variável dependente pode assumir"], ["VARIAVEL", "Símbolo que representa um valor que pode mudar numa função"], ["DEPENDENTE", "Variável cujo valor depende do valor de outra variável"], ["INDEPENDENTE", "Variável que pode assumir valores livremente numa função"], ["RELACAO", "Ligação estabelecida entre elementos de dois conjuntos"], ["TABELA", "Forma de organizar pares de valores de uma função"], ["GRAFICO", "Representação visual de uma função no plano cartesiano"], ["ALGEBRICA", "Forma de expressar uma função por meio de uma fórmula"], ["REPRESENTACAO", "Maneira de expressar uma função, numérica, algébrica ou gráfica"], ["CONJUNTO", "Reunião de elementos que compartilham uma característica"], ["ELEMENTO", "Cada um dos itens que pertencem a um conjunto"], ["CORRESPONDENCIA", "Relação que associa cada elemento do domínio a um da imagem"], ["PAR", "Conjunto de dois valores relacionados numa função"], ["ORDENADO", "Par cujos elementos seguem uma ordem definida, x seguido de y"], ["ENTRADA", "Valor atribuído à variável independente numa função"], ["SAIDA", "Valor obtido para a variável dependente numa função"], ["LEI", "Expressão matemática que define como calcular a saída a partir da entrada"], ["FORMACAO", "Regra que determina os valores gerados por uma sequência ou função"], ["VALOR", "Número atribuído a uma variável numa determinada situação"], ["NUMERICO", "Relativo aos números e às suas propriedades"], ["EIXO", "Linha de referência usada para localizar pontos no plano cartesiano"], ["PLANO", "Superfície onde se representam graficamente as funções"], ["CARTESIANO", "Sistema de coordenadas formado por dois eixos perpendiculares"], ["PONTO", "Posição definida por um par ordenado no plano cartesiano"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Numeros irracionais - Colmeia</title>
+<title>Caça-Palavras dos Irracionais - Colmeia</title>
 <style>
 :root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#1f4fd8}
 *{box-sizing:border-box}
@@ -58,7 +58,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <body>
 <div id="app">
  <div class="top">
-  <div><h1>🐝 Numeros irracionais</h1><div class="sub">Colmeia · Matemática · 9º ano</div></div>
+  <div><h1>🐝 Caça-Palavras dos Irracionais</h1><div class="sub">Colmeia · Matemática · 9º ano</div></div>
   <div class="grow"></div>
   <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
   <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
@@ -77,7 +77,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",
 <div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
 <script>
 (function(){
-const DATA=[["IRRACIONAL", "numero real cuja representacao decimal e infinita e nao periodica"], ["REAL", "conjunto que reune os numeros racionais e os irracionais"], ["RACIONAL", "numero que pode ser escrito como fracao de dois inteiros"], ["DECIMAL", "forma de escrever um numero usando virgula e casas apos ela"], ["INFINITO", "que nao tem fim, como as casas decimais de um numero irracional"], ["PERIODICO", "que se repete em intervalos regulares, como numa dizima"], ["RAIZ", "operacao inversa da potenciacao, usada para encontrar numeros irracionais"], ["DIZIMA", "numero decimal com algarismos que se repetem infinitamente"], ["QUADRADA", "tipo de raiz muito usada para obter numeros irracionais, como a raiz de 2"], ["APROXIMACAO", "valor proximo do numero irracional, usado para facilitar calculos"], ["RETA", "linha onde se localizam e comparam os numeros reais"], ["LOCALIZACAO", "posicao estimada de um numero irracional na reta numerica"], ["ESTIMATIVA", "calculo aproximado da posicao ou do valor de um numero"], ["CONJUNTO", "reuniao de numeros com uma caracteristica em comum, como os reais"], ["REPRESENTACAO", "forma de expressar um numero, decimal ou fracionaria"], ["NUMERICA", "relativa aos numeros e as suas propriedades"], ["FRACIONARIA", "forma de representar um numero racional como fracao"], ["CIRCUNFERENCIA", "contorno de um circulo, usado para calcular o numero pi"], ["DIAMETRO", "medida que atravessa o circulo pelo centro, usada com o numero pi"], ["RAZAO", "relacao entre duas grandezas, base do calculo do numero pi"], ["EXATA", "divisao cujo resultado tem um numero finito de casas decimais"], ["INEXATA", "divisao cujo resultado tem infinitas casas decimais"], ["ORDEM", "posicao relativa de um numero em relacao aos outros"], ["COMPARACAO", "verificacao de qual numero e maior, menor ou igual a outro"], ["MEDIDA", "valor atribuido a uma grandeza, que pode resultar num numero irracional"]];
+const DATA=[["IRRACIONAL", "Número real cuja representação decimal é infinita e não periódica"], ["REAL", "Conjunto que reúne os números racionais e os irracionais"], ["RACIONAL", "Número que pode ser escrito como fração de dois inteiros"], ["DECIMAL", "Forma de escrever um número usando vírgula e casas após ela"], ["INFINITO", "Que não tem fim, como as casas decimais de um número irracional"], ["PERIODICO", "Que se repete em intervalos regulares, como numa dízima"], ["RAIZ", "Operação inversa da potenciação, usada para encontrar números irracionais"], ["DIZIMA", "Número decimal com algarismos que se repetem infinitamente"], ["QUADRADA", "Tipo de raiz muito usada para obter números irracionais, como a raiz de 2"], ["APROXIMACAO", "Valor próximo do número irracional, usado para facilitar cálculos"], ["RETA", "Linha onde se localizam e comparam os números reais"], ["LOCALIZACAO", "Posição estimada de um número irracional na reta numérica"], ["ESTIMATIVA", "Cálculo aproximado da posição ou do valor de um número"], ["CONJUNTO", "Reunião de números com uma característica em comum, como os reais"], ["REPRESENTACAO", "Forma de expressar um número, decimal ou fracionária"], ["NUMERICA", "Relativa aos números e às suas propriedades"], ["FRACIONARIA", "Forma de representar um número racional como fração"], ["CIRCUNFERENCIA", "Contorno de um círculo, usado para calcular o número pi"], ["DIAMETRO", "Medida que atravessa o círculo pelo centro, usada com o número pi"], ["RAZAO", "Relação entre duas grandezas, base do cálculo do número pi"], ["EXATA", "Divisão cujo resultado tem um número finito de casas decimais"], ["INEXATA", "Divisão cujo resultado tem infinitas casas decimais"], ["ORDEM", "Posição relativa de um número em relação aos outros"], ["COMPARACAO", "Verificação de qual número é maior, menor ou igual a outro"], ["MEDIDA", "Valor atribuído a uma grandeza, que pode resultar num número irracional"]];
 const N=Math.min(DATA.length,12);
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
 const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];
