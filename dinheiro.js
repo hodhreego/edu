@@ -274,3 +274,10 @@ document.addEventListener('DOMContentLoaded',function(){
   var m=location.search.match(/[?&]ano=(\d)/);if(m&&D.first(+m[1])){sel.value=m[1];D.go(D.first(+m[1]))}
  });
 })();
+/* fontes menores + alinhamento no topo + puxador da gaveta centralizado e sempre visível */
+(function(){var st=document.createElement('style');
+ st.textContent='@media screen{.top h1{font-size:min(3.2vh,26px)!important}.sub{font-size:min(1.5vh,12px)!important}.coin{font-size:min(2.8vh,22px)!important}.btn.ok{font-size:min(2.1vh,17px)!important}.inst{font-size:min(1.8vh,14px)!important}.card h2{font-size:min(1.9vh,15px)!important}'
+ +'.prod .e{font-size:min(8.5vh,68px)!important}.prod .n{font-size:min(2.3vh,18px)!important}.tag{font-size:min(3.3vh,26px)!important}.paid{font-size:min(2.1vh,17px)!important}.alvo{font-size:min(2.5vh,20px)!important}.alvo small{font-size:min(1.6vh,13px)!important}.zone .vazio,.zb .vazio{font-size:min(1.8vh,14px)!important}.soma{font-size:min(2.5vh,20px)!important}.msg{font-size:min(1.8vh,14px)!important}.row .lbl{font-size:min(1.4vh,11px)!important}.zn h3{font-size:min(1.7vh,14px)!important}.stm{font-size:min(1.8vh,14px)!important}#wal h4{font-size:min(1.6vh,13px)!important}.prods.many .e{font-size:min(6.5vh,52px)!important}.prods.many .n{font-size:min(1.7vh,14px)!important}.prods.many .tag{font-size:min(2.8vh,22px)!important}'
+ +'.zone,.zb{align-content:flex-start!important;justify-content:flex-start!important;align-items:flex-start!important}'
+ +'#app>.tray>.tray-h{left:50%!important;transform:translateX(-50%);top:-23px!important;z-index:60!important;display:flex!important;visibility:visible!important;opacity:1!important}}';
+ document.head.appendChild(st)})();
