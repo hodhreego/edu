@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded',function(){
  document.head.appendChild(st)})();
 /* baixa visão: tamanhos grandes rolam a página inteira; bandeja fixa embaixo */
 (function(){var st=document.createElement('style');
- st.textContent='@media screen and (min-width:701px){#app{overflow-y:auto!important;overflow-x:hidden}#app>.main{flex:1 0 auto!important;min-height:52vh;overflow:visible!important}#app>.main>.card{overflow:visible!important}#app>.tray{max-height:46vh;overflow-y:auto;flex:none!important}}';
+ st.textContent='@media screen and (min-width:701px){html:not(.edu-zoomed) #app{overflow-y:auto!important;overflow-x:hidden}#app>.main{flex:1 0 auto!important;min-height:calc(48vh / var(--ezz,1));overflow:visible!important}#app>.main>.card{overflow:visible!important}}@media screen{#app>.tray{position:fixed!important;left:.5vw;right:.5vw;bottom:.5vh;max-height:calc(56vh / var(--ezz,1))!important;overflow-y:auto!important;flex:none!important;z-index:50;box-shadow:0 -6px 18px #0003;margin:0!important}}';
  document.head.appendChild(st)})();
 
 /* versão para imprimir (?imp=1): TODAS as questões de todas as fases, ajustável */
@@ -97,3 +97,25 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('dm-n').onclick=build;
  });
 })();
+/* bandeja de dinheiro como "gaveta" deslizável (arrastar a alça para cima/baixo) */
+document.addEventListener('DOMContentLoaded',function(){
+ var tr=document.getElementById('tray');if(!tr||/[?&]imp=1/.test(location.search))return;
+ var st=document.createElement('style');
+ st.textContent='@media screen{.tray-h{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 4px;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none;position:sticky;top:-1vh;background:inherit;z-index:3;margin:-.5vh 0 .2vh}.tray-h i{display:block;width:56px;height:6px;border-radius:99px;background:#94a3b8}.tray-h small{font:700 11px "Segoe UI",Arial,sans-serif;color:#64748b}#app>.tray.dr-col{overflow:hidden!important}#app>.tray.dr-col>*:not(.tray-h){display:none!important}}';
+ document.head.appendChild(st);
+ var h=document.createElement('div');h.className='tray-h';h.innerHTML='<i></i><small>⇕ arraste para cima ou para baixo</small>';tr.insertBefore(h,tr.firstChild);
+ function zoom(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ezz'))||1}
+ function setH(px){tr.style.setProperty('height',px+'px','important');tr.style.setProperty('max-height','none','important')}
+ var y0=0,moved=false,drag=false;
+ h.addEventListener('pointerdown',function(e){drag=true;moved=false;y0=e.clientY;h.setPointerCapture(e.pointerId);e.preventDefault()});
+ h.addEventListener('pointermove',function(e){if(!drag)return;if(Math.abs(e.clientY-y0)>4)moved=true;if(!moved)return;
+  var px=(innerHeight-e.clientY)/zoom();px=Math.max(36,Math.min(px,innerHeight*.85/zoom()));tr.classList.toggle('dr-col',px<60);setH(px)});
+ h.addEventListener('pointerup',function(e){drag=false;
+  if(!moved){if(tr.classList.contains('dr-col')){tr.classList.remove('dr-col');tr.style.removeProperty('height');tr.style.removeProperty('max-height')}else{tr.classList.add('dr-col');setH(38)}}});
+});
+
+document.addEventListener('DOMContentLoaded',function(){
+ var tr=document.getElementById('tray'),ap=document.getElementById('app');if(!tr||!ap||/[?&]imp=1/.test(location.search))return;
+ function res(){ap.style.setProperty('padding-bottom',(tr.offsetHeight+10)+'px','important')}
+ if(window.ResizeObserver)new ResizeObserver(res).observe(tr);addEventListener('resize',res);setTimeout(res,300);res();
+});
