@@ -17,7 +17,7 @@ var DET = ['Data', 'Hora', 'Aluno', 'Turma', 'Escola', 'Matéria', 'Série do jo
   'Pontos', 'Acertos', 'Erros', '% acerto', 'Nota (0-10)', 'Peso', 'Gasto (R$)', 'Dinheiro final (R$)', 'Tempo (min)',
   'Senhas dos apps', 'Detalhe dos gastos', 'ID'];
 var PAI = ['Aluno', 'Data', 'Hora', 'Jogo', 'Código', 'Cenário', 'Pontos', 'Acertos', 'Erros', '% acerto', 'Nota (0-10)',
-  'Gasto (R$)', 'Dinheiro final (R$)', 'Tempo (min)', 'ID'];
+  'Gasto (R$)', 'Dinheiro final (R$)', 'Tempo (min)', 'Pontuação final (acumulada)', 'Carimbo', 'ID'];
 var RES = ['Turma', 'Aluno', 'Escola', 'Jogos', 'Pontos somados', 'Melhor pontuação', 'Média da nota', 'Gasto total (R$)'];
 var HR = 2;                       // linhas congeladas: título + cabeçalho
 var FONTE = 'Nunito';
@@ -49,17 +49,54 @@ function doPost(e) {
     return ok_('retido');
   }
   gravar_(det_(ss, 'Todos'), linha, d.sid, DET.length, 17);
-  paraPainel_(ss, linha);
+  paraPainel_(ss, linha, agora.getTime());
   resumo_(ss);
   return ok_('ok');
 }
 
-function paraPainel_(ss, x) {
+// Carimbo numérico (ms) a partir de Data/Hora da linha (Date ou texto).
+function stamp_(x) {
+  var d = x[0], h = x[1];
+  try {
+    if (!(d instanceof Date)) { var p = String(d).split('/'); d = new Date(+p[2], +p[1] - 1, +p[0]); }
+    var hh, mm, ss;
+    if (h instanceof Date) { hh = h.getHours(); mm = h.getMinutes(); ss = h.getSeconds(); }
+    else { var q = String(h).split(':'); hh = +q[0] || 0; mm = +q[1] || 0; ss = +q[2] || 0; }
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm, ss).getTime();
+  } catch (e) { return new Date().getTime(); }
+}
+
+function paraPainel_(ss, x, carimbo) {
   var turma = String(x[3] || 'Sem turma').substring(0, 30);
   var p = painel_(ss, turma.indexOf('(') === 0 ? 'Sem turma' : turma);
-  gravar_(p, [x[2], x[0], x[1], x[7], x[8], x[9], x[11], x[12], x[13], x[14], x[15], x[17], x[18], x[19], x[22]], x[22], PAI.length, 0);
-  p.getRange(HR + 1, 1, Math.max(p.getLastRow() - HR, 1), PAI.length).sort([{ column: 1, ascending: true }]);
-  tamanho_(p, PAI.length, []);
+  gravar_(p, [x[2], x[0], x[1], x[7], x[8], x[9], x[11], x[12], x[13], x[14], x[15], x[17], x[18], x[19], '', carimbo, x[22]], x[22], PAI.length, 0);
+  var n = p.getLastRow() - HR;
+  if (n < 1) return;
+  // data e hora (com segundos) sempre legíveis
+  p.getRange(HR + 1, 2, n, 1).setNumberFormat('dd/MM/yyyy');
+  p.getRange(HR + 1, 3, n, 1).setNumberFormat('HH:mm:ss');
+  p.getRange(HR + 1, 16, n, 1).setNumberFormat('0');
+  // mais recente em cima
+  p.getRange(HR + 1, 1, n, PAI.length).sort([{ column: 16, ascending: false }]);
+  // pontuação final acumulada de cada aluno (soma de todos os jogos, na aba Todos)
+  var todos = ss.getSheetByName('Todos'), soma = {};
+  if (todos && todos.getLastRow() > HR) {
+    todos.getRange(HR + 1, 3, todos.getLastRow() - HR, 10).getValues().forEach(function (r) {
+      if (norm_(r[1]) !== norm_(turma) && String(r[1]) !== String(x[3])) return;
+      soma[r[0]] = (soma[r[0]] || 0) + (Number(r[9]) || 0);
+    });
+  }
+  var nomes = p.getRange(HR + 1, 1, n, 1).getValues();
+  p.getRange(HR + 1, 15, n, 1).setValues(nomes.map(function (r) { return [soma[r[0]] || 0]; }));
+  p.getRange(HR + 1, 15, n, 1).setFontWeight('bold').setNumberFormat('0');
+}
+
+// Reconstrói todos os painéis a partir da aba Todos (use depois de mudar colunas).
+function reconstruirPaineis() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), t = ss.getSheetByName('Todos');
+  if (!t || t.getLastRow() <= HR) return;
+  var v = t.getRange(HR + 1, 1, t.getLastRow() - HR, DET.length).getValues();
+  v.forEach(function (x) { paraPainel_(ss, x, stamp_(x)); });
 }
 
 function doGet() { return ok_('Planilha do professor ativa.'); }
@@ -83,7 +120,7 @@ function liberada_(ss, escola) {
   return liberadas_(ss).some(function (l) { return e === l || e.indexOf(l) >= 0; });
 }
 function onOpen() {
-  SpreadsheetApp.getUi().createMenu('Professor').addItem('Liberar escolas da aba Config', 'liberarRetidos').addToUi();
+  SpreadsheetApp.getUi().createMenu('Professor').addItem('Liberar escolas da aba Config', 'liberarRetidos').addItem('Reconstruir painéis', 'reconstruirPaineis').addToUi();
 }
 // Depois de acrescentar uma escola na aba Config, este menu move os resultados retidos dela para as notas.
 function liberarRetidos() {
@@ -93,7 +130,7 @@ function liberarRetidos() {
   for (var i = v.length - 1; i >= 0; i--) {
     if (!liberada_(ss, v[i][4])) continue;
     gravar_(det_(ss, 'Todos'), v[i], v[i][22], DET.length, 17);
-    paraPainel_(ss, v[i]);
+    paraPainel_(ss, v[i], stamp_(v[i]));
     sh.deleteRow(i + HR + 1); mov++;
   }
   resumo_(ss);
@@ -166,7 +203,9 @@ function painel_(ss, nome) {
     sh.getRange(HR + 1, 12, m, 2).setNumberFormat('R$ #,##0.00');
     sh.getRange(HR + 1, 14, m, 1).setNumberFormat('0.0');
     sh.setFrozenColumns(1);
-    sh.hideColumns(PAI.length);
+    sh.hideColumns(PAI.length - 1, 2);
+    tamanho_(sh, PAI.length, []);
+    sh.setColumnWidth(15, 110);
     sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 11, m, 1), sh.getRange(HR + 1, 10, m, 1)));
   }
   return sh;
