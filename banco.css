@@ -423,3 +423,5 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .phone .scr>:not(.bd):not(.ld):not(.rc):not(.pos){flex-shrink:0}
 .phone .scr .hd{position:sticky;top:0;z-index:2}
 .phone .scr::after{content:"";flex:none;height:1.8em}
+.phone.dv-duo::before{display:none!important}
+.phone.dv-duo .sbar,.phone.dv-duo .lnc.ios .stt,.phone.dv-duo .cal.ios .stt,.phone.dv-duo .lck .stt{padding-top:.3em}
