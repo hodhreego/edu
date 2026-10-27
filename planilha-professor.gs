@@ -174,7 +174,7 @@ function base_(ss, nome, cab, titulo) {
   var sh = ss.getSheetByName(nome), ok = false;
   if (sh) { try { ok = sh.getRange(HR, 1, 1, cab.length).getValues()[0].join('|') === cab.join('|'); } catch (e) { ok = false; } }
   if (ok) return { sh: sh, novo: false };
-  if (!sh) sh = ss.insertSheet(nome); else { sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).breakApart(); sh.clear(); sh.clearConditionalFormatRules(); }
+  if (!sh) sh = ss.insertSheet(nome); else { sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).breakApart(); sh.clear(); sh.clearConditionalFormatRules(); sh.setFrozenColumns(0); sh.setFrozenRows(0); }
   if (sh.getMaxColumns() < cab.length) sh.insertColumnsAfter(sh.getMaxColumns(), cab.length - sh.getMaxColumns());
   var n = cab.length;
   sh.getRange(1, 1, sh.getMaxRows(), n).setFontFamily(FONTE).setFontSize(12).setVerticalAlignment('middle').setHorizontalAlignment('center');
