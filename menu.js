@@ -105,8 +105,8 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   '</div>'+
   '<span class="sp"></span>'+
   (cur.aula?'<span class="tag">Aula '+cur.aula+'</span>':'')+
-  (cur.cod?'<span class="tag k" id="en-k" title="Clique para aumentar o código">🔑 '+cur.cod+'</span>':'')+
-  '<form class="cod" id="en-c" autocomplete="off" title="Digite o código de 4 números de uma atividade"><b>🔑</b>'+
+  (cur.cod?'<span class="tag k" id="en-k" title="Clique para aumentar o código">'+cur.cod+'</span>':'')+
+  '<form class="cod" id="en-c" autocomplete="off" title="Digite o código de 4 números de uma atividade">'+
    '<input id="en-cv" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Código" aria-label="Código da atividade"><button type="submit">Ir ▶</button></form>'+
   '<button class="ac" id="en-a" title="Acessibilidade" aria-label="Acessibilidade">♿</button>'+
   '<a class="n pr" id="en-p" href="'+cur.href+'?imp=1" title="Versão para imprimir (PDF)">🖨️</a>'+
