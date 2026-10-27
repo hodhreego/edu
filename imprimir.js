@@ -1,6 +1,22 @@
+/* Versão para impressão (?imp=1): só abre com a SENHA do professor (hash em config.js). */
+(function(){
+ function hex(b){return Array.from(new Uint8Array(b)).map(function(x){return('0'+x.toString(16)).slice(-2)}).join('')}
+ function unhex(h){var a=new Uint8Array(h.length/2);for(var i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
+ function sha(t){var enc=new TextEncoder();return crypto.subtle.importKey('raw',enc.encode(t),'PBKDF2',false,['deriveBits']).then(function(k){return crypto.subtle.deriveBits({name:'PBKDF2',salt:unhex(window.EDU_PRINT_SALT||'00'),iterations:600000,hash:'SHA-256'},k,256)}).then(hex)}
+ window.EDU_PROF_OK=function(){try{return sessionStorage.getItem('edu_prof')==='1'}catch(e){return false}};
+ window.EDU_PROF_TRY=function(pw){return sha(String(pw||'').trim()).then(function(h){var ok=!!window.EDU_PRINT_HASH&&h===window.EDU_PRINT_HASH;if(ok){try{sessionStorage.setItem('edu_prof','1')}catch(e){}}return ok})};
+ window.EDU_PROF_ASK=function(done){
+  var o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#000c;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Arial,sans-serif';
+  o.innerHTML='<form style="background:#fff;border-radius:18px;padding:22px 26px;text-align:center;max-width:90vw"><h3 style="margin:0 0 6px">🔒 Área do professor</h3><p style="margin:0 0 10px;font-size:14px;color:#555">Digite a senha para liberar a versão de impressão.</p><input type="password" autocomplete="current-password" style="font-size:20px;padding:8px 12px;border:2px solid #1f4fd8;border-radius:10px;width:11em;text-align:center"><div style="margin-top:12px;display:flex;gap:8px;justify-content:center"><button type="submit" style="border:0;border-radius:99px;background:#1f4fd8;color:#fff;font:800 15px Arial;padding:9px 22px;cursor:pointer">Entrar</button><button type="button" class="c" style="border:0;border-radius:99px;background:#e6e9f2;font:800 15px Arial;padding:9px 18px;cursor:pointer">Cancelar</button></div><div class="e" style="color:#d93025;font-weight:700;margin-top:8px;min-height:1.2em"></div></form>';
+  document.body.appendChild(o);var f=o.querySelector('form'),i=o.querySelector('input');setTimeout(function(){i.focus()},50);
+  o.querySelector('.c').onclick=function(){o.remove();done(false)};
+  f.onsubmit=function(e){e.preventDefault();EDU_PROF_TRY(i.value).then(function(ok){if(ok){o.remove();done(true)}else{o.querySelector('.e').textContent='Senha incorreta.';i.value='';i.focus()}})};
+ };
+})();
 /* Versão para impressão (?imp=1): papel A4, sem menu/pontos; colmeias ganham folha + gabarito. */
 (function(){
  if(!/[?&]imp=1/.test(location.search))return;
+ if(!EDU_PROF_OK()){document.documentElement.style.visibility='hidden';addEventListener('DOMContentLoaded',function(){document.documentElement.style.visibility='visible';EDU_PROF_ASK(function(ok){if(ok)location.reload();else location.href=location.pathname})});return}
  window.EDU_IMP=true;
  var css=document.createElement('style');
  css.textContent='#edu-nav,#ac-aviso,.coin,.jcoin,#edu-ac{display:none!important}body{padding-top:0!important}'+
@@ -19,6 +35,16 @@
  document.body.insertBefore(bar,document.body.firstChild);
  function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
  addEventListener('load',function(){
+  var jb=document.getElementById('jbank')||document.querySelector('.jbank');
+  if(jb){
+   var st=document.createElement('style');
+   st.textContent='.jbank div.ch,.jbank>div{border:1.6px dashed #000!important;background:#fff!important;box-shadow:none!important;border-radius:0!important}.jbank{border:2px dashed #000!important}.jbank div.ch{overflow-wrap:normal!important;word-break:normal!important;hyphens:none;font-size:9.5pt!important}.imp-inst{font:700 12px "Segoe UI",Arial,sans-serif;border:1.5px solid #000;border-radius:6px;padding:5px 9px;margin:6px 0;background:#fff;color:#000;line-height:1.35}@media print{.imp-inst{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+   document.head.appendChild(st);
+   var d=document.createElement('div');d.className='imp-inst';
+   d.innerHTML='✂️ <b>Como fazer:</b> 1) Recorte as respostas nas <b>linhas pontilhadas</b>. 2) Leia cada cartão numerado. 3) Cole cada resposta no cartão correto (ou escreva a letra no quadradinho). 4) Confira com o professor.';
+   jb.parentNode.insertBefore(d,jb);
+  }
+
   if(typeof window.EDU_PRINT==='function'){
    var P=window.EDU_PRINT(),app=document.getElementById('app'),sv=document.getElementById('sv');
    if(!sv)return;

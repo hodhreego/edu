@@ -122,6 +122,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   [].forEach.call(ac.querySelectorAll('[data-z]'),function(b){b.classList.toggle('on',b.dataset.z===z)});document.getElementById('en-hc').classList.toggle('on',ls('edu_hc')==='1');setH()}
  ac.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.dataset.z)ls('edu_ez',b.dataset.z);else ls('edu_hc',ls('edu_hc')==='1'?'0':'1');aplica()});
  document.getElementById('en-a').onclick=function(){ac.classList.toggle('on')};
+ var pb=document.getElementById('en-p');if(pb)pb.addEventListener('click',function(e){/*en-p-click*/if(window.EDU_PROF_OK&&EDU_PROF_OK())return;e.preventDefault();if(window.EDU_PROF_ASK)EDU_PROF_ASK(function(ok){if(ok)location.href=pb.href})});
  function setH(){document.documentElement.style.setProperty('--eh',nav.offsetHeight+'px')}
  aplica();addEventListener('resize',setH);addEventListener('load',setH);
  if(window.ResizeObserver)new ResizeObserver(setH).observe(nav);
