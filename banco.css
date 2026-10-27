@@ -484,3 +484,4 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .xapp.qronly .vf2{width:60%;aspect-ratio:1;border:3px solid #fff;border-radius:1em;display:flex;align-items:center;justify-content:center;font-size:4em;opacity:.8}
 .xapp.qronly .qrb{background:#1a56db;color:#fff;border:0;border-radius:1.5em;padding:.7em 1.4em;font:700 1em Arial;cursor:pointer}
 .xapp.qronly small,.xapp.qronly .cmt{font-family:Arial,sans-serif}
+.xapp.cm .gl b{font-size:1.4em}
