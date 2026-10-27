@@ -14,7 +14,7 @@
  *  - Cada MATÉRIA tem uma cor própria; nota/pontos ficam verde, amarelo ou vermelho.
  *  - Aba "Resumo": por aluno, total de jogos, pontos somados e melhor pontuação.
  */
-var CABEC = ['Data', 'Hora', 'Aluno', 'Turma', 'Escola', 'Matéria', 'Série do jogo', 'Jogo', 'Código', 'Aula', 'Pontos', 'Máximo', 'Tempo (min)', 'ID'];
+var CABEC = ['Data', 'Hora', 'Aluno', 'Turma', 'Escola', 'Matéria', 'Série do jogo', 'Jogo', 'Código', 'Aula', 'Pontos', 'Acertos', 'Erros', '% acerto', 'Dinheiro final (R$)', 'Tempo (min)', 'ID'];
 var CORES = {
   dinheiro: '#d9f2e3', lojas: '#fde9c9', inteiros: '#dbe7ff', ingles: '#f3dcf7',
   espanhol: '#ffe0e0', geometria: '#e0f4f7', algebra: '#fff6c2', default: '#eeeeee'
@@ -28,7 +28,9 @@ function doPost(e) {
   var linha = [
     d.dia || '', (d.quando || '').substring(11, 16), d.nome || '(sem nome)', d.turma || '(sem turma)', d.escola || '',
     d.tema || '', d.serie || '', d.jogo || d.arquivo || '', d.codigo || '', d.aula || '',
-    Number(d.pontos) || 0, Number(d.maximo) || 0, Math.round((Number(d.segundos) || 0) / 6) / 10, d.sid || ''
+    Number(d.pontos) || 0, d.certas == null ? '' : Number(d.certas), d.erradas == null ? '' : Number(d.erradas),
+    (d.certas == null || (d.certas + d.erradas) === 0) ? '' : Math.round(100 * d.certas / (d.certas + d.erradas)),
+    d.dinheiro == null ? '' : Number(d.dinheiro), Math.round((Number(d.segundos) || 0) / 6) / 10, d.sid || ''
   ];
   gravar_(aba_(ss, 'Todos'), linha, d.sid);
   gravar_(aba_(ss, String(d.turma || 'Sem turma').substring(0, 30)), linha, d.sid);
@@ -49,7 +51,8 @@ function aba_(ss, nome) {
   sh.setFrozenRows(1);
   sh.setColumnWidths(1, CABEC.length, 110);
   sh.setColumnWidth(3, 200); sh.setColumnWidth(8, 260);
-  var rg = sh.getRange(2, 11, 999, 2);
+  var rg = sh.getRange(2, 14, 999, 1);
+  sh.getRange(2, 15, 999, 1).setNumberFormat('R$ #,##0.00');
   sh.setConditionalFormatRules([
     SpreadsheetApp.newConditionalFormatRule().whenNumberGreaterThanOrEqualTo(80).setBackground('#b7e1cd').setRanges([rg]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenNumberBetween(40, 79.99).setBackground('#fce8b2').setRanges([rg]).build(),
