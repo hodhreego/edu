@@ -71,6 +71,26 @@ var GEN={
   var desc=forma==='debito'?'no <b>débito</b>':pc===1?'no <b>crédito à vista</b>':'no <b>crédito em '+pc+'x</b>';
   var t='Você é o lojista. Um cliente vai pagar <b>'+fmt(v)+'</b> '+desc+'. <b>Passe a venda na maquininha</b> (valor, forma de pagamento'+(forma==='credito'?' e parcelas':'')+') e depois calcule a <b>taxa</b> cobrada e o <b>valor líquido</b> que cai na sua conta.'+tabela;
   return {txt:t+' '+pinTxt(pn).replace('seu app','cartão do cliente'),modo:'pos',venda:{valor:v,forma:forma,parc:pc},pin:pn,fields:[{q:'Taxa cobrada pela maquininha',a:fee},{q:'Valor líquido que cai na sua conta',a:v-fee}]}},
+ compra:function(L,hard){var cat=[['Caderno',1850],['Mochila',8490],['Caneta (caixa)',1290],['Tênis',15900],['Garrafa térmica',2690],['Camiseta',4290],['Fone de ouvido',3850],['Boné',2790],['Estojo',2190],['Régua',690]],
+  tab='<table class="tb"><tr><th>Forma</th><th>Regra</th></tr><tr><td>Dinheiro e Pix</td><td>5% de desconto</td></tr><tr><td>Débito</td><td>taxa 1,5%</td></tr><tr><td>Crédito à vista</td><td>taxa 3%</td></tr><tr><td>Crédito 2 a 6 vezes</td><td>taxa 4,5%</td></tr><tr><td>Crédito 7 a 12 vezes</td><td>taxa 6%</td></tr></table>';
+  for(var g=0;g<400;g++){
+   var n=L===1?2:3,its=[],v=0,pool=cat.slice();
+   for(var i=0;i<n;i++){var it=pool.splice(rnd(0,pool.length-1),1)[0];var pr=L===1?Math.round(it[1]/100)*100:it[1];its.push([it[0],pr]);v+=pr}
+   var forma=pick(L===1?['dinheiro','pix','debito','credito']:['dinheiro','pix','debito','credito','credito']),pc=1,tx=0,d=0,val=v,fields,desc;
+   if(forma==='dinheiro'||forma==='pix'){if(v%20)continue;d=v*5/100;val=v-d}
+   else if(forma==='debito'){tx=1.5}
+   else{if(L===1)pc=1;else pc=hard?rnd(7,12):pick([1,2,3,4,5,6]);tx=pc===1?3:pc<=6?4.5:6;if(v%pc)continue}
+   var fee=Math.round(val*tx*10)/1000;if(tx&&(Math.round(val*tx*10)%1000))continue;
+   if(forma==='dinheiro'){var nota=[5000,10000,20000].filter(function(x){return x>=val})[0];if(!nota)continue;
+    fields=[{q:'Desconto de 5%',a:d},{q:'Troco que o cliente recebe',a:nota-val}];desc='em <b>dinheiro</b>, com uma nota de <b>'+fmt(nota)+'</b>'}
+   else if(forma==='pix'){fields=[{q:'Desconto de 5%',a:d},{q:'Valor do Pix',a:val}];desc='no <b>Pix</b>'}
+   else if(forma==='debito'){fields=[{q:'Taxa cobrada da loja',a:fee},{q:'Valor líquido que cai na sua conta',a:val-fee}];desc='no <b>débito</b>'}
+   else if(pc===1){fields=[{q:'Taxa cobrada da loja',a:fee},{q:'Valor líquido que cai na sua conta',a:val-fee}];desc='no <b>crédito à vista</b>'}
+   else{fields=[{q:'Valor de cada parcela',a:val/pc},{q:'Taxa cobrada da loja',a:fee}];desc='no <b>crédito em '+pc+'x</b>'}
+   var lista='<ul class="lst">'+its.map(function(x){return '<li>'+x[0]+' — '+fmt(x[1])+'</li>'}).join('')+'</ul>';
+   var t='Você é o lojista. O cliente levou:'+lista+'Total da compra: <b>'+fmt(v)+'</b>. Ele vai pagar '+desc+'. <b>Cobre na maquininha</b> (o valor certo, já com o desconto se houver) e <b>deixe o cliente escolher a forma de pagamento</b> na tela dele.'+tab;
+   return {txt:t,modo:'pos',todos:true,venda:{valor:val,forma:forma,parc:pc},pin:'0000',fields:fields}}
+  return GEN.compra(L,hard)},
  parcela:function(L){var P,n,j,t,f=[],ch=null;
   for(var g=0;g<200;g++){
    if(L===1){P=rnd(3,15)*10000;n=pick([2,3,4,5,10]);if(P%n)continue;t='Uma geladeira custa <b>'+fmt(P)+'</b> no cartão de crédito, em <b>'+n+' parcelas iguais, sem juros</b>.';f=[{q:'Valor de cada parcela',a:P/n},{q:'Total pago no fim',a:P}];break}
@@ -119,7 +139,9 @@ window.BANK={run:function(cfg){
  function dots(){var d=$('dots');d.innerHTML='';tasks.forEach(function(_,i){var x=document.createElement('i');x.className=i<ti?'d':i===ti?'c':'';d.appendChild(x)})}
  function msg(t,c){$('msg').textContent=t;$('msg').className='msg '+(c||'')}
  function fase(){var L=cfg.niveis[fi];var hard=L>3;if(hard)L=3;tasks=[];var seen={};for(var g=0;g<80&&tasks.length<6;g++){var t=GEN[cfg.gen](L,hard);if(seen[t.txt])continue;seen[t.txt]=1;tasks.push(t)}ti=0;task()}
- function task(){T=tasks[ti];lock=false;ph={s:T.modo==='pos'?'pos-valor':'home',buf:'',pb:'',vals:[],sale:{}};msg('');
+ function isTab(){try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)>=600}catch(e){return false}}
+ function ftxt(x){return x.forma==='debito'?'Débito':x.forma==='pix'?'Pix':x.forma==='dinheiro'?'Dinheiro':'Crédito '+(x.parc>1?x.parc+'x':'à vista')}
+ function task(){T=tasks[ti];lock=false;ph={s:T.modo==='pos'?'pos-valor':'home',buf:'',pb:'',vals:[],sale:{},rot:isTab()};msg('');
   $('txt').innerHTML=T.chat?chatHtml(T.chat)+'<div class="pnote">🔐 '+pinTxt(T.pin)+' <b>'+T.chat.calc+'</b> e envie o Pix.</div>':T.txt;$('ped').querySelector('h2').textContent=T.chat?'💬 WhatsApp':'📋 Pedido';var q=$('qrs');q.innerHTML='';
   if(T.qrs)q.innerHTML='<div class="qrl">'+T.qrs.map(function(x,i){return '<div class="qrc"><div class="qrimg"></div><b>QR Code '+x.letra+'</b><span>'+x.nome+'</span><span class="qv">'+fmt(x.valor)+'</span><button class="btn sec" data-qr="'+i+'">📷 Escanear</button></div>'}).join('')+'</div>';
   notify();$('inst').innerHTML=cfg.instrucao;$('sub').textContent='Fase '+(fi+1)+'/4 · questão '+(ti+1)+'/'+tasks.length;dots();draw()}
@@ -132,6 +154,7 @@ window.BANK={run:function(cfg){
 
  function backFor(x){var k=(BANKS[BK]||BANKS.nubank).kind;if(k==='caixa')return x==='chave'?'cx-conta':'cx-pix';if(k==='mp')return x==='chave'?'mp-transf':'mp-pagar';return 'menu'}
 
+ function beep2(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=180;g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+.35);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.4)}catch(e){}}
  function beep(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var t=AC.currentTime;[880,1175].forEach(function(f,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.15,t+i*.14);g.gain.exponentialRampToValueAtTime(.0001,t+i*.14+.25);o.connect(g);g.connect(AC.destination);o.start(t+i*.14);o.stop(t+i*.14+.3)})}catch(e){}}
  function notify(){var n=$('notif'),pd=$('ped');if(!T||(T.modo!=='pix'&&T.modo!=='qr')){n.className='';pd.classList.remove('lock');return}
   var nm=(T.chat&&T.chat.nome)||T.target.nome,tx=pick(['Oi! Você ainda não me pagou 😅','Ei, lembra do Pix que ficou pendente? 🙏','Você esqueceu de me pagar! 😬','Oi, tudo bem? Cadê o meu Pix? 💸','Preciso que você me pague, por favor 🙏']);
@@ -163,18 +186,21 @@ window.BANK={run:function(cfg){
   else if(s==='conf')h=hd('Confirme os dados','menu')+'<div class="bd"><div class="cf"><span>Valor</span><b class="big">'+fmt(ph.v)+'</b><span>Para</span><b>'+ph.c.nome+'</b><span>Instituição</span><b>'+ph.c.banco+'</b><span>Chave</span><b>'+ph.c.chave+'</b></div><button class="pb" data-a="conf-ok">Transferir agora</button><button class="pb sec" data-a="cancel">Cancelar</button></div>';
   else if(s==='pin')h=hd('Senha de 4 dígitos')+'<div class="bd c"><p>Digite a senha do app para confirmar</p>'+dots4(ph.pb.length)+keypad()+'</div>';
   else if(s==='rec')h='<div class="rc"><div class="ck">✔</div><h3>Pix enviado!</h3><b class="big">'+fmt(ph.v)+'</b><p>para <b>'+ph.c.nome+'</b><br>'+ph.c.banco+'</p><small>'+new Date().toLocaleString('pt-BR')+'</small></div>';
-  else if(s==='pos-valor')h='<div class="pos"><div class="ps"><small>Digite o valor da venda</small><b class="big">'+fmt(+ph.buf||0)+'</b></div>'+keypad()+'</div>';
-  else if(s==='pos-forma')h='<div class="pos"><div class="ps"><small>Valor</small><b class="big">'+fmt(ph.sale.valor)+'</b><small>Escolha a forma de pagamento</small></div><button class="pb" data-f="debito">💳 Débito</button><button class="pb" data-f="credito">💳 Crédito</button></div>';
-  else if(s==='pos-parc')h='<div class="pos"><div class="ps"><small>Crédito · '+fmt(ph.sale.valor)+'</small><small>Quantas parcelas?</small></div><div class="pg">'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){return '<button data-p="'+n+'">'+(n===1?'À vista':n+'x')+'</button>'}).join('')+'</div></div>';
-  else if(s==='pos-cartao')h='<div class="pos"><div class="ps"><small>'+(ph.sale.forma==='debito'?'Débito':'Crédito '+(ph.sale.parc>1?ph.sale.parc+'x':'à vista'))+' · '+fmt(ph.sale.valor)+'</small><small>Aproxime ou insira o cartão do cliente</small></div><button class="card3" data-a="pos-cartao">💳<br>Toque aqui para aproximar</button></div>';
-  else if(s==='pos-pin')h='<div class="pos"><div class="ps"><small>Senha do cliente</small></div>'+dots4(ph.pb.length)+keypad()+'</div>';
-  else if(s==='pos-ok'||s==='quiz-pos')h='<div class="pos ok"><div class="ps"><b class="big">APROVADA ✔</b><small>'+(ph.sale.forma==='debito'?'Débito':'Crédito '+(ph.sale.parc>1?ph.sale.parc+'x':'à vista'))+'</small><b class="big">'+fmt(ph.sale.valor)+'</b></div>'+fieldsHtml()+'</div>';
+  else if(s==='pos-valor')h='<div class="pos lj'+(ph.back?' back'+(ph.rot?' rot':''):'')+'"><div class="ps"><small>🏪 LOJISTA · valor da venda</small><b class="big">'+fmt(+ph.buf||0)+'</b></div>'+keypad()+'</div>';
+  else if(s==='pos-cobrar')h='<div class="pos lj"><div class="ps"><small>Cobrança</small><b class="big">'+fmt(ph.sale.valor)+'</b><small>Entregue a maquininha ao cliente</small></div><button class="card3" data-a="pos-vira">🔄<br>Virar a maquininha<br>para o cliente</button>'+(ph.rot?'<small class="aut">Girando automaticamente…</small>':'')+'</div>';
+  else if(s==='pos-c-forma')h='<div class="pos cli '+(ph.rot?'rot':'flip')+'"><div class="ps"><small>👤 CLIENTE · confira o valor</small><b class="big">'+fmt(ph.sale.valor)+'</b><small>Como você quer pagar?</small></div><button class="pb" data-f="debito">💳 Débito</button><button class="pb" data-f="credito">💳 Crédito</button><button class="pb" data-f="pix">💠 Pix</button>'+(T.todos?'<button class="pb" data-f="dinheiro">💵 Dinheiro</button>':'')+'<button class="gir" data-a="pos-rot">🔄 Girar tela</button></div>';
+  else if(s==='pos-c-parc')h='<div class="pos cli '+(ph.rot?'rot':'')+'"><div class="ps"><small>Crédito · '+fmt(ph.sale.valor)+'</small><small>Em quantas parcelas?</small></div><div class="pg">'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){return '<button data-p="'+n+'">'+(n===1?'À vista':n+'x')+'</button>'}).join('')+'</div></div>';
+  else if(s==='pos-c-cartao')h='<div class="pos cli '+(ph.rot?'rot':'')+'"><div class="ps"><small>'+ftxt(ph.sale)+' · '+fmt(ph.sale.valor)+'</small><small>Aproxime ou insira o seu cartão</small></div><button class="card3" data-a="pos-cartao">💳<br>Toque aqui para aproximar</button></div>';
+  else if(s==='pos-c-pin')h='<div class="pos cli '+(ph.rot?'rot':'')+(ph.perr?' shake':'')+'"><div class="ps"><small>'+ftxt(ph.sale)+' · '+fmt(ph.sale.valor)+'</small><small>'+(ph.perr?'❌ SENHA INCORRETA — tente de novo':'Digite a senha do cartão')+'</small></div>'+dots4(ph.pb.length)+keypad()+'</div>';
+  else if(s==='pos-c-pix')h='<div class="pos cli '+(ph.rot?'rot':'')+'"><div class="ps"><small>Pix · '+fmt(ph.sale.valor)+'</small><small>Leia o QR Code com o app do seu banco</small></div><div class="qrimg qrbig"></div><button class="pb" data-a="pos-pixpago">Já paguei no app ✔</button></div>';
+  else if(s==='pos-ok'||s==='quiz-pos')h='<div class="pos lj ok'+(ph.back?' back'+(ph.rot?' rot':''):'')+'"><div class="ps"><b class="big">'+(ph.sale.forma==='dinheiro'?'DINHEIRO RECEBIDO ✔':ph.sale.forma==='pix'?'PIX RECEBIDO ✔':'APROVADA ✔')+'</b><small>'+ftxt(ph.sale)+'</small><b class="big">'+fmt(ph.sale.valor)+'</b></div>'+fieldsHtml()+'</div>';
   else if(s==='quiz')h=hd(T.cart==='fatura'?'Fatura do cartão':'Compra no cartão')+'<div class="bd"><div class="cart">💳<div><small>'+b.n+' · final 4821</small><b>Cartão de crédito</b></div></div>'+fieldsHtml()+'</div>';
   P.innerHTML=h;var ic=P.querySelector('#inChave');if(ic)setTimeout(function(){ic.focus()},50);var iv=P.querySelector('#inVal');if(iv)setTimeout(function(){iv.focus()},50)}
  function fieldsHtml(){return '<div class="fl">'+T.fields.map(function(f,i){return '<label>'+f.q+'</label><input class="fi" data-i="'+i+'" type="text" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00">'}).join('')+(T.choose?'<label>'+T.choose.q+'</label><div class="ch">'+T.choose.opts.map(function(o,i){return '<button data-ch="'+i+'">'+o+'</button>'}).join('')+'</div>':'')+'<button class="pb" data-a="quiz-ok">Conferir ✔</button></div>'}
  var LENTO=['cx-pix','cx-aviso','cx-conta','chave','valor','conf','cx-rev','cam'];
+ function fimCli(){ph.back=true;ph.perr=false;ph.pb='';go('pos-ok')}
  function go(s){var k=(BANKS[BK]||{}).kind;if(k==='caixa'&&LENTO.indexOf(s)>=0&&!ph.fast){ph.s='load';draw();setTimeout(function(){ph.s=s;draw()},1000);return}ph.s=s;draw()}
- function wrong(m){if(lock)return;setPts(-10);msg(m,'bad');var P=$('phone');P.classList.add('shake');setTimeout(function(){P.classList.remove('shake');ph.s=T.modo==='pos'?'pos-valor':'home';ph.buf='';ph.pb='';ph.chave='';ph.sale={};draw()},1400)}
+ function wrong(m){if(lock)return;setPts(-10);msg(m,'bad');var P=$('phone');P.classList.add('shake');setTimeout(function(){P.classList.remove('shake');ph.s=T.modo==='pos'?'pos-valor':'home';ph.buf='';ph.pb='';ph.chave='';ph.sale={};ph.back=false;ph.perr=false;draw()},1400)}
  function right(m){lock=true;setPts(15);msg(m,'good');setTimeout(function(){ti++;if(ti>=tasks.length)fim();else task()},1800)}
  function fim(){var f=$('fim');$('fT').textContent=fi<3?'Fase '+(fi+1)+' concluída! 🎉':'Parabéns! Terminou todas as fases! 🏆';$('fP').textContent='Você tem '+pts+' pontos.';$('fB').textContent=fi<3?'Próxima fase ▶':'Jogar de novo ↺';f.classList.add('on');$('ext').innerHTML=LEDGER.length>L0?extrato():'';$('fB').onclick=function(){f.classList.remove('on');L0=LEDGER.length;if(fi<3)fi++;else{fi=0;pts=0;setPts(0);SALDO=125000;LEDGER=[];L0=0}$('nivel').value=cfg.niveis[fi];fase()}}
  function judge(){var ok=ph.c.nome===T.target.nome&&ph.v===T.target.valor;SALDO-=ph.v;LEDGER.push({n:ph.c.nome,b:ph.c.banco,v:ph.v,ok:ok,h:new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
@@ -182,14 +208,16 @@ window.BANK={run:function(cfg){
    else if(ph.c.nome!==T.target.nome)wrong('Você enviou o Pix para '+ph.c.nome+', a pessoa errada! Sempre confira o nome antes de confirmar.');
    else wrong('O valor enviado está errado. Refaça o cálculo do pedido.')},900)}
  function press(k,pos){
-  if(ph.s==='pos-valor'){if(k==='⌫')ph.buf=ph.buf.slice(0,-1);else if(k==='OK'){var v=+ph.buf||0;if(v<=0){toast('Digite o valor');return}ph.sale.valor=v;go('pos-forma');return}else if(ph.buf.length<8)ph.buf+=k;draw();return}
+  if(ph.s==='pos-valor'){if(k==='⌫')ph.buf=ph.buf.slice(0,-1);else if(k==='OK'){var v=+ph.buf||0;if(v<=0){toast('Digite o valor');return}ph.sale.valor=v;go('pos-cobrar');if(ph.rot)setTimeout(function(){if(ph.s==='pos-cobrar')go('pos-c-forma')},1600);return}else if(ph.buf.length<8)ph.buf+=k;draw();return}
+  if(ph.s==='pos-c-pin'){ph.perr=false;if(k==='⌫')ph.pb=ph.pb.slice(0,-1);else if(k==='OK')return;else if(ph.pb.length<4)ph.pb+=k;
+   if(ph.pb.length===4){if(+ph.pb%2===0){fimCli();return}ph.pb='';ph.perr=true;beep2()}draw();return}
   if(k==='⌫')ph.pb=ph.pb.slice(0,-1);else if(k==='OK')return;else if(ph.pb.length<4)ph.pb+=k;
   if(ph.pb.length===4){if(ph.pb===T.pin){var nx=ph.s==='pin'?'rec':'pos-ok';ph.pb='';go(nx);if(nx==='rec')judge();else ph.s='pos-ok',draw();return}else{ph.pb='';toast('Senha incorreta');}}
   draw()}
  $('phone').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||lock||ph.s==='load')return;
   if(t.dataset.k!==undefined)return press(t.dataset.k);
-  if(t.dataset.f){ph.sale.forma=t.dataset.f;if(t.dataset.f==='debito'){ph.sale.parc=1;go('pos-cartao')}else go('pos-parc');return}
-  if(t.dataset.p){ph.sale.parc=+t.dataset.p;go('pos-cartao');return}
+  if(t.dataset.f){var f=t.dataset.f;ph.sale.forma=f;ph.sale.parc=1;if(f==='debito')go('pos-c-cartao');else if(f==='credito')go('pos-c-parc');else if(f==='pix')go('pos-c-pix');else fimCli();return}
+  if(t.dataset.p){ph.sale.parc=+t.dataset.p;go('pos-c-cartao');return}
   if(t.dataset.ch!==undefined){ph.ch=+t.dataset.ch;[].forEach.call(t.parentNode.children,function(x){x.classList.remove('on')});t.classList.add('on');return}
   var a=t.dataset.a,par=null;if(!a)return;if(a.indexOf(':')>0){par=a.split(':')[1];a=a.split(':')[0]}
   if(a==='cx-aviso'){ph.dest=par;return go('cx-aviso')}
@@ -201,7 +229,10 @@ window.BANK={run:function(cfg){
   if(a==='valor-ok'){var n=parse($('inVal').value);if(!(n>0))return toast('Digite um valor válido');if(n>SALDO)return toast('Saldo insuficiente');ph.v=n;go('conf');return}
   if(a==='conf-ok'){ph.pb='';if((BANKS[BK]||{}).kind==='caixa'){go('cx-rev');return}go('pin');return}
   if(a==='cancel'){ph.c=null;toast('Pix cancelado');go('home');return}
-  if(a==='pos-cartao'){if(ph.sale.forma==='debito'){ph.pb='';go('pos-pin')}else{ph.pb='';go('pos-pin')}return}
+  if(a==='pos-vira'){go('pos-c-forma');return}
+  if(a==='pos-rot'){ph.rot=!ph.rot;draw();return}
+  if(a==='pos-pixpago'){fimCli();return}
+  if(a==='pos-cartao'){ph.pb='';ph.perr=false;go('pos-c-pin');return}
   if(a==='quiz-ok')return quiz();
   go(a)});
  function quiz(){var ins=[].slice.call($('phone').querySelectorAll('.fi')),ok=true,miss=[];

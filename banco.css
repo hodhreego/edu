@@ -97,3 +97,13 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 #ped.lock h2::after{content:" — toque na notificação 🔔";color:#25a244;font-size:14px}
 .ex{text-align:left;margin:10px 0;max-height:46vh;overflow:auto;min-width:min(80vw,460px)}.ex h3{margin:0 0 6px;font-size:18px}.ex table{width:100%;border-collapse:collapse;font-size:14px}.ex td{padding:5px 6px;border-bottom:1px solid #e3e6ee}.ex td small{display:block;color:#778;font-size:11px}.ex tr.e{background:#fff0f0;color:#b3261e}.ex tr.o td:last-child{color:#0f9d58;font-weight:900}
 .ex .sm{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:14px;background:#f4f7fc;border-radius:10px;padding:8px 10px}
+
+.pos.cli{background:#1f3a5f}.pos.cli .ps{background:#cfe3ff;color:#0c2748}.pos.cli .ps .big{color:#0c2748}
+.pos.cli.rot,.pos.lj.back.rot{transform:rotate(180deg)}
+.pos.cli.rot{animation:v180 .9s ease-in-out}.pos.lj.back.rot{animation:v0 .9s ease-in-out}
+.pos.cli.flip{animation:vfl .6s ease-out}.pos.lj.back:not(.rot){animation:vfl .6s ease-out}
+@keyframes v180{from{transform:rotate(0)}to{transform:rotate(180deg)}}@keyframes v0{from{transform:rotate(180deg)}to{transform:rotate(360deg)}}
+@keyframes vfl{from{transform:rotateY(90deg);opacity:.2}to{transform:none;opacity:1}}
+.pos .gir{background:transparent;color:#cfe3ff;border:1px dashed #cfe3ff88;border-radius:.6em;padding:.4em;cursor:pointer;font-size:.8em}
+.pos .aut{text-align:center;color:#ffd}.qrbig{width:9em;height:9em;margin:.4em auto;background:#fff}
+.pos.shake{animation:sh .35s}.lst{margin:.3em 0 .5em 1.1em;padding:0}

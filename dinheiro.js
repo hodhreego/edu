@@ -25,7 +25,7 @@ window.DRQT=function(t,fmt){
  }
  return h;
 };
-window.DRQ=function(t,fmt){var el=document.getElementById('inst');if(el&&t&&t.items)el.innerHTML=DRQT(t,fmt)};
+window.DRQ=function(t,fmt){window.DRIT=(t&&t.items)||[];window.DRFMT=fmt;if(window.DRCALC)window.DRCALC();var el=document.getElementById('inst');if(el&&t&&t.items)el.innerHTML=DRQT(t,fmt)};
 /* enunciado + produto + carteira num único espaço */
 document.addEventListener('DOMContentLoaded',function(){
  var i=document.getElementById('inst'),m=document.querySelector('#app>.main');
@@ -133,6 +133,43 @@ document.addEventListener('DOMContentLoaded',function(){
  var okb=document.getElementById('bOk');if(okb){var bar=document.createElement('div');bar.className='tray-bar';bar.appendChild(okb);tr.insertBefore(bar,inn)}
  var h=document.createElement('div');h.className='tray-h';h.title='Arraste para cima ou para baixo';h.innerHTML='<b>GAVETA</b><span></span>';tr.appendChild(h);
 
+
+ (function(){
+  var st2=document.createElement('style');st2.textContent='.tray-bar .dm-cb{font:800 2vh Arial;padding:.7vh 1.6vw;border-radius:99px;border:2px solid #1f3a8a;background:#fff;color:#1f3a8a;cursor:pointer;display:none}.tray-bar .dm-cb.on{display:inline-block}'
+  +'#dmCalc{display:none;background:#10243f;color:#fff;border-radius:12px;padding:8px;margin:0 0 8px;max-width:420px;margin-left:auto;margin-right:auto}#dmCalc.on{display:block}'
+  +'#dmCalc .lv{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}#dmCalc .lv button{background:#ffd24d;color:#10243f;border:0;border-radius:8px;padding:4px 8px;font:800 13px Arial;cursor:pointer}#dmCalc .lv small{width:100%;color:#9fb6d8;font-size:11px}'
+  +'#dmCalc .ds{background:#b9e0a5;color:#16300c;border-radius:8px;padding:6px 8px;text-align:right;font:700 15px monospace;min-height:20px;word-break:break-all}#dmCalc .ds b{display:block;font-size:22px}'
+  +'#dmCalc .kk{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}#dmCalc .kk button{padding:9px 0;border:0;border-radius:8px;background:#2f4a73;color:#fff;font:800 17px Arial;cursor:pointer}#dmCalc .kk .op{background:#f39200}#dmCalc .kk .eq{background:#0f9d58}';
+  document.head.appendChild(st2);
+  var cb=document.createElement('button');cb.type='button';cb.className='dm-cb';cb.id='dmCb';cb.textContent='🧮 Calculadora';
+  var bar2=tr.querySelector('.tray-bar');if(!bar2){bar2=document.createElement('div');bar2.className='tray-bar';tr.insertBefore(bar2,inn)}bar2.appendChild(cb);
+  var pn=document.createElement('div');pn.id='dmCalc';
+  pn.innerHTML='<div class="lv" id="dmLv"></div><div class="ds"><span id="dmEx">&nbsp;</span><b id="dmRs">0</b></div><div class="kk">'
+   +['7','8','9','÷','4','5','6','×','1','2','3','−','0',',','+','C'].map(function(k){return '<button type="button" data-c="'+k+'" class="'+('÷×−+'.indexOf(k)>=0?'op':'')+'">'+k+'</button>'}).join('')
+   +'<button type="button" data-c="⌫">⌫</button><button type="button" data-c="(" >(</button><button type="button" data-c=")">)</button><button type="button" data-c="=" class="eq">=</button></div>';
+  tr.insertBefore(pn,inn);
+  var ex='';
+  function show(){document.getElementById('dmEx').textContent=ex||'\u00a0'}
+  function ev(){var e=ex.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/,/g,'.');if(!/^[0-9+\-*\/().\s]+$/.test(e))return null;try{var r=Function('"use strict";return ('+e+')')();return isFinite(r)?r:null}catch(x){return null}}
+  function br(n){return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  pn.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+   if(b.dataset.v){var v=b.dataset.v;if(/[0-9,)]$/.test(ex))ex+=' + ';ex+=v;show();return}
+   var c=b.dataset.c;if(!c)return;
+   if(c==='C'){ex='';document.getElementById('dmRs').textContent='0'}
+   else if(c==='⌫')ex=ex.replace(/\s*[+×÷−]\s*$/,'').slice(0,-1);
+   else if(c==='='){var r=ev();document.getElementById('dmRs').textContent=r===null?'—':br(r)}
+   else if('÷×−+'.indexOf(c)>=0)ex+=' '+c+' ';
+   else ex+=c;
+   show()});
+  cb.addEventListener('click',function(){pn.classList.toggle('on')});
+  function ano(){var s=document.getElementById('nivel');return s?+s.value:0}
+  window.DRCALC=function(){var on=ano()>=8;cb.classList.toggle('on',on);if(!on)pn.classList.remove('on');
+   var it=window.DRIT||[],f=window.DRFMT||function(c){return c};
+   document.getElementById('dmLv').innerHTML=it.length?'<small>Valores da compra (toque para somar):</small>'+it.map(function(x){return '<button type="button" data-v="'+(x.p/100).toFixed(2).replace('.',',')+'">'+(x.e||'')+' '+f(x.p)+'</button>'}).join(''):'';
+   ex='';show();document.getElementById('dmRs').textContent='0'};
+  document.addEventListener('change',function(e){if(e.target&&e.target.id==='nivel')setTimeout(window.DRCALC,50)});
+  setTimeout(window.DRCALC,300);
+ })();
  var z=document.createElement('div');z.className='tray-z';z.title='Arraste para aumentar ou diminuir o dinheiro';z.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#ffd24d" stroke-width="2.4" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg><em>▲▼</em><span></span>';tr.appendChild(z);
  var sz=document.getElementById('sz'),zy=0,zv=0,zd=false,zm=false;
  function setSz(v){if(!sz)return;v=Math.max(+sz.min,Math.min(+sz.max,v));sz.value=v;sz.dispatchEvent(new Event('input',{bubbles:true}))}
