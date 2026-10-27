@@ -56,6 +56,14 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 .cod input:focus{outline:none;border-color:var(--brand)}
 .cod button{font:800 20px "Segoe UI",Roboto,Arial,sans-serif;background:var(--brand);color:#fff;border:0;border-radius:14px;padding:12px 26px;cursor:pointer}
 .cod .err{color:#d93025;font-weight:700;order:4;flex-basis:100%;display:none}
+
+.cod{background:linear-gradient(120deg,#1f4fd8,#6d3be0 55%,#e8590c);border:0;padding:20px 24px;gap:16px;box-shadow:0 12px 34px #1f4fd855,0 0 0 4px #ffd24d;position:relative;justify-content:center}
+.cod b{color:#fff;font-size:clamp(22px,3.2vw,32px);text-shadow:0 2px 6px #0004}
+.cod input{max-width:340px;min-width:200px;font-size:clamp(34px,6vw,54px);letter-spacing:.35em;border:4px solid #ffd24d;background:#fff;color:#16213a;padding:10px 14px;box-shadow:0 0 0 6px #ffffff55,0 6px 18px #0005;animation:codp 2.2s ease-in-out infinite}
+.cod input::placeholder{color:#b6bdd0;letter-spacing:.35em}.cod input:focus{border-color:#0f9d58;animation:none;box-shadow:0 0 0 6px #3ddc8466,0 6px 18px #0005}
+.cod button{font-size:clamp(20px,2.6vw,28px);padding:14px 34px;background:#0f9d58;box-shadow:0 6px 16px #0004}.cod button#codp{background:#ffd24d;color:#16213a;font-size:16px;padding:10px 18px}
+.cod span{color:#fff;font-size:15px;text-align:center}
+@keyframes codp{50%{box-shadow:0 0 0 12px #ffffff22,0 6px 18px #0005}}
 .kod{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--c);border-radius:12px;padding:8px 12px;font-weight:800;font-size:13px;color:#fff;cursor:pointer;box-shadow:0 3px 10px #0002}.kod b{font:900 28px "Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.08em;color:#fff;background:#0000002e;border-radius:8px;padding:2px 10px}.kod:hover{filter:brightness(1.1)}
 </style>
 </head>
