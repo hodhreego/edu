@@ -39,18 +39,18 @@
    for(var i=0;i<6;i++){var t=AC.currentTime+i*.32,o=AC.createOscillator(),g=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(i%2?620:880,t);
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.32)}}catch(e){}
  }
- var resp=0;
- function novaConta(){var x=Math.floor(Math.random()*11),y=Math.floor(Math.random()*11),mul=Math.random()<.6;resp=mul?x*y:x+y;var c=document.getElementById('ac-c');if(c)c.textContent=x+(mul?' × ':' + ')+y+' = ';var r=document.getElementById('ac-r');if(r)setTimeout(function(){try{r.focus()}catch(e){}},50)}
+ var resp=0,falta=0;
+ function novaConta(){var x=Math.floor(Math.random()*11),y=Math.floor(Math.random()*11),mul=Math.random()<.6;resp=mul?x*y:x+y;var c=document.getElementById('ac-c');if(c)c.textContent=x+(mul?' × ':' + ')+y+' = ';var nn=document.getElementById('ac-n');if(nn)nn.textContent=falta>1?'(faltam '+falta+')':'';var r=document.getElementById('ac-r');if(r)setTimeout(function(){try{r.focus()}catch(e){}},50)}
  function aviso(tipo,titulo){
   cont++;
   var vis=box.style.display==='flex';
-  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Isso foi registrado e o professor será avisado. Tentativas nesta página: '+cont+'.</small><small>Para continuar, resolva a conta:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
-   novaConta();
+  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Fraude registrada ('+cont+'ª vez). O professor foi avisado e a sua atividade poderá ser <b>ANULADA</b> com nota <b>ZERO</b>.</small><small>Para continuar, resolva '+(cont===1?'a conta':cont+' contas')+' <span id="ac-n"></span>:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
+   falta=Math.min(cont,10);novaConta();
    var f=document.getElementById('ac-q'),r=document.getElementById('ac-r');
    r.addEventListener('keydown',function(e){e.stopPropagation()},true);r.addEventListener('input',function(){r.value=r.value.replace(/\D/g,'')});
    f.addEventListener('submit',function(e){e.preventDefault();
-    if(+r.value===resp&&r.value!==''){box.style.display='none';box.innerHTML=''}
-    else{r.value='';f.classList.remove('err');void f.offsetWidth;f.classList.add('err');novaConta()}});
+    if(+r.value===resp&&r.value!==''){falta--;if(falta<=0){box.style.display='none';box.innerHTML=''}else{r.value='';novaConta()}}
+    else{r.value='';f.classList.remove('err');void f.offsetWidth;f.classList.add('err');falta=Math.min(cont,10);novaConta()}});
    box.addEventListener('pointerdown',function(e){if(e.target.closest('#ac-q'))box.style.animationPlayState='paused'});
   }
   box.style.display='flex';alarme();
@@ -74,6 +74,6 @@
  var oculto=0;
  document.addEventListener('visibilitychange',function(){
   if(document.hidden){oculto=Date.now()}
-  else if(oculto&&Date.now()-oculto>1500){saiu++;aviso('Saiu da página ('+Math.round((Date.now()-oculto)/1000)+' s)','VOCÊ SAIU DA PÁGINA! (poderia ser o Google Lens)')}
+  else if(oculto&&Date.now()-oculto>1500){saiu++;aviso('Saiu da página ('+Math.round((Date.now()-oculto)/1000)+' s)','VOCÊ SAIU DA PÁGINA!')}
  });
 })();

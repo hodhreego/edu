@@ -29,6 +29,7 @@
  '#imp-sheet ol{columns:2;column-gap:10mm;font-size:12.5px;padding-left:20px;margin:8px 0}#imp-sheet li{break-inside:avoid;margin-bottom:6px}#imp-sheet li i{display:inline-block;min-width:70px;border-bottom:1px solid #000;margin-left:6px}'+
  '#imp-sheet .key polygon.on{fill:#bbb}#imp-sheet .pg{break-before:page}'+
  '@media print{#imp-bar{display:none!important}body{background:#fff!important}#imp-sheet{margin:0;padding:0;max-width:none}@page{size:A4;margin:10mm}}';
+css.textContent+='@media print{#cfg,#bCfg,#bLimpar,#bSoma,#bOk,#dots,.dots,#painel,#toggle,#rgpBar,#rgpTimer,#fala-w,#falaBtn,#jg-bar,#jg-fim,.coin,.jcoin,#edu-nav,#edu-ac,#ac-aviso,.btns{display:none!important}}';
  document.head.appendChild(css);
  var bar=document.createElement('div');bar.id='imp-bar';
  bar.innerHTML='<span>🖨️ Versão para imprimir</span><button onclick="window.print()">Imprimir / Salvar PDF</button><a href="'+location.pathname.split('/').pop()+'">▶ Jogar na tela</a>';

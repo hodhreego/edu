@@ -20,5 +20,9 @@
    b.addEventListener('paste',function(e){e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData('text').replace(/\s+/g,' ');document.execCommand('insertText',false,t)});
   });
  });
- window.EDU_ALUNO=function(){return{nome:ls(K[0]),turma:ls(K[1]),data:ls(K[2])||hoje}};
+ [].forEach.call(document.querySelectorAll('.ident'),function(id){
+  if(id.querySelector('.esc-w'))return;var w=document.createElement('span');w.className='esc-w';w.style.cssText='white-space:nowrap;margin-left:8px';w.innerHTML='Escola: <b></b>';id.appendChild(w);var b=w.querySelector('b');
+  b.setAttribute('contenteditable','true');b.setAttribute('spellcheck','false');b.setAttribute('role','textbox');b.setAttribute('aria-label','Escola');b.dataset.ph='escola';b.style.minWidth='90px';b.style.display='inline-block';b.style.borderBottom='1px solid #8a93ad';
+  var v=ls('edu_escola');if(v)b.textContent=v;b.addEventListener('input',function(){ls('edu_escola',b.textContent.replace(/\s+/g,' ').trim())});b.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Enter'){e.preventDefault();b.blur()}},true)});
+ window.EDU_ALUNO=function(){return{nome:ls(K[0]),turma:ls(K[1]),data:ls(K[2])||hoje,escola:ls('edu_escola')}};
 })();

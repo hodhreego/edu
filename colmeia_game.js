@@ -120,6 +120,7 @@
   var it=items.filter(function(x){return !x.ok})[0];if(!it||!it.cells)return;setPts(pts-5);
   var c=it.cells[0];c.poly.style.fill='#fff3b0';setTimeout(function(){c.poly.style.fill=''},1800);say('Dica: a primeira letra de uma palavra está na linha '+rowOf(c)+'.','');
  };
+ var ir=document.getElementById('jg-ir');if(ir)ir.onclick=function(){document.getElementById('jg-fill').scrollIntoView({behavior:'smooth',block:'start'})};
  document.getElementById('jg-novo').onclick=function(){location.reload()};
  document.getElementById('jg-fb').onclick=function(){location.reload()};
  window.EDU_DBG=function(){return items.map(function(x){return{w:x.w,cells:x.cells&&x.cells.map(function(c){return c.i}),rev:x.rev,ok:x.ok}})};
