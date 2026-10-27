@@ -80,7 +80,7 @@ function liberadas_(ss) {
 }
 function liberada_(ss, escola) {
   var e = norm_(escola);
-  return liberadas_(ss).some(function (l) { return e === l || e.indexOf(l) === 0; });
+  return liberadas_(ss).some(function (l) { return e === l || e.indexOf(l) >= 0; });
 }
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Professor').addItem('Liberar escolas da aba Config', 'liberarRetidos').addToUi();
