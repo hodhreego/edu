@@ -215,7 +215,7 @@ function renderZone(){zoneEl.innerHTML='';if(!zone.length){zoneEl.innerHTML='<di
  e.addEventListener('pointerup',ev=>{if(!st)return;const mv=st.m;st=null;if(cl){cl.remove();cl=null}if(!mv||out(ev)){zone.splice(zone.indexOf(v),1);renderZone()}else e.style.opacity=''});
  e.addEventListener('pointercancel',()=>{if(cl){cl.remove();cl=null}e.style.opacity='';st=null})}zoneEl.appendChild(e)});
  const s=$('soma');if(showSum){s.className='soma';s.textContent='soma: '+fmt(sum())}else{s.className='soma hide';s.textContent='soma escondida'}}
-function task(){lock=false;const t=tasks[ti];zone=[];tries=0;$('msg').textContent='';$('msg').className='msg';$('res1').className='res';$('res2').className='res';
+function task(){lock=false;const t=tasks[ti];if(window.DRQ)DRQ(t,fmt);zone=[];tries=0;$('msg').textContent='';$('msg').className='msg';$('res1').className='res';$('res2').className='res';
  $('zt').textContent=t.paid?'👛 Troco a entregar':'👛 Sua carteira';
  $('prods').className='prods'+(t.items.length>2?' many':'');$('prods').innerHTML=t.items.map(i=>`<div class="prod"><div class="e">${i.e}</div><div class="n">${i.n}</div><div class="tag">${fmt(i.p)}</div></div>`).join('');
  const x=$('extra');x.innerHTML='';
