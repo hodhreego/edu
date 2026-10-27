@@ -1,6 +1,6 @@
 # Jogos de Pix / banco / WhatsApp (edu) — guia de referência
 
-Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=37; subir N a cada mudança com `sed -i`).
+Atualizado em 27/10/2026. Motor: `banco.js` + `banco.css` (cache: `?v=N` nos wrappers `*-jogo.html`; hoje v=38; subir N a cada mudança com `sed -i`).
 
 ## Como funciona
 - 10 bancos (`BANKS`): Nubank, BB, Itaú, Bradesco, Caixa Tem, Inter, Mercado Pago, Santander, PicPay (verde), C6 (cinza).
@@ -46,3 +46,6 @@ Moedas/cédulas ficam no canto superior esquerdo das zonas; fontes reduzidas com
 
 ## Saldos e gaveta de extratos
 Saldo de cada banco não aparece mais nos cartões nem no app (mostra R$ ••••• 👁; tocar abre o extrato do banco com saldo inicial/atual). No rodapé fica só o **Total**. O painel "Seus bancos" é uma gaveta fixa embaixo com puxador "EXTRATOS DOS BANCOS" (toque abre/fecha). Caixas de aviso (.pnote/.tipx) se ajustam ao tamanho do texto.
+
+## Gabarito só impresso
+Na tela do jogo não há mais botão/caixa de gabarito. O gabarito completo só existe na página impressa `?imp=1&gab=1&c=N` (ou pelo índice gabaritos-professor.html), que exige a senha do professor.

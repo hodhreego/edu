@@ -213,3 +213,5 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 #dash.open{transform:none}
 #dash .dh{position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:min(320px,80%);height:30px;border-radius:0 0 14px 14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(#fdfdfd 0%,#e8ecf1 18%,#aeb7c2 52%,#7d8895 78%,#d5dbe3 100%);border:1.5px solid #5b6674;box-shadow:0 4px 8px #0005,0 1px 0 #fff inset;font:800 11px Arial;letter-spacing:.5px;color:#3d4753;text-shadow:0 1px 0 #fff;user-select:none}
 #dash .dh span{font-size:12px}}
+
+@media screen{.gabp{display:none!important}}
