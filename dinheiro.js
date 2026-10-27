@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded',function(){
   D.FASES.forEach(function(F,fi){
    var tasks=F.gen();q+='<h2>'+esc(F.t||'Fase '+(fi+1))+' — '+esc(F.s||'')+'</h2><div id="dm-g'+fi+'" class="dmg">';gab+='<li><b>'+esc(F.t||'Fase '+(fi+1))+'</b><br>';
    tasks.forEach(function(t,k){
-    n++;var h=DRQT(t,D.fmt).replace(/ Monte o troco na carteira\./,'').replace(/Monte <b>exatamente [^<]*<\/b> na carteira, com moedas e cédulas\./,'<b>Quanto você vai pagar?</b>').replace(/<b>Some os preços<\/b> e monte o total exato na carteira\./,'<b>Some os preços. Qual é o total?</b>');var pay=t.paid?' <span class="img">'+DR.bill(t.paid)+'</span>':'';
-    q+='<div class="q"><b class="n">'+(k+1)+'</b>'+h+'<div class="r">'+(t.paid?'Troco: R$ <u>&nbsp;</u>':'Total a pagar: R$ <u>&nbsp;</u>')+'</div></div>';
+    n++;var h=DRQT(t,D.fmt).replace(/ Monte o troco na carteira\./,'').replace(/Monte <b>exatamente [^<]*<\/b> na carteira, com moedas e cédulas\./,'<b>Quais cédulas e moedas você usa para pagar?</b>').replace(/<b>Some os preços<\/b> e monte o total exato na carteira\./,'<b>Some os preços. Qual é o total?</b>');var pay=t.paid?' <span class="img">'+DR.bill(t.paid)+'</span>':'';
+    q+='<div class="q"><b class="n">'+(k+1)+'</b>'+h+'<div class="r">'+(t.paid?'Troco: R$ <u>&nbsp;</u>':(t.items.length>1?'Total a pagar: R$ <u>&nbsp;</u>':'Resposta: <u style="min-width:70%">&nbsp;</u>'))+'</div></div>';
     gab+=(k+1)+') '+D.fmt(t.target)+(k<tasks.length-1?' · ':'');
    });
    q+='</div>';gab+='</li>';
