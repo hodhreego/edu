@@ -185,6 +185,7 @@ function det_(ss, nome) {
     sh.getRange(HR + 1, 21, m, 2).setHorizontalAlignment('left').setWrap(true).setFontSize(10);
     sh.getRange(HR + 1, 17, m, 1).setBackground('#fff7d6');          // peso: célula editável pelo professor
     sh.setFrozenColumns(3);
+    tamanho_(sh, DET.length, [21, 22]);   // só na criação da aba; depois a largura é do professor
     sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 16, m, 1), sh.getRange(HR + 1, 15, m, 1)));
   }
   return sh;
@@ -211,7 +212,7 @@ function painel_(ss, nome) {
   return sh;
 }
 
-// Larguras fixas e estreitas (não mudam a cada gravação); textos longos um pouco mais largos.
+// Larguras iniciais estreitas, aplicadas só quando a aba é criada. Depois o script nunca mais mexe: o professor ajusta à mão.
 function tamanho_(sh, n, fixas) {
   for (var c = 1; c <= n; c++) {
     sh.setColumnWidth(c, (fixas && fixas.indexOf(c) >= 0) ? 200 : 85);
@@ -231,7 +232,6 @@ function gravar_(sh, linha, sid, idCol, keepCol) {
   if (det) {
     sh.getRange(r, 1, 1, 10).setBackground(CORES[String(linha[5]).toLowerCase()] || '#f6f7fb');
     sh.getRange(r, 17).setBackground('#fff7d6');
-    tamanho_(sh, DET.length, [21, 22]);
   } else {
     sh.getRange(r, 1, 1, 6).setBackground('#f6f7fb');
   }
@@ -268,5 +268,5 @@ function resumo_(ss) {
     sh.getRange(HR + 1, 8, max - HR, 1).setNumberFormat('R$ #,##0.00');
     sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 7, max - HR, 1), null));
   }
-  tamanho_(sh, n, []);
+  if (b.novo) tamanho_(sh, n, []);
 }
