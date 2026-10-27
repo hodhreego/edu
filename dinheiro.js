@@ -126,9 +126,11 @@ document.addEventListener('DOMContentLoaded',function(){
  +'.tray-z{right:16px;width:132px;height:30px;border-radius:12px;cursor:ns-resize;gap:6px;background:linear-gradient(105deg,#2b3a55,#46597d 45%,#2b3a55);border:1.5px solid #12203a;box-shadow:0 5px 10px #0007,0 1px 0 #8fa5cc inset,0 -2px 3px #0006 inset;font:800 11px Arial;color:#e8f0ff}'
  +'.tray-z::before{content:"";position:absolute;inset:3px 4px;border-radius:9px;background:repeating-linear-gradient(90deg,#ffffff14 0 2px,transparent 2px 5px);pointer-events:none}'
  +'.tray-z svg{width:18px;height:18px;flex:none}.tray-z em{font-style:normal;font-size:13px;color:#ffd24d;letter-spacing:1px}'
- +'#app>.tray.dr-col{padding:0!important;height:14px!important;min-height:0!important;border-width:2px!important}#app>.tray.dr-col>.tray-in{display:none!important}}';
+ +'.tray-bar{display:flex;justify-content:center;align-items:center;gap:1vw;margin:0 0 .6vh}.tray-bar .btn.ok{font-size:2.4vh;padding:.8vh 3vw;box-shadow:0 .4vh 1vh #0004}'
+ +'#app>.tray.dr-col{padding:.5vh 1vw!important;height:auto!important;min-height:0!important;border-width:2px!important}#app>.tray.dr-col>.tray-in{display:none!important}#app>.tray.dr-col>.tray-bar{margin:0}}';
  document.head.appendChild(st);
  var inn=document.createElement('div');inn.className='tray-in';while(tr.firstChild)inn.appendChild(tr.firstChild);tr.appendChild(inn);
+ var okb=document.getElementById('bOk');if(okb){var bar=document.createElement('div');bar.className='tray-bar';bar.appendChild(okb);tr.insertBefore(bar,inn)}
  var h=document.createElement('div');h.className='tray-h';h.title='Arraste para cima ou para baixo';h.innerHTML='<b>GAVETA</b><span></span>';tr.appendChild(h);
 
  var z=document.createElement('div');z.className='tray-z';z.title='Arraste para aumentar ou diminuir o dinheiro';z.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#ffd24d" stroke-width="2.4" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg><em>▲▼</em><span></span>';tr.appendChild(z);

@@ -108,6 +108,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   (cur.cod?'<span class="tag k" id="en-k" title="Clique para aumentar o código">'+cur.cod+'</span>':'')+
   '<form class="cod" id="en-c" autocomplete="off" title="Digite o código de 4 números de uma atividade">'+
    '<input id="en-cv" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Código" aria-label="Código da atividade"><button type="submit">Ir ▶</button></form>'+
+  '<button class="ac" id="en-r" title="Ajustar à tela (reiniciar o layout)" aria-label="Ajustar à tela">⟲</button>'+
   '<button class="ac" id="en-a" title="Acessibilidade" aria-label="Acessibilidade">♿</button>'+
   '<a class="n pr" id="en-p" href="'+cur.href+'?imp=1" title="Versão para imprimir (PDF)">🖨️</a>'+
   '<div class="pn"><a class="n'+(prev?'':' off')+'" href="'+(prev?prev.href:'#')+'" title="Jogo anterior">◀</a>'+
@@ -128,6 +129,14 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   [].forEach.call(ac.querySelectorAll('[data-z]'),function(b){b.classList.toggle('on',b.dataset.z===z)});document.getElementById('en-hc').classList.toggle('on',ls('edu_hc')==='1');setH()}
  ac.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.id==='en-aj')return;if(b.dataset.z)ls('edu_ez',b.dataset.z);else ls('edu_hc',ls('edu_hc')==='1'?'0':'1');aplica()});
  document.getElementById('en-a').onclick=function(){ac.classList.toggle('on')};
+ document.getElementById('en-r').onclick=function(){
+  ls('edu_ez','1');aplica();var R=document.documentElement,st=R.style;st.removeProperty('--u');st.removeProperty('--zm');
+  [].forEach.call(document.querySelectorAll('#sz,#zm'),function(i){i.value=i.defaultValue;i.dispatchEvent(new Event('input',{bubbles:true}))});
+  [].forEach.call(document.querySelectorAll('.tray.dr-col'),function(t){t.classList.remove('dr-col')});
+  [].forEach.call(document.querySelectorAll('.tray-in'),function(t){t.style.removeProperty('max-height');t.style.removeProperty('height')});
+  [].forEach.call(document.querySelectorAll('*'),function(e){if(e.scrollTop)e.scrollTop=0;if(e.scrollLeft)e.scrollLeft=0});
+  scrollTo(0,0);window.dispatchEvent(new Event('resize'));if(window.fitChips)window.fitChips();if(window.fitZone)window.fitZone();
+  var t=document.createElement('div');t.textContent='Layout ajustado à tela ✔';t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16213a;color:#fff;padding:8px 16px;border-radius:99px;font:700 14px Arial;z-index:2147483600';document.body.appendChild(t);setTimeout(function(){t.remove()},1600)};
  var pb=document.getElementById('en-p');if(pb)pb.addEventListener('click',function(e){/*en-p-click*/if(window.EDU_PROF_OK&&EDU_PROF_OK())return;e.preventDefault();if(window.EDU_PROF_ASK)EDU_PROF_ASK(function(ok){if(ok)location.href=pb.href})});
  document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&(e.key||'').toLowerCase()==='p'&&!document.documentElement.classList.contains('edu-print-ok')){e.preventDefault();e.stopPropagation()}},true);
  function setH(){document.documentElement.style.setProperty('--eh',nav.offsetHeight+'px')}
@@ -159,7 +168,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
 /* contas/números nos cartões de combinar: não encostar nas bordas */
 (function(){
  var st=document.createElement('style');
- st.textContent='@media screen{html:not(.edu-print-ok) .jc>svg.cena.cena-txt{position:absolute!important;left:2%!important;bottom:3%!important;width:96%!important;height:60%!important;max-height:none!important;margin:0!important}.jc .jn{width:20px!important;height:20px!important;line-height:20px!important;font-size:10px!important;left:-3px!important;top:-3px!important;box-shadow:0 1px 3px #0004}}}';
+ st.textContent='@media screen{.prods,.zone,.zb{align-content:safe center!important}.prods{justify-content:safe center!important}.card{overscroll-behavior:contain}html:not(.edu-print-ok) .jc>svg.cena.cena-txt{position:absolute!important;left:2%!important;bottom:3%!important;width:96%!important;height:60%!important;max-height:none!important;margin:0!important}.jc .jn{width:20px!important;height:20px!important;line-height:20px!important;font-size:10px!important;left:-3px!important;top:-3px!important;box-shadow:0 1px 3px #0004}}}';
  document.head.appendChild(st);
  function mark(){[].forEach.call(document.querySelectorAll('.jc>svg.cena:not([data-m])'),function(s){s.dataset.m=1;if(/[0-9]/.test(s.textContent)&&s.querySelector('text')&&!s.querySelector('path,circle,ellipse,polygon,image,line,polyline')){s.classList.add('cena-txt');try{var bb=s.getBBox();if(bb.width>0&&bb.height>0){var pw=bb.width*.06,ph=bb.height*.1;s.setAttribute('viewBox',(bb.x-pw)+' '+(bb.y-ph)+' '+(bb.width+2*pw)+' '+(bb.height+2*ph))}}catch(e){}}})}
  var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(mark,30)}).observe(document.documentElement,{childList:true,subtree:true});
