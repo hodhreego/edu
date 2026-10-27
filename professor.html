@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel do Professor - Loja de Matemática</title>
+<style>
+:root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#f4f7fc;--brand:#1f4fd8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:16px}
+h1{margin:0 0 4px}.sub{color:var(--muted);margin:0 0 14px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+input,select,button{font:600 15px "Segoe UI",Arial,sans-serif;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+button{background:var(--brand);color:#fff;border-color:var(--brand);cursor:pointer}
+.wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;min-width:560px}th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:15px}
+th{background:#eef2fc;position:sticky;top:0}tr:first-child td b{color:#b98300}
+.pill{display:inline-block;background:#e6edff;color:var(--brand);border-radius:99px;padding:2px 10px;font-weight:800;font-size:13px}
+.aviso{background:#fff8d6;border:1.5px solid #e6c200;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
+.alertas{background:#ffe9e9;border:1.5px solid #d00000;border-radius:12px;padding:10px 14px;margin-top:12px;font-size:14px}
+</style></head><body>
+<h1>🏛️ Painel do Professor</h1><p class="sub">Notas e pontuações dos alunos em tempo real, com ranking por jogo e turma.</p>
+<div class="aviso" id="av"></div>
+<div class="bar"><input id="fc" placeholder="Código do jogo (ex.: 6964)" inputmode="numeric" maxlength="4"><input id="ft" placeholder="Turma (ex.: 6A)"><select id="fo"><option value="max">Ordenar por pontos</option><option value="nome">Ordenar por nome</option><option value="recente">Mais recentes</option></select><button id="bA">↻ Atualizar</button><button id="bC">⬇ Baixar CSV</button></div>
+<div class="wrap"><table><thead><tr><th>#</th><th>Aluno</th><th>Turma</th><th>Jogo</th><th>Código</th><th>Aula</th><th>Pontos</th><th>Tempo</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="alertas" id="al" style="display:none"></div>
+<script src="config.js"></script>
+<script>
+var dados=[];
+function loc(){try{return JSON.parse(localStorage.getItem('edu_resultados')||'[]')}catch(e){return[]}}
+function carregar(){
+ var u=window.EDU_ENDPOINT,c=document.getElementById('fc').value.trim();
+ if(u){fetch(u+(c?'?codigo='+encodeURIComponent(c):'')).then(function(r){return r.json()}).then(function(a){dados=a.map(function(x){return{nome:x.nome,turma:x.turma,jogo:x.jogo,codigo:x.codigo,aula:x.aula,maximo:+x.maximo,segundos:+x.segundos,quando:x.dia+' '+x.hora}});desenha()}).catch(function(){dados=loc();desenha()})}
+ else{dados=loc();desenha()}
+}
+function desenha(){
+ var c=document.getElementById('fc').value.trim(),t=document.getElementById('ft').value.trim().toLowerCase(),o=document.getElementById('fo').value;
+ var a=dados.filter(function(x){return(!c||String(x.codigo)===c)&&(!t||String(x.turma||'').toLowerCase()===t)});
+ a.sort(o==='nome'?function(x,y){return String(x.nome).localeCompare(y.nome)}:o==='recente'?function(x,y){return String(y.quando).localeCompare(String(x.quando))}:function(x,y){return y.maximo-x.maximo});
+ document.getElementById('tb').innerHTML=a.map(function(x,i){return'<tr><td>'+(i+1)+'</td><td><b>'+(x.nome||'(sem nome)')+'</b></td><td>'+(x.turma||'')+'</td><td>'+(x.jogo||'')+'</td><td><span class="pill">'+(x.codigo||'')+'</span></td><td>'+(x.aula||'')+'</td><td><b>'+(x.maximo||x.pontos||0)+'</b></td><td>'+Math.floor((x.segundos||0)/60)+'min '+((x.segundos||0)%60)+'s</td></tr>'}).join('')||'<tr><td colspan="8">Nenhum resultado ainda.</td></tr>';
+ window._a=a;
+ var al=[];try{al=JSON.parse(localStorage.getItem('edu_alertas')||'[]')}catch(e){}
+ var b=document.getElementById('al');if(al.length){b.style.display='block';b.innerHTML='<b>⚠️ Alertas de anti-cola neste aparelho:</b><br>'+al.slice(-10).reverse().map(function(x){return x.quando+' — '+(x.nome||'aluno')+' — '+x.tipo+' — '+x.jogo}).join('<br>')}
+}
+document.getElementById('av').innerHTML=window.EDU_ENDPOINT?'✅ Conectado à planilha. Atualiza a cada 10 segundos.':'⚠️ A planilha ainda não foi conectada: aqui aparecem só os resultados guardados <b>neste aparelho</b>. Veja o arquivo <code>apps-script-planilha.gs</code> para ligar a planilha do Google.';
+['fc','ft','fo'].forEach(function(i){document.getElementById(i).addEventListener('input',function(){i==='fc'?carregar():desenha()})});
+document.getElementById('bA').onclick=carregar;
+document.getElementById('bC').onclick=function(){var l=['Aluno;Turma;Jogo;Codigo;Aula;Pontos;Segundos'].concat((window._a||[]).map(function(x){return[x.nome,x.turma,x.jogo,x.codigo,x.aula,x.maximo||x.pontos,x.segundos].join(';')}));var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+l.join('\n')],{type:'text/csv'}));a.download='resultados.csv';a.click()};
+carregar();setInterval(carregar,10000);
+</script></body></html>

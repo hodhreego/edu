@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Filosofia politica - Colmeia</title>
+<style>
+:root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#eef3fb;--brand:#7c3aed}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif}
+#app{height:100vh;height:100dvh;display:flex;flex-direction:column;padding:8px 14px 10px;gap:8px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top h1{margin:0;font-size:clamp(20px,3vw,32px);line-height:1.05}.top h1 span{color:var(--brand)}
+.sub{color:var(--muted);font-size:13px}
+.grow{flex:1}
+.ident{font-size:12px;color:var(--muted);text-align:right;line-height:1.5}
+.ident b{display:inline-block;border-bottom:1px solid #99a;min-width:150px;height:16px;vertical-align:bottom}
+.coin{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(#ffe08a,#f5b81c);border:2px solid #b98300;border-radius:99px;padding:4px 14px;font-weight:900;font-size:18px;color:#5a3b00;box-shadow:0 3px 0 #b98300}
+.coin i{font-style:normal;display:inline-flex;width:24px;height:24px;border-radius:50%;background:#fff3b0;border:2px solid #b98300;align-items:center;justify-content:center;font-size:14px}
+.inst{background:#fff;border:1.5px solid var(--brand);border-radius:12px;padding:7px 12px;font-size:14px}
+.main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:12px}
+.board{min-height:0;background:#fff;border:2px solid var(--line);border-radius:18px;padding:8px;display:flex;align-items:center;justify-content:center;touch-action:none;position:relative}
+.board svg{width:100%;height:100%;display:block;touch-action:none;-webkit-user-select:none;user-select:none}
+.hx polygon{fill:#fff7e0;stroke:#d9b45a;stroke-width:1.4;transition:fill .1s}
+.hx text{font:800 15px "Segoe UI",Arial,sans-serif;fill:#3b2a12;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.hx.sel polygon{fill:#ffd24d;stroke:#b98300}
+.hx.ini polygon{fill:#9ad1ff;stroke:#1f4fd8;stroke-width:2.4}
+.hx.hint polygon{animation:pulse .6s infinite alternate}
+@keyframes pulse{from{fill:#fff7e0}to{fill:#ff9a9a}}
+.hx.bad polygon{fill:#ffb3b3}
+.side{min-height:0;background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.side h2{margin:0;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.side h2 small{color:var(--muted);font-weight:700}
+.clues{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:2px}
+.cl{border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;font-size:14.5px;line-height:1.3;display:flex;gap:8px;align-items:flex-start;cursor:pointer;background:#fafcff}
+.cl b{flex:none;background:var(--brand);color:#fff;border-radius:8px;min-width:22px;text-align:center;font-size:12px;padding:2px 5px;margin-top:1px}
+.cl em{font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap;margin-left:auto;padding-left:6px}
+.cl.ok{background:#e6f7ec;border-color:#2e9e5b;color:#1d6a3d}.cl.ok span{text-decoration:line-through;text-decoration-color:#2e9e5b88}.cl.ok b{background:#2e9e5b}
+.cl.ok em{color:#1d6a3d;font-weight:800;font-size:13px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--brand);background:#fff;color:var(--brand);border-radius:10px;padding:7px 12px;font:700 14px "Segoe UI",Arial,sans-serif;cursor:pointer}
+.btn.pri{background:var(--brand);color:#fff}
+.msg{min-height:20px;font-weight:700;font-size:14px}.msg.ok{color:#1d8a4a}.msg.bad{color:#c0392b}
+.fim{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:50}
+.fim.on{display:flex}
+.fim div{background:#fff;border-radius:22px;padding:26px 34px;text-align:center;max-width:90vw;box-shadow:0 20px 60px #0007}
+.fim h2{margin:0 0 6px;font-size:30px}.fim p{margin:4px 0 14px;font-size:17px}
+@media(max-width:820px){
+ #app{height:auto;min-height:100vh;padding:8px}
+ .main{grid-template-columns:1fr;grid-template-rows:auto auto}
+ .board{aspect-ratio:1/1.05;padding:4px}
+ .clues{overflow:visible}
+ .ident{text-align:left}.ident b{min-width:110px}
+}
+@media print{.btns,.board{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+ <div class="top">
+  <div><h1>🐝 Filosofia politica</h1><div class="sub">Colmeia · Filosofia · 2ª série EM</div></div>
+  <div class="grow"></div>
+  <div class="coin"><i>$</i><span id="pts">0 pontos</span></div>
+  <div class="ident">Nome: <b></b><br>Turma: <b style="min-width:60px"></b> &nbsp; Data: <b style="min-width:80px"></b></div>
+ </div>
+ <div class="inst"><b>Ache as palavras escondidas na colmeia.</b> Arraste do primeiro ao último hexágono (ou toque no primeiro e depois no último). Leia as dicas ao lado. <i>As palavras podem estar em qualquer direção, até de trás para frente.</i></div>
+ <div class="main">
+  <div class="board" id="board"></div>
+  <div class="side">
+   <h2><span>Dicas</span><small id="prog">0 / 0</small></h2>
+   <div class="clues" id="clues"></div>
+   <div class="msg" id="msg"></div>
+   <div class="btns"><button class="btn" id="bDica">💡 Dica (−5)</button><button class="btn" id="bNovo">🔄 Novo tabuleiro</button></div>
+  </div>
+ </div>
+</div>
+<div class="fim" id="fim"><div><h2 id="fT">🎉 Parabéns!</h2><p id="fP"></p><button class="btn pri" id="fB">Jogar de novo ↺</button></div></div>
+<script>
+(function(){
+const DATA=[["POLITICA", "atividade humana voltada a organizacao do poder e a vida em sociedade"], ["PODER", "capacidade de impor a propria vontade sobre outros, mesmo contra resistencia"], ["ESTADO", "instituicao que detem o monopolio legitimo da forca sobre um territorio"], ["SOBERANIA", "autoridade suprema e independente de um Estado sobre seu territorio"], ["PACTO", "acordo pelo qual os individuos abrem mao de parte da liberdade para viver em sociedade"], ["CONTRATO", "teoria segundo a qual o Estado nasce de um acordo entre os individuos"], ["CIDADANIA", "condicao de membro de uma comunidade politica, com direitos e deveres"], ["DEMOCRACIA", "regime em que o poder emana do povo e e exercido em seu nome"], ["REPUBLICA", "forma de governo em que o poder e exercido em nome do interesse publico"], ["DIREITO", "conjunto de normas que regulam a vida em sociedade"], ["LIBERDADE", "capacidade de agir segundo a propria vontade, dentro de limites legais"], ["CONSENSO", "acordo entre diferentes posicoes, alcancado apos debate e negociacao"], ["CONFLITO", "divergencia de interesses entre individuos ou grupos sociais"], ["REPRESENTACAO", "sistema em que cidadaos elegem quem vai decidir em seu nome"], ["SOCIEDADE", "conjunto de pessoas que vivem organizadas sob normas comuns"], ["AUTONOMIA", "capacidade de se autogovernar segundo as proprias leis e vontade"], ["LEGITIMIDADE", "reconhecimento social de que um poder e justo e aceito"], ["REALISMO", "corrente que entende a politica como disputa de poder e interesse"], ["HOBBES", "filosofo que descreveu o estado de natureza como guerra de todos contra todos"], ["ROUSSEAU", "filosofo que defendeu a vontade geral como base do contrato social"], ["LOCKE", "filosofo que defendeu os direitos naturais a vida, liberdade e propriedade"], ["MAQUIAVEL", "pensador renascentista associado ao realismo politico e a razao de Estado"], ["PARTICIPACAO", "envolvimento dos cidadaos nas decisoes politicas da comunidade"], ["PLURALISMO", "convivencia de diferentes ideias e grupos numa sociedade democratica"], ["DECOLONIAL", "pensamento que questiona as herancas do colonialismo nas relacoes de poder"], ["ANCESTRALIDADE", "vinculo com os saberes e tradicoes transmitidos pelos antepassados"], ["COSMOVISAO", "forma como um povo compreende o mundo e sua relacao com a natureza"], ["BEMCOMUM", "aquilo que beneficia a coletividade, e nao apenas interesses individuais"], ["HEGEMONIA", "predominio de um grupo ou ideia sobre os demais numa sociedade"], ["GOVERNO", "conjunto de instituicoes que exercem o poder executivo do Estado"]];
+const N=Math.min(DATA.length,12);
+const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]];
+const COLORS=['#ffd24d','#8ee3a1','#9ad1ff','#ffb3d1','#c9b6ff','#ffc58a','#8de3e0','#e3e38a','#ffa8a8','#b5e48c','#a0c4ff','#f1b6ff','#fdc5a3','#9ae6c4'];
+const $=id=>document.getElementById(id);
+let words,cells,R,found,pts,hexEl,t0,pending,drag,hintT;
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const key=(q,r)=>q+','+r;
+function inBoard(q,r){return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r))<=R}
+function build(){
+ words=shuffle(DATA).slice(0,N).map(x=>({w:x[0],c:x[1],ok:0,cells:[]}));
+ const maxLen=Math.max.apply(null,words.map(x=>x.w.length));
+ R=Math.max(5,Math.ceil((maxLen-1)/2)+(words.length>10?2:1));
+ for(let guard=0;guard<30;guard++){
+  cells={};for(let q=-R;q<=R;q++)for(let r=-R;r<=R;r++)if(inBoard(q,r))cells[key(q,r)]='';
+  let okAll=true;
+  for(const wd of words.slice().sort((a,b)=>b.w.length-a.w.length)){
+   let placed=false;
+   for(let t=0;t<600&&!placed;t++){
+    const d=DIRS[rnd(0,5)],L=wd.w.length;
+    const q0=rnd(-R,R),r0=rnd(-R,R);if(!inBoard(q0,r0))continue;
+    const qe=q0+d[0]*(L-1),re=r0+d[1]*(L-1);if(!inBoard(qe,re))continue;
+    let ok=true;
+    for(let i=0;i<L;i++){const c=cells[key(q0+d[0]*i,r0+d[1]*i)];if(c!==''&&c!==wd.w[i]){ok=false;break}}
+    if(!ok)continue;
+    wd.cells=[];for(let i=0;i<L;i++){const k=key(q0+d[0]*i,r0+d[1]*i);cells[k]=wd.w[i];wd.cells.push(k)}
+    placed=true;
+   }
+   if(!placed){okAll=false;break}
+  }
+  if(okAll)break;
+ }
+ const pool=words.map(x=>x.w).join('')+'AEIOURSTNLCDMP';
+ for(const k in cells)if(cells[k]==='')cells[k]=pool[rnd(0,pool.length-1)];
+}
+function draw(){
+ const S=22,W=Math.sqrt(3)*S,pos=k=>{const [q,r]=k.split(',').map(Number);return [W*(q+r/2),1.5*S*r]};
+ let minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9;
+ const hex=[];
+ for(const k in cells){const [x,y]=pos(k);minx=Math.min(minx,x-W/2);maxx=Math.max(maxx,x+W/2);miny=Math.min(miny,y-S);maxy=Math.max(maxy,y+S);hex.push([k,x,y])}
+ const pts=a=>[0,1,2,3,4,5].map(i=>{const an=Math.PI/180*(60*i-30);return (a[1]+S*Math.cos(an)).toFixed(1)+','+(a[2]+S*Math.sin(an)).toFixed(1)}).join(' ');
+ let h='<svg id="sv" viewBox="'+(minx-4)+' '+(miny-4)+' '+(maxx-minx+8)+' '+(maxy-miny+8)+'" preserveAspectRatio="xMidYMid meet">';
+ for(const a of hex)h+='<g class="hx" data-k="'+a[0]+'"><polygon points="'+pts(a)+'"/><text x="'+a[1].toFixed(1)+'" y="'+(a[2]+1).toFixed(1)+'">'+cells[a[0]]+'</text></g>';
+ $('board').innerHTML=h+'</svg>';
+ hexEl={};document.querySelectorAll('.hx').forEach(e=>hexEl[e.dataset.k]=e);
+ $('clues').innerHTML=words.map((x,i)=>'<div class="cl" data-i="'+i+'"><b>'+(i+1)+'</b><span>'+x.c+'</span><em>'+x.w.length+' letras</em></div>').join('');
+}
+function line(a,b){
+ const [q1,r1]=a.split(',').map(Number),[q2,r2]=b.split(',').map(Number),dq=q2-q1,dr=r2-r1,ds=-(dq+dr);
+ if(dq!==0&&dr!==0&&ds!==0)return [a];
+ const n=Math.max(Math.abs(dq),Math.abs(dr),Math.abs(ds));if(n===0)return [a];
+ const o=[];for(let i=0;i<=n;i++)o.push(key(q1+dq/n*i,r1+dr/n*i));return o.every(k=>cells[k]!==undefined)?o:[a];
+}
+function clearSel(){document.querySelectorAll('.hx.sel,.hx.ini,.hx.bad').forEach(e=>e.classList.remove('sel','ini','bad'))}
+function mark(ks){clearSel();ks.forEach(k=>hexEl[k]&&hexEl[k].classList.add('sel'))}
+function cellAt(x,y){const e=document.elementFromPoint(x,y);const g=e&&e.closest&&e.closest('.hx');return g?g.dataset.k:null}
+let AC=null;
+function tone(f,d,v,type){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.12,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function setPts(v){pts=Math.max(0,v);$('pts').textContent=pts+' pontos'}
+function msg(t,c){$('msg').textContent=t;$('msg').className='msg '+(c||'')}
+function check(ks){
+ if(ks.length<2){clearSel();return}
+ const s=ks.map(k=>cells[k]).join(''),rs=s.split('').reverse().join('');
+ const i=words.findIndex(x=>!x.ok&&(x.w===s||x.w===rs));
+ if(i<0){ks.forEach(k=>hexEl[k].classList.add('bad'));tone(180,.25,.12,'sawtooth');msg('Essa não é uma das palavras. Tente de novo!','bad');setPts(pts-3);setTimeout(clearSel,350);return}
+ const w=words[i];w.ok=1;const col=COLORS[i%COLORS.length];
+ clearSel();ks.forEach(k=>{const p=hexEl[k].querySelector('polygon');p.style.fill=col;p.style.stroke='#555'});
+ const cl=document.querySelector('.cl[data-i="'+i+'"]');cl.classList.add('ok');cl.querySelector('em').textContent=w.w;cl.style.borderColor=col;
+ tone(660,.12,.14,'triangle');setTimeout(()=>tone(880,.18,.14,'triangle'),90);
+ setPts(pts+20);msg('✔ Muito bem! '+w.w,'ok');
+ const n=words.filter(x=>x.ok).length;$('prog').textContent=n+' / '+words.length;
+ if(n===words.length)fim();
+}
+function fim(){
+ const sec=Math.round((Date.now()-t0)/1000),m=Math.floor(sec/60),s=sec%60;
+ const bonus=Math.max(0,60-Math.floor(sec/10));setPts(pts+bonus);
+ $('fP').innerHTML='Você achou as <b>'+words.length+'</b> palavras em <b>'+m+'min '+s+'s</b>.<br>Bônus de tempo: +'+bonus+' · Total: <b>'+pts+' pontos</b>';
+ tone(523,.15,.15,'triangle');setTimeout(()=>tone(659,.15,.15,'triangle'),140);setTimeout(()=>tone(784,.3,.15,'triangle'),280);
+ $('fim').classList.add('on');
+}
+function start(){
+ build();draw();found=0;pending=null;drag=null;t0=Date.now();setPts(0);msg('');$('prog').textContent='0 / '+words.length;$('fim').classList.remove('on');
+}
+const board=$('board');
+board.addEventListener('pointerdown',e=>{
+ const k=cellAt(e.clientX,e.clientY);if(!k)return;e.preventDefault();
+ try{board.setPointerCapture(e.pointerId)}catch(_){}
+ drag={a:k,b:k,moved:false};
+ if(pending){const ks=line(pending,k);const p=pending;pending=null;drag=null;if(ks.length>1){mark(ks);check(ks);return}clearSel();drag={a:k,b:k,moved:false}}
+ clearSel();hexEl[k].classList.add('ini');
+});
+board.addEventListener('pointermove',e=>{
+ if(!drag)return;const k=cellAt(e.clientX,e.clientY);if(!k||k===drag.b)return;
+ drag.b=k;if(k!==drag.a)drag.moved=true;mark(line(drag.a,k));
+});
+const up=e=>{
+ if(!drag)return;const d=drag;drag=null;
+ if(d.moved&&d.a!==d.b){const ks=line(d.a,d.b);check(ks);return}
+ pending=d.a;clearSel();hexEl[d.a].classList.add('ini');msg('Agora toque no último hexágono da palavra.');
+};
+board.addEventListener('pointerup',up);board.addEventListener('pointercancel',()=>{drag=null;clearSel()});
+$('clues').addEventListener('click',e=>{const c=e.target.closest('.cl');if(!c)return;const w=words[+c.dataset.i];if(w.ok)return;msg('Procure uma palavra com '+w.w.length+' letras começando com “'+w.w[0]+'” ou terminando em “'+w.w[w.w.length-1]+'”.')});
+$('bDica').onclick=()=>{
+ const rest=words.filter(x=>!x.ok);if(!rest.length)return;const w=rest[rnd(0,rest.length-1)];
+ const e=hexEl[w.cells[0]];e.classList.add('hint');setTimeout(()=>e.classList.remove('hint'),2600);setPts(pts-5);msg('💡 A palavra “'+w.c+'” começa no hexágono piscando.');
+};
+$('bNovo').onclick=start;$('fB').onclick=start;
+window.EDU_DBG=function(){return words};
+start();
+})();
+</script>
+<script src="config.js?v=3"></script><script src="ident.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="anticheat.js?v=3"></script>
+</body>
+</html>
