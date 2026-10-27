@@ -46,7 +46,7 @@ body{padding-top:var(--eh)!important}
 #edu-ac.on{display:block}#edu-ac h4{margin:0 0 8px;font-size:15px}#edu-ac .r{display:flex;gap:6px;margin-bottom:8px}
 #edu-ac button{flex:1;border:2px solid #cfd8ec;background:#f4f7fc;color:#16213a;border-radius:10px;padding:7px 4px;font:800 14px "Segoe UI",Arial,sans-serif;cursor:pointer}
 #edu-ac button.on{background:#1f4fd8;border-color:#1f4fd8;color:#fff}
-body>*:not(#edu-nav):not(#edu-ac):not(script):not(style):not(#ac-aviso):not(#painel):not(#toggle):not(#jg-bar):not(#jg-fim):not(#pv):not(#imp-bar){zoom:var(--ezz,1);width:100%!important;max-width:100%!important;box-sizing:border-box}
+body>*:not(#edu-nav):not(#edu-ac):not(script):not(style):not(#ac-aviso):not(#painel):not(#toggle):not(#wal):not(#jg-bar):not(#jg-fim):not(#pv):not(#imp-bar){zoom:var(--ezz,1);width:100%!important;max-width:100%!important;box-sizing:border-box}
 html.edu-hc body,html.edu-hc body *:not(svg):not(svg *):not(img):not(#edu-nav):not(#edu-nav *):not(#edu-ac):not(#edu-ac *){background:#000!important;background-image:none!important;color:#fff!important;border-color:#ffeb3b!important;text-shadow:none!important;box-shadow:none!important;-webkit-text-stroke:0!important}
 html.edu-hc body button,html.edu-hc body .btn,html.edu-hc body a,html.edu-hc body select,html.edu-hc body input:not([type=checkbox]),html.edu-hc body [contenteditable]{background:#ffeb3b!important;color:#000!important;border:2px solid #fff!important;font-weight:800!important}
 html.edu-hc body input.g,html.edu-hc body .ok,html.edu-hc body .good{background:#00e676!important;color:#000!important}
