@@ -49,3 +49,6 @@ Saldo de cada banco não aparece mais nos cartões nem no app (mostra R$ ••�
 
 ## Gabarito só impresso
 Na tela do jogo não há mais botão/caixa de gabarito. O gabarito completo só existe na página impressa `?imp=1&gab=1&c=N` (ou pelo índice gabaritos-professor.html), que exige a senha do professor.
+
+## Extrato dentro do app
+Cada app de banco tem o atalho "Extrato" (tela `extr`, com voltar) mostrando saldo e movimentações do banco; o popup de extrato tem ✕, botão Fechar e fecha clicando fora (não fecha sozinho).

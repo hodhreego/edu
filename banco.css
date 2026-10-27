@@ -230,3 +230,7 @@ html,body{margin:0;background:#eef3fb;font-family:"Segoe UI",Roboto,Arial,sans-s
 .ex .xm{flex:1;min-width:0}.ex .xm b{display:block;font-size:14px;color:#111827}.ex .xm small{display:block;font-size:11.5px;color:#6b7280}
 .ex .xv{text-align:right;flex:none}.ex .xv b{display:block;font-size:15px}.ex .xv b.in{color:#15803d}.ex .xv b.out{color:#111827}.ex .xv small{font-size:11px;color:#6b7280}
 .ex .xe{text-align:center;color:#6b7280;padding:18px}.ex>.btn{margin:12px 10px 0}.ex>.btn.ok{margin-bottom:14px}
+
+.ex .xx{position:absolute;top:10px;right:12px;z-index:3;width:32px;height:32px;border-radius:50%;border:0;background:#ffffffcc;color:#111;font:900 16px Arial;cursor:pointer;box-shadow:0 1px 4px #0005}
+#exm .box.ex{position:relative}
+.exapp{max-height:none;overflow:visible;min-width:0;margin:0;background:transparent}.exapp .xh{border-radius:0 0 18px 18px}.exapp .xl{margin:0 8px 10px}
