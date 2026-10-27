@@ -40,7 +40,7 @@ function pessoa(tipo,n){n=n||nome();var c=tipo==='cel'?chCel():tipo==='cpf'?chCp
  return {nome:n,chave:c,tipo:({cel:'Celular',cpf:'CPF',mail:'E-mail',cnpj:'CNPJ',ale:'Chave aleatória'})[tipo],banco:pick(BCO)}}
 function cts(tipo,alvo,n){var a=[alvo],g=0;while(a.length<n&&g++<50){var p=pessoa(tipo);if(p.nome!==alvo.nome&&p.chave!==alvo.chave)a.push(p)}return shuffle(a)}
 function dados(p){return '<div class="dd"><span>'+p.tipo+'</span><b>'+p.chave+'</b></div>'}
-function pinTxt(p){return 'A senha do seu app é <b>'+p+'</b>.'}
+function pinTxt(p){return ''}
 /* ---------- geradores de questão ---------- */
 var GEN={
  celular:function(L){var p=pessoa('cel'),s=pick(SERV),s2=pick(SERV.filter(function(x){return x!==s})),v,t,pn=pin(),cm;
