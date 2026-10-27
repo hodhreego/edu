@@ -4,7 +4,8 @@
  document.head.appendChild(st);
  var N={200:'n2',500:'n5',1000:'n10',2000:'n20',5000:'n50',10000:'n100'},C={1:'c1',5:'c5',10:'c10',25:'c25',50:'c50',100:'c100'};
  function im(f,e,v){return '<img src="img/din/'+f+'.'+e+'" alt="R$ '+(v>=100?v/100:v/100)+'" draggable="false" title="Imagem ilustrativa, sem valor">'}
- window.DR={bill:function(v){return im(N[v],'jpg',v)},coin:function(v){return im(C[v],'png',v)}};
+ var C1='<svg viewBox="0 0 100 100" style="display:block;height:var(--h);width:auto;filter:drop-shadow(0 .2vh .3vh #0004);pointer-events:none"><defs><radialGradient id="c1g" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#e9a56a"/><stop offset=".55" stop-color="#c47a3f"/><stop offset="1" stop-color="#8f4f22"/></radialGradient><linearGradient id="c1r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3bf8c"/><stop offset="1" stop-color="#7a3d14"/></linearGradient></defs><circle cx="50" cy="50" r="49" fill="url(#c1r)"/><circle cx="50" cy="50" r="46" fill="url(#c1g)" stroke="#7a3d14" stroke-width="1"/><circle cx="50" cy="50" r="42" fill="none" stroke="#f6cfa4" stroke-width="1.2" stroke-opacity=".7"/><path d="M22 66C14 52 16 36 26 26M78 66C86 52 84 36 74 26" fill="none" stroke="#7a3d14" stroke-width="2.2" stroke-linecap="round" opacity=".75"/><g fill="#8f4f22" opacity=".8"><ellipse cx="18" cy="50" rx="3" ry="1.6" transform="rotate(-40 18 50)"/><ellipse cx="19" cy="40" rx="3" ry="1.6" transform="rotate(-70 19 40)"/><ellipse cx="82" cy="50" rx="3" ry="1.6" transform="rotate(40 82 50)"/><ellipse cx="81" cy="40" rx="3" ry="1.6" transform="rotate(70 81 40)"/></g><text x="50" y="62" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="46" fill="#5a2a0c" stroke="#f6cfa4" stroke-width=".8" paint-order="stroke">1</text><text x="50" y="76" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="8.2" letter-spacing=".6" fill="#5a2a0c">CENTAVO</text><text x="50" y="26" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="6.5" letter-spacing="1.4" fill="#5a2a0c">BRASIL</text></svg>';
+ window.DR={bill:function(v){return im(N[v],'jpg',v)},coin:function(v){return v===1?C1:im(C[v],'png',v)}};
 })();
 /* enunciado claro e direto para cada questão */
 window.DRQT=function(t,fmt){
@@ -105,17 +106,21 @@ document.addEventListener('DOMContentLoaded',function(){
  var st=document.createElement('style');
  st.textContent='@media screen{#app>.tray{overflow:visible!important;max-height:none!important}'
  +'#app>.tray>.tray-in{overflow-y:auto;max-height:calc(54vh / var(--ezz,1));display:flex;flex-direction:column;gap:.8vh;border-radius:1.2vh}'
- +'.tray-h,.tray-z{position:absolute;top:-11px;width:92px;height:20px;border-radius:99px;background:linear-gradient(#f8fafc,#cbd5e1);border:2px solid #64748b;box-shadow:0 3px 8px #0005,inset 0 1px 0 #fff;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5;display:flex;align-items:center;justify-content:center;gap:5px}'
- +'.tray-h::before,.tray-h::after{content:"";width:22px;height:3px;border-radius:3px;background:#64748b}'
- +'.tray-h i{display:none}.tray-h:before{box-shadow:0 5px 0 #64748b}.tray-h:after{box-shadow:0 5px 0 #64748b}'
- +'.tray-h span{position:absolute;inset:-14px -10px}'
- +'.tray-h{left:16px}.tray-z{right:16px;height:20px;border-radius:99px;background:linear-gradient(#f8fafc,#cbd5e1);border:2px solid #64748b;box-shadow:0 3px 8px #0005,inset 0 1px 0 #fff;cursor:ns-resize;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5;display:flex;align-items:center;justify-content:center;font:800 12px Arial;color:#334155;gap:4px}.tray-z span{position:absolute;inset:-14px -10px}'
+ +'.tray-h,.tray-z{position:absolute;top:-17px;touch-action:none;user-select:none;-webkit-user-select:none;z-index:5;display:flex;align-items:center;justify-content:center}'
+ +'.tray-h{left:16px;width:150px;height:30px;border-radius:99px;cursor:ns-resize;background:linear-gradient(#fdfdfd 0%,#e8ecf1 18%,#aeb7c2 52%,#7d8895 78%,#d5dbe3 100%);border:1.5px solid #5b6674;box-shadow:0 5px 10px #0007,0 1px 0 #fff inset,0 -2px 3px #0003 inset}'
+ +'.tray-h::before,.tray-h::after{content:"";position:absolute;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9aa5b1 60%,#5b6674);box-shadow:0 1px 2px #0006}'
+ +'.tray-h::before{left:9px}.tray-h::after{right:9px}'
+ +'.tray-h i{display:none}.tray-h b{font:800 10px Arial;letter-spacing:.5px;color:#3d4753;text-shadow:0 1px 0 #fff;pointer-events:none}'
+ +'.tray-h span,.tray-z span{position:absolute;inset:-12px -10px}'
+ +'.tray-z{right:16px;width:132px;height:30px;border-radius:12px;cursor:ns-resize;gap:6px;background:linear-gradient(105deg,#2b3a55,#46597d 45%,#2b3a55);border:1.5px solid #12203a;box-shadow:0 5px 10px #0007,0 1px 0 #8fa5cc inset,0 -2px 3px #0006 inset;font:800 11px Arial;color:#e8f0ff}'
+ +'.tray-z::before{content:"";position:absolute;inset:3px 4px;border-radius:9px;background:repeating-linear-gradient(90deg,#ffffff14 0 2px,transparent 2px 5px);pointer-events:none}'
+ +'.tray-z svg{width:18px;height:18px;flex:none}.tray-z em{font-style:normal;font-size:13px;color:#ffd24d;letter-spacing:1px}'
  +'#app>.tray.dr-col{padding:0!important;height:14px!important;min-height:0!important;border-width:2px!important}#app>.tray.dr-col>.tray-in{display:none!important}}';
  document.head.appendChild(st);
  var inn=document.createElement('div');inn.className='tray-in';while(tr.firstChild)inn.appendChild(tr.firstChild);tr.appendChild(inn);
- var h=document.createElement('div');h.className='tray-h';h.title='Arraste para cima ou para baixo';h.innerHTML='<span></span>';tr.appendChild(h);
+ var h=document.createElement('div');h.className='tray-h';h.title='Arraste para cima ou para baixo';h.innerHTML='<b>GAVETA</b><span></span>';tr.appendChild(h);
 
- var z=document.createElement('div');z.className='tray-z';z.title='Arraste para aumentar ou diminuir o dinheiro';z.innerHTML='🔍 <b>+ −</b><span></span>';tr.appendChild(z);
+ var z=document.createElement('div');z.className='tray-z';z.title='Arraste para aumentar ou diminuir o dinheiro';z.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#ffd24d" stroke-width="2.4" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg><em>▲▼</em><span></span>';tr.appendChild(z);
  var sz=document.getElementById('sz'),zy=0,zv=0,zd=false,zm=false;
  function setSz(v){if(!sz)return;v=Math.max(+sz.min,Math.min(+sz.max,v));sz.value=v;sz.dispatchEvent(new Event('input',{bubbles:true}))}
  z.addEventListener('pointerdown',function(e){zd=true;zm=false;zy=e.clientY;zv=+(sz&&sz.value)||5;z.setPointerCapture(e.pointerId);e.preventDefault()});
