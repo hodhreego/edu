@@ -443,3 +443,44 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .phone,.phone *{scrollbar-width:none;-ms-overflow-style:none}
 .phone::-webkit-scrollbar,.phone *::-webkit-scrollbar{display:none;width:0;height:0}
 .phone .lnc .gridl,.phone .scr,.phone .rcs{cursor:grab}
+
+.phone.fold.single .pane.pa{flex:1 1 100%}.phone.fold.single .pane.pb,.phone.fold.single .fdiv{display:none}
+.phone .psp{position:absolute;right:3.4em;bottom:2.8em;z-index:25;width:2.1em;height:2.1em;border-radius:50%;border:1px solid #fff6;background:rgba(20,20,30,.55);color:#fff;font-size:1em;cursor:pointer;backdrop-filter:blur(6px);padding:0}
+.phone .fsw.fcl{top:3.2em;font-size:.9em}
+.phone.fsplit .nvb i{position:absolute;bottom:.28em;width:22%}
+.phone.fsplit .nvb i:nth-child(1){left:calc(var(--pa,50%)/2);transform:translateX(-50%)}
+.phone.fsplit .nvb i:nth-child(2){left:calc((100% + var(--pa,50%))/2);transform:translateX(-50%)}
+.recs .rcs2{margin-left:auto;border:0;background:#e8f0fe;color:#1a47c9;border-radius:.8em;padding:.1em .5em;font-size:1em;cursor:pointer}
+
+.xapp.web,.xapp.web *{font-family:Arial,Helvetica,sans-serif!important}
+.xapp.web .wb{background:#fff!important;background-image:none!important;color:#1f2430;font-size:1em;line-height:1.4}
+.xapp.web .url input{font-size:1em;text-transform:none;letter-spacing:0;color:#111;background:#fff}
+.xapp.web .wlogo{font-size:2em;font-weight:700;text-align:center;color:#1a56db;margin:.4em 0}
+.xapp.web .wcnt,.xapp.web .wsite{color:#5f6675;font-size:.8em}
+.xapp.web .wr{display:block;text-align:left;border:0;background:none;padding:.5em 0;border-bottom:1px solid #e6e9f0;cursor:pointer;width:100%}
+.xapp.web .wr small{display:block;color:#3b6b3b;font-size:.78em}
+.xapp.web .wr b{display:block;color:#1a0dab;font-size:1.05em;font-weight:600;margin:.1em 0}
+.xapp.web .wr span{display:block;color:#3c4043;font-size:.9em}
+.xapp.web .fav button{font-size:1em}
+
+.phone .flw{position:absolute;z-index:30;width:56%;height:52%;min-width:200px;border-radius:1.2em;overflow:hidden;background:#fff;box-shadow:0 10px 30px #0008,0 0 0 1px #0003;display:flex;flex-direction:column;color:#111}
+.phone .flw .fwh{height:1.9em;background:#2b2b33;display:flex;align-items:center;justify-content:center;gap:.4em;cursor:grab;touch-action:none;flex:none;position:relative}
+.phone .flw .fwh i{width:3em;height:.28em;border-radius:.2em;background:#ffffff99}
+.phone .flw .fwh button{position:absolute;top:.15em;width:1.6em;height:1.6em;border:0;border-radius:50%;background:#ffffff22;color:#fff;font-size:.9em;padding:0;cursor:pointer}
+.phone .flw .fwh button[data-p=fwmax]{right:2.1em}.phone .flw .fwh button[data-p=fwx]{right:.3em}
+.phone .flw .fwb{flex:1;min-height:0;overflow-y:auto;position:relative;display:flex;flex-direction:column}
+
+.xapp.cm .vf2{position:relative;overflow:hidden}.xapp.cm .cmv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}.xapp.cm .vf2.live .cmv{display:block}.xapp.cm .vf2.live .cmf{display:none}
+.xapp.cm .cminit,.sinit{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.xapp.cm .gl{overflow:hidden;padding:0}.xapp.cm .gl img{width:100%;height:100%;object-fit:cover}
+.pg button{border:0;padding:0;overflow:hidden;cursor:pointer;aspect-ratio:3/4;border-radius:.5em;font-size:2em;display:flex;align-items:center;justify-content:center}
+.pg button img{width:100%;height:100%;object-fit:cover}
+.shth{position:relative;overflow:hidden;width:100%;pointer-events:none;border-radius:.4em}
+.shth .shin{position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:none}
+.gvw img{width:100%;border-radius:.6em}.gvw .shth{margin-top:.5em}.gvb{border:0;background:#1a56db;color:#fff;border-radius:1em;padding:.4em .9em;cursor:pointer}.gem{display:block;font-size:6em;text-align:center;padding:.5em;border-radius:.5em;margin-top:.5em}
+.sflash{position:absolute;inset:0;background:#fff;z-index:99;animation:sfl .3s ease-out forwards;pointer-events:none}@keyframes sfl{from{opacity:.9}to{opacity:0}}
+
+.xapp.qronly{background:#111;color:#fff;justify-content:center;align-items:center;text-align:center;gap:1em}
+.xapp.qronly .vf2{width:60%;aspect-ratio:1;border:3px solid #fff;border-radius:1em;display:flex;align-items:center;justify-content:center;font-size:4em;opacity:.8}
+.xapp.qronly .qrb{background:#1a56db;color:#fff;border:0;border-radius:1.5em;padding:.7em 1.4em;font:700 1em Arial;cursor:pointer}
+.xapp.qronly small,.xapp.qronly .cmt{font-family:Arial,sans-serif}
