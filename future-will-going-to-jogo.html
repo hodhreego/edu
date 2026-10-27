@@ -251,7 +251,7 @@ div.ch.drag u{display:inline-block;width:6.5mm;height:6.5mm;line-height:6.5mm;te
  .jogo .topo h1{font-size:22px!important}
 }
 </style>
-</head>
+<style id="fixch">.jbank div.ch{white-space:normal!important;overflow-wrap:anywhere;line-height:1.15;text-align:center}.jbank{overflow-y:auto!important;min-height:0}</style></head>
 <body>
 <div class="painel" id="painel"><button type="button" id="abrir">⚙ Ajustes</button><div class="corpo" id="corpo"></div></div>
 <div class="folha jogo" id="folhaJogo">
@@ -298,7 +298,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
   function selecionar(ch){if(ch.classList.contains('pend')||ch.classList.contains('off'))return;chips.forEach(c=>c.classList.remove('sel'));if(sel===ch){sel=null;return}sel=ch;ch.classList.add('sel')}
   function montar(r){window._jg=(window._jg||0)+1;rodada=r;document.querySelector('#folhaJogo .topo h1').innerHTML=FASES[r][0]+' <span>'+FASES[r][1]+'</span>';document.querySelector('#folhaJogo .topo .sub').innerHTML=FASES[r][2];document.querySelector('#folhaJogo .inst').innerHTML=FASES[r][3];prep(r);sel=null;ocupado=0;acertos=0;
     jgrid.innerHTML=fig(0);jbank.innerHTML=bank(0);cards=[...jgrid.children];cards.forEach(c=>{return;t.setAttribute('font-size',40);const w=t.getBBox().width||1;const f=Math.min(44,40*172/w);t.setAttribute('font-size',f.toFixed(1));t.setAttribute('y',Math.round(62+f*.36-(t.querySelectorAll('tspan').length>1?f*.575:0)))});chips=[...jbank.children];
-    chips.forEach((c,k)=>{c.classList.add('ch');c.dataset.n=o[k];c.dataset.l=L[k]});window.fitChips=function(){chips.forEach(c=>c.style.fontSize='');let z=parseFloat(getComputedStyle(chips[0]).fontSize)||20;const bad=()=>chips.some(c=>c.scrollWidth>c.clientWidth+1);while(bad()&&z>9){z-=.5;chips.forEach(c=>c.style.fontSize=z+'px')}};fitChips();
+    chips.forEach((c,k)=>{c.classList.add('ch');c.dataset.n=o[k];c.dataset.l=L[k]});window.fitChips=function(){chips.forEach(c=>c.style.fontSize='');let z=parseFloat(getComputedStyle(chips[0]).fontSize)||20;const bad=()=>chips.some(c=>c.scrollWidth>c.clientWidth+1)||(innerWidth>820&&document.documentElement.scrollHeight>innerHeight+2);while(bad()&&z>15){z-=.5;chips.forEach(c=>c.style.fontSize=z+'px')}};fitChips();
     cards.forEach(cd=>{
       cd.addEventListener('mouseenter',()=>{if(sel&&!cd.classList.contains('pend'))cd.classList.add('alvo')});
       cd.addEventListener('mouseleave',()=>{cd.classList.remove('alvo')});
@@ -428,7 +428,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
  function pick(){if(!S)return;var v=S.getVoices().filter(function(x){return /^en[-_]US/i.test(x.lang)});
   voz=v.filter(function(x){return /natural|online|google|samantha|aria|jenny|zira/i.test(x.name)})[0]||v[0]||S.getVoices().filter(function(x){return /^en/i.test(x.lang)})[0]||null}
  if(S){pick();S.onvoiceschanged=pick}
- function falar(t){if(!on||!S||!t)return;S.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-US';if(voz)u.voice=voz;u.rate=.8;S.speak(u)}
+ function falar(t){if(!on||!S||!t)return;S.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=EDU_LANG(t,'en-US');var vv=EDU_VOICE(u.lang);if(vv)u.voice=vv;else if(voz&&voz.lang&&voz.lang.slice(0,2)==u.lang.slice(0,2))u.voice=voz;else u.voice=null;u.rate=.8;S.speak(u)}
  window.falar=falar;
  b.addEventListener('click',function(){on=!on;try{localStorage.setItem('fala_off',on?'0':'1')}catch(e){}ui();if(on)falar('Hello')});
  ui();
@@ -454,5 +454,5 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
 })();
 </script>
 <style id="som-css">.jres.ok svg path{stroke:#16a34a!important}.jc.ok{border-color:#16a34a!important}.jc.ok::after{filter:none}</style>
-<script src="ident.js?v=3"></script><script src="config.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
+<script src="ident.js?v=3"></script><script src="config.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
 </body></html>

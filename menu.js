@@ -77,7 +77,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  #edu-nav select{color:#eef2fc}#edu-nav select option{background:#18203a;color:#eef2fc}#edu-nav select:hover,#edu-nav select:focus{background-color:#18203a}
  #edu-nav form.cod{background:#18203a}#edu-nav form.cod input{color:#eef2fc}
 }
-@media screen and (min-width:821px) and (min-height:521px){body>#app{height:calc((100vh - var(--eh))/var(--ezz,1))!important;height:calc((100dvh - var(--eh))/var(--ezz,1))!important}}
+@media screen and (min-width:821px) and (min-height:521px){body>#app,body>.folha.jogo,#folhaJogo{height:calc((100vh - var(--eh))/var(--ezz,1))!important;height:calc((100dvh - var(--eh))/var(--ezz,1))!important}}
 @media print{#edu-nav{display:none!important}body{padding-top:0!important}}
 `;
  document.head.appendChild(css);

@@ -450,7 +450,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
   t=t.replace(/R\$\s*(\d+),(\d{2})/g,function(m,r,c){return r+' reais e '+(+c)+' centavos'}).replace(/R\$\s*(\d+)/g,'$1 reais');
   t=t.replace(/(\d+)\s*%/g,'$1 por cento').replace(/[−–-](?=\s*\d)/g,' menos ').replace(/\+/g,' mais ').replace(/[×*]/g,' vezes ').replace(/÷/g,' dividido por ').replace(/=/g,' igual a ');
   return t}
- function falar(t){if(!on||!S||!t)return;S.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';if(voz)u.voice=voz;u.rate=.8;S.speak(u)}
+ function falar(t){if(!on||!S||!t)return;S.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=EDU_LANG(t,'pt-BR');var vv=EDU_VOICE(u.lang);if(vv)u.voice=vv;else if(voz&&voz.lang&&voz.lang.slice(0,2)==u.lang.slice(0,2))u.voice=voz;else u.voice=null;u.rate=.8;S.speak(u)}
  window.falar=falar;
  b.addEventListener('click',function(){on=!on;try{localStorage.setItem('fala_off',on?'0':'1')}catch(e){}ui();if(on)falar('Hello')});
  ui();
@@ -461,5 +461,5 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
  },true);
 })();
 </script>
-<script src="ident.js?v=3"></script><script src="config.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
+<script src="ident.js?v=3"></script><script src="config.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
 </body></html>

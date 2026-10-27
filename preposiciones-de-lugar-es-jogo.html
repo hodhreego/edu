@@ -552,7 +552,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
  function pick(){if(!S)return;var v=S.getVoices().filter(function(x){return /^es/i.test(x.lang)});
   voz=v.filter(function(x){return /natural|online|google|samantha|aria|jenny|zira/i.test(x.name)})[0]||v[0]||S.getVoices().filter(function(x){return /^es/i.test(x.lang)})[0]||null}
  if(S){pick();S.onvoiceschanged=pick}
- function falar(t){if(!on||!S||!t)return;S.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='es-ES';if(voz)u.voice=voz;u.rate=.8;S.speak(u)}
+ function falar(t){if(!on||!S||!t)return;S.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=EDU_LANG(t,'es-ES');var vv=EDU_VOICE(u.lang);if(vv)u.voice=vv;else if(voz&&voz.lang&&voz.lang.slice(0,2)==u.lang.slice(0,2))u.voice=voz;else u.voice=null;u.rate=.8;S.speak(u)}
  window.falar=falar;
  b.addEventListener('click',function(){on=!on;try{localStorage.setItem('fala_off',on?'0':'1')}catch(e){}ui();if(on)falar('Hello')});
  ui();
@@ -578,5 +578,5 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
 })();
 </script>
 <style id="som-css">.jres.ok svg path{stroke:#16a34a!important}.jc.ok{border-color:#16a34a!important}.jc.ok::after{filter:none}</style>
-<script src="ident.js?v=3"></script><script src="config.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
+<script src="ident.js?v=3"></script><script src="config.js?v=3"></script><script src="catalogo.js?v=3"></script><script src="edu-report.js?v=3"></script><script src="menu.js?v=3"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=3"></script><script src="anticheat.js?v=3"></script>
 </body></html>
