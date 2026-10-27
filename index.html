@@ -79,10 +79,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 /* ===== COMO ATUALIZAR =====
    Jogo novo: acrescente um J(...) em JOGOS no tema certo (TEMAS). Cada tema pertence a uma matéria (MATS). */
 const matOf={};TEMAS.forEach(t=>matOf[t.id]=t.mat);
-const SERIES=['6º','7º','8º','9º','3ª série'];
+const SERIES=['6º','7º','8º','9º','1ª série','2ª série','3ª série'];
 function anos(s){const r=[];const m=s.match(/(\d)º ao (\d)º/);
  if(m){for(let i=+m[1];i<=+m[2];i++)r.push(i+'º')}else{(s.match(/\dº/g)||[]).forEach(x=>r.push(x))}
- if(/3ª série/.test(s))r.push('3ª série');return r}
+ [1,2,3].forEach(n=>{if(new RegExp(n+'ª série').test(s))r.push(n+'ª série')});return r}
 let fm='todos',fs='todas';
 const mats=document.getElementById('mats'),bar=document.getElementById('bar'),out=document.getElementById('out'),empty=document.getElementById('empty');
 function drawMats(){
@@ -95,7 +95,7 @@ function drawMats(){
 function chips(){
  bar.innerHTML='<span class="lab">Série:</span>';
  ['todas'].concat(SERIES).forEach(x=>{
-  const b=document.createElement('button');b.className='chip'+(fs===x?' on':'');b.textContent=x==='todas'?'Todas':x==='3ª série'?'3ª série EM':x+' ano';
+  const b=document.createElement('button');b.className='chip'+(fs===x?' on':'');b.textContent=x==='todas'?'Todas':/série/.test(x)?x+' EM':x+' ano';
   b.onclick=()=>{fs=x;chips();draw()};bar.appendChild(b)})}
 function draw(){
  out.innerHTML='';let n=0;
