@@ -268,3 +268,7 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 #navpick button i{grid-row:span 2;font-size:30px;font-style:normal;text-align:center}#navpick button b{font-size:16px}#navpick button small{color:#666;font-size:13px}
 #navpick button.on,#navpick button:hover{border-color:#2a6cf0;background:#eaf1ff}
 .phone .ls button.fatop{background:#fff1f1;border-color:#e44}
+
+.main.wt{grid-template-columns:1fr minmax(150px,210px) auto}
+#tipm:empty{display:none}#tipm .tipx{margin:0;font-size:14px;position:sticky;top:8px}
+@media screen and (max-width:900px){.main.wt{grid-template-columns:1fr}}
