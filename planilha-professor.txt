@@ -31,6 +31,12 @@ var CORES = {
 function doPost(e) {
   var d = {};
   try { d = JSON.parse(e.postData.contents); } catch (err) { return ok_('json inválido'); }
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(100000); } catch (err) { return ok_('ocupado'); }
+  try { return gravaResultado_(d); } finally { lock.releaseLock(); }
+}
+
+function gravaResultado_(d) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var agora = new Date();
   var tot = (d.certas == null || d.erradas == null) ? 0 : (Number(d.certas) + Number(d.erradas));
@@ -72,10 +78,6 @@ function paraPainel_(ss, x, carimbo) {
   gravar_(p, [x[2], x[0], x[1], x[7], x[8], x[9], x[11], x[12], x[13], x[14], x[15], x[17], x[18], x[19], '', carimbo, x[22]], x[22], PAI.length, 0);
   var n = p.getLastRow() - HR;
   if (n < 1) return;
-  // data e hora (com segundos) sempre legíveis
-  p.getRange(HR + 1, 2, n, 1).setNumberFormat('dd/MM/yyyy');
-  p.getRange(HR + 1, 3, n, 1).setNumberFormat('HH:mm:ss');
-  p.getRange(HR + 1, 16, n, 1).setNumberFormat('0');
   // mais recente em cima
   p.getRange(HR + 1, 1, n, PAI.length).sort([{ column: 16, ascending: false }]);
   // pontuação final acumulada de cada aluno (soma de todos os jogos, na aba Todos)
@@ -88,11 +90,14 @@ function paraPainel_(ss, x, carimbo) {
   }
   var nomes = p.getRange(HR + 1, 1, n, 1).getValues();
   p.getRange(HR + 1, 15, n, 1).setValues(nomes.map(function (r) { return [soma[r[0]] || 0]; }));
-  p.getRange(HR + 1, 15, n, 1).setFontWeight('bold').setNumberFormat('0');
 }
 
 // Reconstrói todos os painéis a partir da aba Todos (use depois de mudar colunas).
 function reconstruirPaineis() {
+  var lock = LockService.getScriptLock(); lock.waitLock(100000);
+  try { reconstruir_(); } finally { lock.releaseLock(); }
+}
+function reconstruir_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), t = ss.getSheetByName('Todos');
   if (!t || t.getLastRow() <= HR) return;
   var v = t.getRange(HR + 1, 1, t.getLastRow() - HR, DET.length).getValues();
@@ -199,6 +204,10 @@ function painel_(ss, nome) {
     var m = sh.getMaxRows() - HR;
     sh.getRange(HR + 1, 1, m, 1).setHorizontalAlignment('left').setFontWeight('bold');
     sh.getRange(HR + 1, 4, m, 1).setHorizontalAlignment('left');
+    sh.getRange(HR + 1, 2, m, 1).setNumberFormat('dd/MM/yyyy');
+    sh.getRange(HR + 1, 3, m, 1).setNumberFormat('HH:mm:ss');
+    sh.getRange(HR + 1, 15, m, 2).setNumberFormat('0');
+    sh.getRange(HR + 1, 15, m, 1).setFontWeight('bold');
     sh.getRange(HR + 1, 10, m, 1).setNumberFormat('0"%"');
     sh.getRange(HR + 1, 11, m, 1).setNumberFormat('0.0');
     sh.getRange(HR + 1, 12, m, 2).setNumberFormat('R$ #,##0.00');
