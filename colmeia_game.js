@@ -97,6 +97,7 @@
   it.w.split('').forEach(function(_,j){var n=document.createElement('input');n.maxLength=1;n.autocomplete='off';n.setAttribute('autocapitalize','characters');n.dataset.j=j;n.setAttribute('aria-label','letra '+(j+1));bx.appendChild(n)});
   fill.appendChild(d);
  });
+ fill.style.setProperty('--minw',(Math.max.apply(null,items.map(function(x){return x.w.length}))*29+34)+'px');
  fill.addEventListener('input',function(e){
   var n=e.target;if(n.tagName!=='INPUT')return;var bx=n.parentNode,i=[].indexOf.call(fill.children,bx.parentNode),it=items[i],j=+n.dataset.j;
   var v=(n.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(-1);n.value=v;if(!v){n.className='';return}
