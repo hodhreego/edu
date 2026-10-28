@@ -646,4 +646,27 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .phone.dv-aw .sbar,.phone.dv-gw .sbar{padding-left:1.8em!important;padding-right:1.8em!important;box-sizing:border-box}
 
 #dash .dh{touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none}
-#stage{touch-action:pan-y}
+#stage{touch-action:auto}
+#tipm .tipx{max-width:min(100%,340px);margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+/* avisos compactos: caixas de aviso nao ocupam a tela inteira */
+.inst,.gabp{max-width:min(100%,640px);margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+#stage .msg,.fhint,.swp,.pnote,.wlock{max-width:min(100%,380px);margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+.tcard,.des{max-width:100%}
+
+/* modo desafios */
+.cdz{background:#fff;color:#1f2937;border:2px solid #f59e0b;border-radius:12px;padding:8px 9px;font:14px/1.35 Arial,sans-serif;text-align:left;min-width:220px}
+.cdz>b{display:block;color:#b45309;font-size:14px;margin-bottom:4px}.cdz p{margin:.4em 0;font-weight:700}
+.cdz .pq,.cdz .dic{display:block;color:#475569;margin:.3em 0}
+.cdz .cops{display:flex;flex-direction:column;gap:5px;margin-top:5px}.cdz .cop{border:2px solid #cbd5e1;background:#f8fafc;color:#1f2937;border-radius:99px;padding:8px 10px;font:700 14px Arial;text-align:left;cursor:pointer}.cdz .cop:hover{border-color:#f59e0b;background:#fffbeb}
+.cdz .cin{display:block;width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:2px solid #cbd5e1;border-radius:10px;font:15px Arial;color:#111;background:#fff}
+.cdz .cbt,.jkf .cbt{display:block;width:100%;border:0;border-radius:10px;background:#16a34a;color:#fff;font:800 14px Arial;padding:9px;cursor:pointer}
+.cdz .dmsg{margin-top:6px;font-size:13px;color:#b91c1c}.cdz .dmsg.ok{color:#15803d;font-weight:700}
+.jkbar{display:flex;align-items:center;gap:6px;background:#1e1b4b;color:#fde68a;padding:6px 8px;font:700 13px Arial;flex-wrap:wrap}.jkbar span{flex:1;min-width:120px}.jkbar b{color:#fff}.jkbar button{border:0;border-radius:99px;background:#fbbf24;color:#1e1b4b;font:800 12px Arial;padding:5px 10px;cursor:pointer}
+.wa.wl .jkbar{position:sticky;top:0;z-index:3}
+.jkc{background:linear-gradient(135deg,#312e81,#6d28d9);color:#fff;border-radius:14px;padding:10px;text-align:center;margin:6px 0}.jkc span{display:block;font:700 13px Arial;color:#ddd6fe}.jkc b{display:block;font:900 28px Arial;color:#fde047}
+.jkf{background:#fff;color:#1f2937;border:2px dashed #16a34a;border-radius:12px;padding:8px;margin:6px 0;font:14px Arial}.jkf p{margin:0 0 6px}.jkf .cin{display:block;width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:2px solid #cbd5e1;border-radius:10px;font:15px Arial}
+.jkv .dmsg{background:#fff;border-radius:10px;padding:6px 8px;margin:6px 0;font:14px Arial;color:#15803d}.jkv .dmsg:empty{display:none}.jkn,.jks{background:#fff;color:#334155;border-radius:10px;padding:6px 8px;font:13px Arial;margin:6px 0}
+.cen{font:15px/1.4 Arial,sans-serif;color:#1f2937}.cen h3{margin:0 0 6px;color:#4c1d95}.cen .cbs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.cen .cbs button{border:0;border-radius:99px;background:#4c1d95;color:#fff;font:800 14px Arial;padding:9px;cursor:pointer}.cen .cbs button:last-child{background:#16a34a}.cen .jks{background:#f1f5f9}
+/* relogios: quadrados com cantos arredondados (nao retrato) */
+.phone.dv-aw,.phone.dv-gw{width:calc(var(--ph)*.52);height:calc(var(--ph)*.52);border-radius:3.2em!important}
+@media screen and (max-width:900px){.phone.dv-aw,.phone.dv-gw{width:min(76vw,300px)!important;height:min(76vw,300px)!important}}
