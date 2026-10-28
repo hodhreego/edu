@@ -1,3 +1,4 @@
+try{if(/^\s*teste( de aluno)?\s*$/i.test(localStorage.getItem('edu_nome')||''))localStorage.removeItem('edu_nome')}catch(e){}
 /* Nome, turma e data do aluno: campos editáveis na própria página, guardados no aparelho e valendo para todos os jogos. */
 (function(){
  var K={0:'edu_nome',1:'edu_turma',2:'edu_data'};
