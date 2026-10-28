@@ -582,3 +582,68 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .pks{width:3.4em;height:3.4em;border:.4em solid #fff8;border-top-color:#fff;border-radius:50%;animation:pks .8s linear infinite}@keyframes pks{to{transform:rotate(360deg)}}
 .pkb{background:#fff;color:#222;border-radius:1em;padding:1em 1.2em;text-align:center;max-width:80%;box-shadow:0 4px 18px #0007}.pkb p{margin:.4em 0}
 .phone.dv-aw{font-size:calc(var(--ph)/72)}.phone.dv-gw{font-size:calc(var(--ph)/78)}
+
+/* interfaces proprias por app */
+.vb{display:inline-block;vertical-align:-2px;margin-left:4px;flex:none}
+.wa.ap-tg .wab{background:#fff;padding:0 8px}.wa.ap-tg .wab span{background:transparent;color:#707b85;border-radius:0;padding:8px 12px;font-weight:700}.wa.ap-tg .wab span:first-child{background:transparent;color:#2b8fc7;border-bottom:3px solid #2b8fc7}
+.wa.ap-tg .wch .av{border-radius:50%}.wa.ap-tg .bub{border-radius:12px}.wa.ap-tg .bub.first::before{display:none}
+.wa.ap-tg .wf{background:#fff;border-top:1px solid #dfe5ea}.wa.ap-tg .wif{background:transparent}.wa.ap-tg .wmic{background:transparent;color:#8a97a3}.wa.ap-tg .wf.wro{color:#2b8fc7;font-weight:700}
+#txt .wa.ap-ms .wst,#txt .wa.ap-ms .wh,.phone .wa.ap-ms .wst,.phone .wa.ap-ms .wh{background:#fff!important;color:#111}
+#txt .wa.ap-ms .wb,.phone .wa.ap-ms .wb{background:#fff!important;background-image:none!important}
+.wa.ap-ms .wh svg{fill:#7b3ff2}.wa.ap-ms .wh .wn b,.wa.ap-ms .wh .wn small{color:#111}.wa.ap-ms .wh i{color:#7b3ff2}
+.wa.ap-ms .wt{font-size:22px;font-weight:800;flex:1}.wa.ap-ms .mav{width:34px;height:34px;border-radius:50%;overflow:hidden;display:block;flex:none}.wa.ap-ms .mav svg{width:100%;height:100%}
+.wa.ap-ms .wsr{padding:8px 14px;background:#f0f2f5;border-radius:99px;color:#65676b;margin:0 10px 8px}
+.wa.ap-ms .mst{display:flex;gap:12px;overflow-x:auto;padding:4px 12px 10px;background:#fff}.wa.ap-ms .st{display:flex;flex-direction:column;align-items:center;font-size:11px;color:#444;flex:none;width:54px}.wa.ap-ms .st .av{width:48px;height:48px;border-radius:50%;border:2px solid #a033ff;padding:2px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}.wa.ap-ms .st .av svg{width:100%;height:100%}
+.wa.ap-ms .wch .av{border-radius:50%}.wa.ap-ms .wct i{background:#a033ff}.wa.ap-ms .wct small{color:#65676b}
+.wa.ap-ms .bub{background:#f0f0f0;border-radius:18px;padding:8px 14px;color:#111;box-shadow:none}.wa.ap-ms .bub small{display:none}.wa.ap-ms .bub.first::before{display:none}
+#txt .wa.ap-ms .bub.me,.phone .wa.ap-ms .bub.me{background:linear-gradient(135deg,#0099ff,#a033ff)!important;color:#fff}
+.wa.ap-ms .wf{background:#fff}.wa.ap-ms .wif{background:#f0f2f5}.wa.ap-ms .wmic{background:transparent;font-size:22px}
+#txt .wa.ap-sm .wst,#txt .wa.ap-sm .wh,.phone .wa.ap-sm .wst,.phone .wa.ap-sm .wh{background:#fff!important;color:#202124}
+#txt .wa.ap-sm .wb,.phone .wa.ap-sm .wb{background:#fff!important;background-image:none!important}
+.wa.ap-sm .wh svg{fill:#444}.wa.ap-sm .wh .wn b,.wa.ap-sm .wh .wn small{color:#202124}.wa.ap-sm .wh i{color:#0b57d0}
+.wa.ap-sm .wt{font-size:22px;flex:1}.wa.ap-sm .wab span:first-child{background:#d3e3fd;color:#041e49}
+.wa.ap-sm .wch .av.gp{background:#d3e3fd;color:#041e49}.wa.ap-sm .wct i{background:#0b57d0}.wa.ap-sm .wct small{color:#5f6368}
+.wa.ap-sm .bub{background:#f1f3f4;color:#202124;border-radius:18px;max-width:84%;padding:8px 14px;box-shadow:none}.wa.ap-sm .bub small{display:none}.wa.ap-sm .bub.first::before{display:none}
+#txt .wa.ap-sm .bub.me,.phone .wa.ap-sm .bub.me{background:#d3e3fd!important}
+.wa.ap-sm .wf{background:#fff;border-top:1px solid #e0e0e0}.wa.ap-sm .wif{background:#f1f3f4}.wa.ap-sm .wmic{background:#0b57d0}
+
+/* relogios: retangulares de canto redondo, colmeia e coroa */
+.phone.dv-aw,.phone.dv-gw{border-radius:3.6em!important;padding:0!important}
+.phone.dv-gw{border-color:#1d1f27;width:calc(var(--ph)*.46);height:calc(var(--ph)*.54)}
+.phone.dv-aw>*,.phone.dv-gw>*{border-radius:inherit}
+@media screen and (max-width:900px){.phone.dv-gw{width:min(66vw,270px);height:min(78vw,316px)}}
+.wlnc{flex:1;overflow-y:auto;scrollbar-width:none;background:#000;color:#fff;display:flex;flex-direction:column;padding:0 0 1.2em;border-radius:2.6em}
+.wlnc::-webkit-scrollbar{display:none}.wlnc .stt{background:transparent;color:#fff;justify-content:center;padding:.6em 0 .2em;font-weight:700}
+.wlnc .hxs{display:flex;flex-direction:column;align-items:center;padding:.4em 0 3em}
+.wlnc .hr{display:flex;justify-content:center;gap:.5em;margin-top:-.9em}.wlnc .hr:first-child{margin-top:0}
+.wlnc button{flex:none;width:5.6em;height:5.6em;border-radius:50%;padding:0;border:0;background:transparent;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.wlnc button em{display:none}.wlnc button .bi{width:100%;height:100%;border-radius:50%;margin:0;overflow:hidden;font-size:2.2em;display:flex;align-items:center;justify-content:center}
+.wlnc button .bi svg{width:100%;height:100%}
+#wcr{position:absolute;width:1.1em;z-index:4;pointer-events:none;font-size:calc(var(--ph)/54)}
+#wcr i{position:absolute;right:-.7em;display:block;pointer-events:auto;cursor:ns-resize;border-radius:0 .7em .7em 0;box-shadow:inset 0 0 0 1px #0006,0 1px 3px #0005}
+#wcr .wc1{top:22%;width:1.9em;height:4.6em;background:repeating-linear-gradient(0deg,#b9bcc4 0 .3em,#7c7f87 .3em .6em)}
+#wcr .wc2{top:46%;width:1.3em;height:3.4em;background:#5a5d66;cursor:pointer}
+#stage.wtc-gw #wcr .wc1{background:repeating-linear-gradient(0deg,#8b93b0 0 .3em,#4d5470 .3em .6em)}
+/* Galaxy Pocket: botoes fisicos */
+.phone.dv-pocket .nvb.pkbz{height:5em!important;background:linear-gradient(#1c1d20,#0e0f11);display:flex;align-items:center;justify-content:space-around;margin-top:auto}
+.phone.dv-pocket .nvb.pkbz button{flex:none;border:0;background:transparent;cursor:pointer;height:100%;width:30%;display:flex;align-items:center;justify-content:center;padding:0}
+.phone.dv-pocket .nvb.pkbz u,.phone.dv-pocket .nvb.pkbz s{display:block;text-decoration:none;color:#8a8e96;font-size:1.5em}
+.phone.dv-pocket .nvb.pkbz u::before{content:"1"}.phone.dv-pocket .nvb.pkbz s::before{content:"A9"}
+.phone.dv-pocket .nvb.pkbz .pkh{width:3.1em;height:2.2em;flex:none;border-radius:1.1em;background:linear-gradient(#4a4d55,#2a2c31);box-shadow:inset 0 0 0 2px #15161a,0 1px 0 #ffffff22;position:relative}
+.phone.dv-pocket .nvb.pkbz .pkh::after{content:"";position:absolute;inset:.55em 1em;border:2px solid #9a9ea8;border-radius:.35em}
+.wa.ap-tg .wch.grp,.wa.ap-ms .wch.grp,.wa.ap-sm .wch.grp{background:#fff}
+.wa.ap-tg .wch .av.gp{background:#d8ecf8}.wa.ap-ms .wch .av.gp{background:#ece3fb}
+
+.phone.dv-aw,.phone.dv-gw{background:#000!important}.wlnc{border-radius:2.7em!important}
+.wlnc .stt{position:static!important;width:100%;box-sizing:border-box;display:flex;justify-content:center;padding:1em 0 .2em!important}
+
+#stage.wtc-gw #wcr .wc2{top:22%;width:1.5em;height:3em}#stage.wtc-gw #wcr .wc1{top:38%;height:4.4em}#stage.wtc-gw #wcr .wc3{top:65%;width:1.5em;height:3em;background:#5a5d66;cursor:pointer}
+.wct small{color:#0a7c3a}.wct i{background:#0a7c3a}.wsr{color:#4b5b64}
+
+.phone.dv-aw,.phone.dv-gw{background:var(--bg)!important}
+.phone.dv-aw:has(.wlnc),.phone.dv-gw:has(.wlnc){background:#000!important}
+@media screen and (min-width:901px){.phone.dv-aw,.phone.dv-gw{font-size:calc(var(--ph)/52)}}
+.phone.dv-aw .sbar,.phone.dv-gw .sbar{padding-left:1.8em!important;padding-right:1.8em!important;box-sizing:border-box}
+
+#dash .dh{touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none}
+#stage{touch-action:pan-y}
