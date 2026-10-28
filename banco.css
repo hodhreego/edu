@@ -670,3 +670,9 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 /* relogios: quadrados com cantos arredondados (nao retrato) */
 .phone.dv-aw,.phone.dv-gw{width:calc(var(--ph)*.52);height:calc(var(--ph)*.52);border-radius:3.2em!important}
 @media screen and (max-width:900px){.phone.dv-aw,.phone.dv-gw{width:min(76vw,300px)!important;height:min(76vw,300px)!important}}
+/* relogios: barra de status longe dos cantos redondos, texto sempre branco; icones com transicao suave */
+.phone.dv-aw .sbar,.phone.dv-gw .sbar{padding-top:.9em!important;padding-left:2.6em!important;padding-right:2.6em!important;color:#fff!important;font-weight:700}
+.phone.dv-aw .sbar *,.phone.dv-gw .sbar *{color:#fff!important}
+.wlnc button{transition:transform .12s ease-out,opacity .12s ease-out;will-change:transform}
+.phone.dv-aw .scr,.phone.dv-gw .scr{padding-bottom:1.4em}
+.phone.dv-aw .sbar,.phone.dv-gw .sbar{mix-blend-mode:normal!important;font-size:.8em!important;height:auto!important}
