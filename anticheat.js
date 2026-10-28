@@ -44,13 +44,13 @@
  function aviso(tipo,titulo){
   cont++;
   var vis=box.style.display==='flex';
-  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Trapaça (cheat) registrada ('+cont+'ª vez). O professor foi avisado e a sua atividade poderá ser <b>ANULADA</b> com nota <b>ZERO</b>.</small><small>Para continuar, resolva '+(cont===1?'a conta':cont+' contas')+' <span id="ac-n"></span>:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
-   falta=Math.min(cont,10);novaConta();
+  if(!vis){box.innerHTML='⚠️ '+titulo+'<small>Trapaça (cheat) registrada ('+cont+'ª vez). O professor foi avisado e a sua atividade poderá ser <b>ANULADA</b> com nota <b>ZERO</b>.</small><small>Para continuar, resolva '+(cont===1?'a conta':Math.min(cont,3)+' contas')+' <span id="ac-n"></span>:</small><form id="ac-q" autocomplete="off"><b id="ac-c"></b><input id="ac-r" inputmode="numeric" pattern="[0-9]*" maxlength="3" aria-label="resposta"><button type="submit">OK</button></form>';
+   falta=Math.min(cont,3);novaConta();
    var f=document.getElementById('ac-q'),r=document.getElementById('ac-r');
    r.addEventListener('keydown',function(e){e.stopPropagation()},true);r.addEventListener('input',function(){r.value=r.value.replace(/\D/g,'')});
    f.addEventListener('submit',function(e){e.preventDefault();
     if(+r.value===resp&&r.value!==''){falta--;if(falta<=0){box.style.display='none';box.innerHTML=''}else{r.value='';novaConta()}}
-    else{r.value='';f.classList.remove('err');void f.offsetWidth;f.classList.add('err');falta=Math.min(cont,10);novaConta()}});
+    else{r.value='';f.classList.remove('err');void f.offsetWidth;f.classList.add('err');falta=Math.min(cont,3);novaConta()}});
    box.addEventListener('pointerdown',function(e){if(e.target.closest('#ac-q'))box.style.animationPlayState='paused'});
   }
   box.style.display='flex';alarme();
