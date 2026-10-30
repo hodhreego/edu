@@ -206,3 +206,109 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
    o.querySelectorAll('input,select').forEach(function(i){ls(i.dataset.k,i.value.replace(/\s+/g,' ').trim())});ss(1);o.remove();if(window.EDU_IDOK)window.EDU_IDOK()};
   setTimeout(function(){var n=o.querySelector('#eid_nome');if(n)n.focus()},50)}
  if(document.body)abrir();else document.addEventListener('DOMContentLoaded',abrir)})();
+
+/* ===== Tecla ENTER central (Prof. Rodrigo) =====
+   Enter confirma onde antes só dava para clicar (Verificar, Conferir, Próxima, Continuar, Pagar, Enviar...).
+   Regras de segurança: não mexe em botão/link focado (o navegador já ativa), textarea, campos de formulário (<form> já envia com Enter),
+   campos com onkeydown próprio, nem em botões de imprimir/sair/limpar/pular/professor. Só age quando existe UM único botão principal visível
+   (senão, não faz nada). Se o próprio jogo já reagiu ao Enter (DOM mudou), não dispara de novo. Botão principal pode ser marcado com data-enter. */
+(function(){
+ if(window.__eduEnter)return;window.__eduEnter=1;
+ if(/[?&]imp=1/.test(location.search))return;
+ var TIERS=['#tbo,#tabuOk','.kp button[data-k="OK"],#fB,#jg-fb','[data-enter]','button#nx,.jnext','button#ck,#bOk,#cOk,#consC,.nvgo,[data-x="go"]','.pb:not(.sec),.cbt,[data-x^="sci:"],[data-w="dsend"],[data-w="tsend"],[data-w="jksend"]'];
+ var SKIP=/imprim|\bsair\b|sa[ií]da|limpar|pular|\bprof|cancel|zerar|reinici|recome[cç]|voltar|fechar|apagar|exclu|resgat|logout|prefiro|desfaz|girar|ajustes/i;
+ var NOPE='#painel,#corpo,#cfg,[id*=cfg],[class*=ajust],#edu-nav,#rgpBar,#rgpTimer';
+ var NOENTER=/^(button|submit|reset|checkbox|radio|file|range|color|image|password|hidden)$/i;
+ var last=0,mo=null;
+ function vis(b){
+  if(!b||b.disabled||b.hidden||b.getAttribute('aria-disabled')==='true')return false;
+  if(!b.getClientRects().length)return false;
+  var cs=getComputedStyle(b);if(cs.visibility==='hidden'||cs.pointerEvents==='none')return false;
+  return !(b.closest&&b.closest('[hidden],[inert]'));
+ }
+ function ok(b){return vis(b)&&!SKIP.test((b.textContent||'')+' '+(b.title||'')+' '+(b.getAttribute('aria-label')||''))&&!(b.closest&&b.closest(NOPE))}
+ function pickIn(root){
+  for(var i=0;i<TIERS.length;i++){
+   var c=[].filter.call(root.querySelectorAll(TIERS[i]),ok);
+   if(c.length===1)return c[0];
+   if(c.length>1)return null;
+  }
+  return undefined;
+ }
+ function campos(root){
+  return [].filter.call(root.querySelectorAll('input'),function(i){return /^(|text|number|tel|search|email|url)$/i.test(i.type)&&!i.readOnly&&vis(i)});
+ }
+ function overlay(){
+  var k=document.body?document.body.children:[];
+  for(var i=0;i<k.length;i++){var el=k[i];if(el.id==='ac-aviso')continue;var z=parseInt(el.style&&el.style.zIndex,10);if(z>=2147483000&&el.getClientRects().length)return el}
+  return null;
+ }
+ function fire(b,e){last=Date.now();e.preventDefault();b.click()}
+ /* captura: marca o DOM antes de os handlers do jogo rodarem */
+ document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  try{
+   if(mo)mo.disconnect();
+   var m=new MutationObserver(function(){});mo=m;
+   m.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});
+   setTimeout(function(){m.disconnect();if(mo===m)mo=null},0);
+  }catch(x){mo=null}
+ },true);
+ document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  var changed=false;
+  try{if(mo){changed=mo.takeRecords().length>0;mo.disconnect();mo=null}}catch(x){}
+  if(changed||e.defaultPrevented||e.isComposing||e.repeat||e.ctrlKey||e.altKey||e.metaKey||e.shiftKey)return;
+  if(Date.now()-last<300)return;
+  var t=e.target,tag=((t&&t.tagName)||'').toLowerCase();
+  if(!t||t.isContentEditable||tag==='textarea')return;
+  /* aviso do anti-cola: Enter confirma a conta digitada */
+  var ac=document.getElementById('ac-aviso');
+  if(ac&&getComputedStyle(ac).display!=='none'){
+   if(t.id==='ac-r')return;
+   var r=ac.querySelector('#ac-r'),f=ac.querySelector('#ac-q');
+   if(r){if(r.value&&f&&f.requestSubmit){last=Date.now();e.preventDefault();f.requestSubmit()}else r.focus()}
+   return;
+  }
+  if(tag==='a'||tag==='summary'||tag==='video'||tag==='audio'||(tag==='button'&&!t.disabled))return;
+  if(tag==='select'){var fm=t.form;if(fm&&fm.requestSubmit&&fm.querySelector('button:not([type]),[type=submit]')){last=Date.now();e.preventDefault();fm.requestSubmit()}return}
+  var isIn=tag==='input';
+  if(isIn){
+   if(NOENTER.test(t.type||'')||t.form||typeof t.onkeydown==='function'||t.closest('[data-no-enter]'))return;
+  }
+  /* janelas por cima (tabuada: Enter no botão da janela; senha/identificação: tratadas pelo próprio <form>) */
+  var mod=null;
+  var tb=document.querySelector('#tbo,#tabuOk');
+  if(tb&&ok(tb))mod=tb;
+  if(mod){fire(mod,e);return}
+  if(overlay())return;
+  var b;
+  if(isIn){
+   for(var n=t.parentElement;n;n=n.parentElement){
+    var r2=pickIn(n);
+    if(r2===null)return;
+    if(r2){b=r2;
+     /* vários campos: Enter vai para o próximo campo vazio; no último, confirma */
+     var cs=campos(n),ix=cs.indexOf(t);
+     if(ix>-1)for(var j=ix+1;j<cs.length;j++){if(!cs[j].value){e.preventDefault();cs[j].focus();return}}
+     break}
+    if(n===document.body)break;
+   }
+  }else{
+   var r3=pickIn(document.body);
+   if(r3)b=r3;
+  }
+  if(b)fire(b,e);
+ },false);
+
+ /* teclado numérico da senha do app (banco): digitar 0-9 e Backspace no teclado do computador */
+ document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.altKey||e.metaKey||e.repeat)return;
+  var k=e.key;if(!/^[0-9]$/.test(k)&&k!=='Backspace')return;
+  var t=e.target,tag=((t&&t.tagName)||'').toLowerCase();
+  if(tag==='input'||tag==='textarea'||tag==='select'||(t&&t.isContentEditable))return;
+  var kp=document.querySelectorAll('.kp');if(kp.length!==1||!kp[0].getClientRects().length)return;
+  var b=kp[0].querySelector('button[data-k="'+(k==='Backspace'?'⌫':k)+'"]');
+  if(b){e.preventDefault();b.click()}
+ },false);
+})();
