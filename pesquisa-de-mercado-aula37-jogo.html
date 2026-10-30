@@ -62,7 +62,12 @@ input.n{max-width:14em}
 .slide table{border-collapse:collapse;width:100%;font-size:.95em}.slide th,.slide td{border:2px solid #9fb0e8;padding:5px 8px;text-align:left}.slide th{background:#e8eefc}
 .slide .dica{background:#fff8dc}
 .tab{border-collapse:collapse;margin:8px 0;background:#fff}.tab th,.tab td{border:2px solid #9fb0e8;padding:6px 12px;text-align:left}.tab th{background:#e8eefc}.tab input.n{max-width:6em;margin:0}
-.slide:fullscreen{overflow:auto;font-size:2.2vh}
+.fsbar{display:none}
+#sWrap:fullscreen,#sWrap.fake{background:#fff;overflow:auto;padding:10px;box-sizing:border-box}
+#sWrap.fake{position:fixed;inset:0;z-index:2147483000}
+#sWrap:fullscreen .fsbar,#sWrap.fake .fsbar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;position:sticky;top:0;background:#fff;padding:6px 0 10px;z-index:2}
+.fsbar .sair{background:#d00000;color:#fff;margin-left:auto}
+#sWrap:fullscreen .slide,#sWrap.fake .slide{font-size:2.2vh;min-height:75vh}
 </style></head><body>
 <div class="jogo">
 <div class="ident">Nome: <b></b> &nbsp; Turma: <b></b> &nbsp; <span class="coin" id="pts">0 pontos</span></div>
@@ -104,12 +109,19 @@ function shuf(a,r){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r(
 /* ---------- telas ---------- */
 function bar(extra){var t=T[tema];return '<div class="bar" style="--c:'+t.cor+'"><button class="btn alt" id="bTema">🔄 Trocar negócio</button><button class="btn alt" id="bHub">🏠 Atividades</button>'+(extra||'')+'</div>'}
 function wireBar(){var a=stage.querySelector('#bTema'),b=stage.querySelector('#bHub');if(a)a.onclick=menu;if(b)b.onclick=hub}
-function menu(){tema=null;stage.innerHTML='<h2 id="pergunta">Escolha o negócio que você quer pesquisar</h2><p>Você pode trocar de negócio a qualquer momento. Seus pontos e respostas ficam guardados.</p><div class="temas">'+Object.keys(T).map(function(k){var t=T[k];return '<button class="tema" data-k="'+k+'" style="--c:'+t.cor+'"><img class="ti" src="img37f/'+k+'.webp" alt="" draggable="false"><span>'+t.nome+'</span></button>'}).join('')+'</div><p style="text-align:center"><button class="btn alt" id="aulaB">📊 Ver a aula em slides</button></p>';
+function menu(){tema=null;cur=null;stage.innerHTML='<h2 id="pergunta">Escolha o negócio que você quer pesquisar</h2><p>Você pode trocar de negócio a qualquer momento. Seus pontos e respostas ficam guardados.</p><div class="temas">'+Object.keys(T).map(function(k){var t=T[k];return '<button class="tema" data-k="'+k+'" style="--c:'+t.cor+'"><img class="ti" src="img37f/'+k+'.webp" alt="" draggable="false"><span>'+t.nome+'</span></button>'}).join('')+'</div><p style="text-align:center"><button class="btn alt" id="aulaB">📊 Ver a aula em slides</button></p>';
  [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){tema=b.dataset.k;R[tema]=R[tema]||{};hub()}});stage.querySelector('#aulaB').onclick=function(){slides(menu)};window.scrollTo(0,0)}
 var ACTS=[['aula','📊','Aula em slides','Leia e edite as anotações'],['mc','🔘','Escolha','Marque a resposta certa'],['tp','⌨️','Digite','Escreva a resposta'],['dg','🧲','Arraste e solte','Complete as frases'],['bx','🔠','Quadrinhos','Uma letra em cada quadrinho'],['hv','🐝','Mini colmeia','Caça-palavras com 8 palavras'],['tb','📋','Analise a tabela','Responda com os dados'],['jn','📰','Caça-palavras do jornal','8 palavras com dicas'],['ds','✍️','Pesquisa escrita','Monte a sua pesquisa']];
-function hub(){var t=T[tema];stage.innerHTML=bar()+'<h2 id="pergunta" style="margin-top:12px">'+t.em+' '+t.nome+' — escolha uma atividade</h2><div class="temas h">'+ACTS.map(function(a){var ok=GOT[tema+'done_'+a[0]];return '<button class="tema'+(ok?' okk':'')+'" data-a="'+a[0]+'" style="--c:'+t.cor+'"><span class="em">'+a[1]+'</span>'+a[2]+(ok?' ✔':'')+'<small>'+a[3]+'</small></button>'}).join('')+'</div>';wireBar();
+function hub(){cur=null;var t=T[tema];stage.innerHTML=bar()+'<h2 id="pergunta" style="margin-top:12px">'+t.em+' '+t.nome+' — escolha uma atividade</h2><div class="temas h">'+ACTS.map(function(a){var ok=GOT[tema+'done_'+a[0]];return '<button class="tema'+(ok?' okk':'')+'" data-a="'+a[0]+'" style="--c:'+t.cor+'"><span class="em">'+a[1]+'</span>'+a[2]+(ok?' ✔':'')+'<small>'+a[3]+'</small></button>'}).join('')+'</div>';wireBar();
  [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){run(b.dataset.a)}});window.scrollTo(0,0)}
-function run(a){({aula:function(){slides(hub)},mc:actMc,tp:actTp,dg:actDg,bx:actBx,hv:actHv,jn:actJn,tb:actTb,ds:actDs})[a]();window.scrollTo(0,0)}
+var cur=null;
+function run(a){cur=a;({aula:function(){slides(hub)},mc:actMc,tp:actTp,dg:actDg,bx:actBx,hv:actHv,jn:actJn,tb:actTb,ds:actDs})[a]();window.scrollTo(0,0)}
+function nextBtn(){if(!cur||!tema)return;var st=document.getElementById('stage');if(!st||document.getElementById('nextAct'))return;
+ var ks=ACTS.map(function(x){return x[0]}),i=ks.indexOf(cur),last=i<0||i===ks.length-1,nx=last?null:ACTS[i+1];
+ var d=document.createElement('div');d.id='nextAct';d.style.cssText='text-align:center;margin:22px 0 10px';
+ var b=document.createElement('button');b.className='btn';b.style.cssText='font-size:1.15em;padding:.7em 1.4em';b.textContent=last?'🏁 Voltar ao menu de atividades':'Avançar para a próxima atividade: '+nx[1]+' '+nx[2]+' ▶';
+ b.onclick=function(){if(last){cur=null;hub()}else run(nx[0])};d.appendChild(b);st.appendChild(d)}
+new MutationObserver(function(){nextBtn()}).observe(document.getElementById('stage'),{childList:true});
 function fimAct(a){if(GOT[tema+'done_'+a])return;GOT[tema+'done_'+a]=1;score+=5;setPts()}
 
 /* ---------- slides da aula (editáveis) ---------- */
@@ -118,16 +130,21 @@ var SL=[
  '<h2>1. O que é pesquisa de mercado?</h2><p>É o processo de coletar e analisar informações sobre clientes, concorrentes e o ambiente de um negócio. Ela reduz riscos e ajuda a tomar decisões com mais segurança.</p><table><tr><th>Tipo</th><th>O que é</th><th>Exemplo</th></tr><tr><td>Primária</td><td>dados coletados por você</td><td>questionário, entrevista, observação</td></tr><tr><td>Secundária</td><td>dados já publicados</td><td>IBGE, Sebrae, relatórios, notícias</td></tr><tr><td>Quantitativa</td><td>números e percentuais</td><td>“70% dos clientes preferem…”</td></tr><tr><td>Qualitativa</td><td>motivos e opiniões</td><td>“Por que você escolhe esse produto?”</td></tr></table>',
  '<h2>2. Etapas da pesquisa</h2><ol><li>Defina o problema: o que você quer descobrir?</li><li>Escolha o público e a amostra.</li><li>Prepare o instrumento (questionário ou roteiro).</li><li>Colete os dados.</li><li>Organize e interprete os resultados.</li><li>Tome uma decisão com base nos dados.</li></ol><p class="dica"><b>Boa pergunta:</b> clara, curta e sem induzir a resposta. Evite “Você não acha que nosso produto é ótimo?”. Prefira “Como você avalia o produto?”.</p>'];
 var slideI=0,editing=false;
-function slides(back){var h='<div class="bar"><button class="btn alt" id="sBack">◀ Voltar</button><button class="btn alt" id="sEdit">✏️ Editar anotações</button><button class="btn alt" id="sFull">⛶ Tela cheia</button></div><div class="slide" id="slide" contenteditable="false"></div><div class="nav"><button class="btn alt" id="sPrev">◀ Slide anterior</button><span id="sCnt"></span><button class="btn" id="sNext">Próximo slide ▶</button></div><p class="mut">Dica: ative "Editar anotações" para alterar o texto do slide. As mudanças ficam neste aparelho.</p>';
+function slides(back){var h='<div class="bar"><button class="btn alt" id="sBack">◀ Voltar</button><button class="btn alt" id="sEdit">✏️ Editar anotações</button><button class="btn alt" id="sFull">⛶ Tela cheia</button></div><div id="sWrap"><div class="fsbar"><button class="btn alt" id="fPrev">◀ Anterior</button><span id="fCnt"></span><button class="btn" id="fNext">Próximo ▶</button><button class="btn sair" id="fExit">✕ Sair da tela cheia</button></div><div class="slide" id="slide" contenteditable="false"></div></div><div class="nav"><button class="btn alt" id="sPrev">◀ Slide anterior</button><span id="sCnt"></span><button class="btn" id="sNext">Próximo slide ▶</button></div><p class="mut">Dica: ative "Editar anotações" para alterar o texto do slide. As mudanças ficam neste aparelho.</p>';
  stage.innerHTML=h;var sl=stage.querySelector('#slide');
- function load(){var sv=null;try{sv=localStorage.getItem('pm37_slide'+slideI)}catch(e){}sl.innerHTML=sv||SL[slideI];stage.querySelector('#sCnt').textContent=(slideI+1)+' / '+SL.length;stage.querySelector('#sPrev').disabled=!slideI;stage.querySelector('#sNext').textContent=slideI===SL.length-1?'Terminar ✔':'Próximo slide ▶'}
+ function load(){var sv=null;try{sv=localStorage.getItem('pm37_slide'+slideI)}catch(e){}sl.innerHTML=sv||SL[slideI];stage.querySelector('#sCnt').textContent=stage.querySelector('#fCnt').textContent=(slideI+1)+' / '+SL.length;stage.querySelector('#sPrev').disabled=!slideI;stage.querySelector('#sNext').textContent=slideI===SL.length-1?'Terminar ✔':'Próximo slide ▶'}
  function save(){try{localStorage.setItem('pm37_slide'+slideI,sl.innerHTML)}catch(e){}}
  sl.addEventListener('input',save);sl.addEventListener('keydown',function(e){e.stopPropagation()});
  stage.querySelector('#sEdit').onclick=function(){editing=!editing;sl.contentEditable=editing;sl.classList.toggle('ed',editing);this.textContent=editing?'✔ Salvar':'✏️ Editar anotações';if(editing)sl.focus()};
  stage.querySelector('#sPrev').onclick=function(){save();slideI--;load()};
  stage.querySelector('#sNext').onclick=function(){save();if(slideI===SL.length-1){slideI=0;if(tema)fimAct('aula');back()}else{slideI++;load()}};
  stage.querySelector('#sBack').onclick=function(){save();back()};
- stage.querySelector('#sFull').onclick=function(){var el=sl;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el)};
+ var wr=stage.querySelector('#sWrap');
+ function fsOut(){try{(document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document)}catch(e){}wr.classList.remove('fake')}
+ stage.querySelector('#sFull').onclick=function(){var q=wr.requestFullscreen||wr.webkitRequestFullscreen;if(q){try{var r=q.call(wr);if(r&&r.catch)r.catch(function(){wr.classList.add('fake')})}catch(e){wr.classList.add('fake')}}else wr.classList.add('fake')};
+ stage.querySelector('#fExit').onclick=fsOut;
+ stage.querySelector('#fPrev').onclick=function(){stage.querySelector('#sPrev').click()};
+ stage.querySelector('#fNext').onclick=function(){if(slideI===SL.length-1)fsOut();stage.querySelector('#sNext').click()};
  load()}
 
 /* ---------- apoio: relatorio para a planilha, espera de 5 s ---------- */
