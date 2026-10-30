@@ -245,7 +245,7 @@ function rTy(){
  var inp=$('ti'),fb=$('msg');
  startTimer(TEMPO.ty,tmoutHandler(function(){return tries},function(){tries++}));
  function chk(){if(locked||stage.classList.contains('lk'))return;var v=inp.value.trim().toLowerCase();if(!v)return;
-  if(v===S.ans){locked=true;inp.classList.add('ok');inp.disabled=true;var r=record(true,tries,S);fb.className='fb ok';fb.textContent='Correct! '+S.clue.replace('___',S.ans);$('sk').hidden=true;
+  if(v===String(S.ans).toLowerCase()){locked=true;inp.classList.add('ok');inp.disabled=true;var r=record(true,tries,S);fb.className='fb ok';fb.textContent='Correct! '+S.clue.replace('___',S.ans);$('sk').hidden=true;
    if(tipo===1)afterOk(r,S);else{setPts(tries?0:10);beep(1);$('nx').hidden=false}say(S.clue.replace('___',S.ans))}
   else{inp.classList.add('no');setTimeout(function(){inp.classList.remove('no')},500);var r2=record(false,tries,S);tries++;onWrong(r2,S,tries);if(tries>=2)$('sk').hidden=false;if(tipo===1&&tries>=2){locked=true;guided(S,S.clue.replace('___',S.ans))}}}
  $('ck').onclick=chk;inp.onkeydown=function(e){if(e.key==='Enter')chk()};
