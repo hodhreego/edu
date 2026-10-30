@@ -601,7 +601,7 @@ $('cpy').onclick=function(){var c=window.__resultado&&window.__resultado.codigo;
 function fallback(c){var t=document.createElement('textarea');t.value=c;document.body.appendChild(t);t.select();try{document.execCommand('copy');$('cpy').textContent='Copiado!'}catch(e){}t.remove()}
 $('sav').onclick=function(){var o=window.__resultado;if(!o)return;var bl=new Blob([txt(o)],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='resultado-aula47-'+(o.nome||'aluno').replace(/[^a-z0-9]+/gi,'-')+'.txt';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 /* liberar (professor) */
-function liberar(){var ask=function(){var v=window.prompt('Código do professor para liberar a tela final:');if(v===null)return;if(v==='4747'){released=true;finish()}else alert('Código incorreto.')};ask()}
+function liberar(){var ask=function(){var v=window.prompt('Código do professor para liberar a tela final:');if(v===null)return;if(v==='4747'){released=true;finish()}else if(window.EDU_PROF_TRY){EDU_PROF_TRY(v).then(function(ok){if(ok){released=true;finish()}else alert('Código incorreto.')})}else alert('Código incorreto.')};ask()}
 $('prof').onclick=liberar;$('rk').addEventListener('toggle',function(){if($('rk').open)rkPoll()});
 addEventListener('keydown',function(e){if(e.ctrlKey&&e.shiftKey&&(e.key==='L'||e.key==='l')){e.preventDefault();liberar()}});
 stage.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.say');if(b){window.__btn=1;say(b.dataset.say);window.__btn=0}});
