@@ -199,7 +199,7 @@ function pick(a){return a[Math.floor(Math.random()*a.length)]}
 function setPts(d){var old=pts;pts=Math.max(0,pts+d);$('pts').textContent=pts+' pontos';var p2=$('pts2');if(p2){p2.textContent=pts+' pontos';if(pts!==old){p2.classList.remove('pop');void p2.offsetWidth;p2.classList.add('pop');if(pts>old){var f=document.createElement('div');f.className='mpf';f.textContent='+'+(pts-old);fxroot().appendChild(f);setTimeout(function(){f.remove()},1200)}}}try{potePts(old,pts)}catch(e){}var bv=$('bigv'),bp=$('bigpts');if(bv){bv.textContent=pts;if(pts!==old&&bp){bp.classList.remove('pop');void bp.offsetWidth;bp.classList.add('pop')}}}
 function beep(ok){try{if(!AUD)AUD=new (window.AudioContext||window.webkitAudioContext)();var f=ok?[660,880]:[300],t=AUD.currentTime;f.forEach(function(fr,i){var o=AUD.createOscillator(),g=AUD.createGain();o.frequency.value=fr;o.type='sine';g.gain.setValueAtTime(.0001,t+i*.12);g.gain.exponentialRampToValueAtTime(.08,t+i*.12+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*.12+.18);o.connect(g);g.connect(AUD.destination);o.start(t+i*.12);o.stop(t+i*.12+.2)})}catch(e){}}
 function hasVoice(){try{return !!(window.speechSynthesis&&speechSynthesis.getVoices().some(function(v){return /^en/i.test(v.lang)}))}catch(e){return false}}
-function say(t){try{var Sy=window.speechSynthesis;if(!Sy||!t)return;Sy.cancel();var u=new SpeechSynthesisUtterance(String(t).replace(/___/g,'blank'));u.lang='en-US';if(window.EDU_VOICE){var v=EDU_VOICE('en-US');if(v)u.voice=v}u.rate=.85;Sy.speak(u)}catch(e){}}
+function say(t){if(tipo===4&&!window.__btn)return;try{var Sy=window.speechSynthesis;if(!Sy||!t)return;Sy.cancel();var u=new SpeechSynthesisUtterance(String(t).replace(/___/g,'blank'));u.lang='en-US';if(window.EDU_VOICE){var v=EDU_VOICE('en-US');if(v)u.voice=v}u.rate=.85;Sy.speak(u)}catch(e){}}
 function sayBtn(t){return '<button class="say" data-say="'+esc(t).replace(/"/g,'&quot;')+'" aria-label="Ouvir em inglês" title="Ouvir">🔊</button>'}
 function picHtml(p){return p?'<div class="pic">'+PIC[p]+'</div>':''}
 function lab(v){return String(v).indexOf('pic:')===0?PIC[v.slice(4)]:v}
@@ -263,7 +263,7 @@ function t3conf(){var now=Date.now();if(now-T3LAST<1000)return;T3LAST=now;var m=
  if(t3rd())return;T3FX[Math.floor(Math.random()*T3FX.length)]()}
 function t3deco(){var n=STEPS[tipo].length,h='';for(var i=0;i<n;i++)h+='<i class="'+(i<idx?'f':i===idx?'a':'')+'"></i>';
  var m=document.createElement('div');m.innerHTML='<div id="t3trilha">'+h+'</div><div class="mascote">'+T3MASC+'<div class="bal" id="t3bal">'+(S.fase||(S.k==='th'?'Olhe e ouça!':'Vamos! Toque na resposta.'))+'</div></div>';stage.insertBefore(m,stage.firstChild);if(tipo===4&&window.f4Btn)window.f4Btn();
- if(S.k==='mc'&&S.say)setTimeout(function(){try{say(S.say)}catch(e){}},700)}
+ if(S.k==='mc'&&S.say)if(tipo!==4)setTimeout(function(){try{say(S.say)}catch(e){}},700)}
 var T3OBS=new MutationObserver(function(ms){if(tipo<3)return;ms.forEach(function(m){var t=m.target;if(t.classList&&t.classList.contains('ok')&&m.oldValue&&m.oldValue.indexOf('ok')<0){t3conf();t3fala(['Muito bem!','Isso mesmo!','Uau, acertou!','Parabéns!'][Math.floor(Math.random()*4)])}
  else if(t.id==='fim'&&t.classList.contains('on')){t3conf()}
  else if(t.classList&&t.classList.contains('no')&&m.oldValue&&m.oldValue.indexOf('no')<0)t3fala('Quase! Tente o outro.')})});
@@ -412,12 +412,12 @@ function rMc(){
  var corr=S.o[0],o=sh(S.o),tries=0,res=null,pic=S.isPic;
  stage.innerHTML='<p class="consigna">'+(tipo>1?'Toque na resposta certa.':'Escolha a resposta certa.')+'</p>'+picHtml(S.pic)+'<div class="q"><span class="tx" id="pergunta">'+S.q+'</span>'+((S.say||(tipo>1&&/[a-z]/i.test(S.q)))?sayBtn(S.say||S.q.replace(/<[^>]+>/g,'')):'')+'</div><div class="opts'+(pic?' pics':'')+'">'+o.map(function(x,i){return '<button class="opt" data-i="'+i+'">'+lab(x)+'</button>'}).join('')+'</div><div class="fb" id="msg"></div>'+nextBtn(false);
  var bs=stage.querySelectorAll('.opt'),fb=$('msg');
- if(S.auto)setTimeout(function(){say(S.auto)},400);
+ if(S.auto&&tipo!==4)setTimeout(function(){say(S.auto)},400);
  startTimer(TEMPO.mc+TEMPO.mcPorLetra*String(S.q).length+(pic?8:0),tmoutHandler(function(){return tries},function(){tries++}));
  [].forEach.call(bs,function(b,i){b.onclick=function(){if(locked||stage.classList.contains('lk'))return;
   if(o[i]===corr){locked=true;b.classList.add('ok');var r=record(true,tries,S);fb.className='fb ok';fb.textContent=tipo>=3?'Muito bem!':(tries?'Correct. Agora você já sabe!':'Correct!');[].forEach.call(bs,function(x){x.disabled=true});
    if(tipo===1)afterOk(r,S);else{setPts(tries?(tipo===2?5:5):10);beep(1);$('nx').hidden=false;$('nx').focus()}
-   if(S.say&&!pic)say(S.say)}
+   if(S.say&&!pic&&tipo!==4)say(S.say)}
   else{b.classList.add('no');b.disabled=true;var r2=record(false,tries,S);tries++;onWrong(r2,S,tries);if(tipo===1&&tries>=2){locked=true;guided(S,corr)}}}});
  wireNext()}
 /* ---------- escolher a resposta (alternativa a digitar) ---------- */
@@ -586,7 +586,7 @@ $('sav').onclick=function(){var o=window.__resultado;if(!o)return;var bl=new Blo
 function liberar(){var ask=function(){var v=window.prompt('Código do professor para liberar a tela final:');if(v===null)return;if(v==='4747'){released=true;finish()}else alert('Código incorreto.')};ask()}
 $('prof').onclick=liberar;$('rk').addEventListener('toggle',function(){if($('rk').open)rkPoll()});
 addEventListener('keydown',function(e){if(e.ctrlKey&&e.shiftKey&&(e.key==='L'||e.key==='l')){e.preventDefault();liberar()}});
-stage.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.say');if(b)say(b.dataset.say)});
+stage.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.say');if(b){window.__btn=1;say(b.dataset.say);window.__btn=0}});
 $('b1').onclick=function(){start(1)};$('b2').onclick=function(){start(2)};$('b3').onclick=function(){start(3)};$('b4').onclick=function(){start(4)};
 $('rec').onclick=function(){start(tipo)};$('fimb').onclick=function(){start(tipo)};
 window.__pc47={PIC:PIC,get A(){return A},get S(){return S},get tipo(){return tipo},get pts(){return pts},next:next,finish:finish,mastered:mastered};
