@@ -127,18 +127,19 @@ function actMc(){var t=T[tema],q=[
  stage.innerHTML=h;wireBar();var n=0,need=q.length;
  [].forEach.call(stage.querySelectorAll('.opt'),function(b){b.onclick=function(){var c=b.parentNode;if(c.dataset.done)return;if(b.dataset.ok==='1'){c.dataset.done=1;b.classList.add('ok');c.querySelector('.fb').textContent='✔ Certo!';c.querySelector('.fb').className='fb ok';[].forEach.call(c.querySelectorAll('.opt'),function(x){x.disabled=true});if(award('mc'+b.dataset.i,5)){}if(++n===need)fimAct('mc')}else{b.classList.add('no');b.disabled=true;c.querySelector('.fb').textContent='Tente de novo';c.querySelector('.fb').className='fb no'}}})}
 
-/* ---------- 2) digite ---------- */
+/* ---------- 2) digite (quadrinhos individuais) ---------- */
+function boxHtml(i,ans){return '<div class="bxs" data-i="'+i+'" data-a="'+esc(ans)+'">'+ans.split('').map(function(_,k){return '<input maxlength="1" data-k="'+k+'" autocomplete="off" inputmode="'+(/^\d+$/.test(ans)?'numeric':'text')+'">'}).join('')+'</div>'}
+function wireBoxes(root,onOk){[].forEach.call(root.querySelectorAll('.bxs'),function(g){var i=g.dataset.i,ans=g.dataset.a,num=/^\d+$/.test(ans),ins=g.querySelectorAll('input'),fb=g.parentNode.querySelector('.fb');
+ [].forEach.call(ins,function(inp,k){inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Backspace'&&!inp.value&&k>0){ins[k-1].focus();ins[k-1].value=''}else if(e.key==='ArrowLeft'&&k>0)ins[k-1].focus();else if(e.key==='ArrowRight'&&k<ins.length-1)ins[k+1].focus()});
+  inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(num?/[^0-9]/g:/[^A-Z]/g,'');if(inp.value&&k<ins.length-1)ins[k+1].focus();var w=[].map.call(ins,function(x){return x.value}).join('');if(w.length===ans.length){if(w===ans){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.disabled=true;x.classList.add('ok')});onOk(i)}else{fb.textContent='Confira as letras';fb.className='fb no'}}else{fb.textContent='';}})})})}
 function actTp(){var t=T[tema],q=[
- ['Pesquisa de mercado serve para conhecer o ______ (quem compra o produto).',['cliente','clientes','consumidor','publico']],
- ['Quem já vende algo parecido com o seu negócio é o seu ______.',['concorrente','concorrentes','concorrencia']],
- ['Qual a porcentagem de '+t.sim+' em 20? (só o número)',[String(t.sim*5)]],
- [t.sim+' pessoas gastariam '+t.per+'. Quanto você faturaria no total? (só o número, em reais)',[String(t.rec),t.rec.toLocaleString('pt-BR')]]];
- var h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta</h2>';
- q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+'</p><input class="n" data-i="'+i+'" autocomplete="off"> <button class="btn" data-i="'+i+'">Conferir</button> <span class="fb"></span></div>'});
- stage.innerHTML=h;wireBar();var n=0;
- [].forEach.call(stage.querySelectorAll('.btn[data-i]'),function(b){var i=+b.dataset.i,inp=stage.querySelector('input[data-i="'+i+'"]'),fb=b.parentNode.querySelector('.fb');
-  function chk(){if(inp.disabled)return;var v=norm(inp.value).replace(/[.,]$/,'');var ok=q[i][1].some(function(a){return norm(a)===v||norm(a).replace(/[.,]/g,'')===v.replace(/[.,]/g,'')});if(ok){fb.textContent='✔ Certo!';fb.className='fb ok';inp.disabled=true;b.disabled=true;award('tp'+i,5);if(++n===q.length)fimAct('tp')}else{fb.textContent='Confira e tente de novo';fb.className='fb no'}}
-  b.onclick=chk;inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Enter')chk()})})}
+ ['Pesquisa de mercado serve para conhecer o ______ (quem compra o produto).','CLIENTE'],
+ ['Quem já vende algo parecido com o seu negócio é o seu ______.','CONCORRENTE'],
+ ['Qual a porcentagem de '+t.sim+' em 20? (só o número)',String(t.sim*5)],
+ [t.sim+' pessoas gastariam '+t.per+'. Quanto você faturaria no total? (só o número, em reais)',String(t.rec)]];
+ var h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta, uma letra (ou número) em cada quadrinho</h2>';
+ q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+(/^\d+$/.test(x[1])?' dígitos':' letras')+')</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
+ stage.innerHTML=h;wireBar();var n=0;wireBoxes(stage,function(i){award('tp'+i,5);if(++n===q.length)fimAct('tp')})}
 
 /* ---------- 3) arraste e solte ---------- */
 function actDg(){var t=T[tema],q=[['A pesquisa mostra o que o ___ quer.','cliente'],['Quem já vende algo parecido é o ___.','concorrente'],['O grupo de pessoas entrevistadas é a ___.','amostra'],['O que sobra depois de pagar todos os custos é o ___.','lucro']];
@@ -198,17 +199,17 @@ function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(
 /* ---------- tabela do tema ---------- */
 function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});
  var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>Pesquisa feita com os clientes do negócio: <b>'+esc(t.nome)+'</b>. Qual é a preferência de cada um?</p><table class="tab"><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<t.tb.length-1?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a linha "Outro": quantas respostas e qual porcentagem.</p>';
- var Q=[['q1','1. Quantas pessoas responderam no total?',[String(tot)]],['q2','2. Qual foi a preferência mais escolhida? (escreva o nome)',[t.kw],1],['q3','3. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',[String(t.tb[0][1]-t.tb[2][1])]],['q4','4. Se o dono pesquisasse 300 pessoas e a proporção fosse a mesma, quantas prefeririam "'+t.tb[0][0]+'"?',[String(300*t.tb[0][1]/tot)]]];
- Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p><input class="n" data-q="'+x[0]+'" autocomplete="off" style="max-width:20em"> <span class="fb"></span></div>'});
+ var Q=[['q1','1. Quantas pessoas responderam no total?',[String(tot)]],['q2','2. Qual foi a preferência mais escolhida? (escreva a 1ª palavra, uma letra em cada quadrinho)',[t.kw],1],['q3','3. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',[String(t.tb[0][1]-t.tb[2][1])]],['q4','4. Se o dono pesquisasse 300 pessoas e a proporção fosse a mesma, quantas prefeririam "'+t.tb[0][0]+'"?',[String(300*t.tb[0][1]/tot)]]];
+ Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p>'+(x[3]?boxHtml('tbq2',({hamburguer:'HAMBURGUER',corte:'CORTE',esportivo:'ESPORTIVO'})[t.kw]):'<input class="n" data-q="'+x[0]+'" autocomplete="off" style="max-width:20em">')+' <span class="fb"></span></div>'});
  h+='<div class="card" style="--c:'+t.cor+'"><p>5. O que o dono do negócio deve fazer com esse resultado? Explique em uma frase.</p><textarea rows="2" id="tbOpen"></textarea></div><div class="nav"><span></span><button class="btn" id="tbChk">Conferir ✔</button></div><p class="mut">A pergunta 5 é aberta: chame o professor para conferir.</p>';
- stage.innerHTML=h;wireBar();[].forEach.call(stage.querySelectorAll('input,textarea'),function(e){e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
+ stage.innerHTML=h;wireBar();wireBoxes(stage,function(){});[].forEach.call(stage.querySelectorAll('input,textarea'),function(e){e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
  stage.querySelector('#tbChk').onclick=function(){var ok=0,tot2=Q.length+2;
   function val(k){return stage.querySelector('[data-q="'+k+'"]').value}
   function mark(el,good,key){el.classList.toggle('okk2',good);el.style.borderColor=good?'#1f9d55':'#d93025';if(good){award('tb'+key,4)}return good}
   var last=t.tb[t.tb.length-1][1];
   if(mark(stage.querySelector('[data-q="o1"]'),norm(val('o1'))===String(last),'o1'))ok++;
   if(mark(stage.querySelector('[data-q="o2"]'),norm(val('o2')).replace('%','')===String(Math.round(last/tot*100)),'o2'))ok++;
-  Q.forEach(function(x){var el=stage.querySelector('[data-q="'+x[0]+'"]'),v=norm(val(x[0])),good=x[3]?v.indexOf(x[2][0])>-1:x[2].some(function(a){return norm(a)===v});var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'Confira e tente de novo';fb.className='fb '+(good?'ok':'no');if(mark(el,good,x[0]))ok++});
+  Q.forEach(function(x){if(x[3]){var g=stage.querySelector('.bxs[data-i="tbq2"]'),w=[].map.call(g.querySelectorAll('input'),function(z){return z.value}).join(''),gd=w===g.dataset.a,f2=g.parentNode.querySelector('.fb');f2.textContent=gd?'✔ Certo!':'Confira e tente de novo';f2.className='fb '+(gd?'ok':'no');if(gd&&award('tb'+x[0],4))ok++;else if(gd&&GOT[tema+'tb'+x[0]])ok++;return}var el=stage.querySelector('[data-q="'+x[0]+'"]'),v=norm(val(x[0])),good=x[3]?v.indexOf(x[2][0])>-1:x[2].some(function(a){return norm(a)===v});var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'Confira e tente de novo';fb.className='fb '+(good?'ok':'no');if(mark(el,good,x[0]))ok++});
   if(ok===tot2)fimAct('tb')}}
 
 /* ---------- 7) pesquisa escrita (discursiva) ---------- */
