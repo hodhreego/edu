@@ -38,12 +38,12 @@ input.n{max-width:14em}
 .tema.okk{background:#e8fbee}
 .tema .em{font-size:2.4em}
 .opt{display:block;width:100%;text-align:left;margin:6px 0;border:3px solid #9fb0e8;background:#fff;border-radius:14px;padding:10px 12px;font:700 1em inherit;color:var(--ink);cursor:pointer}
-.opt.ok{background:#d6f5e0;border-color:#1f9d55}.opt.no{background:#fde2e0;border-color:#d93025;opacity:.7}
+.opt.pick{background:#e0e8ff;border-color:#1f4fd8}.opt.ok{background:#d6f5e0;border-color:#1f9d55}.opt.no{background:#fde2e0;border-color:#d93025;opacity:.7}
 .bank{display:flex;flex-wrap:wrap;gap:8px;min-height:3em;background:#fff;border:3px dashed #9fb0e8;border-radius:14px;padding:8px;margin:8px 0}
 .chip{background:#ffd24d;border-radius:99px;padding:6px 16px;font-weight:800;cursor:grab;user-select:none}.chip.sel{outline:4px solid #1f4fd8}
 .slot{display:inline-block;min-width:8em;min-height:2em;border-bottom:4px solid #1f4fd8;background:#eef2ff;border-radius:8px;vertical-align:middle;margin:0 4px;text-align:center}
 .slot.ok{background:#d6f5e0}.slot.no{background:#fde2e0}.slot .chip{margin:2px}
-.bxs{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}.bxs input{width:2.1em;height:2.3em;text-align:center;font:900 1.3em inherit;border:3px solid #1f4fd8;border-radius:8px;padding:0;text-transform:uppercase}.bxs input.ok{background:#d6f5e0;border-color:#1f9d55}
+.bxs{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}.bxs input{width:2.1em;height:2.3em;text-align:center;font:700 16px Arial,Helvetica,sans-serif;border:3px solid #1f4fd8;border-radius:8px;padding:0;text-transform:uppercase}.bxs input.ok{background:#d6f5e0;border-color:#1f9d55}
 .jornal{background:#f4efe1;border:5px double #222;padding:10px 12px;margin:8px 0;font-family:Georgia,"Times New Roman",serif;color:#111}
 .jh{text-align:center;border-bottom:3px solid #111;margin-bottom:8px}.jh span{display:block;font:900 clamp(20px,3.4vw,30px) Georgia,serif;letter-spacing:1px}.jh small{display:block;font:700 .75em Georgia,serif;border-top:1px solid #111;padding:2px}
 .jc{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
@@ -70,12 +70,24 @@ input.n{max-width:14em}
 <script>
 (function(){
 var T={
- a:{em:'🍔',nome:'Delivery de lanche artesanal',cor:'#e8590c',neg:'delivery de lanche artesanal (hambúrguer, salgados ou doces vendidos por aplicativo ou WhatsApp)',ex:['Com que frequência você pede lanche por aplicativo?','Quanto você paga em média?','Que sabores você gostaria de encontrar?','O que pesa mais: preço, tempo de entrega ou sabor?'],sim:14,per:'por mês, 2 pedidos de R$ 18,00',rec:14*2*18,preco:'preço de um lanche',tb:[['Hambúrguer artesanal',48],['Salgados',36],['Doces e sobremesas',24],['Outro',12]],kw:'hamburguer',tbq:'delivery',
+ a:{em:'🍔',nome:'Delivery de lanche artesanal',cor:'#e8590c',neg:'delivery de lanche artesanal (hambúrguer, salgados ou doces vendidos por aplicativo ou WhatsApp)',ex:['Com que frequência você pede lanche por aplicativo?','Quanto você paga em média?','Que sabores você gostaria de encontrar?','O que pesa mais: preço, tempo de entrega ou sabor?'],sim:14,per:'por mês, 2 pedidos de R$ 18,00',rec:14*2*18,preco:'preço de um lanche',tb:[['Hambúrguer artesanal',48],['Salgados',36],['Doces e sobremesas',24],['Outro',12]],
   jn:[['ENTREGA','Levar o pedido até a casa do cliente'],['SABOR','O que o cliente sente ao comer'],['COMBO','Lanche + bebida por um preço só'],['MOTOBOY','Quem faz a entrega de moto'],['PEDIDO','O que o cliente faz pelo aplicativo'],['RECEITA','Modo de preparo do lanche'],['CARDAPIO','Lista de lanches e preços'],['EMBALAGEM','Mantém o lanche quente e protegido']]},
- b:{em:'✂️',nome:'Salão ou barbearia',cor:'#7c3aed',neg:'salão ou barbearia (corte, barba, unhas, cabelo)',ex:['Com que frequência você corta o cabelo ou faz as unhas?','Quanto você paga?','Prefere hora marcada ou ordem de chegada?','O que faria você trocar de salão?'],sim:12,per:'por mês, 2 atendimentos de R$ 35,00',rec:12*2*35,preco:'preço do corte',tb:[['Corte de cabelo',48],['Unhas',36],['Barba',24],['Outro',12]],kw:'corte',tbq:'salão',
+ b:{em:'✂️',nome:'Salão ou barbearia',cor:'#7c3aed',neg:'salão ou barbearia (corte, barba, unhas, cabelo)',ex:['Com que frequência você corta o cabelo ou faz as unhas?','Quanto você paga?','Prefere hora marcada ou ordem de chegada?','O que faria você trocar de salão?'],sim:12,per:'por mês, 2 atendimentos de R$ 35,00',rec:12*2*35,preco:'preço do corte',tb:[['Corte de cabelo',48],['Unhas',36],['Barba',24],['Outro',12]],
   jn:[['CORTE','Serviço mais pedido na barbearia'],['BARBA','Fica no rosto do cliente e precisa de aparo'],['UNHAS','Cuidadas pela manicure'],['ESCOVA','Alisa e dá forma ao cabelo'],['AGENDA','Onde ficam os horários marcados'],['TESOURA','Instrumento para cortar o cabelo'],['COLORACAO','Mudar a cor do cabelo'],['HIDRATACAO','Tratamento que devolve a maciez']]},
- c:{em:'👟',nome:'Loja de tênis personalizados',cor:'#0d9488',neg:'loja de tênis personalizados (cores, desenhos e nomes feitos sob encomenda)',ex:['Quantos pares de tênis você compra por ano?','Quanto pagaria por um personalizado?','Que estilo você prefere?','Onde você descobre novas marcas?'],sim:9,per:'1 par de R$ 250,00',rec:9*250,preco:'preço do tênis',tb:[['Tênis esportivo',48],['Tênis casual',36],['Tênis colorido personalizado',24],['Outro',12]],kw:'esportivo',tbq:'loja',
-  jn:[['TENIS','O produto que você vende'],['SOLADO','Parte de baixo do calçado'],['CORES','Escolhidas pelo cliente na encomenda'],['ESTILO','Jeito próprio de se vestir'],['DESENHO','Arte pintada no tênis'],['COLECAO','Linha de modelos lançados juntos'],['TAMANHO','Número que o cliente calça'],['CADARCO','Cordão que amarra o tênis']]}
+ c:{em:'👟',nome:'Loja de tênis personalizados',cor:'#0d9488',neg:'loja de tênis personalizados (cores, desenhos e nomes feitos sob encomenda)',ex:['Quantos pares de tênis você compra por ano?','Quanto pagaria por um personalizado?','Que estilo você prefere?','Onde você descobre novas marcas?'],sim:9,per:'1 par de R$ 250,00',rec:9*250,preco:'preço do tênis',tb:[['Tênis esportivo',48],['Tênis casual',36],['Tênis colorido personalizado',24],['Outro',12]],
+  jn:[['TENIS','O produto que você vende'],['SOLADO','Parte de baixo do calçado'],['CORES','Escolhidas pelo cliente na encomenda'],['ESTILO','Jeito próprio de se vestir'],['DESENHO','Arte pintada no tênis'],['COLECAO','Linha de modelos lançados juntos'],['TAMANHO','Número que o cliente calça'],['CADARCO','Cordão que amarra o tênis']]},
+ d:{em:'🎮',nome:'Campeonato e loja de games',cor:'#2563eb',neg:'campeonato de games e loja de jogos',ex:['Quais jogos você mais joga?','Quantas horas por semana você joga?','Quanto pagaria para entrar em um campeonato?','Prefere jogar online ou presencial?'],sim:15,per:'por mês, 1 inscrição de R$ 20,00',rec:15*20,preco:'valor da inscrição',tb:[['Tiro e ação',48],['Futebol',36],['Corrida',24],['Outro',12]],
+  jn:[['CAMPEONATO','Disputa com várias partidas e um vencedor'],['CONSOLE','Aparelho ligado na TV para jogar'],['TORCIDA','Quem assiste e apoia'],['PREMIO','O que o vencedor recebe'],['EQUIPE','Grupo que joga junto'],['STREAM','Transmissão ao vivo na internet'],['INSCRICAO','Taxa para participar'],['JOGADOR','Quem disputa a partida']]},
+ e:{em:'📱',nome:'Aplicativo para estudantes',cor:'#db2777',neg:'aplicativo de celular para estudantes (organizar estudos, resumos ou caronas)',ex:['Quanto tempo por dia você usa o celular para estudar?','Que problema o app deveria resolver?','Você pagaria uma mensalidade? Quanto?','Que recurso é mais importante?'],sim:16,per:'por mês, 1 assinatura de R$ 10,00',rec:16*10,preco:'preço da assinatura',tb:[['Organizar tarefas e provas',48],['Resumos e flashcards',36],['Caronas e transporte',24],['Outro',12]],
+  jn:[['APLICATIVO','Programa instalado no celular'],['DOWNLOAD','Baixar o app'],['USUARIO','Quem usa o app'],['NOTIFICACAO','Aviso que aparece na tela'],['ASSINATURA','Pagamento mensal pelo uso'],['INTERFACE','Aparência e telas do app'],['GRATUITO','Sem custo'],['AVALIACAO','Estrelas dadas pelos usuários']]},
+ f:{em:'👗',nome:'Brechó e moda sustentável',cor:'#a16207',neg:'brechó (roupas e acessórios usados, com estilo e preço justo)',ex:['Você já comprou roupa usada?','Quanto pagaria por uma peça de brechó?','Que peça você procura mais (camiseta, jaqueta, tênis)?','Prefere comprar online ou na loja?'],sim:11,per:'por mês, 2 peças de R$ 30,00',rec:11*2*30,preco:'preço médio das peças',tb:[['Camisetas e blusas',48],['Jaquetas e casacos',36],['Calças e bermudas',24],['Outro',12]],
+  jn:[['BRECHO','Loja de roupas já usadas'],['PECA','Cada item de roupa à venda'],['ESTILO','Jeito próprio de se vestir'],['DOACAO','Roupa entregue sem custo ao brechó'],['CABIDE','Onde a roupa fica pendurada'],['VITRINE','Onde os produtos ficam à mostra'],['DESCONTO','Redução no preço'],['SUSTENTAVEL','Que cuida do meio ambiente']]},
+ g:{em:'🐶',nome:'Pet shop e passeador de cães',cor:'#15803d',neg:'pet shop com banho e tosa, ou serviço de passeador de cães',ex:['Você tem animal de estimação?','Quanto gasta por mês com ele?','Você contrataria um passeador de cães?','O que importa mais: preço, confiança ou rapidez?'],sim:13,per:'por mês, 4 banhos de R$ 25,00',rec:13*4*25,preco:'preço do banho',tb:[['Banho e tosa',48],['Ração e petiscos',36],['Passeio e hotelzinho',24],['Outro',12]],
+  jn:[['BANHO','Serviço que deixa o pet limpinho'],['TOSA','Corte de pelos'],['COLEIRA','Usada no passeio'],['RACAO','Comida do cachorro'],['VETERINARIO','Médico de animais'],['PASSEIO','Caminhada com o cachorro'],['HOTELZINHO','Onde o pet fica hospedado'],['TUTOR','Dono do animal']]},
+ h:{em:'📸',nome:'Foto e vídeo para redes sociais',cor:'#9333ea',neg:'serviço de fotos e vídeos para pequenos negócios e redes sociais',ex:['Que redes sociais você mais usa?','Quanto uma loja pagaria por 10 fotos?','Prefere foto ou vídeo curto?','O que torna uma publicação boa?'],sim:10,per:'por mês, 1 pacote de R$ 150,00',rec:10*150,preco:'preço do pacote',tb:[['Vídeos curtos',48],['Fotos de produtos',36],['Edição de perfil',24],['Outro',12]],
+  jn:[['CAMERA','Equipamento que grava imagens'],['EDICAO','Ajustes feitos depois de gravar'],['SEGUIDOR','Quem acompanha o perfil'],['ENGAJAMENTO','Curtidas e comentários'],['PORTFOLIO','Coleção dos seus melhores trabalhos'],['LEGENDA','Texto abaixo da foto'],['FILTRO','Efeito aplicado à imagem'],['ROTEIRO','Planejamento do vídeo']]},
+ i:{em:'🏋️',nome:'Academia e treino personalizado',cor:'#dc2626',neg:'academia ou treino personalizado para jovens',ex:['Quantas vezes por semana você treina?','Quanto pagaria por mês?','Prefere treino em grupo ou individual?','O que faria você desistir da academia?'],sim:12,per:'por mês, 1 mensalidade de R$ 90,00',rec:12*90,preco:'valor da mensalidade',tb:[['Musculação',48],['Treino funcional',36],['Dança e aulas coletivas',24],['Outro',12]],
+  jn:[['ALUNO','Quem treina'],['MENSALIDADE','Valor pago todo mês'],['TREINO','Série de exercícios'],['PERSONAL','Instrutor exclusivo'],['HALTERE','Peso usado na musculação'],['ESTEIRA','Aparelho para correr'],['MATRICULA','Inscrição na academia'],['FREQUENCIA','Quantas vezes você vai']]}
 };
 var HIVE=['PESQUISA','PUBLICO','AMOSTRA','CLIENTE','PRECO','DEMANDA','LUCRO','NICHO'];
 var stage=document.getElementById('stage'),pts=document.getElementById('pts'),tema=null,score=0,R={},GOT={};
@@ -116,52 +128,74 @@ function slides(back){var h='<div class="bar"><button class="btn alt" id="sBack"
  stage.querySelector('#sFull').onclick=function(){var el=sl;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el)};
  load()}
 
-/* ---------- 1) escolha ---------- */
-function actMc(){var t=T[tema],q=[
- ['O que é pesquisa de mercado?','Descobrir o que os clientes querem antes de vender',['Fazer propaganda na televisão','Contar o dinheiro do caixa']],
- ['Quem é o público-alvo de um negócio?','As pessoas que mais provavelmente vão comprar',['Todas as pessoas do mundo','Somente os amigos do dono']],
- ['Qual é uma boa pergunta para a pesquisa?',t.ex[1],['Você não acha que o nosso produto é ótimo?','Qual é a cor do carro do seu pai?']],
- ['Você entrevistou 20 pessoas e '+t.sim+' comprariam. Qual a porcentagem?',(t.sim*5)+'%',[(t.sim*5+10)+'%',(100-t.sim*5-5)+'%']]];
- var r=rng(seedOf(tema+'mc')),h=bar()+'<h2 id="pergunta">🔘 Escolha a resposta certa</h2>';
- q.forEach(function(x,i){var o=shuf([x[1]].concat(x[2]),r);h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+'</p>'+o.map(function(v){return '<button class="opt" data-i="'+i+'" data-ok="'+(v===x[1]?1:0)+'">'+esc(v)+'</button>'}).join('')+'<div class="fb"></div></div>'});
- stage.innerHTML=h;wireBar();var n=0,need=q.length;
- [].forEach.call(stage.querySelectorAll('.opt'),function(b){b.onclick=function(){var c=b.parentNode;if(c.dataset.done)return;if(b.dataset.ok==='1'){c.dataset.done=1;b.classList.add('ok');c.querySelector('.fb').textContent='✔ Certo!';c.querySelector('.fb').className='fb ok';[].forEach.call(c.querySelectorAll('.opt'),function(x){x.disabled=true});if(award('mc'+b.dataset.i,5)){}if(++n===need)fimAct('mc')}else{b.classList.add('no');b.disabled=true;c.querySelector('.fb').textContent='Tente de novo';c.querySelector('.fb').className='fb no'}}})}
-
-/* ---------- 2) digite (quadrinhos individuais) ---------- */
-function boxHtml(i,ans){return '<div class="bxs" data-i="'+i+'" data-a="'+esc(ans)+'">'+ans.split('').map(function(_,k){return '<input maxlength="1" data-k="'+k+'" autocomplete="off" inputmode="'+(/^\d+$/.test(ans)?'numeric':'text')+'">'}).join('')+'</div>'}
-function wireBoxes(root,onOk){[].forEach.call(root.querySelectorAll('.bxs'),function(g){var i=g.dataset.i,ans=g.dataset.a,num=/^\d+$/.test(ans),ins=g.querySelectorAll('input'),fb=g.parentNode.querySelector('.fb');
- [].forEach.call(ins,function(inp,k){inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Backspace'&&!inp.value&&k>0){ins[k-1].focus();ins[k-1].value=''}else if(e.key==='ArrowLeft'&&k>0)ins[k-1].focus();else if(e.key==='ArrowRight'&&k<ins.length-1)ins[k+1].focus()});
-  inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(num?/[^0-9]/g:/[^A-Z]/g,'');if(inp.value&&k<ins.length-1)ins[k+1].focus();var w=[].map.call(ins,function(x){return x.value}).join('');if(w.length===ans.length){if(w===ans){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.disabled=true;x.classList.add('ok')});onOk(i)}else{fb.textContent='Confira as letras';fb.className='fb no'}}else{fb.textContent='';}})})})}
-function actTp(){var t=T[tema],q=[
+/* ---------- apoio: relatorio para a planilha, espera de 4 s ---------- */
+var CE=0,ER=0,LOG=[],T0=Date.now();
+function mm(){var q=Math.round((Date.now()-T0)/1000);return ('0'+Math.floor(q/60)).slice(-2)+':'+('0'+q%60).slice(-2)}
+function logIt(txt,ok){if(ok===true)CE++;else if(ok===false)ER++;LOG.push('['+mm()+'] '+(tema?T[tema].nome+' · ':'')+txt+(ok===true?' ✔':(ok===false?' ✘':'')));if(LOG.length>70)LOG.shift()}
+window.EDU_EXTRA=function(){return {certas:CE,erradas:ER,acoes:LOG.join('\n').slice(-3800),cenario:tema?T[tema].nome:'',fase:'Pesquisa de mercado'}};
+function wait(fb,cb){var n=4;fb.className='fb';fb.textContent='⏳ Conferindo... '+n;var iv=setInterval(function(){n--;if(n>0)fb.textContent='⏳ Conferindo... '+n;else{clearInterval(iv);cb()}},1000)}
+function fw(t){return norm(t.tb[0][0].split(' ')[0]).toUpperCase()}
+function pct(t){return t.sim*5}
+function mcQs(t){return [
+ {q:'O que é pesquisa de mercado?',ok:'Descobrir o que os clientes querem antes de vender',wr:['Fazer propaganda na televisão','Contar o dinheiro do caixa']},
+ {q:'Quem é o público-alvo de um negócio?',ok:'As pessoas que mais provavelmente vão comprar',wr:['Todas as pessoas do mundo','Somente os amigos do dono']},
+ {q:'Qual é uma boa pergunta para a pesquisa?',ok:t.ex[1],wr:['Você não acha que o nosso produto é ótimo?','Qual é a cor do carro do seu pai?']},
+ {q:'Você entrevistou 20 pessoas e '+t.sim+' comprariam. Qual a porcentagem?',ok:pct(t)+'%',wr:[(pct(t)+10)+'%',(100-pct(t)-5)+'%']},
+ {q:'Qual é um exemplo de pesquisa primária (dados coletados por você)?',ok:'Aplicar um questionário aos seus possíveis clientes',wr:['Ler um relatório do IBGE','Copiar a pesquisa de um concorrente']},
+ {q:'Qual é um exemplo de pesquisa secundária (dados já publicados)?',ok:'Consultar dados do IBGE ou do Sebrae',wr:['Entrevistar 20 pessoas na rua','Observar a fila da loja']},
+ {q:'Qual pergunta busca os motivos e opiniões (pesquisa qualitativa)?',ok:'Por que você escolheria esse produto?',wr:['Quantos anos você tem?','Quanto custa o produto?']},
+ {q:'Qual pergunta deve ser evitada, porque induz a resposta?',ok:'Você não acha que o nosso negócio é ótimo?',wr:['Como você avalia o nosso negócio?','Quanto você pagaria?']}]}
+function tpQs(t){return [
  ['Pesquisa de mercado serve para conhecer o ______ (quem compra o produto).','CLIENTE'],
  ['Quem já vende algo parecido com o seu negócio é o seu ______.','CONCORRENTE'],
- ['Qual a porcentagem de '+t.sim+' em 20? (só o número)',String(t.sim*5)],
- [t.sim+' pessoas gastariam '+t.per+'. Quanto você faturaria no total? (só o número, em reais)',String(t.rec)]];
- var h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta, uma letra (ou número) em cada quadrinho</h2>';
+ ['Pesquisa com números e porcentagens é a pesquisa ______.','QUANTITATIVA'],
+ ['Pesquisa com dados já publicados (IBGE, Sebrae) é a pesquisa ______.','SECUNDARIA'],
+ ['Qual a porcentagem de '+t.sim+' em 20? (só o número)',String(pct(t))],
+ [t.sim+' pessoas gastariam '+t.per+'. Quanto você faturaria no total? (só o número, em reais)',String(t.rec)]]}
+function dgQs(){return [['A pesquisa mostra o que o ___ quer.','cliente'],['Quem já vende algo parecido é o ___.','concorrente'],['O grupo de pessoas entrevistadas é a ___.','amostra'],['O que sobra depois de pagar todos os custos é o ___.','lucro'],['Pesquisa com dados coletados por você é ___.','primária'],['Pesquisa com dados já publicados é ___.','secundária']]}
+function bxQs(){return [['Quem compra o produto','CLIENTE'],['Valor cobrado por um produto','PRECO'],['O que sobra depois de pagar os custos','LUCRO'],['Grupo de pessoas que responde à pesquisa','AMOSTRA'],['Quantidade de pessoas que querem comprar','DEMANDA'],['Parte específica do mercado','NICHO']]}
+
+/* ---------- 1) escolha ---------- */
+function actMc(){var t=T[tema],q=mcQs(t),r=rng(seedOf(tema+'mc')),h=bar()+'<h2 id="pergunta">🔘 Escolha a resposta certa</h2><p class="mut">Depois de escolher, aguarde 4 segundos para saber se acertou.</p>';
+ q.forEach(function(x,i){x.o=shuf([x.ok].concat(x.wr),r);h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x.q)+'</p>'+x.o.map(function(v){return '<button class="opt" data-i="'+i+'" data-v="'+esc(v)+'">'+esc(v)+'</button>'}).join('')+'<div class="fb"></div></div>'});
+ stage.innerHTML=h;wireBar();var n=0;
+ [].forEach.call(stage.querySelectorAll('.opt'),function(b){b.onclick=function(){var c=b.parentNode,i=+b.dataset.i,fb=c.querySelector('.fb');if(c.dataset.busy||c.dataset.done)return;c.dataset.busy=1;b.classList.add('pick');[].forEach.call(c.querySelectorAll('.opt'),function(x){x.disabled=true});
+  wait(fb,function(){c.dataset.busy='';b.classList.remove('pick');var ok=b.dataset.v===q[i].ok;logIt('Escolha '+(i+1)+': '+b.dataset.v,ok);
+   if(ok){c.dataset.done=1;b.classList.add('ok');fb.textContent='✔ Certo!';fb.className='fb ok';award('mc'+i,5);if(++n===q.length)fimAct('mc')}
+   else{b.classList.add('no');fb.textContent='✘ Ainda não. Tente outra.';fb.className='fb no';[].forEach.call(c.querySelectorAll('.opt'),function(x){if(!x.classList.contains('no'))x.disabled=false})}})}})}
+
+/* ---------- 2) digite (quadrinhos individuais) ---------- */
+function boxHtml(i,ans){return '<div class="bxs" data-i="'+i+'" data-a="'+esc(ans)+'">'+ans.split('').map(function(_,k){return '<input maxlength="1" data-k="'+k+'" autocomplete="off" autocapitalize="characters" inputmode="'+(/^\d+$/.test(ans)?'numeric':'text')+'">'}).join('')+'</div>'}
+function wireBoxes(root,onOk,onNo){[].forEach.call(root.querySelectorAll('.bxs'),function(g){var i=g.dataset.i,ans=g.dataset.a,num=/^\d+$/.test(ans),ins=g.querySelectorAll('input'),fb=g.parentNode.querySelector('.fb');
+ [].forEach.call(ins,function(inp,k){inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Backspace'&&!inp.value&&k>0){ins[k-1].focus();ins[k-1].value=''}else if(e.key==='ArrowLeft'&&k>0)ins[k-1].focus();else if(e.key==='ArrowRight'&&k<ins.length-1)ins[k+1].focus()});
+  inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(num?/[^0-9]/g:/[^A-Z]/g,'');if(inp.value&&k<ins.length-1)ins[k+1].focus();var w=[].map.call(ins,function(x){return x.value}).join('');
+   if(w.length===ans.length&&!g.dataset.busy){g.dataset.busy=1;[].forEach.call(ins,function(x){x.disabled=true});wait(fb,function(){g.dataset.busy='';var ok=w===ans;
+    if(ok){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.classList.add('ok')});onOk(i,w)}
+    else{fb.textContent='✘ Confira as letras e corrija.';fb.className='fb no';[].forEach.call(ins,function(x){x.disabled=false});if(onNo)onNo(i,w);ins[ins.length-1].focus()}})}
+   else if(w.length<ans.length&&!g.dataset.busy)fb.textContent=''})})})}
+function actTp(){var t=T[tema],q=tpQs(t),h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta, uma letra (ou número) em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 4 segundos para saber se acertou.</p>';
  q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+(/^\d+$/.test(x[1])?' dígitos':' letras')+')</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
- stage.innerHTML=h;wireBar();var n=0;wireBoxes(stage,function(i){award('tp'+i,5);if(++n===q.length)fimAct('tp')})}
+ stage.innerHTML=h;wireBar();var n=0;wireBoxes(stage,function(i,w){logIt('Digite '+(+i+1)+': '+w,true);award('tp'+i,5);if(++n===q.length)fimAct('tp')},function(i,w){logIt('Digite '+(+i+1)+': '+w,false)})}
 
 /* ---------- 3) arraste e solte ---------- */
-function actDg(){var t=T[tema],q=[['A pesquisa mostra o que o ___ quer.','cliente'],['Quem já vende algo parecido é o ___.','concorrente'],['O grupo de pessoas entrevistadas é a ___.','amostra'],['O que sobra depois de pagar todos os custos é o ___.','lucro']];
- var bank=shuf(q.map(function(x){return x[1]}).concat(['preço']),rng(seedOf(tema+'dg')));
- var h=bar()+'<h2 id="pergunta">🧲 Arraste a palavra para o lugar certo</h2><p>No celular, toque na palavra e depois no espaço.</p><div class="bank" id="bank">'+bank.map(function(w){return '<span class="chip" draggable="true" data-w="'+w+'">'+w+'</span>'}).join('')+'</div>';
+function actDg(){var t=T[tema],q=dgQs(),bank=shuf(q.map(function(x){return x[1]}).concat(['preço']),rng(seedOf(tema+'dg')));
+ var h=bar()+'<h2 id="pergunta">🧲 Arraste a palavra para o lugar certo</h2><p>No celular, toque na palavra e depois no espaço. Ao tocar em Conferir, aguarde 4 segundos.</p><div class="bank" id="bank">'+bank.map(function(w){return '<span class="chip" draggable="true" data-w="'+w+'">'+w+'</span>'}).join('')+'</div>';
  q.forEach(function(x,i){var p=x[0].split('___');h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(p[0])+'<span class="slot" data-i="'+i+'"></span>'+esc(p[1])+' <span class="fb"></span></p></div>'});
- h+='<div class="nav"><span></span><button class="btn" id="dgChk">Conferir ✔</button></div>';stage.innerHTML=h;wireBar();
+ h+='<div class="nav"><span class="fb" id="dgfb"></span><button class="btn" id="dgChk">Conferir ✔</button></div>';stage.innerHTML=h;wireBar();
  var sel=null,bk=stage.querySelector('#bank');
- function place(slot,chip){if(slot.firstChild)bk.appendChild(slot.firstChild);slot.appendChild(chip);slot.classList.remove('no');sel&&sel.classList.remove('sel');sel=null}
+ function place(slot,chip){if(slot.firstChild)bk.appendChild(slot.firstChild);slot.appendChild(chip);slot.classList.remove('no');if(sel)sel.classList.remove('sel');sel=null}
  [].forEach.call(stage.querySelectorAll('.chip'),function(c){c.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',c.dataset.w);sel=c});c.onclick=function(e){e.stopPropagation();if(sel&&sel!==c)sel.classList.remove('sel');sel=c;c.classList.add('sel')}});
  [].forEach.call(stage.querySelectorAll('.slot'),function(s){s.addEventListener('dragover',function(e){e.preventDefault()});s.addEventListener('drop',function(e){e.preventDefault();if(sel)place(s,sel)});s.onclick=function(){if(sel)place(s,sel);else if(s.firstChild)bk.appendChild(s.firstChild)}});
  bk.addEventListener('dragover',function(e){e.preventDefault()});bk.addEventListener('drop',function(e){e.preventDefault();if(sel)bk.appendChild(sel)});
- stage.querySelector('#dgChk').onclick=function(){var ok=0;[].forEach.call(stage.querySelectorAll('.slot'),function(s){var i=+s.dataset.i,c=s.firstChild,fb=s.parentNode.querySelector('.fb');if(c&&c.dataset.w===q[i][1]){ok++;s.classList.remove('no');s.classList.add('ok');fb.textContent='✔';fb.className='fb ok';award('dg'+i,5)}else{s.classList.add('no');fb.textContent=c?'✘ tente outra':'falta';fb.className='fb no'}});if(ok===q.length)fimAct('dg')}}
+ var busy=false;stage.querySelector('#dgChk').onclick=function(){if(busy)return;busy=true;var btn=this;btn.disabled=true;var fb0=stage.querySelector('#dgfb');
+  wait(fb0,function(){busy=false;btn.disabled=false;var ok=0;[].forEach.call(stage.querySelectorAll('.slot'),function(s){var i=+s.dataset.i,c=s.firstChild,fb=s.parentNode.querySelector('.fb'),good=!!c&&c.dataset.w===q[i][1];logIt('Arraste '+(i+1)+': '+(c?c.dataset.w:'(vazio)'),good);
+    if(good){ok++;s.classList.remove('no');s.classList.add('ok');fb.textContent='✔';fb.className='fb ok';award('dg'+i,5)}else{s.classList.add('no');fb.textContent=c?'✘ tente outra':'falta';fb.className='fb no'}});
+   fb0.textContent=ok===q.length?'✔ Tudo certo!':ok+' de '+q.length+' certas';fb0.className='fb '+(ok===q.length?'ok':'no');if(ok===q.length)fimAct('dg')})}}
 
 /* ---------- 4) quadrinhos ---------- */
-function actBx(){var t=T[tema],q=[['Quem compra o produto','CLIENTE'],['Valor cobrado por um produto','PRECO'],['O que sobra depois de pagar os custos','LUCRO'],['Grupo de pessoas que responde à pesquisa','AMOSTRA']];
- var h=bar()+'<h2 id="pergunta">🔠 Digite uma letra em cada quadrinho</h2>';
- q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' ('+x[1].length+' letras)</p><div class="bxs" data-i="'+i+'">'+x[1].split('').map(function(_,k){return '<input maxlength="1" data-k="'+k+'" autocomplete="off">'}).join('')+'</div><span class="fb"></span></div>'});
- stage.innerHTML=h;wireBar();var n=0;
- [].forEach.call(stage.querySelectorAll('.bxs'),function(g){var i=+g.dataset.i,ins=g.querySelectorAll('input'),fb=g.parentNode.querySelector('.fb');
-  [].forEach.call(ins,function(inp,k){inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Backspace'&&!inp.value&&k>0){ins[k-1].focus();ins[k-1].value=''}});
-   inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,'');if(inp.value&&k<ins.length-1)ins[k+1].focus();var w=[].map.call(ins,function(x){return x.value}).join('');if(w.length===q[i][1].length){if(w===q[i][1]){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.disabled=true;x.classList.add('ok')});award('bx'+i,5);if(++n===q.length)fimAct('bx')}else{fb.textContent='Confira as letras';fb.className='fb no'}}else fb.textContent=''})})})}
+function actBx(){var t=T[tema],q=bxQs(),h=bar()+'<h2 id="pergunta">🔠 Descubra a palavra: uma letra em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 4 segundos para saber se acertou.</p>';
+ q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+' letras)</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
+ stage.innerHTML=h;wireBar();var n=0;wireBoxes(stage,function(i,w){logIt('Quadrinhos '+(+i+1)+': '+w,true);award('bx'+i,5);if(++n===q.length)fimAct('bx')},function(i,w){logIt('Quadrinhos '+(+i+1)+': '+w,false)})}
 
 /* ---------- caça-palavras: geração ---------- */
 var D8=[[0,1],[1,0],[1,1],[0,-1],[-1,0],[1,-1],[-1,1],[-1,-1]];
@@ -207,20 +241,24 @@ function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(
   if(hit&&!li.classList.contains('f')){var col=MK[found%MK.length],a=pos(cells[pt[0]]),b=pos(cells[pt[pt.length-1]]);li.classList.add('f');li.style.setProperty('--mk',col);svgLine(hmg,a[0],a[1],b[0],b[1],S*1.15,col,.45);found++;award('hv'+hit,3);if(found===HIVE.length)fimAct('hv')}},prev)}
 
 /* ---------- tabela do tema ---------- */
-function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});
- var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>Pesquisa feita com os clientes do negócio: <b>'+esc(t.nome)+'</b>. Qual é a preferência de cada um?</p><table class="tab"><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<t.tb.length-1?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a linha "Outro": quantas respostas e qual porcentagem.</p>';
- var Q=[['q1','1. Quantas pessoas responderam no total?',[String(tot)]],['q2','2. Qual foi a preferência mais escolhida? (escreva a 1ª palavra, uma letra em cada quadrinho)',[t.kw],1],['q3','3. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',[String(t.tb[0][1]-t.tb[2][1])]],['q4','4. Se o dono pesquisasse 300 pessoas e a proporção fosse a mesma, quantas prefeririam "'+t.tb[0][0]+'"?',[String(300*t.tb[0][1]/tot)]]];
- Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p>'+(x[3]?boxHtml('tbq2',({hamburguer:'HAMBURGUER',corte:'CORTE',esportivo:'ESPORTIVO'})[t.kw]):'<input class="n" data-q="'+x[0]+'" autocomplete="off" style="max-width:20em">')+' <span class="fb"></span></div>'});
- h+='<div class="card" style="--c:'+t.cor+'"><p>5. O que o dono do negócio deve fazer com esse resultado? Explique em uma frase.</p><textarea rows="2" id="tbOpen"></textarea></div><div class="nav"><span></span><button class="btn" id="tbChk">Conferir ✔</button></div><p class="mut">A pergunta 5 é aberta: chame o professor para conferir.</p>';
- stage.innerHTML=h;wireBar();wireBoxes(stage,function(){});[].forEach.call(stage.querySelectorAll('input,textarea'),function(e){e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
- stage.querySelector('#tbChk').onclick=function(){var ok=0,tot2=Q.length+2;
-  function val(k){return stage.querySelector('[data-q="'+k+'"]').value}
-  function mark(el,good,key){el.classList.toggle('okk2',good);el.style.borderColor=good?'#1f9d55':'#d93025';if(good){award('tb'+key,4)}return good}
-  var last=t.tb[t.tb.length-1][1];
-  if(mark(stage.querySelector('[data-q="o1"]'),norm(val('o1'))===String(last),'o1'))ok++;
-  if(mark(stage.querySelector('[data-q="o2"]'),norm(val('o2')).replace('%','')===String(Math.round(last/tot*100)),'o2'))ok++;
-  Q.forEach(function(x){if(x[3]){var g=stage.querySelector('.bxs[data-i="tbq2"]'),w=[].map.call(g.querySelectorAll('input'),function(z){return z.value}).join(''),gd=w===g.dataset.a,f2=g.parentNode.querySelector('.fb');f2.textContent=gd?'✔ Certo!':'Confira e tente de novo';f2.className='fb '+(gd?'ok':'no');if(gd&&award('tb'+x[0],4))ok++;else if(gd&&GOT[tema+'tb'+x[0]])ok++;return}var el=stage.querySelector('[data-q="'+x[0]+'"]'),v=norm(val(x[0])),good=x[3]?v.indexOf(x[2][0])>-1:x[2].some(function(a){return norm(a)===v});var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'Confira e tente de novo';fb.className='fb '+(good?'ok':'no');if(mark(el,good,x[0]))ok++});
-  if(ok===tot2)fimAct('tb')}}
+function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});var last=t.tb[3][1],FW=fw(t);
+ var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>Pesquisa feita com os clientes do negócio: <b>'+esc(t.nome)+'</b>. Qual é a preferência de cada um?</p><table class="tab"><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<3?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a linha "Outro": quantas respostas e qual porcentagem. Ao tocar em Conferir, aguarde 4 segundos.</p>';
+ var Q=[['q1','1. Quantas pessoas responderam no total?',String(tot)],['q3','2. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',String(t.tb[0][1]-t.tb[2][1])],['q4','3. Se o dono pesquisasse 300 pessoas e a proporção fosse a mesma, quantas prefeririam "'+t.tb[0][0]+'"?',String(300*t.tb[0][1]/tot)]];
+ h+='<div class="card" style="--c:'+t.cor+'"><p>4. Qual foi a preferência mais escolhida? Escreva a 1ª palavra, uma letra em cada quadrinho. <small>('+FW.length+' letras)</small></p>'+boxHtml('tbq2',FW)+' <span class="fb"></span></div>';
+ Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p><input class="n" data-q="'+x[0]+'" inputmode="numeric" autocomplete="off" style="max-width:10em"> <span class="fb"></span></div>'});
+ h+='<div class="card" style="--c:'+t.cor+'"><p>5. O que o dono do negócio deve fazer com esse resultado? Explique em uma frase.</p><textarea rows="2" id="tbOpen"></textarea></div><div class="nav"><span class="fb" id="tbfb"></span><button class="btn" id="tbChk">Conferir ✔</button></div><p class="mut">A pergunta 5 é aberta: chame o professor para conferir.</p>';
+ stage.innerHTML=h;wireBar();wireBoxes(stage,function(i,w){logIt('Tabela: preferência mais escolhida = '+w,true);award('tbq2',4)},function(i,w){logIt('Tabela: preferência = '+w,false)});
+ [].forEach.call(stage.querySelectorAll('input,textarea'),function(e){e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
+ var busy=false;stage.querySelector('#tbChk').onclick=function(){if(busy)return;busy=true;var btn=this;btn.disabled=true;var fb0=stage.querySelector('#tbfb');
+  wait(fb0,function(){busy=false;btn.disabled=false;var ok=0,need=6;
+   function val(k){return norm(stage.querySelector('[data-q="'+k+'"]').value).replace('%','')}
+   function mark(el,good,key,txt){el.style.borderColor=good?'#1f9d55':'#d93025';logIt(txt+': '+el.value,good);if(good){award('tb'+key,4);ok++}return good}
+   mark(stage.querySelector('[data-q="o1"]'),val('o1')===String(last),'o1','Tabela · Outro (respostas)');
+   mark(stage.querySelector('[data-q="o2"]'),val('o2')===String(Math.round(last/tot*100)),'o2','Tabela · Outro (%)');
+   Q.forEach(function(x){var el=stage.querySelector('[data-q="'+x[0]+'"]'),good=norm(el.value)===norm(x[2]);var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'✘ Confira a conta';fb.className='fb '+(good?'ok':'no');mark(el,good,x[0],'Tabela · '+x[0])});
+   var g=stage.querySelector('.bxs[data-i="tbq2"]'),w=[].map.call(g.querySelectorAll('input'),function(z){return z.value}).join('');if(w===FW){ok++;award('tbq2',4)}
+   var o=stage.querySelector('#tbOpen').value.trim();if(o)logIt('Tabela · conclusão: '+o.slice(0,120));
+   fb0.textContent=ok===6?'✔ Tudo certo!':ok+' de 6 certas';fb0.className='fb '+(ok===6?'ok':'no');if(ok===6)fimAct('tb')})}}
 
 /* ---------- 7) pesquisa escrita (discursiva) ---------- */
 function steps(t){return[
@@ -240,6 +278,38 @@ function actDs(){var t=T[tema],S=steps(t);if(dsStep>=S.length){dsStep=0;fimAct('
  [].forEach.call(stage.querySelectorAll('textarea'),function(e){e.addEventListener('input',save);e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
  stage.querySelector('#ant').onclick=function(){save();dsStep--;actDs()};stage.querySelector('#prox').onclick=function(){save();dsStep++;actDs()};
  [].forEach.call(stage.querySelectorAll('.pill'),function(b){b.onclick=function(){save();dsStep=+b.dataset.i;actDs()}})}
+/* ---------- versao para imprimir (so apos a senha do professor, via botao da impressora) ---------- */
+function printMode(){
+ var sel='all',gab=true,pf=1,mg=10;
+ var css=document.createElement('style');
+ css.textContent='#pm-bar{position:sticky;top:0;z-index:2147483000;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 14px;font:700 14px Arial}#pm-bar select,#pm-bar button{font:700 14px Arial;padding:6px 10px;border-radius:99px;border:0}#pm-bar button{background:#ffd24d;cursor:pointer}'+
+ '.pmp{background:#fff;color:#000;max-width:794px;margin:12px auto;padding:var(--mg,10mm);font-family:"Segoe UI",Arial,sans-serif;font-size:calc(13px*var(--pf,1));line-height:1.35;box-sizing:border-box}.pmp.pg{break-before:page}.pmp h1{font-size:1.6em;margin:0}.pmp .id{display:flex;gap:16px;margin:6px 0 8px}.pmp .id span{flex:1;border-bottom:1px solid #000;padding-bottom:2px}.pmp h2{font-size:1.1em;border-bottom:2px solid #000;margin:10px 0 5px}.pmp ol{margin:0;padding-left:22px}.pmp li{margin:4px 0;break-inside:avoid}.pmp .bx{display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px}.pmp .bx i{width:19px;height:21px;border:1.5px solid #000;display:inline-block}.pmp .ln{border-bottom:1px solid #000;height:23px;margin:3px 0}.pmp table{border-collapse:collapse}.pmp td,.pmp th{border:1.5px solid #000;padding:3px 10px}.pmp .jgp{display:grid;grid-template-columns:repeat(12,22px);border:2px solid #000;width:max-content}.pmp .jgp b{width:22px;height:22px;border:.5px solid #999;display:flex;align-items:center;justify-content:center;font:700 13px Georgia,serif}.pmp .cols{display:flex;gap:14px;align-items:flex-start}.pmp.gk,.pmp.gk *{font-family:Arial,Helvetica,sans-serif!important}.pmp.gk h3{margin:8px 0 2px;font-size:1.05em}.pmp small{font-size:.85em}'+
+ '@media print{#pm-bar{display:none!important}.pmp{margin:0;max-width:none}@page{size:A4;margin:8mm}}';
+ document.head.appendChild(css);
+ [].forEach.call(document.querySelectorAll('body>*'),function(e){if(e.id!=='imp-bar'&&e.tagName!=='SCRIPT'&&e.tagName!=='STYLE')e.style.display='none'});
+ var ib=document.getElementById('imp-bar');if(ib)ib.style.display='none';
+ var bar=document.createElement('div');bar.id='pm-bar';
+ bar.innerHTML='<span>🖨️ Pesquisa de mercado — versão para imprimir</span><select id="pmSel"><option value="all">Todos os 9 temas</option>'+Object.keys(T).map(function(k){return '<option value="'+k+'">'+T[k].em+' '+T[k].nome+'</option>'}).join('')+'</select><label><input type="checkbox" id="pmG" checked> Incluir gabarito (só você vê)</label><label>Letra <input type="range" id="pmF" min="70" max="130" value="100" style="width:90px"></label><label>Margem <input type="range" id="pmM" min="4" max="20" value="10" style="width:90px"></label><button id="pmP">Imprimir / Salvar PDF</button>';
+ var root=document.createElement('div');root.id='pm-root';document.body.appendChild(bar);document.body.appendChild(root);
+ function opts(t,k){var r=rng(seedOf(k+'print')),L='ABCD';return mcQs(t).map(function(x){var o=shuf([x.ok].concat(x.wr),r);return {q:x.q,o:o,a:L[o.indexOf(x.ok)]}})}
+ function boxes(n){return '<span class="bx">'+Array(n+1).join('<i></i>')+'</span>'}
+ function sheet(k){var t=T[k],mc=opts(t,k),tp=tpQs(t),tot=0;t.tb.forEach(function(x){tot+=x[1]});var G=gridWords(t.jn.map(function(x){return x[0]}),12,D8.slice(0,5),rng(seedOf(k+'jn')));
+  var h='<div class="pmp pg"><h1>'+t.em+' Pesquisa de mercado — '+esc(t.nome)+'</h1><div class="id"><span>Nome:</span><span>Turma:</span><span>Data:</span></div><p style="margin:0">Você vai abrir um(a) '+esc(t.neg)+'. Responda às atividades.</p>';
+  h+='<h2>Parte 1 — Marque a alternativa certa</h2><ol>'+mc.map(function(x){return '<li>'+esc(x.q)+'<br>'+x.o.map(function(v,i){return '<b>'+'ABCD'[i]+')</b> '+esc(v)}).join(' &nbsp; ')+'</li>'}).join('')+'</ol>';
+  h+='<h2>Parte 2 — Escreva uma letra (ou número) em cada quadrinho</h2><ol>'+tp.map(function(x){return '<li>'+esc(x[0])+boxes(x[1].length)+'</li>'}).join('')+'</ol>';
+  h+='<h2>Parte 3 — Analise a tabela</h2><table><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<3?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>'}).join('')+'</table><ol><li>Quantas pessoas responderam no total? ____________</li><li>Quantas pessoas a mais escolheram "'+esc(t.tb[0][0])+'" do que "'+esc(t.tb[2][0])+'"? ____________</li><li>Se pesquisassem 300 pessoas na mesma proporção, quantas prefeririam "'+esc(t.tb[0][0])+'"? ____________</li><li>Qual foi a preferência mais escolhida? '+boxes(fw(t).length)+'</li></ol>';
+  h+='</div><div class="pmp pg"><h2>Parte 4 — Caça-palavras: ache as 8 respostas</h2><div class="cols"><div class="jgp">'+G.g.map(function(r){return r.map(function(c){return '<b>'+c+'</b>'}).join('')}).join('')+'</div><ol>'+t.jn.map(function(x){return '<li>'+esc(x[1])+' <small>('+x[0].length+' letras)</small></li>'}).join('')+'</ol></div>';
+  h+='<h2>Parte 5 — Sua pesquisa</h2><p style="margin:2px 0">Quem é o seu público? Descreva idade, onde moram e o que gostam.</p><div class="ln"></div><div class="ln"></div><p style="margin:2px 0">Escreva 5 perguntas para descobrir o que o seu público quer:</p><ol>'+[1,2,3,4,5].map(function(){return '<li><div class="ln"></div></li>'}).join('')+'</ol><p style="margin:2px 0">Vale a pena lançar o negócio? Justifique e sugira um '+esc(t.preco)+'.</p><div class="ln"></div><div class="ln"></div></div>';
+  return h}
+ function key(k){var t=T[k],mc=opts(t,k),tp=tpQs(t),tot=0;t.tb.forEach(function(x){tot+=x[1]});
+  return '<h3>'+t.em+' '+esc(t.nome)+'</h3><p style="margin:0"><b>Parte 1:</b> '+mc.map(function(x,i){return (i+1)+'-'+x.a}).join(' &nbsp; ')+'</p><p style="margin:0"><b>Parte 2:</b> '+tp.map(function(x,i){return (i+1)+') '+x[1]}).join(' &nbsp; ')+'</p><p style="margin:0"><b>Parte 3:</b> Outro = '+t.tb[3][1]+' respostas e '+Math.round(t.tb[3][1]/tot*100)+'%; total = '+tot+'; diferença = '+(t.tb[0][1]-t.tb[2][1])+'; em 300 pessoas = '+(300*t.tb[0][1]/tot)+'; mais escolhida = '+fw(t)+'</p><p style="margin:0"><b>Parte 4:</b> '+t.jn.map(function(x){return x[0]}).join(', ')+'</p><p style="margin:0"><b>Parte 5:</b> resposta pessoal (o professor confere).</p>'}
+ function render(){var ks=sel==='all'?Object.keys(T):[sel],h=ks.map(sheet).join('');
+  if(gab)h+='<div class="pmp gk pg"><h1>GABARITO — uso do professor</h1><p style="margin:2px 0 6px">Pesquisa de mercado · Educação Financeira · 3ª série EM · Aula 37</p>'+ks.map(key).join('')+'</div>';
+  root.innerHTML=h;root.style.setProperty('--pf',pf);root.style.setProperty('--mg',mg+'mm')}
+ bar.querySelector('#pmSel').onchange=function(){sel=this.value;render()};bar.querySelector('#pmG').onchange=function(){gab=this.checked;render()};
+ bar.querySelector('#pmF').oninput=function(){pf=this.value/100;root.style.setProperty('--pf',pf)};bar.querySelector('#pmM').oninput=function(){mg=this.value;root.style.setProperty('--mg',mg+'mm')};bar.querySelector('#pmP').onclick=function(){window.print()};
+ render()}
+addEventListener('load',function(){if(window.EDU_IMP)printMode()});
 menu();
 })();
 </script>
