@@ -332,20 +332,14 @@ function rkPontos_(d){
   if(!sid||!cod||!turma||!nome||!isFinite(pts)||pts<0||pts>RK_MAX_PTS)return ContentService.createTextOutput('recusado');
   if(cache.get('rk'+sid))return ContentService.createTextOutput('aguarde');
   cache.put('rk'+sid,'1',3);
-  var lock=LockService.getScriptLock();lock.waitLock(5000);
-  try{var sh=rkAba_(),n=sh.getLastRow()-1,ids=n>0?sh.getRange(2,1,n,1).getValues():[],row=-1;
-    for(var i=0;i<ids.length;i++){if(ids[i][0]===sid){row=i+2;break}}
-    if(row>0){var ant=Number(sh.getRange(row,5).getValue());if(pts<ant)pts=ant}
-    var v=[sid,turma,cod,nome,pts,new Date()];
-    if(row>0)sh.getRange(row,1,1,6).setValues([v]);else sh.appendRow(v);
-    if(sh.getLastRow()>3000)sh.deleteRows(2,1000);
-  }finally{lock.releaseLock()}
+  rkAba_().appendRow([sid,turma,cod,nome,pts,new Date()]); /* só acrescenta (sem bloqueio); o ranking pega o maior de cada aluno */
   return ContentService.createTextOutput('ok');
 }
 function rkTop_(p){
   var turma=rkLimpa_(p.turma,12).toUpperCase(),cod=rkLimpa_(p.codigo,8),sh=rkAba_(),v=sh.getDataRange().getValues();v.shift();
   var lim=Date.now()-RK_HORAS*3600000;
-  var o=v.filter(function(r){return String(r[1]).toUpperCase()===turma&&String(r[2])===cod&&new Date(r[5]).getTime()>=lim}).map(function(r){return{sid:r[0],nome:r[3],pontos:Number(r[4])}});
+  var m={};v.forEach(function(r){if(String(r[1]).toUpperCase()===turma&&String(r[2])===cod&&new Date(r[5]).getTime()>=lim){var s=r[0],x=Number(r[4]);if(!m[s]||x>m[s].pontos)m[s]={sid:s,nome:r[3],pontos:x}}});
+  var o=Object.keys(m).map(function(k){return m[k]});
   o.sort(function(a,b){return b.pontos-a.pontos});
   return ContentService.createTextOutput(JSON.stringify({ranking:o.slice(0,10)})).setMimeType(ContentService.MimeType.JSON);
 }
