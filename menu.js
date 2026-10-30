@@ -99,7 +99,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  var gs=jt.map(function(j){return opt(j.href,lab(j),j===cur)}).join('');
  var prev=idx>0?jt[idx-1]:null,next=idx<jt.length-1?jt[idx+1]:null;
  nav.innerHTML=
-  '<a class="b brand" href="'+HUB+'" title="Loja de Matemática — voltar ao início"><i>'+(typeof LOGO==='function'?LOGO('n'):'🏛️')+'</i><span>Loja de Matemática</span></a>'+
+  '<a class="b brand" href="'+HUB+'" title="Ludopédia — voltar ao início"><i>'+(typeof LOGO==='function'?LOGO('n'):'🏛️')+'</i><span>Ludopédia</span></a>'+
   '<div class="sels">'+
    '<label><span>Matéria</span><select id="en-m" aria-label="Matéria">'+ms+'</select></label><i class="div"></i>'+
    '<label><span>Tema</span><select id="en-t" aria-label="Tema">'+ts+'</select></label><i class="div"></i>'+

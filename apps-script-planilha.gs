@@ -1,7 +1,7 @@
 /* Cole este código em script.google.com (Novo projeto), implante como "App da Web"
    (Executar como: você · Quem tem acesso: Qualquer pessoa) e copie o endereço /exec para config.js. */
 var ABA='Resultados';
-function aba_(){var ss=SpreadsheetApp.getActiveSpreadsheet()||SpreadsheetApp.create('Loja de Matemática - Resultados');
+function aba_(){var ss=SpreadsheetApp.getActiveSpreadsheet()||SpreadsheetApp.create('Ludopédia - Resultados');
   var sh=ss.getSheetByName(ABA);if(!sh){sh=ss.insertSheet(ABA);sh.appendRow(['sid','data','hora','nome','turma','jogo','codigo','aula','pontos','maximo','segundos'])}return sh}
 function doPost(e){
   var d=JSON.parse(e.postData.contents),sh=aba_(),ids=sh.getRange(2,1,Math.max(sh.getLastRow()-1,1),1).getValues(),row=-1;
