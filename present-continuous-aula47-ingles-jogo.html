@@ -322,6 +322,25 @@ function potePts(old,n){var pote=document.getElementById('pote');if(!pote)return
   a.onfinish=function(){el.remove();done++;if(done===cnt){poteFill(n);pote.classList.remove('pop');void pote.offsetWidth;pote.classList.add('pop')}}})(i)}
 function poteHeader(n){var pt=document.getElementById('pote'),nav=document.getElementById('edu-nav'),c=document.getElementById('pts');if(pt&&nav&&c&&c.parentNode===nav){if(pt.parentNode!==nav)nav.insertBefore(pt,c.nextSibling);return}if(n<40)setTimeout(function(){poteHeader(n+1)},250)}
 poteHeader(0);
+
+/* ---- carteirinha do pote ---- */
+(function(){
+var DEN=[['1','R$ 1,00',100],['50','R$ 0,50',50],['25','R$ 0,25',25],['10','R$ 0,10',10],['5','R$ 0,05',5]];
+function brl(c){return 'R$ '+(c/100).toFixed(2).replace('.',',')}
+function walOpen(){if(document.getElementById('wal2'))return;
+ var cents=Math.max(0,Math.round((typeof pts==='number'?pts:0)*10)),left=cents,h='',goals=[100,250,500,1000],g=goals[goals.length-1],i;
+ for(i=0;i<goals.length;i++)if(cents<goals[i]){g=goals[i];break}
+ var tit=cents>=1000?'Mestre do Pote':(cents>=500?'Super Poupador':(cents>=250?'Poupador':(cents>=100?'Aprendiz':'Iniciante')));
+ DEN.forEach(function(d){var q=Math.floor(left/d[2]);left-=q*d[2];h+='<div class="wi">'+coinSvg(COINS[['1','50','25','10','5'].indexOf(d[0])])+'<b>'+q+'x</b>'+d[1]+'</div>'});
+ var o=document.createElement('div');o.id='wal2';
+ o.innerHTML='<div class="wc" role="dialog" aria-label="Carteirinha"><h3>CARTEIRINHA DO POTE</h3><div class="wt">'+brl(cents)+'</div><div>'+tit+'</div><div class="wg">'+h+'</div><div class="wm">Meta: '+brl(g)+'<div class="wb"><i style="width:'+Math.min(100,Math.round(cents/g*100))+'%"></i></div></div><small>Cada ponto vale R$ 0,10 de brincadeira. Dinheiro de brincadeira, sem valor.</small><button type="button" id="wal2x">Fechar</button></div>';
+ document.body.appendChild(o);
+ function cl(){o.remove()}
+ o.onclick=function(e){if(e.target===o)cl()};document.getElementById('wal2x').onclick=cl;
+ document.addEventListener('keydown',function k(e){if(e.key==='Escape'){cl();document.removeEventListener('keydown',k)}})}
+var st=document.createElement('style');st.textContent="#wal2{position:fixed;inset:0;background:#000a;z-index:99999;display:flex;align-items:center;justify-content:center;padding:12px;font-family:Arial,sans-serif}\n#wal2 .wc{background:linear-gradient(135deg,#1f7a4d,#2fa56a);color:#fff;border-radius:22px;border:5px solid #f5c542;max-width:460px;width:100%;max-height:92vh;overflow:auto;padding:16px;box-shadow:0 10px 30px #0008;text-align:center}\n#wal2 h3{margin:0;font-size:1.15em;letter-spacing:1px}\n#wal2 .wt{font:900 2.6em Arial;color:#ffe066;margin:4px 0}\n#wal2 .wg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}\n#wal2 .wi{background:#fff;color:#222;border-radius:12px;padding:6px 2px;font-weight:800;font-size:.85em}\n#wal2 .wi svg{width:100%;max-width:44px;display:block;margin:0 auto 2px}\n#wal2 .wi b{display:block;font-size:1.4em;color:#1f7a4d}\n#wal2 .wm{background:#0003;border-radius:10px;padding:6px;margin:8px 0;font-weight:700;font-size:.9em}\n#wal2 .wb{height:14px;background:#0004;border-radius:8px;overflow:hidden;margin-top:4px}\n#wal2 .wb i{display:block;height:100%;background:#ffe066}\n#wal2 button{margin-top:8px;font:800 1em Arial;padding:10px 26px;border-radius:14px;border:0;background:#f5c542;color:#222;cursor:pointer}\n#wal2 small{display:block;opacity:.9;margin-top:6px}\n#pote{cursor:pointer}";document.head.appendChild(st);
+document.addEventListener('click',function(e){var p=e.target.closest&&e.target.closest('#pote');if(p){e.preventDefault();walOpen()}});
+})();
 var render0=render;render=function(){render0();if(tipo>=3)t3deco()};
 function advance(){if(tipo===1)next();else{idx++;show()}}
 function wireNext(){var n=$('nx');if(n)n.onclick=advance}
