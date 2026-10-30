@@ -131,7 +131,7 @@ body.t4{background:linear-gradient(#ffe3f1,#e3f0ff,#fff6d6)}
 .fcard.done{background:#eafff0}
 .fcard .fn{width:2em;height:2em;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2em}
 .fcard .fst{color:#f5a300;letter-spacing:2px;font-size:1.25em}
-.f4e{text-align:center}.f4e .bigst{font-size:3.2em;color:#f5a300;letter-spacing:6px;line-height:1.1}
+.f4e{text-align:center}.f4e .bigst{font-size:2.6em;color:#f5a300;letter-spacing:3px;line-height:1.1}
 .mascote #f4map{margin-left:auto;font-size:.8em;padding:8px 16px;min-height:0}
 #stage{scroll-margin-top:96px}.en b{color:var(--red)}
 .consigna{font-size:.8em;color:var(--mut);font-weight:700;margin:0 0 8px}
@@ -289,13 +289,13 @@ T3OBS.observe(document.getElementById('stage')||document.body,{attributes:true,a
  var F4={i:-1,ok:0,ph:DEF.map(function(d,f){return{name:d[0],steps:d[1].split('').map(function(c,j){return KD[c](f*7+j*3)})}})},LSK='p47_fases4';
  function lsGet(){try{return JSON.parse(localStorage.getItem(LSK)||'{}')}catch(e){return{}}}
  function lsSet(f,n){try{var o=lsGet();if(!o[f]||o[f]<n)o[f]=n;localStorage.setItem(LSK,JSON.stringify(o))}catch(e){}}
- function strs(n){return '\u2605\u2605\u2605'.slice(0,n)+'\u2606\u2606\u2606'.slice(0,3-n)}
+ function strs(n){return '★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n)}
  STEPS[4]=F4.ph[0].steps;window.__F4=F4;
  function showMap(){var sv=lsGet();$('prog').textContent='Mapa de fases';
   stage.innerHTML='<h2 style="text-align:center">Escolha uma fase</h2><p style="text-align:center;margin:0">Jogue na ordem que quiser. Cada fase tem 10 desafios.</p><div class="fmap">'+F4.ph.map(function(f,i){return '<button class="fcard'+(sv[i]?' done':'')+'" data-f="'+i+'" style="--c:hsl('+(i*30)+' 70% 48%)"><span class="fn">'+(i+1)+'</span><span class="fname">'+f.name+'</span><span class="fst">'+strs(sv[i]||0)+'</span></button>'}).join('')+'</div>';
   [].forEach.call(stage.querySelectorAll('.fcard'),function(b){b.onclick=function(){startPhase(+b.dataset.f)}});stage.scrollIntoView({block:"start"})}
  function startPhase(i){F4.i=i;F4.ok=0;STEPS[4]=F4.ph[i].steps;idx=0;show()}
- function phaseEnd(){var st=STEPS[4],sc=st.filter(function(x){return x.k==='mc'||x.k==='or'}).length,r=sc?F4.ok/sc:1,n=r>=.9?3:(r>=.7?2:1);lsSet(F4.i,n);$('prog').textContent='Fase '+(F4.i+1)+' completa';
+ function phaseEnd(){var st=STEPS[4],sc=st.filter(function(x){return x.k==='mc'||x.k==='or'}).length,r=sc?F4.ok/sc:1,n=r>=.95?5:(r>=.85?4:(r>=.7?3:(r>=.5?2:1)));lsSet(F4.i,n);$('prog').textContent='Fase '+(F4.i+1)+' completa';
   stage.innerHTML='<div class="f4e"><h2>Fase '+(F4.i+1)+' completa!</h2><div class="bigst">'+strs(n)+'</div><p>Voc\u00ea acertou '+F4.ok+' de '+sc+' de primeira.</p><div class="nav"><button class="btn" id="f4n">'+(F4.i<F4.ph.length-1?'Pr\u00f3xima fase \u25b6':'Mapa de fases')+'</button><button class="btn alt" id="f4m">Mapa de fases</button><button class="btn alt" id="f4r">Jogar de novo</button></div></div>';
   setPts(n*5);t3conf();
   $('f4n').onclick=function(){if(F4.i<F4.ph.length-1)startPhase(F4.i+1);else{F4.i=-1;idx=0;show()}};$('f4m').onclick=function(){F4.i=-1;idx=0;show()};$('f4r').onclick=function(){startPhase(F4.i)};stage.scrollIntoView({block:"start"})}
@@ -325,15 +325,33 @@ poteHeader(0);
 
 /* ---- carteirinha do pote ---- */
 (function(){
+var WAL={'1':0,'50':0,'25':0,'10':0,'5':0},KI=['1','50','25','10','5'],
+ BIG=[['25',1],['50',1],['1',1],['25',2],['10',4],['25',5],['50',2],['5',3],['10',3],['1',2],['25',3],['5',5]],
+ MID=[['25',1],['50',1],['10',2],['5',3],['10',4],['25',2],['5',2],['10',1]],
+ SML=[['5',1],['10',1],['5',2],['25',1],['5',3],['10',2]];
+function sum(){var t=0;KI.forEach(function(k){t+=(WAL[k]||0)*(k==='1'?100:+k)});return t}
+function toast(txt){var el=document.createElement('div');el.textContent=txt;el.style.cssText='position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#1f7a4d;color:#fff;border:3px solid #ffe066;border-radius:99px;padding:6px 16px;font:900 18px Arial;z-index:99998;pointer-events:none';fxroot().appendChild(el);el.animate([{opacity:0,transform:'translateX(-50%) translateY(10px)'},{opacity:1,transform:'translateX(-50%)',offset:.2},{opacity:1,offset:.75},{opacity:0}],{duration:1900}).onfinish=function(){el.remove()}}
+potePts=function(old,n){var pote=document.getElementById('pote');
+ if(n<old){if(n<=0)KI.forEach(function(k){WAL[k]=0});poteFill(n);return}
+ if(n===old){return}
+ var d=n-old,L=d>=10?BIG:(d>=5?MID:SML),b=L[Math.floor(Math.random()*L.length)],k=b[0],q=b[1];WAL[k]+=q;
+ var nm=k==='1'?'R$ 1,00':'R$ 0,'+(k.length<2?'0'+k:k);toast('+ '+q+' × '+nm);
+ if(!pote)return;if(t3rd()){poteFill(n);return}
+ var st=document.getElementById('stage')||document.body,sr=st.getBoundingClientRect(),tg=pote.getBoundingClientRect(),vis=tg.bottom>0&&tg.top<innerHeight;if(!vis){var bb=document.getElementById('pts2');tg=bb?bb.getBoundingClientRect():tg}
+ var tx=tg.left+tg.width/2-22,ty=tg.top+tg.height/2-22,sx0=Math.max(20,Math.min(innerWidth-70,sr.left+sr.width/2-22)),sy0=Math.max(80,Math.min(innerHeight-120,sr.top+Math.min(sr.height,innerHeight)/2-22)),done=0;
+ for(var i=0;i<q;i++)(function(i){var el=document.createElement('div');el.className='fcoin';el.innerHTML=coinSvg(COINS[KI.indexOf(k)]);fxroot().appendChild(el);
+  var x0=sx0+(i-(q-1)/2)*52,y0=sy0;
+  var a=el.animate([{transform:'translate('+x0+'px,'+(y0+30)+'px) scale(.2) rotate(0deg)',opacity:0},{transform:'translate('+x0+'px,'+y0+'px) scale(1.3) rotate(200deg)',opacity:1,offset:.3},{transform:'translate('+x0+'px,'+y0+'px) scale(1.3) rotate(360deg)',opacity:1,offset:.5},{transform:'translate('+tx+'px,'+ty+'px) scale(.45) rotate(720deg)',opacity:.95}],{duration:1500,delay:i*130,easing:'ease-in-out',fill:'both'});
+  a.onfinish=function(){el.remove();done++;if(done===q){poteFill(n);pote.classList.remove('pop');void pote.offsetWidth;pote.classList.add('pop')}}})(i)};
 var DEN=[['1','R$ 1,00',100],['50','R$ 0,50',50],['25','R$ 0,25',25],['10','R$ 0,10',10],['5','R$ 0,05',5]];
 function brl(c){return 'R$ '+(c/100).toFixed(2).replace('.',',')}
 function walOpen(){if(document.getElementById('wal2'))return;
- var cents=Math.max(0,Math.round((typeof pts==='number'?pts:0)*10)),left=cents,h='',goals=[100,250,500,1000],g=goals[goals.length-1],i;
+ var cents=sum(),h='',goals=[100,250,500,1000],g=goals[goals.length-1],i;
  for(i=0;i<goals.length;i++)if(cents<goals[i]){g=goals[i];break}
  var tit=cents>=1000?'Mestre do Pote':(cents>=500?'Super Poupador':(cents>=250?'Poupador':(cents>=100?'Aprendiz':'Iniciante')));
- DEN.forEach(function(d){var q=Math.floor(left/d[2]);left-=q*d[2];h+='<div class="wi">'+coinSvg(COINS[['1','50','25','10','5'].indexOf(d[0])])+'<b>'+q+'x</b>'+d[1]+'</div>'});
+ DEN.forEach(function(d){var q=WAL[d[0]]||0;h+='<div class="wi">'+coinSvg(COINS[['1','50','25','10','5'].indexOf(d[0])])+'<b>'+q+'x</b>'+d[1]+'</div>'});
  var o=document.createElement('div');o.id='wal2';
- o.innerHTML='<div class="wc" role="dialog" aria-label="Carteirinha"><h3>CARTEIRINHA DO POTE</h3><div class="wt">'+brl(cents)+'</div><div>'+tit+'</div><div class="wg">'+h+'</div><div class="wm">Meta: '+brl(g)+'<div class="wb"><i style="width:'+Math.min(100,Math.round(cents/g*100))+'%"></i></div></div><small>Cada ponto vale R$ 0,10 de brincadeira. Dinheiro de brincadeira, sem valor.</small><button type="button" id="wal2x">Fechar</button></div>';
+ o.innerHTML='<div class="wc" role="dialog" aria-label="Carteirinha"><h3>CARTEIRINHA DO POTE</h3><div class="wt">'+brl(cents)+'</div><div>'+tit+'</div><div class="wg">'+h+'</div><div class="wm">Meta: '+brl(g)+'<div class="wb"><i style="width:'+Math.min(100,Math.round(cents/g*100))+'%"></i></div></div><small>Você ganha moedinhas a cada acerto. Dinheiro de brincadeira, sem valor.</small><button type="button" id="wal2x">Fechar</button></div>';
  document.body.appendChild(o);
  function cl(){o.remove()}
  o.onclick=function(e){if(e.target===o)cl()};document.getElementById('wal2x').onclick=cl;
