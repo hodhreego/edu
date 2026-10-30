@@ -69,6 +69,35 @@ table.tb{border-collapse:collapse;width:100%;margin:.6em 0;font-size:.95em}
 .t2 .btn{font-size:1em;padding:18px 40px;min-height:76px}
 .t2 .b2{font-size:1.3em;text-align:center;margin:.4em 0}
 .t3{--fs:clamp(21px,3.4vw,32px)}.t3 .opt{min-height:80px}.t3 .b3{font-size:1.2em;text-align:center;margin:.4em 0}
+
+/* ---- Tipo 3: visual e lúdico ---- */
+body.t3{background:linear-gradient(#e8f6ff,#fff6e0)}
+.t3 .pic{background:#fff;border:6px dashed #ffb703;border-radius:30px;padding:10px;margin:.4em auto;max-width:330px}
+.t3 .pic svg{width:100%;height:auto;max-height:260px}
+.t3 .opts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
+.t3 .opt{border-radius:30px;border-width:6px;font-weight:800;min-height:110px;box-shadow:0 6px 0 rgba(0,0,0,.15);transition:transform .12s}
+.t3 .opt:nth-child(1){background:#dff1ff;border-color:#2b8be0}.t3 .opt:nth-child(2){background:#ffe9c7;border-color:#f08a00}
+.t3 .opt:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.t3 .opt.ok{background:#b9f6ca!important;border-color:#13a538!important;animation:t3pulo .6s}
+.t3 .opt.no{background:#eceff4!important;border-color:#aab!important;animation:t3treme .35s}
+.t3 .say{width:76px;height:76px;border-radius:50%;font-size:2em}
+.t3 .btn{border-radius:30px;font-size:1.2em;padding:16px 38px;background:#13a538;color:#fff;box-shadow:0 6px 0 #0b7a27}
+.t3 .consigna{font-size:1.1em;text-align:center}
+.t3 .th-card{background:#fff;border-radius:30px;padding:10px 18px}
+#t3trilha{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+#t3trilha i{width:22px;height:22px;border-radius:50%;background:#d7dbe6;display:inline-block}
+#t3trilha i.f{background:#ffc400;clip-path:polygon(50% 0,62% 36%,100% 38%,70% 60%,80% 100%,50% 76%,20% 100%,30% 60%,0 38%,38% 36%);width:26px;height:26px;border-radius:0}
+#t3trilha i.a{background:#2b8be0;outline:4px solid #bfe0ff}
+.mascote{display:flex;align-items:center;gap:10px;margin:2px 0 6px}
+.mascote svg{width:84px;height:84px;flex:none;animation:t3flutua 2.4s ease-in-out infinite}
+.mascote .bal{background:#fff;border:4px solid #7a5cff;border-radius:22px;padding:8px 16px;font:800 1.15em Arial,sans-serif;color:#33307a;position:relative}
+.mascote .bal:before{content:"";position:absolute;left:-14px;top:50%;margin-top:-9px;border:9px solid transparent;border-right:12px solid #7a5cff;border-left:0}
+.conf{position:fixed;top:-20px;width:14px;height:20px;z-index:60;border-radius:3px;animation:t3cai 1.5s ease-in forwards;pointer-events:none}
+@keyframes t3cai{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+@keyframes t3pulo{30%{transform:scale(1.1)}60%{transform:scale(.96)}}
+@keyframes t3treme{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+@keyframes t3flutua{50%{transform:translateY(-6px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.mascote svg,.conf{animation:none}}
 .en b{color:var(--red)}
 .consigna{font-size:.8em;color:var(--mut);font-weight:700;margin:0 0 8px}
 #bar{position:fixed;left:0;right:0;bottom:0;z-index:2147482000;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 12px;font:700 14px Arial,sans-serif}
@@ -178,6 +207,18 @@ function show(){ // tipos 2 e 3 (linear + extras)
  if(idx>=st.length){S=extraStep();A.extraN++;$('prog').textContent='Desafio extra '+A.extraN}else{S=st[idx];$('prog').textContent=(idx+1)+' / '+st.length}
  render()}
 function render(){if(CHK){document.removeEventListener('keydown',CHK);CHK=null}locked=false;shownAt=Date.now();clearTimer();var fn={th:rTh,mc:rMc,ty:rTy,or:rOr,mt:rMt,mem:rMem}[S.k];stage.innerHTML='';stage.classList.remove('lk');fn();window.scrollTo(0,0)}
+
+/* ---- Tipo 3: mascote, trilha de estrelas, confete e leitura automática ---- */
+var T3MASC='<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="56" r="38" fill="#ffd54a" stroke="#222" stroke-width="4"/><path d="M22 28 36 40M78 28 64 40" stroke="#222" stroke-width="5" stroke-linecap="round"/><circle cx="38" cy="50" r="9" fill="#fff" stroke="#222" stroke-width="3"/><circle cx="62" cy="50" r="9" fill="#fff" stroke="#222" stroke-width="3"/><circle cx="40" cy="52" r="4" fill="#222"/><circle cx="60" cy="52" r="4" fill="#222"/><path d="M40 70Q50 82 60 70" fill="#ff7a8a" stroke="#222" stroke-width="3" stroke-linecap="round"/></svg>';
+function t3fala(t){var b=document.getElementById('t3bal');if(b)b.textContent=t}
+function t3conf(){var c=['#ff4d6d','#ffc400','#2b8be0','#13a538','#7a5cff','#f08a00'];for(var i=0;i<30;i++){var d=document.createElement('div');d.className='conf';d.style.left=(Math.random()*100)+'vw';d.style.background=c[i%6];d.style.animationDelay=(Math.random()*.4)+'s';document.body.appendChild(d);(function(x){setTimeout(function(){x.remove()},2200)})(d)}}
+function t3deco(){var n=STEPS[3].length,h='';for(var i=0;i<n;i++)h+='<i class="'+(i<idx?'f':i===idx?'a':'')+'"></i>';
+ var m=document.createElement('div');m.innerHTML='<div id="t3trilha">'+h+'</div><div class="mascote">'+T3MASC+'<div class="bal" id="t3bal">'+(S.k==='th'?'Olhe e ouça!':'Vamos! Toque na resposta.')+'</div></div>';stage.insertBefore(m,stage.firstChild);
+ if(S.k==='mc'&&S.say)setTimeout(function(){try{say(S.say)}catch(e){}},700)}
+var T3OBS=new MutationObserver(function(ms){if(tipo!==3)return;ms.forEach(function(m){var t=m.target;if(t.classList&&t.classList.contains('ok')&&m.oldValue&&m.oldValue.indexOf('ok')<0){t3conf();t3fala(['Muito bem!','Isso mesmo!','Uau, acertou!','Parabéns!'][Math.floor(Math.random()*4)])}
+ else if(t.classList&&t.classList.contains('no')&&m.oldValue&&m.oldValue.indexOf('no')<0)t3fala('Quase! Tente o outro.')})});
+T3OBS.observe(document.getElementById('stage')||document.body,{attributes:true,attributeFilter:['class'],attributeOldValue:true,subtree:true});
+var render0=render;render=function(){render0();if(tipo===3)t3deco()};
 function advance(){if(tipo===1)next();else{idx++;show()}}
 function wireNext(){var n=$('nx');if(n)n.onclick=advance}
 function nextBtn(show0){return '<div class="nav"><button class="btn" id="nx"'+(show0?'':' hidden')+'>Próxima ▶</button></div>'}
