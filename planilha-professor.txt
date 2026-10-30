@@ -18,7 +18,8 @@ var DET = ['Data', 'Hora', 'Aluno', 'Turma', 'Escola', 'Matéria', 'Série do jo
   'Senhas dos apps', 'Detalhe das ações', 'ID'];
 var PAI = ['Aluno', 'Data', 'Hora', 'Jogo', 'Código', 'Cenário', 'Pontos', 'Acertos', 'Erros', '% acerto', 'Nota (0-10)',
   'Gasto (R$)', 'Dinheiro final (R$)', 'Tempo (min)', 'Pontuação final (acumulada)', 'Carimbo', 'ID'];
-var RES = ['Turma', 'Aluno', 'Escola', 'Jogos', 'Pontos somados', 'Melhor pontuação', 'Média da nota', 'Gasto total (R$)'];
+var RES = ['Turma', 'Aluno', 'Escola', 'Jogos', 'Pontos somados', 'Melhor pontuação', 'Média da nota', 'Gasto total (R$)', 'Última atividade', 'Ao vivo', 'Posição (nota)'];
+var MIN_AO_VIVO = 30;            // minutos: quem jogou nos últimos MIN_AO_VIVO min, na mesma série da jogada mais recente, vai para o topo
 var HR = 2;                       // linhas congeladas: título + cabeçalho
 var FONTE = 'Nunito';
 var NAVY = '#16213a';
@@ -56,7 +57,7 @@ function gravaResultado_(d) {
   }
   gravar_(det_(ss, 'Todos'), linha, d.sid, DET.length, 17);
   paraPainel_(ss, linha, agora.getTime());
-  resumo_(ss);
+  try { resumo_(ss); } catch (err) { /* o resumo nunca pode impedir o registro do resultado */ }
   return ok_('ok');
 }
 
@@ -260,26 +261,52 @@ function gravar_(sh, linha, sid, idCol, keepCol) {
 function resumo_(ss) {
   var todos = ss.getSheetByName('Todos');
   if (!todos || todos.getLastRow() <= HR) return;
-  var v = todos.getRange(HR + 1, 1, todos.getLastRow() - HR, DET.length).getValues(), m = {};
+  var v = todos.getRange(HR + 1, 1, todos.getLastRow() - HR, DET.length).getValues(), m = {}, ultimo = { t: 0, serie: '' };
   v.forEach(function (x) {
-    var k = x[2] + '|' + x[3];
-    if (!m[k]) m[k] = { aluno: x[2], turma: x[3], escola: x[4], jogos: 0, soma: 0, melhor: 0, nn: 0, np: 0, gasto: 0 };
+    var k = x[2] + '|' + x[3], t = stamp_(x);
+    if (!m[k]) m[k] = { aluno: x[2], turma: x[3], escola: x[4], serie: x[6], jogos: 0, soma: 0, melhor: 0, nn: 0, np: 0, gasto: 0, last: 0 };
     var a = m[k]; a.jogos++; a.soma += Number(x[11]) || 0; if (x[11] > a.melhor) a.melhor = x[11];
     if (x[15] !== '' && !isNaN(x[15])) { var p = Number(x[16]) || 1; a.nn += x[15] * p; a.np += p; }
     a.gasto += Number(x[17]) || 0;
+    if (t >= a.last) { a.last = t; a.serie = x[6]; }
+    if (t >= ultimo.t) { ultimo.t = t; ultimo.serie = x[6]; }
   });
-  var linhas = Object.keys(m).map(function (k) {
-    var a = m[k]; return [a.turma, a.aluno, a.escola, a.jogos, a.soma, a.melhor, a.np ? Math.round(10 * a.nn / a.np) / 10 : '', a.gasto];
-  }).sort(function (a, b) { return String(a[0]).localeCompare(String(b[0])) || String(a[1]).localeCompare(String(b[1])); });
-  var b = base_(ss, 'Resumo', RES, '📊 Resumo por aluno — média ponderada pelo peso');
+  var corte = new Date().getTime() - MIN_AO_VIVO * 60000;
+  var lista = Object.keys(m).map(function (k) {
+    var a = m[k]; a.media = a.np ? Math.round(10 * a.nn / a.np) / 10 : '';
+    a.vivo = a.last >= corte && String(a.serie) === String(ultimo.serie);
+    return a;
+  });
+  function nota_(a) { return a.media === '' ? -1 : a.media; }
+  lista.sort(function (a, b) {
+    return (b.vivo - a.vivo) || (nota_(b) - nota_(a)) || (b.soma - a.soma) || String(a.aluno).localeCompare(String(b.aluno));
+  });
+  // posição por nota (empates dividem a posição), dentro do bloco "ao vivo" e dentro do restante
+  var pos = {}, ult = null, ultPos = 0;
+  [true, false].forEach(function (blk) {
+    ult = null; ultPos = 0; var n = 0;
+    lista.forEach(function (a) {
+      if (a.vivo !== blk) return;
+      n++; if (nota_(a) !== ult) { ult = nota_(a); ultPos = n; }
+      pos[a.aluno + '|' + a.turma] = ultPos;
+    });
+  });
+  var linhas = lista.map(function (a) {
+    return [a.turma, a.aluno, a.escola, a.jogos, a.soma, a.melhor, a.media, a.gasto,
+      Utilities.formatDate(new Date(a.last), TZ, 'dd/MM HH:mm'), a.vivo ? '🟢 AGORA' : '', pos[a.aluno + '|' + a.turma]];
+  });
+  var b = base_(ss, 'Resumo', RES, '📊 Resumo ao vivo — quem jogou nos últimos ' + MIN_AO_VIVO + ' min (mesma série da jogada mais recente) em cima; depois, por nota');
   var sh = b.sh, n = RES.length, max = sh.getMaxRows();
+  if (linhas.length > max - HR) sh.insertRowsAfter(max, linhas.length - (max - HR));
+  max = sh.getMaxRows();
   sh.getRange(HR + 1, 1, max - HR, n).clearContent().setBackground(null);
   if (linhas.length) {
     sh.getRange(HR + 1, 1, linhas.length, n).setValues(linhas);
     var cores = ['#e8f0fe', '#e6f4ea', '#fef7e0', '#fce8e6', '#f3e8fd'], t = '', ci = -1;
     linhas.forEach(function (l, i) {
+      var vivo = l[9] !== '';
       if (l[0] !== t) { t = l[0]; ci = (ci + 1) % cores.length; }
-      sh.getRange(i + HR + 1, 1, 1, 6).setBackground(cores[ci]);
+      sh.getRange(i + HR + 1, 1, 1, n).setBackground(vivo ? '#c8f7d4' : cores[ci]);
     });
   }
   if (b.novo) {
