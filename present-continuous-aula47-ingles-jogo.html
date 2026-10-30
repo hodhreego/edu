@@ -227,7 +227,7 @@ var T3OBS=new MutationObserver(function(ms){if(tipo<3)return;ms.forEach(function
 T3OBS.observe(document.getElementById('stage')||document.body,{attributes:true,attributeFilter:['class'],attributeOldValue:true,subtree:true});
 
 /* ---- Adaptada 4: monta os desafios só com figuras ---- */
-(function(){var P=PINFO,o=[{k:'th',t:'Vamos jogar!',h:'<p class="b3">Ouça. Toque na <b>figura</b> certa.</p>',pic:'jump',fase:'Vamos jogar!'}];
+(function(){var PX=[{p:'music',c:'The boy is listening to music.'},{p:'write',c:'The girl is writing a letter.'},{p:'soccer',c:'They are playing soccer.'},{p:'rain',c:'It is raining.'}];PX.forEach(function(x){var k=x.p;PICSVG[k]='<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"></svg>';PIC[k]='<img class="pimg" src="'+(typeof IMG47!=='undefined'?IMG47[k]:'img/aula47/'+k+'.webp')+'" alt="" draggable="false">'});var P=PINFO.concat(PX),o=[{k:'th',t:'Vamos jogar!',h:'<p class="b3">Ouça. Toque na <b>figura</b> certa.</p>',pic:'jump',fase:'Vamos jogar!'}];
  function pm(a,b){return {k:'mc',q:a.c,o:['pic:'+a.p,'pic:'+b.p],isPic:true,say:a.c,tema:'figura e frase',ad:[],fase:'Ouça e ache a figura!'}}
  function sm(a,b){return {k:'mc',q:'Qual frase combina com a figura?',o:[a.c,b.c],pic:a.p,say:a.c,tema:'figura e frase',ad:[],fase:'Qual frase é a certa?'}}
  function mt(i){var g=P.slice(i,i+3);return {k:'mt',t:'Ligue a figura à frase',pairs:g.map(function(q){return ['pic:'+q.p,q.c]}),fase:'Ligue os pares!'}}
@@ -235,11 +235,11 @@ T3OBS.observe(document.getElementById('stage')||document.body,{attributes:true,a
  o.push(mt(0));
  for(var j=0;j<4;j++)o.push(sm(P[j+2<P.length?j+2:j],P[j]));
  o.push({k:'mem',n:3,fase:'Ache os pares!'});
- for(var k=4;k<8&&k<P.length;k++)o.push(pm(P[k],P[(k+2)%P.length]));
+ for(var k=4;k<P.length;k++)o.push(pm(P[k],P[(k+2)%P.length]));
  o.push(mt(3));
- for(var m=4;m<8&&m<P.length;m++)o.push(sm(P[m],P[(m+1)%P.length]));
+ for(var m=4;m<P.length;m++)o.push(sm(P[m],P[(m+1)%P.length]));
  o.push({k:'mem',n:3,fase:'Ache os pares!'});
- STEPS[4]=o})();
+ o.splice(o.length-1,0,mt(8));STEPS[4]=o})();
 var render0=render;render=function(){render0();if(tipo>=3)t3deco()};
 function advance(){if(tipo===1)next();else{idx++;show()}}
 function wireNext(){var n=$('nx');if(n)n.onclick=advance}
