@@ -128,12 +128,12 @@ function slides(back){var h='<div class="bar"><button class="btn alt" id="sBack"
  stage.querySelector('#sFull').onclick=function(){var el=sl;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el)};
  load()}
 
-/* ---------- apoio: relatorio para a planilha, espera de 4 s ---------- */
+/* ---------- apoio: relatorio para a planilha, espera de 5 s ---------- */
 var CE=0,ER=0,LOG=[],T0=Date.now();
 function mm(){var q=Math.round((Date.now()-T0)/1000);return ('0'+Math.floor(q/60)).slice(-2)+':'+('0'+q%60).slice(-2)}
 function logIt(txt,ok){if(ok===true)CE++;else if(ok===false)ER++;LOG.push('['+mm()+'] '+(tema?T[tema].nome+' · ':'')+txt+(ok===true?' ✔':(ok===false?' ✘':'')));if(LOG.length>70)LOG.shift()}
 window.EDU_EXTRA=function(){return {certas:CE,erradas:ER,acoes:LOG.join('\n').slice(-3800),cenario:tema?T[tema].nome:'',fase:'Pesquisa de mercado'}};
-function wait(fb,cb){var n=4;fb.className='fb';fb.textContent='⏳ Conferindo... '+n;var iv=setInterval(function(){n--;if(n>0)fb.textContent='⏳ Conferindo... '+n;else{clearInterval(iv);cb()}},1000)}
+function wait(fb,cb){var n=5;fb.className='fb';fb.textContent='⏳ Enviando a sua resposta ao professor... '+n;var iv=setInterval(function(){n--;if(n>0)fb.textContent='⏳ Enviando a sua resposta ao professor... '+n;else{clearInterval(iv);cb()}},1000)}
 function fw(t){return norm(t.tb[0][0].split(' ')[0]).toUpperCase()}
 function pct(t){return t.sim*5}
 function mcQs(t){return [
@@ -156,7 +156,7 @@ function dgQs(){return [['A pesquisa mostra o que o ___ quer.','cliente'],['Quem
 function bxQs(){return [['Quem compra o produto','CLIENTE'],['Valor cobrado por um produto','PRECO'],['O que sobra depois de pagar os custos','LUCRO'],['Grupo de pessoas que responde à pesquisa','AMOSTRA'],['Quantidade de pessoas que querem comprar','DEMANDA'],['Parte específica do mercado','NICHO']]}
 
 /* ---------- 1) escolha ---------- */
-function actMc(){var t=T[tema],q=mcQs(t),r=rng(seedOf(tema+'mc')),h=bar()+'<h2 id="pergunta">🔘 Escolha a resposta certa</h2><p class="mut">Depois de escolher, aguarde 4 segundos para saber se acertou.</p>';
+function actMc(){var t=T[tema],q=mcQs(t),r=rng(seedOf(tema+'mc')),h=bar()+'<h2 id="pergunta">🔘 Escolha a resposta certa</h2><p class="mut">Depois de escolher, aguarde 5 segundos para saber se acertou.</p>';
  q.forEach(function(x,i){x.o=shuf([x.ok].concat(x.wr),r);h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x.q)+'</p>'+x.o.map(function(v){return '<button class="opt" data-i="'+i+'" data-v="'+esc(v)+'">'+esc(v)+'</button>'}).join('')+'<div class="fb"></div></div>'});
  stage.innerHTML=h;wireBar();var n=0;
  [].forEach.call(stage.querySelectorAll('.opt'),function(b){b.onclick=function(){var c=b.parentNode,i=+b.dataset.i,fb=c.querySelector('.fb');if(c.dataset.busy||c.dataset.done)return;c.dataset.busy=1;b.classList.add('pick');[].forEach.call(c.querySelectorAll('.opt'),function(x){x.disabled=true});
@@ -173,13 +173,13 @@ function wireBoxes(root,onOk,onNo){[].forEach.call(root.querySelectorAll('.bxs')
     if(ok){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.classList.add('ok')});onOk(i,w)}
     else{fb.textContent='✘ Confira as letras e corrija.';fb.className='fb no';[].forEach.call(ins,function(x){x.disabled=false});if(onNo)onNo(i,w);ins[ins.length-1].focus()}})}
    else if(w.length<ans.length&&!g.dataset.busy)fb.textContent=''})})})}
-function actTp(){var t=T[tema],q=tpQs(t),h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta, uma letra (ou número) em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 4 segundos para saber se acertou.</p>';
+function actTp(){var t=T[tema],q=tpQs(t),h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta, uma letra (ou número) em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 5 segundos para saber se acertou.</p>';
  q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+(/^\d+$/.test(x[1])?' dígitos':' letras')+')</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
  stage.innerHTML=h;wireBar();var n=0;wireBoxes(stage,function(i,w){logIt('Digite '+(+i+1)+': '+w,true);award('tp'+i,5);if(++n===q.length)fimAct('tp')},function(i,w){logIt('Digite '+(+i+1)+': '+w,false)})}
 
 /* ---------- 3) arraste e solte ---------- */
 function actDg(){var t=T[tema],q=dgQs(),bank=shuf(q.map(function(x){return x[1]}).concat(['preço']),rng(seedOf(tema+'dg')));
- var h=bar()+'<h2 id="pergunta">🧲 Arraste a palavra para o lugar certo</h2><p>No celular, toque na palavra e depois no espaço. Ao tocar em Conferir, aguarde 4 segundos.</p><div class="bank" id="bank">'+bank.map(function(w){return '<span class="chip" draggable="true" data-w="'+w+'">'+w+'</span>'}).join('')+'</div>';
+ var h=bar()+'<h2 id="pergunta">🧲 Arraste a palavra para o lugar certo</h2><p>No celular, toque na palavra e depois no espaço. Ao tocar em Conferir, aguarde 5 segundos.</p><div class="bank" id="bank">'+bank.map(function(w){return '<span class="chip" draggable="true" data-w="'+w+'">'+w+'</span>'}).join('')+'</div>';
  q.forEach(function(x,i){var p=x[0].split('___');h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(p[0])+'<span class="slot" data-i="'+i+'"></span>'+esc(p[1])+' <span class="fb"></span></p></div>'});
  h+='<div class="nav"><span class="fb" id="dgfb"></span><button class="btn" id="dgChk">Conferir ✔</button></div>';stage.innerHTML=h;wireBar();
  var sel=null,bk=stage.querySelector('#bank');
@@ -193,7 +193,7 @@ function actDg(){var t=T[tema],q=dgQs(),bank=shuf(q.map(function(x){return x[1]}
    fb0.textContent=ok===q.length?'✔ Tudo certo!':ok+' de '+q.length+' certas';fb0.className='fb '+(ok===q.length?'ok':'no');if(ok===q.length)fimAct('dg')})}}
 
 /* ---------- 4) quadrinhos ---------- */
-function actBx(){var t=T[tema],q=bxQs(),h=bar()+'<h2 id="pergunta">🔠 Descubra a palavra: uma letra em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 4 segundos para saber se acertou.</p>';
+function actBx(){var t=T[tema],q=bxQs(),h=bar()+'<h2 id="pergunta">🔠 Descubra a palavra: uma letra em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 5 segundos para saber se acertou.</p>';
  q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+' letras)</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
  stage.innerHTML=h;wireBar();var n=0;wireBoxes(stage,function(i,w){logIt('Quadrinhos '+(+i+1)+': '+w,true);award('bx'+i,5);if(++n===q.length)fimAct('bx')},function(i,w){logIt('Quadrinhos '+(+i+1)+': '+w,false)})}
 
@@ -242,7 +242,7 @@ function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(
 
 /* ---------- tabela do tema ---------- */
 function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});var last=t.tb[3][1],FW=fw(t);
- var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>Pesquisa feita com os clientes do negócio: <b>'+esc(t.nome)+'</b>. Qual é a preferência de cada um?</p><table class="tab"><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<3?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a linha "Outro": quantas respostas e qual porcentagem. Ao tocar em Conferir, aguarde 4 segundos.</p>';
+ var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>Pesquisa feita com os clientes do negócio: <b>'+esc(t.nome)+'</b>. Qual é a preferência de cada um?</p><table class="tab"><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<3?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a linha "Outro": quantas respostas e qual porcentagem. Ao tocar em Conferir, aguarde 5 segundos.</p>';
  var Q=[['q1','1. Quantas pessoas responderam no total?',String(tot)],['q3','2. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',String(t.tb[0][1]-t.tb[2][1])],['q4','3. Se o dono pesquisasse 300 pessoas e a proporção fosse a mesma, quantas prefeririam "'+t.tb[0][0]+'"?',String(300*t.tb[0][1]/tot)]];
  h+='<div class="card" style="--c:'+t.cor+'"><p>4. Qual foi a preferência mais escolhida? Escreva a 1ª palavra, uma letra em cada quadrinho. <small>('+FW.length+' letras)</small></p>'+boxHtml('tbq2',FW)+' <span class="fb"></span></div>';
  Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p><input class="n" data-q="'+x[0]+'" inputmode="numeric" autocomplete="off" style="max-width:10em"> <span class="fb"></span></div>'});
