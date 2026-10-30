@@ -43,6 +43,15 @@ table.tb{border-collapse:collapse;width:100%;margin:.6em 0;font-size:.95em}
 .txt{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .txt input{flex:1 1 180px;min-width:0;font:800 1.2em Arial,sans-serif;padding:10px 12px;border:3px solid #b9c4e4;border-radius:12px;text-transform:lowercase}
 .txt input.ok{background:#c9f5d6;border-color:var(--ok)}.txt input.no{background:#ffd9d6;border-color:var(--bad)}
+.btn.chb{background:#fff;color:var(--blue);border:3px solid var(--blue);min-height:56px;font-size:1.05em;padding:12px 24px}
+.btn.chb:focus-visible,.chopt:focus-visible,#chv:focus-visible{outline:4px solid #f5a300;outline-offset:2px}
+.chw{margin-top:12px}.chw .nav{margin-top:12px}
+.opts.ch{grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.chopt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:84px;position:relative}
+.chopt .chn{position:absolute;left:10px;top:6px;font:800 .7em Arial,sans-serif;color:var(--mut)}
+.chopt .cht{font:800 1.35em Arial,sans-serif}.chopt .chtr{font-weight:600;color:var(--mut)}
+.t3 .chopt{min-height:100px}
+.lk .chb{pointer-events:none;opacity:.55}
 .pool,.line{display:flex;flex-wrap:wrap;gap:8px;min-height:58px;padding:8px;border-radius:14px}
 .line{background:#f3f6ff;border:3px dashed #b9c4e4;margin-bottom:10px}
 .chip{border:3px solid var(--blue);background:#fff;color:var(--blue);border-radius:12px;padding:10px 14px;font:800 1em Arial,sans-serif;cursor:pointer;min-height:48px}
@@ -63,7 +72,11 @@ table.tb{border-collapse:collapse;width:100%;margin:.6em 0;font-size:.95em}
 .en b{color:var(--red)}
 .consigna{font-size:.8em;color:var(--mut);font-weight:700;margin:0 0 8px}
 #bar{position:fixed;left:0;right:0;bottom:0;z-index:2147482000;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 12px;font:700 14px Arial,sans-serif}
-#bar .coin{background:#ffd24d;color:#16213a;border-radius:99px;padding:5px 14px;font-weight:900;font-size:16px}
+#bar .coin{background:#ffd24d;color:#16213a;border-radius:99px;padding:5px 16px;font-weight:900;font-size:22px}
+#bigpts{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:#ffd24d;color:#16213a;border-radius:99px;padding:4px 24px 6px;margin:0 0 10px;width:max-content;max-width:100%;box-shadow:0 2px 10px rgba(30,40,80,.18);font-family:Arial,sans-serif}
+#bigpts b{font-size:38px;font-weight:900;line-height:1.1}#bigpts span{font-size:20px;font-weight:800}
+#bigpts.pop{animation:bgpop .45s ease}@keyframes bgpop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+@media(max-width:480px){#bigpts b{font-size:34px}#bigpts span{font-size:17px}}@media(prefers-reduced-motion:reduce){#bigpts.pop{animation:none}}
 #bar button{border:0;border-radius:99px;padding:6px 14px;font:800 13px Arial,sans-serif;cursor:pointer;background:#fff;color:#16213a}
 #bar .sp{flex:1}
 #fim{position:fixed;inset:0;z-index:2147483200;display:none;align-items:center;justify-content:center;background:#000a}#fim.on{display:flex}
@@ -95,6 +108,7 @@ table.tb{border-collapse:collapse;width:100%;margin:.6em 0;font-size:.95em}
 <div class="ident">Nome: <b></b> &nbsp; Turma: <b></b> &nbsp; Data: <b></b></div>
 <header class="top"><h1>Present <span>Continuous</span> · Aula 47</h1>
 <div class="tipos" id="tipos"><button id="b1" data-t="1">Tipo 1</button><button id="b2" class="adap" data-t="2">Adaptada 2</button><button id="b3" class="adap" data-t="3">Adaptada 3</button></div></header>
+<div id="bigpts" role="status" aria-label="Pontuação"><b id="bigv">0</b><span>pontos</span></div>
 <div id="hud" hidden><div class="bar"><div id="barf"></div><span id="barl"></span></div><div id="stars"></div><div id="city"></div></div>
 <details id="rk"><summary>Ranking</summary><ol id="rkl" class="rkl"></ol><div id="rkm" class="rkm"></div></details>
 <main class="card" id="stage" aria-live="polite"></main>
@@ -113,12 +127,12 @@ var PICSVG={};Object.keys(PIC).forEach(function(k){PICSVG[k]=PIC[k];PIC[k]='<img
 var P=new URLSearchParams(location.search),QS=function(k,d){var v=P.get(k);return v===null?d:+v};
 var tipo=QS('tipo',1);if(tipo<1||tipo>3)tipo=1;
 var RP=QS("rapido",0)?.05:1,TOTALMIN=QS('min',50),MINITEMS=QS('rapido',0)?10:55,MINSEC=QS('rapido',0)?0:25*60,LOCK=QS('rapido',0)?QS('lock',300):QS('lock',2500);
-var idx=0,pts=0,S=null,locked=false,shownAt=0,t0=Date.now(),tmr=null,released=false,AUD=null;
+var CH=0,CHK=null,idx=0,pts=0,S=null,locked=false,shownAt=0,t0=Date.now(),tmr=null,released=false,AUD=null;
 var A=null; // estado adaptativo (tipo 1)
 function sh(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
-function setPts(d){pts=Math.max(0,pts+d);$('pts').textContent=pts+' pontos'}
+function setPts(d){var old=pts;pts=Math.max(0,pts+d);$('pts').textContent=pts+' pontos';var bv=$('bigv'),bp=$('bigpts');if(bv){bv.textContent=pts;if(pts!==old&&bp){bp.classList.remove('pop');void bp.offsetWidth;bp.classList.add('pop')}}}
 function beep(ok){try{if(!AUD)AUD=new (window.AudioContext||window.webkitAudioContext)();var f=ok?[660,880]:[300],t=AUD.currentTime;f.forEach(function(fr,i){var o=AUD.createOscillator(),g=AUD.createGain();o.frequency.value=fr;o.type='sine';g.gain.setValueAtTime(.0001,t+i*.12);g.gain.exponentialRampToValueAtTime(.08,t+i*.12+.02);g.gain.exponentialRampToValueAtTime(.0001,t+i*.12+.18);o.connect(g);g.connect(AUD.destination);o.start(t+i*.12);o.stop(t+i*.12+.2)})}catch(e){}}
 function hasVoice(){try{return !!(window.speechSynthesis&&speechSynthesis.getVoices().some(function(v){return /^en/i.test(v.lang)}))}catch(e){return false}}
 function say(t){try{var Sy=window.speechSynthesis;if(!Sy||!t)return;Sy.cancel();var u=new SpeechSynthesisUtterance(String(t).replace(/___/g,'blank'));u.lang='en-US';if(window.EDU_VOICE){var v=EDU_VOICE('en-US');if(v)u.voice=v}u.rate=.85;Sy.speak(u)}catch(e){}}
@@ -129,7 +143,7 @@ function mmss(s){s=Math.max(0,Math.round(s));return ('0'+Math.floor(s/60)).slice
 function elapsed(){return (Date.now()-t0)/1000}
 /* ---------- bloqueio de leitura ---------- */
 function lockFor(ms,txt){if(!ms)return;stage.classList.add('lk');var m=$('msg');if(m&&txt){m.className='fb';m.textContent=txt}
- setTimeout(function(){stage.classList.remove('lk');var ti=$('ti');if(ti&&!ti.disabled)ti.focus();var m2=$('msg');if(m2&&txt&&m2.textContent===txt)m2.textContent=''},ms)}
+ setTimeout(function(){stage.classList.remove('lk');var ti=$('ti');if(ti&&!ti.disabled&&!ti.hidden)ti.focus();else{var f1=stage.querySelector('.chopt');if(f1&&!f1.disabled)f1.focus()}var m2=$('msg');if(m2&&txt&&m2.textContent===txt)m2.textContent=''},ms)}
 /* ---------- timer regressivo (só Tipo 1) ---------- */
 var TM=null;
 function clearTimer(){if(TM){clearInterval(TM.iv);TM=null}var e=document.getElementById('tmr');if(e)e.remove()}
@@ -142,7 +156,7 @@ function startTimer(sec,cb){clearTimer();if(tipo!==1||!A||A.phase!=='q'||!sec)re
   if(left<=0){clearInterval(TM.iv);TM=null;box.classList.add('end');tt.textContent='tempo';cb()}},100)}}
 function tmoutHandler(getTries,inc){return function(){if(locked)return;var r=record(false,getTries(),S);r.tip=true;r.reread=true;r.guess=false;inc();onWrong(r,S,getTries());var m=$('msg');if(m)m.innerHTML='O tempo acabou! Sem problema, vamos reler a teoria:<div class="tip">'+(REINF[S.topic]||'')+'</div>'}}
 /* ---------- início ---------- */
-function start(t){tipo=t;idx=0;pts=0;released=false;t0=Date.now();setPts(0);$('pts').textContent='0 pontos';$('fim').classList.remove('on');
+function start(t){tipo=t;idx=0;pts=0;CH=0;released=false;t0=Date.now();setPts(0);$('pts').textContent='0 pontos';$('fim').classList.remove('on');
  document.body.className='t'+t;$('raiz').className='jogo t'+t;
  ['b1','b2','b3'].forEach(function(b,i){$(b).classList.toggle('on',i+1===t);$(b).setAttribute('aria-pressed',i+1===t)});
  A={phase:'intro',level:2,streak:0,maxStreak:0,ok:{},uses:{},items:0,correct:0,guess:0,wrongRun:0,lastFmt:'',lastTopic:'',extraN:0,th:0,stars:{},ach:{},pauseAt:12,hist:[]};
@@ -163,7 +177,7 @@ function show(){ // tipos 2 e 3 (linear + extras)
  var st=STEPS[tipo];
  if(idx>=st.length){S=extraStep();A.extraN++;$('prog').textContent='Desafio extra '+A.extraN}else{S=st[idx];$('prog').textContent=(idx+1)+' / '+st.length}
  render()}
-function render(){locked=false;shownAt=Date.now();clearTimer();var fn={th:rTh,mc:rMc,ty:rTy,or:rOr,mt:rMt,mem:rMem}[S.k];stage.innerHTML='';stage.classList.remove('lk');fn();window.scrollTo(0,0)}
+function render(){if(CHK){document.removeEventListener('keydown',CHK);CHK=null}locked=false;shownAt=Date.now();clearTimer();var fn={th:rTh,mc:rMc,ty:rTy,or:rOr,mt:rMt,mem:rMem}[S.k];stage.innerHTML='';stage.classList.remove('lk');fn();window.scrollTo(0,0)}
 function advance(){if(tipo===1)next();else{idx++;show()}}
 function wireNext(){var n=$('nx');if(n)n.onclick=advance}
 function nextBtn(show0){return '<div class="nav"><button class="btn" id="nx"'+(show0?'':' hidden')+'>Próxima ▶</button></div>'}
@@ -242,17 +256,59 @@ function rMc(){
    if(S.say&&!pic)say(S.say)}
   else{b.classList.add('no');b.disabled=true;var r2=record(false,tries,S);tries++;onWrong(r2,S,tries);if(tipo===1&&tries>=2){locked=true;guided(S,corr)}}}});
  wireNext()}
+/* ---------- escolher a resposta (alternativa a digitar) ---------- */
+var PTING={play:'jogando',read:'lendo',talk:'conversando',watch:'assistindo',cook:'cozinhando',sleep:'dormindo',listen:'ouvindo',study:'estudando',write:'escrevendo',dance:'dançando',make:'fazendo',use:'usando',move:'movendo',rain:'chovendo',jump:'pulando',smile:'sorrindo',wear:'vestindo',run:'correndo',swim:'nadando',sit:'sentando',stop:'parando','lie':'deitando',die:'morrendo',tie:'amarrando','do':'fazendo',go:'indo',work:'trabalhando'};
+function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i})}
+function wrongIng(b,ans){var l=b.slice(-1),c=[b+'ing'];
+ if(!/[ywx]$/.test(b))c.push(b+l+'ing');
+ c.push(b.slice(0,-1)+'ing');
+ if(!/e$/.test(b))c.push(b+'eing');
+ if(/y$/.test(b))c.push(b.slice(0,-1)+'iing');
+ return uniq(c).filter(function(x){return x!==ans&&x.length>=3})}
+function ingOpts(b,ans){b=b||ans.replace(/ing$/,'');var tr=PTING[b],out=[{t:ans,tr:tr,ok:1}];
+ sh(wrongIng(b,ans)).slice(0,2).forEach(function(x){out.push({t:x,tr:tr})});
+ var oth=sh(VERBS.filter(function(v){return v[0]!==b&&v[1]!==ans&&Math.abs(v[1].length-ans.length)<=1}));
+ while(out.length<4&&oth.length){var v=oth.shift();out.push({t:v[1],tr:PTING[v[0]]})}
+ return out.length>=3?sh(out):null}
+function sentOpts(clean){
+ var end=(clean.match(/[.?!]$/)||[''])[0],core=clean.replace(/[.?!]$/,''),w=core.split(' '),seen={},be=[],sp=[];seen[core]=1;
+ function add(list,a){var t=a.join(' ');if(!seen[t]){seen[t]=1;list.push({t:t+end})}}
+ var BE={am:['is','are'],is:['are','am'],are:['is','am']};
+ w.some(function(x,i){var k=BE[x.toLowerCase()];if(!k)return false;k.forEach(function(r){var c=w.slice();c[i]=x[0]===x[0].toUpperCase()?r[0].toUpperCase()+r.slice(1):r;add(be,c)});return true});
+ w.forEach(function(x,j){if(!/ing$/i.test(x)||x.length<5)return;var st=x.slice(0,-3),l=st.slice(-1),v=[];
+  if(st.length>1&&st.slice(-2,-1)===l)v.push(st.slice(0,-1)+'ing');else{if(!/[ywx]$/.test(st))v.push(st+l+'ing');v.push(st.slice(0,-1)+'ing');if(!/e$/.test(st))v.push(st+'eing')}
+  v.forEach(function(r){if(r!==x){var c=w.slice();c[j]=r;add(sp,c)}})});
+ var d=sh(sp).slice(0,2).concat(sh(be).slice(0,1));sh(be).concat(sh(sp)).forEach(function(x){if(d.length<3&&d.indexOf(x)<0)d.push(x)});
+ if(d.length<2)return null;return sh([{t:core+end,ok:1}].concat(d.slice(0,3)))}
+function chHtml(opts){return '<p class="consigna">Toque na resposta certa (ou tecle 1 a '+opts.length+'):</p><div class="opts ch">'+opts.map(function(x,i){return '<button type="button" class="opt chopt" data-i="'+i+'" aria-label="'+esc(x.t).replace(/"/g,'&quot;')+(x.tr?' ('+esc(x.tr)+')':'')+'"><span class="chn">'+(i+1)+'</span><b class="cht">'+esc(x.t)+'</b>'+(x.tr?'<small class="chtr">('+esc(x.tr)+')</small>':'')+'</button>'}).join('')+'</div><div class="nav"><button type="button" class="btn alt" id="chv">Voltar a digitar</button></div>'}
+/* liga o modo escolha: onPick(opt,btn) devolve true se acertou */
+function chWire(opts,onPick,free){
+ var inp=$('ti'),chb=$('chb'),chw=$('chw'),ck=$('ck'),on=false,lk=function(){return !free&&locked};
+ function mode(c){on=c;inp.hidden=c;ck.hidden=c||lk();chb.hidden=c||lk();chw.hidden=!c;
+  if(c){chw.innerHTML=chHtml(opts);var bs=chw.querySelectorAll('.chopt');[].forEach.call(bs,function(b,i){b.onclick=function(){if(lk()||stage.classList.contains('lk')||b.disabled)return;
+    var ok=onPick(opts[i],b);if(ok){b.classList.add('ok');[].forEach.call(bs,function(x){x.disabled=true})}else{b.classList.add('no');b.disabled=true}}});
+   $('chv').onclick=function(){mode(false);if(!inp.disabled)inp.focus()};
+   var f=bs[0];if(f&&!stage.classList.contains('lk'))f.focus()}}
+ chb.onclick=function(){if(lk()||stage.classList.contains('lk'))return;mode(true)};
+ if(CHK)document.removeEventListener('keydown',CHK);
+ CHK=function(e){if(!on||e.ctrlKey||e.altKey||e.metaKey||e.shiftKey||e.defaultPrevented)return;var n=parseInt(e.key,10);if(n>=1&&n<=opts.length){var b=chw.querySelectorAll('.chopt')[n-1];if(b&&!b.disabled){e.preventDefault();b.click()}}};
+ document.addEventListener('keydown',CHK);
+ return {isOn:function(){return on},reveal:function(){[].forEach.call(chw.querySelectorAll('.chopt'),function(b,i){b.disabled=true;if(opts[i].ok)b.classList.add('ok')});chb.hidden=true}}}
 function rTy(){
  var tries=0;
- stage.innerHTML='<p class="consigna">Escreva o verbo com -ing.</p>'+picHtml(S.pic)+'<div class="q"><span class="tx" id="pergunta">'+(S.b?'<b>'+S.b+'</b> &rarr; ?<br>':'')+'<span style="font-weight:600">'+esc(S.clue)+'</span></span>'+sayBtn(S.clue.replace('___',S.ans))+'</div><div class="txt"><input id="ti" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Resposta"><button class="btn" id="ck">Verificar</button><button class="btn alt" id="sk" hidden>Ver resposta</button></div><div class="fb" id="msg"></div>'+nextBtn(false);
- var inp=$('ti'),fb=$('msg');
+ stage.innerHTML='<p class="consigna">Escreva o verbo com -ing.</p>'+picHtml(S.pic)+'<div class="q"><span class="tx" id="pergunta">'+(S.b?'<b>'+S.b+'</b> &rarr; ?<br>':'')+'<span style="font-weight:600">'+esc(S.clue)+'</span></span>'+sayBtn(S.clue.replace('___',S.ans))+'</div><div class="txt"><input id="ti" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Resposta"><button class="btn" id="ck">Verificar</button><button class="btn alt chb" id="chb" type="button">Escolher a resposta</button><button class="btn alt" id="sk" hidden>Ver resposta</button></div><div class="chw" id="chw" hidden></div><div class="fb" id="msg"></div>'+nextBtn(false);
+ var inp=$('ti'),fb=$('msg'),opts=ingOpts(S.b,String(S.ans).toLowerCase()),C=null;
+ if(!opts)$('chb').hidden=true;
  startTimer(TEMPO.ty,tmoutHandler(function(){return tries},function(){tries++}));
- function chk(){if(locked||stage.classList.contains('lk'))return;var nz=function(x){return String(x).toLowerCase().replace(/[^a-z0-9]/g,'')},v=nz(inp.value);if(!v)return;
-  if(v===nz(S.ans)){locked=true;inp.classList.add('ok');inp.disabled=true;var r=record(true,tries,S);fb.className='fb ok';fb.textContent='Correct! '+S.clue.replace('___',S.ans);$('sk').hidden=true;
+ function good(via){locked=true;if(via)CH++;inp.classList.add('ok');inp.disabled=true;var r=record(true,tries,S);fb.className='fb ok';fb.textContent='Correct! '+S.clue.replace('___',S.ans);$('sk').hidden=true;$('chb').hidden=true;
    if(tipo===1)afterOk(r,S);else{setPts(tries?0:10);beep(1);$('nx').hidden=false}say(S.clue.replace('___',S.ans))}
-  else{inp.classList.add('no');setTimeout(function(){inp.classList.remove('no')},500);var r2=record(false,tries,S);tries++;onWrong(r2,S,tries);if(tries>=2)$('sk').hidden=false;if(tipo===1&&tries>=2){locked=true;guided(S,S.clue.replace('___',S.ans))}}}
+ function bad(){var r2=record(false,tries,S);tries++;onWrong(r2,S,tries);if(tries>=2)$('sk').hidden=false;if(tipo===1&&tries>=2){locked=true;guided(S,S.clue.replace('___',S.ans))}}
+ function chk(){if(locked||stage.classList.contains('lk'))return;var v=inp.value.trim().toLowerCase();if(!v)return;
+  if(v===String(S.ans).toLowerCase())good(false);
+  else{inp.classList.add('no');setTimeout(function(){inp.classList.remove('no')},500);bad()}}
+ if(opts)C=chWire(opts,function(o){if(o.ok){good(true);return true}bad();return false});
  $('ck').onclick=chk;inp.onkeydown=function(e){if(e.key==='Enter')chk()};
- $('sk').onclick=function(){locked=true;inp.value=S.ans;inp.disabled=true;fb.className='fb no';fb.textContent='Resposta: '+S.ans;$('nx').hidden=false;$('sk').hidden=true};
+ $('sk').onclick=function(){locked=true;inp.value=S.ans;inp.disabled=true;fb.className='fb no';fb.textContent='Resposta: '+S.ans;$('nx').hidden=false;$('sk').hidden=true;if(C&&C.isOn())C.reveal()};
  wireNext()}
 function rOr(){
  var pun=/[.?!]$/.test(S.ans)?S.ans.slice(-1):'',words=S.ans.replace(/[.?!]$/,'').split(' '),tries=0;
@@ -297,10 +353,12 @@ function rMem(){
   b._i=c.i;mm.appendChild(b)});wireNext()}
 /* guiado: copiar a frase certa */
 function guided(item,text){
- var clean=text.replace(/<[^>]+>/g,'').replace(/\s*\([^)]*\)/g,'').trim();
- stage.innerHTML='<h2>Vamos juntos</h2><p>Sem problema! Veja a resposta certa e copie no campo abaixo:</p><p class="ex big">'+esc(clean)+'</p><div class="txt"><input id="ti" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Copie a frase"><button class="btn" id="ck">Conferir</button></div><div class="fb" id="msg"></div>'+nextBtn(false);
- var inp=$('ti'),norm=function(s){return s.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()},fails=0;
- function chk(){if(norm(inp.value)===norm(clean)){inp.classList.add('ok');inp.disabled=true;$('msg').className='fb ok';$('msg').textContent='Muito bem! Vamos em frente.';beep(1);$('nx').hidden=false;$('nx').focus()}else{fails++;$('msg').className='fb no';$('msg').textContent=fails>=3?'Tudo bem, vamos em frente.':'Quase! Confira letra por letra.';if(fails>=3){inp.disabled=true;$('nx').hidden=false;$('nx').focus()}}}
+ var clean=text.replace(/<[^>]+>/g,''),gop=sentOpts(clean);
+ stage.innerHTML='<h2>Vamos juntos</h2><p>Sem problema! Veja a resposta certa e copie no campo abaixo:</p><p class="ex big">'+esc(clean)+'</p><div class="txt"><input id="ti" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Copie a frase"><button class="btn" id="ck">Conferir</button>'+(gop?'<button class="btn alt chb" id="chb" type="button">Escolher a resposta</button>':'')+'</div><div class="chw" id="chw" hidden></div><div class="fb" id="msg"></div>'+nextBtn(false);
+ var inp=$('ti'),norm=function(s){return s.toLowerCase().replace(/[.?!\s]+$/,'').replace(/\s+/g,' ').trim()};
+ function good(via){if(via)CH++;inp.classList.add('ok');inp.disabled=true;$('msg').className='fb ok';$('msg').textContent='Muito bem! Vamos em frente.';beep(1);if($('chb'))$('chb').hidden=true;$('nx').hidden=false;$('nx').focus()}
+ function chk(){if(norm(inp.value)===norm(clean))good(false);else{$('msg').className='fb no';$('msg').textContent='Quase! Confira letra por letra.'}}
+ if(gop)chWire(gop,function(o){if(o.ok){good(true);return true}$('msg').className='fb no';$('msg').textContent='Quase! Olhe de novo a resposta certa.';return false},true);
  $('ck').onclick=chk;inp.onkeydown=function(e){if(e.key==='Enter')chk()};inp.focus();wireNext();A.items++}
 /* ---------- extras ---------- */
 function extraStep(){
@@ -349,14 +407,14 @@ function code(o){var s=[o.pts,o.itens,Math.round(o.seg/60),o.estrelas,o.tipo].jo
 function finish(){
  if($('fim').classList.contains('on'))return;clearInterval(tmr);
  var id=ident(),est=tipo===1?TOPICS.filter(function(x){return A.stars[x[0]]}).length:0;
- var o={nome:id.nome,turma:id.turma,data:id.data||new Date().toLocaleDateString('pt-BR'),tipo:tipo,pts:pts,itens:tipo===1?A.items:(idx),seg:Math.round(elapsed()),estrelas:est,chutes:A?A.guess:0};
+ var o={nome:id.nome,turma:id.turma,data:id.data||new Date().toLocaleDateString('pt-BR'),tipo:tipo,pts:pts,itens:tipo===1?A.items:(idx),seg:Math.round(elapsed()),estrelas:est,chutes:A?A.guess:0,escolhas:CH};
  o.codigo=code(o);window.__resultado=o;
  try{var a=JSON.parse(localStorage.getItem('pc47_resultados')||'[]');a.push(o);localStorage.setItem('pc47_resultados',JSON.stringify(a.slice(-100)))}catch(e){}
  var ach=[];if(tipo===1){if(A.maxStreak>=5)ach.push('5 acertos seguidos');if(!A.guess)ach.push('Sem chutes');if(A.stars.ing)ach.push('Detetive do -ing');if(mastered())ach.push('Cidade viva completa');if(A.extraN>=5)ach.push('Desafiante extra')}
- $('fimt').innerHTML='<b>'+esc(o.nome||'Aluno(a)')+'</b> '+esc(o.turma)+'<br>'+o.pts+' pontos · '+mmss(o.seg)+' · '+o.itens+' desafios'+(tipo===1?' · '+est+' de '+TOPICS.length+' estrelas':'')+(ach.length?'<br>Conquistas: '+ach.join(', '):'')+'<br><br>Você praticou: verbo to be, present continuous (afirmativa, negativa e pergunta), verbos com -ing e ortografia.<br><br>Código do resultado:<br><span class="cod" id="codv">'+o.codigo+'</span>';
+ $('fimt').innerHTML='<b>'+esc(o.nome||'Aluno(a)')+'</b> '+esc(o.turma)+'<br>'+o.pts+' pontos · '+mmss(o.seg)+' · '+o.itens+' desafios'+(tipo===1?' · '+est+' de '+TOPICS.length+' estrelas':'')+(ach.length?'<br>Conquistas: '+ach.join(', '):'')+(CH?'<br>Respostas por escolha: '+CH:'')+'<br><br>Você praticou: verbo to be, present continuous (afirmativa, negativa e pergunta), verbos com -ing e ortografia.<br><br>Código do resultado:<br><span class="cod" id="codv">'+o.codigo+'</span>';
  if(OFFLINE){rkLocal();$('fimt').innerHTML+='<br><br><b>Ranking neste computador</b><ol class="rkl">'+$('rkl').innerHTML+'</ol>'}
  $('fim').classList.add('on')}
-function txt(o){return 'Aula 47 - Present Continuous (Ludopedia)\nNome: '+o.nome+'\nTurma: '+o.turma+'\nData: '+o.data+'\nTipo: '+o.tipo+'\nPontos: '+o.pts+'\nTempo: '+mmss(o.seg)+'\nDesafios: '+o.itens+'\nEstrelas: '+o.estrelas+'\nCodigo: '+o.codigo+'\n'}
+function txt(o){return 'Aula 47 - Present Continuous (Ludopedia)\nNome: '+o.nome+'\nTurma: '+o.turma+'\nData: '+o.data+'\nTipo: '+o.tipo+'\nPontos: '+o.pts+'\nTempo: '+mmss(o.seg)+'\nDesafios: '+o.itens+'\nEstrelas: '+o.estrelas+(o.escolhas?'\nRespostas por escolha: '+o.escolhas:'')+'\nCodigo: '+o.codigo+'\n'}
 $('cpy').onclick=function(){var c=window.__resultado&&window.__resultado.codigo;try{navigator.clipboard.writeText(c).then(function(){$('cpy').textContent='Copiado!'},function(){fallback(c)})}catch(e){fallback(c)}};
 function fallback(c){var t=document.createElement('textarea');t.value=c;document.body.appendChild(t);t.select();try{document.execCommand('copy');$('cpy').textContent='Copiado!'}catch(e){}t.remove()}
 $('sav').onclick=function(){var o=window.__resultado;if(!o)return;var bl=new Blob([txt(o)],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='resultado-aula47-'+(o.nome||'aluno').replace(/[^a-z0-9]+/gi,'-')+'.txt';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
@@ -374,5 +432,5 @@ start(tipo);
 })();
 
 </script>
-<script src="config.js?v=4"></script><script src="ident.js?v=5"></script><script src="catalogo.js?v=5"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=21"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+<script src="config.js?v=4"></script><script src="ident.js?v=5"></script><script src="catalogo.js?v=5"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=22"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
 </html>

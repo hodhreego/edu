@@ -47,6 +47,7 @@ body{padding-top:var(--eh)!important}
 #edu-ac{position:fixed;top:calc(var(--eh) + 6px);right:12px;z-index:2147483001;background:#fff;color:#16213a;border:2px solid #1f4fd8;border-radius:16px;padding:12px 14px;box-shadow:0 12px 32px #0004;display:none;font:700 14px "Segoe UI",Roboto,Arial,sans-serif;min-width:230px}
 #edu-ac.on{display:block}#edu-ac h4{margin:0 0 8px;font-size:15px}#edu-ac .r{display:flex;gap:6px;margin-bottom:8px}
 #edu-ac button{flex:1;border:2px solid #cfd8ec;background:#f4f7fc;color:#16213a;border-radius:10px;padding:7px 4px;font:800 14px "Segoe UI",Arial,sans-serif;cursor:pointer}
+#edu-ac h4{padding-right:52px}#edu-ac .x{position:absolute;top:6px;right:8px;flex:none;width:44px;height:44px;padding:0;font-size:24px;line-height:1;border-radius:50%}
 #edu-ac button.on{background:#1f4fd8;border-color:#1f4fd8;color:#fff}
 body>*:not(#edu-nav):not(#edu-ac):not(script):not(style):not(#ac-aviso):not(#painel):not(#toggle):not(#wal):not(#jg-bar):not(#jg-fim):not(#pv):not(#imp-bar){zoom:var(--ezz,1);width:100%!important;max-width:100%!important;box-sizing:border-box}
 html.edu-hc body,html.edu-hc body *:not(svg):not(svg *):not(img):not(#edu-nav):not(#edu-nav *):not(#edu-ac):not(#edu-ac *){background:#000!important;background-image:none!important;color:#fff!important;border-color:#ffeb3b!important;text-shadow:none!important;box-shadow:none!important;-webkit-text-stroke:0!important}
@@ -62,7 +63,7 @@ html.edu-zoomed body>#app,html.edu-zoomed body>.folha.jogo,html.edu-zoomed #folh
 /* gabarito manuscrito aposentado: cobria as figuras */
 .folha.gab,.jgab{display:none!important}
 @media print{html:not(.edu-print-ok) body>*{display:none!important}html:not(.edu-print-ok) body::before{content:'🔒 Impressão disponível apenas para o professor. Use o botão 🖨️ do cabeçalho e digite a senha.';display:block;font:700 26px Arial,sans-serif;text-align:center;padding:60mm 12mm;color:#000}html,body{max-width:100%!important}.listas ol{column-width:27ch!important}.listas .pal{overflow-wrap:anywhere}}
-#edu-nav .en-coin{position:static!important;transform:none!important;margin:0!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;zoom:.62;flex:none;order:0;z-index:auto!important}
+#edu-nav .en-coin{position:static!important;transform:none!important;margin:0!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;zoom:.85;flex:none;order:0;z-index:auto!important}
 html.edu-hc #edu-nav{background:#000!important;color:#fff!important;border-bottom:3px solid #ffeb3b}
 html.edu-hc #edu-nav .tag.k{background:#ffeb3b!important;color:#000!important}
 html.edu-hc #edu-nav .sels,html.edu-hc #edu-nav form.cod{background:#fff!important;border-color:#ffeb3b!important}
@@ -118,7 +119,7 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  document.body.insertBefore(nav,document.body.firstChild);
  (function(){var c=document.querySelector('.coin,.jcoin');if(!c)return;var k=nav.querySelector('.tag.k')||nav.querySelector('form.cod');
   c.classList.add('en-coin');nav.insertBefore(c,k);})();
- var ac=document.createElement('div');ac.id='edu-ac';ac.innerHTML='<h4>♿ Acessibilidade</h4><div class="r"><button data-z="1">Texto normal</button><button data-z="1.25">Grande</button><button data-z="1.5">Enorme</button><button data-z="1.75">Gigante</button></div><div class="r"><button id="en-hc">◐ Alto contraste</button></div>';
+ var ac=document.createElement('div');ac.id='edu-ac';ac.innerHTML='<button type="button" class="x" id="en-ax" aria-label="Fechar acessibilidade" title="Fechar (Esc)">✕</button><h4>♿ Acessibilidade</h4><div class="r"><button data-z="1">Texto normal</button><button data-z="1.25">Grande</button><button data-z="1.5">Enorme</button><button data-z="1.75">Gigante</button></div><div class="r"><button id="en-hc">◐ Alto contraste</button></div>';
  if(document.getElementById('txt')){var az=1;try{az=parseFloat(localStorage.getItem('edu_appz'))||1}catch(e){}
   var rz=document.createElement('div');rz.className='r';rz.style.cssText='flex-direction:column;align-items:stretch;gap:4px';rz.innerHTML='<label style="font:700 13px Arial">💬 Texto do app aberto à esquerda: <b id="az-v"></b></label><input type="range" id="az-r" min="0.6" max="1.6" step="0.05">';ac.appendChild(rz);
   var zr=rz.querySelector('#az-r'),zv=rz.querySelector('#az-v'),aplz=function(v){document.documentElement.style.setProperty('--appz',v);zv.textContent=Math.round(v*100)+'%';try{localStorage.setItem('edu_appz',v)}catch(e){}};
@@ -134,7 +135,15 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
  function aplica(){var z=ls('edu_ez')||'1';nav.style.setProperty('--ez',z);nav.style.zoom=z>1?1+(z-1)*.5:1;document.documentElement.style.setProperty('--ezz',z);document.documentElement.classList.toggle('edu-hc',ls('edu_hc')==='1');document.documentElement.classList.toggle('edu-zoomed',+z>1);if(window.fitChips)setTimeout(window.fitChips,30);
   [].forEach.call(ac.querySelectorAll('[data-z]'),function(b){b.classList.toggle('on',b.dataset.z===z)});document.getElementById('en-hc').classList.toggle('on',ls('edu_hc')==='1');setH()}
  ac.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.id==='en-aj')return;if(b.dataset.z)ls('edu_ez',b.dataset.z);else ls('edu_hc',ls('edu_hc')==='1'?'0':'1');aplica()});
- document.getElementById('en-a').onclick=function(){ac.classList.toggle('on')};
+ (function(){var ab=document.getElementById('en-a'),T=null;
+  function fechar(volta){clearTimeout(T);ac.classList.remove('on');if(volta)ab.focus()}
+  function rearmar(){clearTimeout(T);if(ac.classList.contains('on'))T=setTimeout(function(){fechar(true)},6000)}
+  ab.onclick=function(){if(ac.classList.contains('on'))fechar(true);else{ac.classList.add('on');rearmar()}};
+  ['click','focusin','keydown','mousemove','pointerdown','touchstart','input'].forEach(function(ev){ac.addEventListener(ev,rearmar,true)});
+  document.getElementById('en-ax').onclick=function(){fechar(true)};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ac.classList.contains('on'))fechar(true)});
+  document.addEventListener('pointerdown',function(e){if(ac.classList.contains('on')&&!ac.contains(e.target)&&!ab.contains(e.target))fechar(false)},true);
+ })();
  document.getElementById('en-r').onclick=function(){
   ls('edu_ez','1');aplica();var R=document.documentElement,st=R.style;st.removeProperty('--u');st.removeProperty('--zm');
   [].forEach.call(document.querySelectorAll('#sz,#zm'),function(i){i.value=i.defaultValue;i.dispatchEvent(new Event('input',{bubbles:true}))});
