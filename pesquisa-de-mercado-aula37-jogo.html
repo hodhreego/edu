@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pesquisa de Mercado — Aula 37</title>
+<style>
+:root{--ink:#1b2440;--mut:#5b6585;--c:#1f4fd8;--fs:clamp(14px,min(1.7vw,2.7vh),21px)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#eef2fb;color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;font-size:var(--fs);padding-bottom:40px}
+.jogo{max-width:900px;margin:0 auto;padding:12px 14px}
+h1{margin:4px 0;font-size:clamp(22px,4vw,32px);color:#1f3a8a;line-height:1.1}
+h2{margin:6px 0;font-size:1.25em}
+.ident{font-size:14px;color:var(--mut);line-height:1.8}
+.ident b{display:inline-block;border-bottom:1px solid #99a;min-width:120px;min-height:20px;vertical-align:bottom}
+.coin{background:#ffd24d;color:#16213a;border-radius:99px;padding:4px 14px;font-weight:900;display:inline-block}
+.temas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+@media (max-width:700px){.temas{grid-template-columns:1fr}}
+.tema{border:6px solid var(--c);background:#fff;border-radius:26px;padding:16px 10px;text-align:center;cursor:pointer;font:800 1em inherit;color:var(--ink);box-shadow:0 6px 0 #0002}
+.tema:active{transform:translateY(4px);box-shadow:0 2px 0 #0002}
+.tema .em{font-size:3.2em;display:block}
+.tema small{display:block;font-weight:600;color:var(--mut);margin-top:4px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.pill{border:3px solid var(--c);background:#fff;border-radius:99px;min-width:2.3em;height:2.3em;font:800 1em inherit;cursor:pointer;color:var(--c)}
+.pill.on{background:var(--c);color:#fff}.pill.ok{background:#d6f5e0}.pill.on.ok{background:var(--c)}
+.btn{border:0;border-radius:99px;padding:10px 20px;font:800 1em inherit;cursor:pointer;background:var(--c);color:#fff}
+.btn.alt{background:#fff;color:var(--c);border:3px solid var(--c)}
+.btn:disabled{opacity:.4;cursor:default}
+.card{background:#fff;border:4px solid var(--c);border-radius:20px;padding:14px 16px;margin:8px 0}
+.card p{margin:4px 0}
+.dica{background:#fff8dc;border-left:6px solid #f5a300;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.92em}
+textarea,input.n{width:100%;font:inherit;border:3px solid #9fb0e8;border-radius:12px;padding:8px 10px;margin:4px 0;background:#fff;color:var(--ink)}
+textarea{min-height:3.2em;resize:vertical}
+input.n{max-width:14em}
+.nav{display:flex;justify-content:space-between;gap:10px;margin:12px 0;flex-wrap:wrap}
+.fb{font-weight:800;margin:2px 0}.fb.ok{color:#1f9d55}.fb.no{color:#d93025}
+.sum li{margin:6px 0}
+
+.mut{color:var(--mut);font-size:.85em}
+.temas.h{grid-template-columns:repeat(4,1fr)}@media (max-width:800px){.temas.h{grid-template-columns:repeat(2,1fr)}}
+.tema.okk{background:#e8fbee}
+.tema .em{font-size:2.4em}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;border:3px solid #9fb0e8;background:#fff;border-radius:14px;padding:10px 12px;font:700 1em inherit;color:var(--ink);cursor:pointer}
+.opt.ok{background:#d6f5e0;border-color:#1f9d55}.opt.no{background:#fde2e0;border-color:#d93025;opacity:.7}
+.bank{display:flex;flex-wrap:wrap;gap:8px;min-height:3em;background:#fff;border:3px dashed #9fb0e8;border-radius:14px;padding:8px;margin:8px 0}
+.chip{background:#ffd24d;border-radius:99px;padding:6px 16px;font-weight:800;cursor:grab;user-select:none}.chip.sel{outline:4px solid #1f4fd8}
+.slot{display:inline-block;min-width:8em;min-height:2em;border-bottom:4px solid #1f4fd8;background:#eef2ff;border-radius:8px;vertical-align:middle;margin:0 4px;text-align:center}
+.slot.ok{background:#d6f5e0}.slot.no{background:#fde2e0}.slot .chip{margin:2px}
+.bxs{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}.bxs input{width:2.1em;height:2.3em;text-align:center;font:900 1.3em inherit;border:3px solid #1f4fd8;border-radius:8px;padding:0;text-transform:uppercase}.bxs input.ok{background:#d6f5e0;border-color:#1f9d55}
+.jornal{background:#f4efe1;border:5px double #222;padding:10px 12px;margin:8px 0;font-family:Georgia,"Times New Roman",serif;color:#111}
+.jh{text-align:center;border-bottom:3px solid #111;margin-bottom:8px}.jh span{display:block;font:900 clamp(20px,3.4vw,30px) Georgia,serif;letter-spacing:1px}.jh small{display:block;font:700 .75em Georgia,serif;border-top:1px solid #111;padding:2px}
+.jc{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.jg{display:grid;grid-template-columns:repeat(var(--n),1fr);border:3px solid #111;background:#fff;width:min(100%,430px);flex:none}
+.jg b{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid #bbb;font:700 clamp(11px,2.2vw,18px) Georgia,serif;cursor:pointer;user-select:none}
+.jg b.s{background:#ffd24d}.jg b.f0{background:#bfe3ff}.jg b.f1{background:#ffd6a8}.jg b.f2{background:#c9f2c7}.jg b.f3{background:#f4c6ec}
+.jd{flex:1;min-width:200px;margin:0;padding:0;list-style:none;column-rule:1px solid #111;font-size:.9em}.jd li{margin:4px 0;padding-bottom:3px;border-bottom:1px dotted #777}.jd li.f{text-decoration:line-through;color:#777}.jd i{font-weight:900}
+.hv{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}#hx{width:min(100%,430px);flex:none}
+.hc polygon{fill:#fff7cf;stroke:#d99a00;stroke-width:2;cursor:pointer}.hc text{font:800 17px Arial;text-anchor:middle;dominant-baseline:central;pointer-events:none;fill:#333}
+.hc.s polygon{fill:#ffd24d}.hc.f0 polygon{fill:#bfe3ff}.hc.f1 polygon{fill:#ffd6a8}.hc.f2 polygon{fill:#c9f2c7}.hc.f3 polygon{fill:#f4c6ec}
+.hw{list-style:none;margin:0;padding:0;font-weight:800;columns:2;flex:1;min-width:180px}.hw li{margin:4px 0}.hw li.f{text-decoration:line-through;color:#888}
+.slide{background:#fff;border:6px solid #1f3a8a;border-radius:18px;padding:18px 24px;min-height:min(60vh,420px);font-size:1.05em;line-height:1.45}
+.slide.ed{outline:4px dashed #f5a300}.slide h2{color:#1f3a8a;font-size:1.5em;margin:0 0 8px}
+.slide table{border-collapse:collapse;width:100%;font-size:.95em}.slide th,.slide td{border:2px solid #9fb0e8;padding:5px 8px;text-align:left}.slide th{background:#e8eefc}
+.slide .dica{background:#fff8dc}
+.tab{border-collapse:collapse;margin:8px 0;background:#fff}.tab th,.tab td{border:2px solid #9fb0e8;padding:6px 12px;text-align:left}.tab th{background:#e8eefc}.tab input.n{max-width:6em;margin:0}
+.slide:fullscreen{overflow:auto;font-size:2.2vh}
+</style></head><body>
+<div class="jogo">
+<div class="ident">Nome: <b></b> &nbsp; Turma: <b></b> &nbsp; <span class="coin" id="pts">0 pontos</span></div>
+<h1>Pesquisa de Mercado</h1>
+<div id="stage"></div>
+</div>
+<script>
+(function(){
+var T={
+ a:{em:'🍔',nome:'Delivery de lanche artesanal',cor:'#e8590c',neg:'delivery de lanche artesanal (hambúrguer, salgados ou doces vendidos por aplicativo ou WhatsApp)',ex:['Com que frequência você pede lanche por aplicativo?','Quanto você paga em média?','Que sabores você gostaria de encontrar?','O que pesa mais: preço, tempo de entrega ou sabor?'],sim:14,per:'por mês, 2 pedidos de R$ 18,00',rec:14*2*18,preco:'preço de um lanche',tb:[['Hambúrguer artesanal',48],['Salgados',36],['Doces e sobremesas',24],['Outro',12]],kw:'hamburguer',tbq:'delivery',
+  jn:[['ENTREGA','Levar o pedido até a casa do cliente'],['SABOR','O que o cliente sente ao comer'],['COMBO','Lanche + bebida por um preço só'],['MOTOBOY','Quem faz a entrega de moto'],['PEDIDO','O que o cliente faz pelo aplicativo'],['RECEITA','Modo de preparo do lanche'],['CARDAPIO','Lista de lanches e preços'],['EMBALAGEM','Mantém o lanche quente e protegido']]},
+ b:{em:'✂️',nome:'Salão ou barbearia',cor:'#7c3aed',neg:'salão ou barbearia (corte, barba, unhas, cabelo)',ex:['Com que frequência você corta o cabelo ou faz as unhas?','Quanto você paga?','Prefere hora marcada ou ordem de chegada?','O que faria você trocar de salão?'],sim:12,per:'por mês, 2 atendimentos de R$ 35,00',rec:12*2*35,preco:'preço do corte',tb:[['Corte de cabelo',48],['Unhas',36],['Barba',24],['Outro',12]],kw:'corte',tbq:'salão',
+  jn:[['CORTE','Serviço mais pedido na barbearia'],['BARBA','Fica no rosto do cliente e precisa de aparo'],['UNHAS','Cuidadas pela manicure'],['ESCOVA','Alisa e dá forma ao cabelo'],['AGENDA','Onde ficam os horários marcados'],['TESOURA','Instrumento para cortar o cabelo'],['COLORACAO','Mudar a cor do cabelo'],['HIDRATACAO','Tratamento que devolve a maciez']]},
+ c:{em:'👟',nome:'Loja de tênis personalizados',cor:'#0d9488',neg:'loja de tênis personalizados (cores, desenhos e nomes feitos sob encomenda)',ex:['Quantos pares de tênis você compra por ano?','Quanto pagaria por um personalizado?','Que estilo você prefere?','Onde você descobre novas marcas?'],sim:9,per:'1 par de R$ 250,00',rec:9*250,preco:'preço do tênis',tb:[['Tênis esportivo',48],['Tênis casual',36],['Tênis colorido personalizado',24],['Outro',12]],kw:'esportivo',tbq:'loja',
+  jn:[['TENIS','O produto que você vende'],['SOLADO','Parte de baixo do calçado'],['CORES','Escolhidas pelo cliente na encomenda'],['ESTILO','Jeito próprio de se vestir'],['DESENHO','Arte pintada no tênis'],['COLECAO','Linha de modelos lançados juntos'],['TAMANHO','Número que o cliente calça'],['CADARCO','Cordão que amarra o tênis']]}
+};
+var HIVE=['PESQUISA','PUBLICO','AMOSTRA','CLIENTE','PRECO','DEMANDA','LUCRO','NICHO'];
+var stage=document.getElementById('stage'),pts=document.getElementById('pts'),tema=null,score=0,R={},GOT={};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9,.]/g,'')}
+function setPts(){pts.textContent=score+' pontos'}
+function award(key,n){if(GOT[tema+key])return false;GOT[tema+key]=1;score+=n;setPts();return true}
+function rng(seed){var a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seedOf(s){var h=7;for(var i=0;i<s.length;i++)h=Math.imul(h,31)+s.charCodeAt(i)|0;return h}
+function shuf(a,r){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---------- telas ---------- */
+function bar(extra){var t=T[tema];return '<div class="bar" style="--c:'+t.cor+'"><button class="btn alt" id="bTema">🔄 Trocar negócio</button><button class="btn alt" id="bHub">🏠 Atividades</button>'+(extra||'')+'</div>'}
+function wireBar(){var a=stage.querySelector('#bTema'),b=stage.querySelector('#bHub');if(a)a.onclick=menu;if(b)b.onclick=hub}
+function menu(){tema=null;stage.innerHTML='<h2 id="pergunta">Escolha o negócio que você quer pesquisar</h2><p>Você pode trocar de negócio a qualquer momento. Seus pontos e respostas ficam guardados.</p><div class="temas">'+Object.keys(T).map(function(k){var t=T[k];return '<button class="tema" data-k="'+k+'" style="--c:'+t.cor+'"><span class="em">'+t.em+'</span>'+t.nome+'</button>'}).join('')+'</div><p style="text-align:center"><button class="btn alt" id="aulaB">📊 Ver a aula em slides</button></p>';
+ [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){tema=b.dataset.k;R[tema]=R[tema]||{};hub()}});stage.querySelector('#aulaB').onclick=function(){slides(menu)};window.scrollTo(0,0)}
+var ACTS=[['aula','📊','Aula em slides','Leia e edite as anotações'],['mc','🔘','Escolha','Marque a resposta certa'],['tp','⌨️','Digite','Escreva a resposta'],['dg','🧲','Arraste e solte','Complete as frases'],['bx','🔠','Quadrinhos','Uma letra em cada quadrinho'],['hv','🐝','Mini colmeia','Caça-palavras com 8 palavras'],['tb','📋','Analise a tabela','Responda com os dados'],['jn','📰','Caça-palavras do jornal','8 palavras com dicas'],['ds','✍️','Pesquisa escrita','Monte a sua pesquisa']];
+function hub(){var t=T[tema];stage.innerHTML=bar()+'<h2 id="pergunta" style="margin-top:12px">'+t.em+' '+t.nome+' — escolha uma atividade</h2><div class="temas h">'+ACTS.map(function(a){var ok=GOT[tema+'done_'+a[0]];return '<button class="tema'+(ok?' okk':'')+'" data-a="'+a[0]+'" style="--c:'+t.cor+'"><span class="em">'+a[1]+'</span>'+a[2]+(ok?' ✔':'')+'<small>'+a[3]+'</small></button>'}).join('')+'</div>';wireBar();
+ [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){run(b.dataset.a)}});window.scrollTo(0,0)}
+function run(a){({aula:function(){slides(hub)},mc:actMc,tp:actTp,dg:actDg,bx:actBx,hv:actHv,jn:actJn,tb:actTb,ds:actDs})[a]();window.scrollTo(0,0)}
+function fimAct(a){if(GOT[tema+'done_'+a])return;GOT[tema+'done_'+a]=1;score+=5;setPts()}
+
+/* ---------- slides da aula (editáveis) ---------- */
+var SL=[
+ '<h2>Pesquisa de mercado</h2><p><b>Educação Financeira · 3ª série EM · Aula 37</b></p><p>Entender antes de vender.</p><p><b>Objetivo:</b> reconhecer os fundamentos do empreendedorismo, analisando o perfil empreendedor, as etapas para empreender, as oportunidades de negócio e ferramentas como pesquisas de mercado e inovação.</p><p>📋🔍 Antes de abrir um negócio, pergunte: quem é meu público? O que ele precisa? Quanto está disposto a pagar? Quem são meus concorrentes? A pesquisa de mercado transforma suposições em informação.</p>',
+ '<h2>1. O que é pesquisa de mercado?</h2><p>É o processo de coletar e analisar informações sobre clientes, concorrentes e o ambiente de um negócio. Ela reduz riscos e ajuda a tomar decisões com mais segurança.</p><table><tr><th>Tipo</th><th>O que é</th><th>Exemplo</th></tr><tr><td>Primária</td><td>dados coletados por você</td><td>questionário, entrevista, observação</td></tr><tr><td>Secundária</td><td>dados já publicados</td><td>IBGE, Sebrae, relatórios, notícias</td></tr><tr><td>Quantitativa</td><td>números e percentuais</td><td>“70% dos clientes preferem…”</td></tr><tr><td>Qualitativa</td><td>motivos e opiniões</td><td>“Por que você escolhe esse produto?”</td></tr></table>',
+ '<h2>2. Etapas da pesquisa</h2><ol><li>Defina o problema: o que você quer descobrir?</li><li>Escolha o público e a amostra.</li><li>Prepare o instrumento (questionário ou roteiro).</li><li>Colete os dados.</li><li>Organize e interprete os resultados.</li><li>Tome uma decisão com base nos dados.</li></ol><p class="dica"><b>Boa pergunta:</b> clara, curta e sem induzir a resposta. Evite “Você não acha que nosso produto é ótimo?”. Prefira “Como você avalia o produto?”.</p>'];
+var slideI=0,editing=false;
+function slides(back){var h='<div class="bar"><button class="btn alt" id="sBack">◀ Voltar</button><button class="btn alt" id="sEdit">✏️ Editar anotações</button><button class="btn alt" id="sFull">⛶ Tela cheia</button></div><div class="slide" id="slide" contenteditable="false"></div><div class="nav"><button class="btn alt" id="sPrev">◀ Slide anterior</button><span id="sCnt"></span><button class="btn" id="sNext">Próximo slide ▶</button></div><p class="mut">Dica: ative "Editar anotações" para alterar o texto do slide. As mudanças ficam neste aparelho.</p>';
+ stage.innerHTML=h;var sl=stage.querySelector('#slide');
+ function load(){var sv=null;try{sv=localStorage.getItem('pm37_slide'+slideI)}catch(e){}sl.innerHTML=sv||SL[slideI];stage.querySelector('#sCnt').textContent=(slideI+1)+' / '+SL.length;stage.querySelector('#sPrev').disabled=!slideI;stage.querySelector('#sNext').textContent=slideI===SL.length-1?'Terminar ✔':'Próximo slide ▶'}
+ function save(){try{localStorage.setItem('pm37_slide'+slideI,sl.innerHTML)}catch(e){}}
+ sl.addEventListener('input',save);sl.addEventListener('keydown',function(e){e.stopPropagation()});
+ stage.querySelector('#sEdit').onclick=function(){editing=!editing;sl.contentEditable=editing;sl.classList.toggle('ed',editing);this.textContent=editing?'✔ Salvar':'✏️ Editar anotações';if(editing)sl.focus()};
+ stage.querySelector('#sPrev').onclick=function(){save();slideI--;load()};
+ stage.querySelector('#sNext').onclick=function(){save();if(slideI===SL.length-1){slideI=0;if(tema)fimAct('aula');back()}else{slideI++;load()}};
+ stage.querySelector('#sBack').onclick=function(){save();back()};
+ stage.querySelector('#sFull').onclick=function(){var el=sl;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el)};
+ load()}
+
+/* ---------- 1) escolha ---------- */
+function actMc(){var t=T[tema],q=[
+ ['O que é pesquisa de mercado?','Descobrir o que os clientes querem antes de vender',['Fazer propaganda na televisão','Contar o dinheiro do caixa']],
+ ['Quem é o público-alvo de um negócio?','As pessoas que mais provavelmente vão comprar',['Todas as pessoas do mundo','Somente os amigos do dono']],
+ ['Qual é uma boa pergunta para a pesquisa?',t.ex[1],['Você não acha que o nosso produto é ótimo?','Qual é a cor do carro do seu pai?']],
+ ['Você entrevistou 20 pessoas e '+t.sim+' comprariam. Qual a porcentagem?',(t.sim*5)+'%',[(t.sim*5+10)+'%',(100-t.sim*5-5)+'%']]];
+ var r=rng(seedOf(tema+'mc')),h=bar()+'<h2 id="pergunta">🔘 Escolha a resposta certa</h2>';
+ q.forEach(function(x,i){var o=shuf([x[1]].concat(x[2]),r);h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+'</p>'+o.map(function(v){return '<button class="opt" data-i="'+i+'" data-ok="'+(v===x[1]?1:0)+'">'+esc(v)+'</button>'}).join('')+'<div class="fb"></div></div>'});
+ stage.innerHTML=h;wireBar();var n=0,need=q.length;
+ [].forEach.call(stage.querySelectorAll('.opt'),function(b){b.onclick=function(){var c=b.parentNode;if(c.dataset.done)return;if(b.dataset.ok==='1'){c.dataset.done=1;b.classList.add('ok');c.querySelector('.fb').textContent='✔ Certo!';c.querySelector('.fb').className='fb ok';[].forEach.call(c.querySelectorAll('.opt'),function(x){x.disabled=true});if(award('mc'+b.dataset.i,5)){}if(++n===need)fimAct('mc')}else{b.classList.add('no');b.disabled=true;c.querySelector('.fb').textContent='Tente de novo';c.querySelector('.fb').className='fb no'}}})}
+
+/* ---------- 2) digite ---------- */
+function actTp(){var t=T[tema],q=[
+ ['Pesquisa de mercado serve para conhecer o ______ (quem compra o produto).',['cliente','clientes','consumidor','publico']],
+ ['Quem já vende algo parecido com o seu negócio é o seu ______.',['concorrente','concorrentes','concorrencia']],
+ ['Qual a porcentagem de '+t.sim+' em 20? (só o número)',[String(t.sim*5)]],
+ [t.sim+' pessoas gastariam '+t.per+'. Quanto você faturaria no total? (só o número, em reais)',[String(t.rec),t.rec.toLocaleString('pt-BR')]]];
+ var h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta</h2>';
+ q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+'</p><input class="n" data-i="'+i+'" autocomplete="off"> <button class="btn" data-i="'+i+'">Conferir</button> <span class="fb"></span></div>'});
+ stage.innerHTML=h;wireBar();var n=0;
+ [].forEach.call(stage.querySelectorAll('.btn[data-i]'),function(b){var i=+b.dataset.i,inp=stage.querySelector('input[data-i="'+i+'"]'),fb=b.parentNode.querySelector('.fb');
+  function chk(){if(inp.disabled)return;var v=norm(inp.value).replace(/[.,]$/,'');var ok=q[i][1].some(function(a){return norm(a)===v||norm(a).replace(/[.,]/g,'')===v.replace(/[.,]/g,'')});if(ok){fb.textContent='✔ Certo!';fb.className='fb ok';inp.disabled=true;b.disabled=true;award('tp'+i,5);if(++n===q.length)fimAct('tp')}else{fb.textContent='Confira e tente de novo';fb.className='fb no'}}
+  b.onclick=chk;inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Enter')chk()})})}
+
+/* ---------- 3) arraste e solte ---------- */
+function actDg(){var t=T[tema],q=[['A pesquisa mostra o que o ___ quer.','cliente'],['Quem já vende algo parecido é o ___.','concorrente'],['O grupo de pessoas entrevistadas é a ___.','amostra'],['O que sobra depois de pagar todos os custos é o ___.','lucro']];
+ var bank=shuf(q.map(function(x){return x[1]}).concat(['preço']),rng(seedOf(tema+'dg')));
+ var h=bar()+'<h2 id="pergunta">🧲 Arraste a palavra para o lugar certo</h2><p>No celular, toque na palavra e depois no espaço.</p><div class="bank" id="bank">'+bank.map(function(w){return '<span class="chip" draggable="true" data-w="'+w+'">'+w+'</span>'}).join('')+'</div>';
+ q.forEach(function(x,i){var p=x[0].split('___');h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(p[0])+'<span class="slot" data-i="'+i+'"></span>'+esc(p[1])+' <span class="fb"></span></p></div>'});
+ h+='<div class="nav"><span></span><button class="btn" id="dgChk">Conferir ✔</button></div>';stage.innerHTML=h;wireBar();
+ var sel=null,bk=stage.querySelector('#bank');
+ function place(slot,chip){if(slot.firstChild)bk.appendChild(slot.firstChild);slot.appendChild(chip);slot.classList.remove('no');sel&&sel.classList.remove('sel');sel=null}
+ [].forEach.call(stage.querySelectorAll('.chip'),function(c){c.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',c.dataset.w);sel=c});c.onclick=function(e){e.stopPropagation();if(sel&&sel!==c)sel.classList.remove('sel');sel=c;c.classList.add('sel')}});
+ [].forEach.call(stage.querySelectorAll('.slot'),function(s){s.addEventListener('dragover',function(e){e.preventDefault()});s.addEventListener('drop',function(e){e.preventDefault();if(sel)place(s,sel)});s.onclick=function(){if(sel)place(s,sel);else if(s.firstChild)bk.appendChild(s.firstChild)}});
+ bk.addEventListener('dragover',function(e){e.preventDefault()});bk.addEventListener('drop',function(e){e.preventDefault();if(sel)bk.appendChild(sel)});
+ stage.querySelector('#dgChk').onclick=function(){var ok=0;[].forEach.call(stage.querySelectorAll('.slot'),function(s){var i=+s.dataset.i,c=s.firstChild,fb=s.parentNode.querySelector('.fb');if(c&&c.dataset.w===q[i][1]){ok++;s.classList.remove('no');s.classList.add('ok');fb.textContent='✔';fb.className='fb ok';award('dg'+i,5)}else{s.classList.add('no');fb.textContent=c?'✘ tente outra':'falta';fb.className='fb no'}});if(ok===q.length)fimAct('dg')}}
+
+/* ---------- 4) quadrinhos ---------- */
+function actBx(){var t=T[tema],q=[['Quem compra o produto','CLIENTE'],['Valor cobrado por um produto','PRECO'],['O que sobra depois de pagar os custos','LUCRO'],['Grupo de pessoas que responde à pesquisa','AMOSTRA']];
+ var h=bar()+'<h2 id="pergunta">🔠 Digite uma letra em cada quadrinho</h2>';
+ q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' ('+x[1].length+' letras)</p><div class="bxs" data-i="'+i+'">'+x[1].split('').map(function(_,k){return '<input maxlength="1" data-k="'+k+'" autocomplete="off">'}).join('')+'</div><span class="fb"></span></div>'});
+ stage.innerHTML=h;wireBar();var n=0;
+ [].forEach.call(stage.querySelectorAll('.bxs'),function(g){var i=+g.dataset.i,ins=g.querySelectorAll('input'),fb=g.parentNode.querySelector('.fb');
+  [].forEach.call(ins,function(inp,k){inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Backspace'&&!inp.value&&k>0){ins[k-1].focus();ins[k-1].value=''}});
+   inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,'');if(inp.value&&k<ins.length-1)ins[k+1].focus();var w=[].map.call(ins,function(x){return x.value}).join('');if(w.length===q[i][1].length){if(w===q[i][1]){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.disabled=true;x.classList.add('ok')});award('bx'+i,5);if(++n===q.length)fimAct('bx')}else{fb.textContent='Confira as letras';fb.className='fb no'}}else fb.textContent=''})})})}
+
+/* ---------- caça-palavras: geração ---------- */
+var D8=[[0,1],[1,0],[1,1],[0,-1],[-1,0],[1,-1],[-1,1],[-1,-1]];
+function gridWords(words,N,dirs,r){var g=[];for(var i=0;i<N;i++){g.push([]);for(var j=0;j<N;j++)g[i].push('')}
+ var pl={};words.slice().sort(function(a,b){return b.length-a.length}).forEach(function(w){for(var tr=0;tr<400;tr++){var d=dirs[Math.floor(r()*dirs.length)],y=Math.floor(r()*N),x=Math.floor(r()*N),ex=y+d[0]*(w.length-1),ey=x+d[1]*(w.length-1);if(ex<0||ex>=N||ey<0||ey>=N)continue;var ok=true;for(var k=0;k<w.length;k++){var c=g[y+d[0]*k][x+d[1]*k];if(c&&c!==w[k]){ok=false;break}}if(!ok)continue;for(k=0;k<w.length;k++)g[y+d[0]*k][x+d[1]*k]=w[k];pl[w]=[y,x,d];return}});
+ var L='ABCDEFGHIJLMNOPQRSTUVX';for(var a=0;a<N;a++)for(var b=0;b<N;b++)if(!g[a][b])g[a][b]=L[Math.floor(r()*L.length)];return {g:g,pl:pl}}
+function lineCells(a,b){var dy=b[0]-a[0],dx=b[1]-a[1],n=Math.max(Math.abs(dy),Math.abs(dx));if(!n)return null;if(dy&&dx&&Math.abs(dy)!==Math.abs(dx))return null;var sy=Math.sign(dy),sx=Math.sign(dx),o=[];for(var k=0;k<=n;k++)o.push([a[0]+sy*k,a[1]+sx*k]);return o}
+
+/* ---------- 6) caça-palavras estilo jornal ---------- */
+function actJn(){var t=T[tema],N=12,words=t.jn.map(function(x){return x[0]}),G=gridWords(words,N,D8.slice(0,5),rng(seedOf(tema+'jn')));
+ var h=bar()+'<div class="jornal"><div class="jh"><span>O DIÁRIO DO EMPREENDEDOR</span><small>CAÇA-PALAVRAS · '+esc(t.nome.toUpperCase())+'</small></div><div class="jc"><div class="jg" id="jg" style="--n:'+N+'">'+G.g.map(function(row,y){return row.map(function(c,x){return '<b data-y="'+y+'" data-x="'+x+'">'+c+'</b>'}).join('')}).join('')+'</div><ol class="jd">'+t.jn.map(function(x,i){return '<li data-w="'+x[0]+'"><i>'+(i+1)+'.</i> '+esc(x[1])+' <small>('+x[0].length+' letras)</small></li>'}).join('')+'</ol></div><p class="mut" style="margin:6px 0 0">Toque na primeira e na última letra de cada resposta. Podem estar na horizontal, vertical ou diagonal, para a frente ou para trás.</p></div>';
+ stage.innerHTML=h;wireBar();var start=null,found=0,cells=stage.querySelectorAll('#jg b');
+ function at(y,x){return stage.querySelector('#jg b[data-y="'+y+'"][data-x="'+x+'"]')}
+ [].forEach.call(cells,function(c){c.onclick=function(){var p=[+c.dataset.y,+c.dataset.x];if(!start){start=p;c.classList.add('s');return}
+   var ln=lineCells(start,p);var s0=at(start[0],start[1]);s0&&s0.classList.remove('s');start=null;if(!ln)return;var wd=ln.map(function(q){return G.g[q[0]][q[1]]}).join(''),rv=wd.split('').reverse().join('');
+   var hit=words.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('li[data-w="'+hit+'"]');if(hit&&!li.classList.contains('f')){li.classList.add('f');ln.forEach(function(q){at(q[0],q[1]).classList.add('f'+(found%4))});found++;award('jn'+hit,3);if(found===words.length)fimAct('jn')}}})}
+
+/* ---------- 5) mini colmeia ---------- */
+function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(var r=Math.max(-R_,-q-R_);r<=Math.min(R_,-q+R_);r++){idx[q+','+r]=cells.length;cells.push({q:q,r:r,c:''})}
+ var DIR=[[1,0],[0,1],[-1,1],[-1,0],[0,-1],[1,-1]],rd=rng(seedOf(tema+'hv'));
+ HIVE.slice().sort(function(a,b){return b.length-a.length}).forEach(function(w){for(var tr=0;tr<600;tr++){var d=DIR[Math.floor(rd()*6)],s=cells[Math.floor(rd()*cells.length)],ok=true,path=[];for(var k=0;k<w.length;k++){var i=idx[(s.q+d[0]*k)+','+(s.r+d[1]*k)];if(i===undefined||(cells[i].c&&cells[i].c!==w[k])){ok=false;break}path.push(i)}if(ok){path.forEach(function(i,k){cells[i].c=w[k]});return}}});
+ var L='ABCDEFGHIJLMNOPQRSTUVX';cells.forEach(function(c){if(!c.c)c.c=L[Math.floor(rd()*L.length)]});
+ var S=26,W=Math.round(S*Math.sqrt(3)*(2*R_+1))+10,H=Math.round(S*1.5*(2*R_)+S*2)+10;
+ function pos(c){return [W/2+S*Math.sqrt(3)*(c.q+c.r/2),H/2+S*1.5*c.r]}
+ function poly(x,y){var p=[];for(var k=0;k<6;k++){var a=Math.PI/180*(60*k-30);p.push((x+(S-1)*Math.cos(a)).toFixed(1)+','+(y+(S-1)*Math.sin(a)).toFixed(1))}return p.join(' ')}
+ var h=bar()+'<h2 id="pergunta">🐝 Mini colmeia: ache as 8 palavras</h2><div class="hv"><svg id="hx" viewBox="0 0 '+W+' '+H+'">'+cells.map(function(c,i){var p=pos(c);return '<g class="hc" data-i="'+i+'"><polygon points="'+poly(p[0],p[1])+'"/><text x="'+p[0].toFixed(1)+'" y="'+(p[1]+1).toFixed(1)+'">'+c.c+'</text></g>'}).join('')+'</svg><ul class="hw">'+HIVE.map(function(w){return '<li data-w="'+w+'">'+w+'</li>'}).join('')+'</ul></div><p class="mut">Toque na primeira e na última letra da palavra (em linha reta, em qualquer direção).</p>';
+ stage.innerHTML=h;wireBar();var st=null,found=0;
+ [].forEach.call(stage.querySelectorAll('.hc'),function(g){g.onclick=function(){var i=+g.dataset.i,c=cells[i];if(st===null){st=i;g.classList.add('s');return}
+  var a=cells[st];stage.querySelector('.hc[data-i="'+st+'"]').classList.remove('s');var dq=c.q-a.q,dr=c.r-a.r;st=null;var n=Math.max(Math.abs(dq),Math.abs(dr),Math.abs(dq+dr));if(!n)return;var dd=[dq/n,dr/n];if(DIR.every(function(d){return d[0]!==dd[0]||d[1]!==dd[1]}))return;
+  var path=[];for(var k=0;k<=n;k++){var j=idx[(a.q+dd[0]*k)+','+(a.r+dd[1]*k)];if(j===undefined)return;path.push(j)}
+  var wd=path.map(function(j){return cells[j].c}).join(''),rv=wd.split('').reverse().join(''),hit=HIVE.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('.hw li[data-w="'+hit+'"]');
+  if(hit&&!li.classList.contains('f')){li.classList.add('f');path.forEach(function(j){stage.querySelector('.hc[data-i="'+j+'"]').classList.add('f'+(found%4))});found++;award('hv'+hit,3);if(found===HIVE.length)fimAct('hv')}}})}
+
+
+/* ---------- tabela do tema ---------- */
+function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});
+ var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>Pesquisa feita com os clientes do negócio: <b>'+esc(t.nome)+'</b>. Qual é a preferência de cada um?</p><table class="tab"><tr><th>Preferência</th><th>Respostas</th><th>%</th></tr>'+t.tb.map(function(x,i){return i<t.tb.length-1?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a linha "Outro": quantas respostas e qual porcentagem.</p>';
+ var Q=[['q1','1. Quantas pessoas responderam no total?',[String(tot)]],['q2','2. Qual foi a preferência mais escolhida? (escreva o nome)',[t.kw],1],['q3','3. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',[String(t.tb[0][1]-t.tb[2][1])]],['q4','4. Se o dono pesquisasse 300 pessoas e a proporção fosse a mesma, quantas prefeririam "'+t.tb[0][0]+'"?',[String(300*t.tb[0][1]/tot)]]];
+ Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p><input class="n" data-q="'+x[0]+'" autocomplete="off" style="max-width:20em"> <span class="fb"></span></div>'});
+ h+='<div class="card" style="--c:'+t.cor+'"><p>5. O que o dono do negócio deve fazer com esse resultado? Explique em uma frase.</p><textarea rows="2" id="tbOpen"></textarea></div><div class="nav"><span></span><button class="btn" id="tbChk">Conferir ✔</button></div><p class="mut">A pergunta 5 é aberta: chame o professor para conferir.</p>';
+ stage.innerHTML=h;wireBar();[].forEach.call(stage.querySelectorAll('input,textarea'),function(e){e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
+ stage.querySelector('#tbChk').onclick=function(){var ok=0,tot2=Q.length+2;
+  function val(k){return stage.querySelector('[data-q="'+k+'"]').value}
+  function mark(el,good,key){el.classList.toggle('okk2',good);el.style.borderColor=good?'#1f9d55':'#d93025';if(good){award('tb'+key,4)}return good}
+  var last=t.tb[t.tb.length-1][1];
+  if(mark(stage.querySelector('[data-q="o1"]'),norm(val('o1'))===String(last),'o1'))ok++;
+  if(mark(stage.querySelector('[data-q="o2"]'),norm(val('o2')).replace('%','')===String(Math.round(last/tot*100)),'o2'))ok++;
+  Q.forEach(function(x){var el=stage.querySelector('[data-q="'+x[0]+'"]'),v=norm(val(x[0])),good=x[3]?v.indexOf(x[2][0])>-1:x[2].some(function(a){return norm(a)===v});var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'Confira e tente de novo';fb.className='fb '+(good?'ok':'no');if(mark(el,good,x[0]))ok++});
+  if(ok===tot2)fimAct('tb')}}
+
+/* ---------- 7) pesquisa escrita (discursiva) ---------- */
+function steps(t){return[
+ {id:'publico',t:'Quem é o seu público?',q:'Você vai abrir um(a) '+t.neg+'. Quem seriam seus clientes? Descreva idade, onde moram e o que gostam.',min:25},
+ {id:'conc',t:'Quem já vende isso?',q:'Cite 2 concorrentes (lugares ou pessoas que já vendem algo parecido) e diga o que eles fazem bem.',min:25},
+ {id:'perg',t:'As 5 perguntas',q:'Crie 5 perguntas para descobrir o que o seu público quer.',dica:'Exemplos: '+t.ex.join(' · '),multi:5,min:8},
+ {id:'amostra',t:'Quantas pessoas?',q:'Quantas pessoas você vai entrevistar e quem elas seriam? Por que esse número é suficiente?',min:25},
+ {id:'dec',t:'Vale a pena?',q:'Com base na pesquisa, vale a pena lançar o negócio? Justifique e sugira um '+t.preco+'.',min:30}]}
+function dsDone(id,s){var v=R[tema][id];if(s.multi)return (v||[]).filter(function(x){return (x||'').trim().length>=s.min}).length>=s.multi;return !!v&&v.trim().length>=s.min}
+var dsStep=0;
+function actDs(){var t=T[tema],S=steps(t);if(dsStep>=S.length){dsStep=0;fimAct('ds');return hub()}var s=S[dsStep],v=R[tema][s.id];
+ var h=bar(S.map(function(x,i){return '<button class="pill'+(i===dsStep?' on':'')+(dsDone(x.id,x)?' ok':'')+'" data-i="'+i+'">'+(i+1)+'</button>'}).join(''))+'<div class="card" style="--c:'+t.cor+'"><h2>'+t.em+' '+(dsStep+1)+'. '+esc(s.t)+'</h2><p id="pergunta">'+esc(s.q)+'</p>'+(s.dica?'<div class="dica">'+esc(s.dica)+'</div>':'');
+ if(s.multi)h+=Array.apply(null,Array(s.multi)).map(function(_,i){return '<textarea data-m="'+i+'" rows="1" placeholder="Pergunta '+(i+1)+'">'+esc((v||[])[i]||'')+'</textarea>'}).join('');else h+='<textarea rows="4" data-s="1">'+esc(v||'')+'</textarea>';
+ h+='</div><div class="nav"><button class="btn alt" id="ant"'+(dsStep?'':' disabled')+'>◀ Anterior</button><button class="btn" id="prox">'+(dsStep===S.length-1?'Terminar ✔':'Próximo ▶')+'</button></div><p class="mut">Estas respostas são abertas: chame o professor para conferir.</p>';
+ stage.innerHTML=h;wireBar();
+ function save(){R[tema][s.id]=s.multi?[].map.call(stage.querySelectorAll('[data-m]'),function(x){return x.value}):stage.querySelector('[data-s]').value;if(dsDone(s.id,s))award('ds'+s.id,6)}
+ [].forEach.call(stage.querySelectorAll('textarea'),function(e){e.addEventListener('input',save);e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
+ stage.querySelector('#ant').onclick=function(){save();dsStep--;actDs()};stage.querySelector('#prox').onclick=function(){save();dsStep++;actDs()};
+ [].forEach.call(stage.querySelectorAll('.pill'),function(b){b.onclick=function(){save();dsStep=+b.dataset.i;actDs()}})}
+menu();
+})();
+</script>
+<script src="config.js?v=4"></script><script src="ident.js?v=5"></script><script src="catalogo.js?v=5"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=22"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+</html>
