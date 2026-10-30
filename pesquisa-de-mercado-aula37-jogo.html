@@ -16,6 +16,8 @@ h2{margin:6px 0;font-size:1.25em}
 .tema{border:6px solid var(--c);background:#fff;border-radius:26px;padding:16px 10px;text-align:center;cursor:pointer;font:800 1em inherit;color:var(--ink);box-shadow:0 6px 0 #0002}
 .tema:active{transform:translateY(4px);box-shadow:0 2px 0 #0002}
 .tema .em{font-size:3.2em;display:block}
+.tema>span{font-size:1.25em;font-family:inherit}
+.tema .ti{display:block;width:min(100%,190px);height:auto;margin:0 auto 6px;border-radius:14px;pointer-events:none}
 .tema small{display:block;font-weight:600;color:var(--mut);margin-top:4px}
 .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
 .pill{border:3px solid var(--c);background:#fff;border-radius:99px;min-width:2.3em;height:2.3em;font:800 1em inherit;cursor:pointer;color:var(--c)}
@@ -102,7 +104,7 @@ function shuf(a,r){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r(
 /* ---------- telas ---------- */
 function bar(extra){var t=T[tema];return '<div class="bar" style="--c:'+t.cor+'"><button class="btn alt" id="bTema">🔄 Trocar negócio</button><button class="btn alt" id="bHub">🏠 Atividades</button>'+(extra||'')+'</div>'}
 function wireBar(){var a=stage.querySelector('#bTema'),b=stage.querySelector('#bHub');if(a)a.onclick=menu;if(b)b.onclick=hub}
-function menu(){tema=null;stage.innerHTML='<h2 id="pergunta">Escolha o negócio que você quer pesquisar</h2><p>Você pode trocar de negócio a qualquer momento. Seus pontos e respostas ficam guardados.</p><div class="temas">'+Object.keys(T).map(function(k){var t=T[k];return '<button class="tema" data-k="'+k+'" style="--c:'+t.cor+'"><span class="em">'+t.em+'</span>'+t.nome+'</button>'}).join('')+'</div><p style="text-align:center"><button class="btn alt" id="aulaB">📊 Ver a aula em slides</button></p>';
+function menu(){tema=null;stage.innerHTML='<h2 id="pergunta">Escolha o negócio que você quer pesquisar</h2><p>Você pode trocar de negócio a qualquer momento. Seus pontos e respostas ficam guardados.</p><div class="temas">'+Object.keys(T).map(function(k){var t=T[k];return '<button class="tema" data-k="'+k+'" style="--c:'+t.cor+'"><img class="ti" src="img37f/'+k+'.webp" alt="" draggable="false"><span>'+t.nome+'</span></button>'}).join('')+'</div><p style="text-align:center"><button class="btn alt" id="aulaB">📊 Ver a aula em slides</button></p>';
  [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){tema=b.dataset.k;R[tema]=R[tema]||{};hub()}});stage.querySelector('#aulaB').onclick=function(){slides(menu)};window.scrollTo(0,0)}
 var ACTS=[['aula','📊','Aula em slides','Leia e edite as anotações'],['mc','🔘','Escolha','Marque a resposta certa'],['tp','⌨️','Digite','Escreva a resposta'],['dg','🧲','Arraste e solte','Complete as frases'],['bx','🔠','Quadrinhos','Uma letra em cada quadrinho'],['hv','🐝','Mini colmeia','Caça-palavras com 8 palavras'],['tb','📋','Analise a tabela','Responda com os dados'],['jn','📰','Caça-palavras do jornal','8 palavras com dicas'],['ds','✍️','Pesquisa escrita','Monte a sua pesquisa']];
 function hub(){var t=T[tema];stage.innerHTML=bar()+'<h2 id="pergunta" style="margin-top:12px">'+t.em+' '+t.nome+' — escolha uma atividade</h2><div class="temas h">'+ACTS.map(function(a){var ok=GOT[tema+'done_'+a[0]];return '<button class="tema'+(ok?' okk':'')+'" data-a="'+a[0]+'" style="--c:'+t.cor+'"><span class="em">'+a[1]+'</span>'+a[2]+(ok?' ✔':'')+'<small>'+a[3]+'</small></button>'}).join('')+'</div>';wireBar();
