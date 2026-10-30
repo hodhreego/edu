@@ -49,11 +49,11 @@ input.n{max-width:14em}
 .jc{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .jg{display:grid;grid-template-columns:repeat(var(--n),1fr);border:3px solid #111;background:#fff;width:min(100%,430px);flex:none}
 .jg b{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid #bbb;font:700 clamp(11px,2.2vw,18px) Georgia,serif;cursor:pointer;user-select:none}
-.jg b.s{background:#ffd24d}.jg b.f0{background:#bfe3ff}.jg b.f1{background:#ffd6a8}.jg b.f2{background:#c9f2c7}.jg b.f3{background:#f4c6ec}
+.jgw{position:relative;width:min(100%,430px);flex:none}.jgw .jg{width:100%}.jm{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.jg b.s{background:#ffd24d}.jg{touch-action:none}
 .jd{flex:1;min-width:200px;margin:0;padding:0;list-style:none;column-rule:1px solid #111;font-size:.9em}.jd li{margin:4px 0;padding-bottom:3px;border-bottom:1px dotted #777}.jd li.f{text-decoration:line-through;color:#777}.jd i{font-weight:900}
 .hv{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}#hx{width:min(100%,430px);flex:none}
 .hc polygon{fill:#fff7cf;stroke:#d99a00;stroke-width:2;cursor:pointer}.hc text{font:800 17px Arial;text-anchor:middle;dominant-baseline:central;pointer-events:none;fill:#333}
-.hc.s polygon{fill:#ffd24d}.hc.f0 polygon{fill:#bfe3ff}.hc.f1 polygon{fill:#ffd6a8}.hc.f2 polygon{fill:#c9f2c7}.hc.f3 polygon{fill:#f4c6ec}
+.hc.s polygon{fill:#ffd24d}#hx{touch-action:none}.hw li.f,.jd li.f{border-left:10px solid var(--mk,#888);padding-left:6px}
 .hw{list-style:none;margin:0;padding:0;font-weight:800;columns:2;flex:1;min-width:180px}.hw li{margin:4px 0}.hw li.f{text-decoration:line-through;color:#888}
 .slide{background:#fff;border:6px solid #1f3a8a;border-radius:18px;padding:18px 24px;min-height:min(60vh,420px);font-size:1.05em;line-height:1.45}
 .slide.ed{outline:4px dashed #f5a300}.slide h2{color:#1f3a8a;font-size:1.5em;margin:0 0 8px}
@@ -170,14 +170,25 @@ function gridWords(words,N,dirs,r){var g=[];for(var i=0;i<N;i++){g.push([]);for(
  var L='ABCDEFGHIJLMNOPQRSTUVX';for(var a=0;a<N;a++)for(var b=0;b<N;b++)if(!g[a][b])g[a][b]=L[Math.floor(r()*L.length)];return {g:g,pl:pl}}
 function lineCells(a,b){var dy=b[0]-a[0],dx=b[1]-a[1],n=Math.max(Math.abs(dy),Math.abs(dx));if(!n)return null;if(dy&&dx&&Math.abs(dy)!==Math.abs(dx))return null;var sy=Math.sign(dy),sx=Math.sign(dx),o=[];for(var k=0;k<=n;k++)o.push([a[0]+sy*k,a[1]+sx*k]);return o}
 
-/* ---------- 6) caça-palavras estilo jornal ---------- */
+/* marcador colorido (estilo das colmeias): arraste do primeiro ao ultimo, ou toque no primeiro e no ultimo */
+var MK=['#ff3b30','#ff9500','#34c759','#007aff','#af52de','#ff2d92','#00c7be','#e6b800'];
+function dragSel(root,sel,get,done,prev){var A=null,pend=null,cur=null;
+ function cellAt(e){var el=document.elementFromPoint(e.clientX,e.clientY);return el&&el.closest?el.closest(sel):null}
+ root.style.touchAction='none';
+ root.addEventListener('pointerdown',function(e){var c=cellAt(e);if(!c)return;e.preventDefault();A=c;cur=c;prev(get(A),get(A))});
+ root.addEventListener('pointermove',function(e){if(!A)return;var c=cellAt(e);if(c&&c!==cur){cur=c;prev(get(A),get(c))}});
+ function up(e){if(!A)return;var c=cellAt(e)||cur;prev(null,null);var a=A;A=null;if(!c)return;if(c!==a){if(pend){pend.classList.remove('s');pend=null}done(get(a),get(c))}else if(pend&&pend!==c){var p0=pend;pend.classList.remove('s');pend=null;done(get(p0),get(c))}else if(pend===c){c.classList.remove('s');pend=null}else{pend=c;c.classList.add('s')}}
+ window.addEventListener('pointerup',up);root.addEventListener('pointercancel',function(){A=null;prev(null,null)})}
+function svgLine(g,x1,y1,x2,y2,w,col,op){var l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke',col);l.setAttribute('stroke-width',w);l.setAttribute('stroke-linecap','round');l.setAttribute('stroke-opacity',op);g.appendChild(l);return l}
+
+/* ---------- 6) cacapalavras estilo jornal ---------- */
 function actJn(){var t=T[tema],N=12,words=t.jn.map(function(x){return x[0]}),G=gridWords(words,N,D8.slice(0,5),rng(seedOf(tema+'jn')));
- var h=bar()+'<div class="jornal"><div class="jh"><span>O DIÁRIO DO EMPREENDEDOR</span><small>CAÇA-PALAVRAS · '+esc(t.nome.toUpperCase())+'</small></div><div class="jc"><div class="jg" id="jg" style="--n:'+N+'">'+G.g.map(function(row,y){return row.map(function(c,x){return '<b data-y="'+y+'" data-x="'+x+'">'+c+'</b>'}).join('')}).join('')+'</div><ol class="jd">'+t.jn.map(function(x,i){return '<li data-w="'+x[0]+'"><i>'+(i+1)+'.</i> '+esc(x[1])+' <small>('+x[0].length+' letras)</small></li>'}).join('')+'</ol></div><p class="mut" style="margin:6px 0 0">Toque na primeira e na última letra de cada resposta. Podem estar na horizontal, vertical ou diagonal, para a frente ou para trás.</p></div>';
- stage.innerHTML=h;wireBar();var start=null,found=0,cells=stage.querySelectorAll('#jg b');
- function at(y,x){return stage.querySelector('#jg b[data-y="'+y+'"][data-x="'+x+'"]')}
- [].forEach.call(cells,function(c){c.onclick=function(){var p=[+c.dataset.y,+c.dataset.x];if(!start){start=p;c.classList.add('s');return}
-   var ln=lineCells(start,p);var s0=at(start[0],start[1]);s0&&s0.classList.remove('s');start=null;if(!ln)return;var wd=ln.map(function(q){return G.g[q[0]][q[1]]}).join(''),rv=wd.split('').reverse().join('');
-   var hit=words.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('li[data-w="'+hit+'"]');if(hit&&!li.classList.contains('f')){li.classList.add('f');ln.forEach(function(q){at(q[0],q[1]).classList.add('f'+(found%4))});found++;award('jn'+hit,3);if(found===words.length)fimAct('jn')}}})}
+ var h=bar()+'<div class="jornal"><div class="jh"><span>O DIÁRIO DO EMPREENDEDOR</span><small>CAÇA-PALAVRAS · '+esc(t.nome.toUpperCase())+'</small></div><div class="jc"><div class="jgw"><div class="jg" id="jg" style="--n:'+N+'">'+G.g.map(function(row,y){return row.map(function(c,x){return '<b data-y="'+y+'" data-x="'+x+'">'+c+'</b>'}).join('')}).join('')+'</div><svg class="jm" viewBox="0 0 '+N+' '+N+'"><g id="jmg"></g><g id="jmp"></g></svg></div><ol class="jd">'+t.jn.map(function(x,i){return '<li data-w="'+x[0]+'"><i>'+(i+1)+'.</i> '+esc(x[1])+' <small>('+x[0].length+' letras)</small></li>'}).join('')+'</ol></div><p class="mut" style="margin:6px 0 0">Passe o dedo (ou o mouse) da primeira à última letra, ou toque na primeira e na última. Pode estar na horizontal, vertical ou diagonal, para a frente ou para trás.</p></div>';
+ stage.innerHTML=h;wireBar();var found=0,jmg=stage.querySelector('#jmg'),jmp=stage.querySelector('#jmp');
+ function get(c){return [+c.dataset.y,+c.dataset.x]}
+ function prev(a,b){jmp.innerHTML='';if(!a)return;var ln=lineCells(a,b);if(!ln)return;var f=ln[0],l=ln[ln.length-1];svgLine(jmp,f[1]+.5,f[0]+.5,l[1]+.5,l[0]+.5,.7,'#888',.35)}
+ dragSel(stage.querySelector('#jg'),'b',get,function(a,b){var ln=lineCells(a,b);if(!ln)return;var wd=ln.map(function(q){return G.g[q[0]][q[1]]}).join(''),rv=wd.split('').reverse().join(''),hit=words.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('li[data-w="'+hit+'"]');
+  if(hit&&!li.classList.contains('f')){var col=MK[found%MK.length];li.classList.add('f');li.style.setProperty('--mk',col);svgLine(jmg,ln[0][1]+.5,ln[0][0]+.5,ln[ln.length-1][1]+.5,ln[ln.length-1][0]+.5,.7,col,.45);found++;award('jn'+hit,3);if(found===words.length)fimAct('jn')}},prev)}
 
 /* ---------- 5) mini colmeia ---------- */
 function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(var r=Math.max(-R_,-q-R_);r<=Math.min(R_,-q+R_);r++){idx[q+','+r]=cells.length;cells.push({q:q,r:r,c:''})}
@@ -187,14 +198,13 @@ function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(
  var S=26,W=Math.round(S*Math.sqrt(3)*(2*R_+1))+10,H=Math.round(S*1.5*(2*R_)+S*2)+10;
  function pos(c){return [W/2+S*Math.sqrt(3)*(c.q+c.r/2),H/2+S*1.5*c.r]}
  function poly(x,y){var p=[];for(var k=0;k<6;k++){var a=Math.PI/180*(60*k-30);p.push((x+(S-1)*Math.cos(a)).toFixed(1)+','+(y+(S-1)*Math.sin(a)).toFixed(1))}return p.join(' ')}
- var h=bar()+'<h2 id="pergunta">🐝 Mini colmeia: ache as 8 palavras</h2><div class="hv"><svg id="hx" viewBox="0 0 '+W+' '+H+'">'+cells.map(function(c,i){var p=pos(c);return '<g class="hc" data-i="'+i+'"><polygon points="'+poly(p[0],p[1])+'"/><text x="'+p[0].toFixed(1)+'" y="'+(p[1]+1).toFixed(1)+'">'+c.c+'</text></g>'}).join('')+'</svg><ul class="hw">'+HIVE.map(function(w){return '<li data-w="'+w+'">'+w+'</li>'}).join('')+'</ul></div><p class="mut">Toque na primeira e na última letra da palavra (em linha reta, em qualquer direção).</p>';
- stage.innerHTML=h;wireBar();var st=null,found=0;
- [].forEach.call(stage.querySelectorAll('.hc'),function(g){g.onclick=function(){var i=+g.dataset.i,c=cells[i];if(st===null){st=i;g.classList.add('s');return}
-  var a=cells[st];stage.querySelector('.hc[data-i="'+st+'"]').classList.remove('s');var dq=c.q-a.q,dr=c.r-a.r;st=null;var n=Math.max(Math.abs(dq),Math.abs(dr),Math.abs(dq+dr));if(!n)return;var dd=[dq/n,dr/n];if(DIR.every(function(d){return d[0]!==dd[0]||d[1]!==dd[1]}))return;
-  var path=[];for(var k=0;k<=n;k++){var j=idx[(a.q+dd[0]*k)+','+(a.r+dd[1]*k)];if(j===undefined)return;path.push(j)}
-  var wd=path.map(function(j){return cells[j].c}).join(''),rv=wd.split('').reverse().join(''),hit=HIVE.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('.hw li[data-w="'+hit+'"]');
-  if(hit&&!li.classList.contains('f')){li.classList.add('f');path.forEach(function(j){stage.querySelector('.hc[data-i="'+j+'"]').classList.add('f'+(found%4))});found++;award('hv'+hit,3);if(found===HIVE.length)fimAct('hv')}}})}
-
+ var h=bar()+'<h2 id="pergunta">🐝 Mini colmeia: ache as 8 palavras</h2><div class="hv"><svg id="hx" viewBox="0 0 '+W+' '+H+'">'+cells.map(function(c,i){var p=pos(c);return '<g class="hc" data-i="'+i+'"><polygon points="'+poly(p[0],p[1])+'"/><text x="'+p[0].toFixed(1)+'" y="'+(p[1]+1).toFixed(1)+'">'+c.c+'</text></g>'}).join('')+'<g id="hmg" pointer-events="none"></g><g id="hmp" pointer-events="none"></g></svg><ul class="hw">'+HIVE.map(function(w){return '<li data-w="'+w+'">'+w+'</li>'}).join('')+'</ul></div><p class="mut">Passe o dedo (ou o mouse) da primeira à última letra, ou toque na primeira e na última. Em linha reta, em qualquer direção.</p>';
+ stage.innerHTML=h;wireBar();var found=0,hmg=stage.querySelector('#hmg'),hmp=stage.querySelector('#hmp');
+ function get(g){return +g.dataset.i}
+ function path(i,j){var a=cells[i],c=cells[j],dq=c.q-a.q,dr=c.r-a.r,n=Math.max(Math.abs(dq),Math.abs(dr),Math.abs(dq+dr));if(!n)return null;var dd=[dq/n,dr/n];if(DIR.every(function(d){return d[0]!==dd[0]||d[1]!==dd[1]}))return null;var pt=[];for(var k=0;k<=n;k++){var x=idx[(a.q+dd[0]*k)+','+(a.r+dd[1]*k)];if(x===undefined)return null;pt.push(x)}return pt}
+ function prev(i,j){hmp.innerHTML='';if(i===null)return;var pt=path(i,j);if(!pt)return;var a=pos(cells[pt[0]]),b=pos(cells[pt[pt.length-1]]);svgLine(hmp,a[0],a[1],b[0],b[1],S*1.15,'#888',.35)}
+ dragSel(stage.querySelector('#hx'),'.hc',get,function(i,j){var pt=path(i,j);if(!pt)return;var wd=pt.map(function(x){return cells[x].c}).join(''),rv=wd.split('').reverse().join(''),hit=HIVE.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('.hw li[data-w="'+hit+'"]');
+  if(hit&&!li.classList.contains('f')){var col=MK[found%MK.length],a=pos(cells[pt[0]]),b=pos(cells[pt[pt.length-1]]);li.classList.add('f');li.style.setProperty('--mk',col);svgLine(hmg,a[0],a[1],b[0],b[1],S*1.15,col,.45);found++;award('hv'+hit,3);if(found===HIVE.length)fimAct('hv')}},prev)}
 
 /* ---------- tabela do tema ---------- */
 function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});
