@@ -32,6 +32,7 @@ var CORES = {
 function doPost(e) {
   var d = {};
   try { d = JSON.parse(e.postData.contents); } catch (err) { return ok_('json inválido'); }
+  if (d.acao === 'pontos') return rkPontos_(d);
   var lock = LockService.getScriptLock();
   try { lock.waitLock(100000); } catch (err) { return ok_('ocupado'); }
   try { return gravaResultado_(d); } finally { lock.releaseLock(); }
@@ -116,7 +117,10 @@ function reconstruir_() {
   });
 }
 
-function doGet() { return ok_('Planilha do professor ativa.'); }
+function doGet(e) {
+  if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
+  return ok_('Planilha do professor ativa.');
+}
 function ok_(t) { return ContentService.createTextOutput(t); }
 
 // ---- Escolas liberadas: Schuster e Clarito salvam direto; qualquer outra fica retida até o professor liberar. ----
@@ -316,4 +320,32 @@ function resumo_(ss) {
     sh.setConditionalFormatRules(regras_(sh.getRange(HR + 1, 7, max - HR, 1), null));
   }
   if (b.novo) tamanho_(sh, n, []);
+}
+
+
+/* ===== Classificação ao vivo (top 10 por turma + código da atividade) ===== */
+var RK='Ranking',RK_MAX_PTS=6000,RK_HORAS=12;
+function rkAba_(){var ss=SpreadsheetApp.getActiveSpreadsheet(),sh=ss.getSheetByName(RK);if(!sh){sh=ss.insertSheet(RK);sh.appendRow(['sid','turma','codigo','nome','pontos','quando'])}return sh}
+function rkLimpa_(t,n){return String(t==null?'':t).replace(/[<>&"'\=+@]/g,'').replace(/\s+/g,' ').trim().slice(0,n)}
+function rkPontos_(d){
+  var cache=CacheService.getScriptCache(),sid=rkLimpa_(d.sid,24),turma=rkLimpa_(d.turma,12).toUpperCase(),cod=rkLimpa_(d.codigo,8),nome=rkLimpa_(d.nome,30),pts=Math.floor(Number(d.pts));
+  if(!sid||!cod||!turma||!nome||!isFinite(pts)||pts<0||pts>RK_MAX_PTS)return ContentService.createTextOutput('recusado');
+  if(cache.get('rk'+sid))return ContentService.createTextOutput('aguarde');
+  cache.put('rk'+sid,'1',3);
+  var lock=LockService.getScriptLock();lock.waitLock(5000);
+  try{var sh=rkAba_(),n=sh.getLastRow()-1,ids=n>0?sh.getRange(2,1,n,1).getValues():[],row=-1;
+    for(var i=0;i<ids.length;i++){if(ids[i][0]===sid){row=i+2;break}}
+    if(row>0){var ant=Number(sh.getRange(row,5).getValue());if(pts<ant)pts=ant}
+    var v=[sid,turma,cod,nome,pts,new Date()];
+    if(row>0)sh.getRange(row,1,1,6).setValues([v]);else sh.appendRow(v);
+    if(sh.getLastRow()>3000)sh.deleteRows(2,1000);
+  }finally{lock.releaseLock()}
+  return ContentService.createTextOutput('ok');
+}
+function rkTop_(p){
+  var turma=rkLimpa_(p.turma,12).toUpperCase(),cod=rkLimpa_(p.codigo,8),sh=rkAba_(),v=sh.getDataRange().getValues();v.shift();
+  var lim=Date.now()-RK_HORAS*3600000;
+  var o=v.filter(function(r){return String(r[1]).toUpperCase()===turma&&String(r[2])===cod&&new Date(r[5]).getTime()>=lim}).map(function(r){return{sid:r[0],nome:r[3],pontos:Number(r[4])}});
+  o.sort(function(a,b){return b.pontos-a.pontos});
+  return ContentService.createTextOutput(JSON.stringify({ranking:o.slice(0,10)})).setMimeType(ContentService.MimeType.JSON);
 }
