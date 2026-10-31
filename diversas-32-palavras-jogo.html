@@ -65,9 +65,10 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 .confete{position:fixed;top:-20px;font-size:1.6rem;pointer-events:none;animation:cai 2.4s linear forwards;z-index:9}
 @keyframes cai{to{transform:translateY(110vh) rotate(360deg);opacity:.8}}
 
-.moedas{position:fixed;left:auto;width:max-content;right:10px;top:calc(var(--eh,0px) + 52px);z-index:30;display:flex;align-items:center;gap:6px;background:linear-gradient(#ffe98a,#f4b400);border:3px solid #b07a00;border-radius:99px;padding:3px 14px 3px 4px;font:900 1.25rem Verdana,Arial,sans-serif;color:#5d3d00;box-shadow:0 3px 0 rgba(0,0,0,.2)}
-.moedas i{font-style:normal;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c2,#ffc400 60%,#c98a00);border:2px solid #9a6a00;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#8a5a00}
-.moedas.up{animation:bump .5s}.moedas.down{animation:tremer .4s;background:linear-gradient(#ffd0d0,#f08080)}
+#dv-top{position:fixed;left:0;right:0;top:calc(var(--eh,0px) + 52px);height:0;z-index:30;pointer-events:none}
+.dv-moedas{position:absolute;right:10px;top:0;width:max-content;z-index:30;display:flex;align-items:center;gap:6px;background:linear-gradient(#ffe98a,#f4b400);border:3px solid #b07a00;border-radius:99px;padding:3px 14px 3px 4px;font:900 1.25rem Verdana,Arial,sans-serif;color:#5d3d00;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.dv-moedas i{font-style:normal;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c2,#ffc400 60%,#c98a00);border:2px solid #9a6a00;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#8a5a00}
+.dv-moedas.up{animation:bump .5s}.dv-moedas.down{animation:tremer .4s;background:linear-gradient(#ffd0d0,#f08080)}
 @keyframes bump{40%{transform:scale(1.3)}}
 @keyframes tremer{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 .voa{position:fixed;right:70px;top:56px;z-index:31;font:900 1.7rem Verdana,Arial,sans-serif;pointer-events:none;animation:voa 1.2s forwards}
@@ -87,11 +88,25 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 .premio img{width:130px;height:130px;object-fit:contain;animation:nova 1.6s ease-out 3}
 .medalhas{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 12px;font-size:2.2rem}
 .medalhas span.b{filter:grayscale(1) opacity(.3)}
+
+.zap{display:inline-flex;align-items:center;gap:10px;background:#d9fdd3;border-radius:18px 18px 18px 4px;padding:8px 14px 8px 8px;box-shadow:0 2px 0 rgba(0,0,0,.18);cursor:pointer;user-select:none;margin:0 auto 10px;border:0;font:inherit;min-width:230px}
+.zap:active{transform:scale(.97)}
+.zap .pl{width:46px;height:46px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex:none}
+.zap .pl svg{width:24px;height:24px;fill:#fff}
+.zap .pl .pa{display:none}
+.zap.tocando .pl .pp{display:none}.zap.tocando .pl .pa{display:block}
+.zap .on{display:flex;align-items:center;gap:2.5px;height:34px;flex:1}
+.zap .on i{width:3.5px;border-radius:2px;background:#8aa59a;display:block}
+.zap.tocando .on i{background:#128C7E;animation:onda .7s ease-in-out infinite}
+.zap .on i:nth-child(3n){animation-delay:.15s}.zap .on i:nth-child(3n+1){animation-delay:.3s}
+@keyframes onda{50%{transform:scaleY(.4)}}
+.zap .t{font:600 .8rem Verdana,Arial,sans-serif;color:#667781;align-self:flex-end;margin-left:2px}
+.zap .mic{font-size:1.2rem;align-self:flex-start}
 </style>
 <script src="alf-gate.js?v=2"></script>
 </head>
 <body>
-<div class="moedas" id="moedas"><i>$</i><span id="m-n">0</span></div>
+<div id="dv-top"><div class="dv-moedas" id="dv-moedas"><i>$</i><span id="m-n">0</span></div></div>
 
 <section id="t-menu" class="tela on">
   <h1>🎯 Atividades Diversificadas</h1>
@@ -107,7 +122,7 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 </section>
 
 <section id="t-jogo" class="tela">
-  <div class="barra"><button class="btn cz" onclick="sair()">⬅ Sair</button><div class="tit" id="j-tit"></div><button class="btn az" id="j-ouvir" onclick="ouvir()">🔊 Ouvir</button></div>
+  <div class="barra"><button class="btn cz" onclick="sair()">⬅ Sair</button><div class="tit" id="j-tit"></div><span style="width:52px"></span></div>
   <div class="prog" id="j-prog"></div>
   <div class="quadro" id="j-quadro"></div>
   <div class="msg" id="j-msg"></div>
@@ -187,7 +202,7 @@ var PROG={};try{PROG=JSON.parse(localStorage.getItem("div32_prog")||"{}")}catch(
 var MOEDAS=0;try{MOEDAS=parseInt(localStorage.getItem("div32_moedas"))||0}catch(e){}
 function salvaM(){try{localStorage.setItem("div32_moedas",MOEDAS)}catch(e){}}
 function moeda(d){
-  MOEDAS=Math.max(0,MOEDAS+d);salvaM();var m=$("moedas"),n=$("m-n");if(n)n.textContent=MOEDAS;
+  MOEDAS=Math.max(0,MOEDAS+d);salvaM();var m=$("dv-moedas"),n=$("m-n");if(n)n.textContent=MOEDAS;
   if(m){m.classList.remove("up","down");void m.offsetWidth;m.classList.add(d>0?"up":"down")}
   var v=document.createElement("div");v.className="voa "+(d>0?"mais":"menos");v.textContent=(d>0?"+":"−")+Math.abs(d);document.body.appendChild(v);setTimeout(function(){v.remove()},1300);
   if(d>0&&window.requestAnimationFrame)tom(880,"sine",.1)
@@ -284,19 +299,23 @@ function msg(t,c){var m=$("j-msg");m.textContent=t||"";m.className="msg "+(c||""
 
 /* ===== Uma rodada ===== */
 var OUVIR=function(){};
-function ouvir(){OUVIR()}
+var BARRAS=[10,18,26,14,30,22,12,28,20,8,24,30,16,10,26,18,12,22,28,14,8,20];
+function zapHtml(){return '<button type="button" class="zap" id="zap" aria-label="Ouvir" onclick="ouvir()"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on">'+BARRAS.map(function(h){return '<i style="height:'+h+'px"></i>'}).join("")+'</span><span class="t">0:03</span></button><br>'}
+var ZT=null;
+function ouvir(){var z=$("zap");if(z){z.classList.add("tocando");clearTimeout(ZT);ZT=setTimeout(function(){var q=$("zap");if(q)q.classList.remove("tocando")},3200)}OUVIR()}
 function proxima(primeira){
   if(!primeira)QI++;
   if(QI>=Q.length){fimFase();return}
   ERROS_Q=0;TRAVA=false;bolinhas();msg("");
   var q=Q[QI],qd=$("j-quadro");
-  $("j-ouvir").style.display="";
+  
   if(A.id==="letras")rLetras(q,qd);
   else if(A.id==="silabas")rSilabas(q,qd);
   else if(A.id==="som")rSom(q,qd);
   else if(A.id==="frase")rFrase(q,qd);
   else if(A.id==="complete")rComplete(q,qd);
   else if(A.id==="leitura")rPergunta(q,qd);
+  qd.insertAdjacentHTML("afterbegin",zapHtml());
 }
 function erra(el){
   ERROS++;ERROS_Q++;tom(160,"sawtooth",.2);moeda(-10);resposta(false);msg("Tente de novo!","ruim");
@@ -364,9 +383,9 @@ function rComplete(c,qd){
 }
 /* Fichas de leitura */
 function mostraHistoria(){
-  var h=HI[FI];$("j-prog").innerHTML="";msg("");$("j-ouvir").style.display="";
+  var h=HI[FI];$("j-prog").innerHTML="";msg("");
   OUVIR=function(){fala(h.tx.join(" "))};
-  $("j-quadro").innerHTML='<div class="hist" style="--c:'+h.c+';--g1:'+h.g[0]+';--g2:'+h.g[1]+'"><div class="cena">'+h.e+'</div><div class="corpo"><h2>'+h.t+'</h2>'+h.tx.map(function(p){return"<p>"+p+"</p>"}).join("")+'</div></div><div class="acoes"><button class="btn vd" onclick="comecaPerguntas()">Já li! Ir para as perguntas ➡</button></div>';
+  $("j-quadro").innerHTML=zapHtml()+'<div class="hist" style="--c:'+h.c+';--g1:'+h.g[0]+';--g2:'+h.g[1]+'"><div class="cena">'+h.e+'</div><div class="corpo"><h2>'+h.t+'</h2>'+h.tx.map(function(p){return"<p>"+p+"</p>"}).join("")+'</div></div><div class="acoes"><button class="btn vd" onclick="comecaPerguntas()">Já li! Ir para as perguntas ➡</button></div>';
 }
 function comecaPerguntas(){try{speechSynthesis.cancel()}catch(e){};QI=0;ERROS=0;proxima(true)}
 function rPergunta(q,qd){

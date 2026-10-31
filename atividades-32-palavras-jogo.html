@@ -553,7 +553,21 @@
       .slot.char-slot { min-width: 42px; min-height: 52px; font-size: 1.4rem; }
       .btn-tile.char-tile { min-width: 42px; min-height: 50px; font-size: 1.3rem; }
     }
-  </style>
+  
+    .btn-speak{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:8px;background:#d9fdd3;border-radius:18px 18px 18px 4px;padding:6px 12px 6px 6px;box-shadow:0 2px 0 rgba(0,0,0,.18);cursor:pointer;min-width:190px;vertical-align:middle;-webkit-tap-highlight-color:transparent}
+    .btn-speak:active{transform:scale(.97)}
+    .btn-speak .pl{width:42px;height:42px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex:none}
+    .btn-speak .pl svg{width:22px;height:22px;fill:#fff}.btn-speak .pl .pa{display:none}
+    .btn-speak.tocando .pl .pp{display:none}.btn-speak.tocando .pl .pa{display:block}
+    .btn-speak .on{display:flex;align-items:center;gap:2.5px;height:32px;flex:1}
+    .btn-speak .on i{width:3.5px;border-radius:2px;background:#8aa59a;display:block}
+    .btn-speak.tocando .on i{background:#128C7E;animation:onda .7s ease-in-out infinite}
+    .btn-speak .on i:nth-child(3n){animation-delay:.15s}.btn-speak .on i:nth-child(3n+1){animation-delay:.3s}
+    @keyframes onda{50%{transform:scaleY(.4)}}
+    .btn-speak .t{font:600 .75rem Verdana,Arial,sans-serif;color:#667781;align-self:flex-end}
+    .btn-speak.pulse{animation:zpulse 1.6s infinite}
+    @keyframes zpulse{50%{box-shadow:0 0 0 6px rgba(37,211,102,.35)}}
+</style>
 <script src="alf-gate.js?v=2"></script>
 </head>
 <body>
@@ -577,6 +591,9 @@
   <div id="ariaStatus" class="sr-only" aria-live="polite"></div>
 
   <script>
+function zapFalar(b,t){b.classList.add('tocando');clearTimeout(b._z);b._z=setTimeout(function(){b.classList.remove('tocando')},2600);falar(t)}
+</script>
+<script>
 function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');if(k==='brinquedos')k='brinquedo';
   return '<img src="img32/'+k+'.png" alt="" data-e="'+(it.e||'')+'" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle" onerror="this.replaceWith(document.createTextNode(this.dataset.e))">'}
 </script>
@@ -917,7 +934,7 @@ function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[
         corpo.innerHTML = `
           <div class="act-prompt">
             <span>Qual é a palavra?</span>
-            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+            <button class="btn-speak" onclick="zapFalar(this,'${item.p}')" aria-label="Ouvir palavra"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on"><i style="height:10px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:30px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:8px"></i><i style="height:24px"></i><i style="height:16px"></i></span><span class="t">0:02</span></button>
           </div>
           <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="choice-grid">
@@ -972,7 +989,7 @@ function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[
         corpo.innerHTML = `
           <div class="act-prompt">
             <span>Monte a palavra:</span>
-            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+            <button class="btn-speak" onclick="zapFalar(this,'${item.p}')" aria-label="Ouvir palavra"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on"><i style="height:10px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:30px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:8px"></i><i style="height:24px"></i><i style="height:16px"></i></span><span class="t">0:02</span></button>
           </div>
           <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="word-slots">${slotsHtml}</div>
@@ -1036,7 +1053,7 @@ function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[
         corpo.innerHTML = `
           <div class="act-prompt">
             <span>Complete a palavra:</span>
-            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+            <button class="btn-speak" onclick="zapFalar(this,'${item.p}')" aria-label="Ouvir palavra"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on"><i style="height:10px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:30px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:8px"></i><i style="height:24px"></i><i style="height:16px"></i></span><span class="t">0:02</span></button>
           </div>
           <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="word-preview">${palavraLacuna}</div>
@@ -1073,7 +1090,7 @@ function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[
         corpo.innerHTML = `
           <div class="act-prompt">
             <span>Ouça a sílaba e toque:</span>
-            <button class="btn-speak pulse" onclick="falar('${silabaSorteada}')" aria-label="Ouvir a sílaba novamente">🔊</button>
+            <button class="btn-speak pulse" onclick="zapFalar(this,'${silabaSorteada}')" aria-label="Ouvir a sílaba novamente"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on"><i style="height:10px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:30px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:8px"></i><i style="height:24px"></i><i style="height:16px"></i></span><span class="t">0:02</span></button>
           </div>
           <div class="context-tag" aria-label="Palavra de apoio: ${item.p}">
             <span aria-hidden="true">${fg(item)}</span> Palavra de apoio: <strong>${item.p.toUpperCase()}</strong>
@@ -1115,7 +1132,7 @@ function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[
         corpo.innerHTML = `
           <div class="act-prompt">
             <span>Qual é a primeira letra?</span>
-            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+            <button class="btn-speak" onclick="zapFalar(this,'${item.p}')" aria-label="Ouvir palavra"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on"><i style="height:10px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:30px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:8px"></i><i style="height:24px"></i><i style="height:16px"></i></span><span class="t">0:02</span></button>
           </div>
           <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="choice-grid">
@@ -1178,7 +1195,7 @@ function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[
         corpo.innerHTML = `
           <div class="act-prompt">
             <span>Escute e escreva:</span>
-            <button class="btn-speak pulse" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+            <button class="btn-speak pulse" onclick="zapFalar(this,'${item.p}')" aria-label="Ouvir palavra"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on"><i style="height:10px"></i><i style="height:18px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:30px"></i><i style="height:22px"></i><i style="height:12px"></i><i style="height:28px"></i><i style="height:20px"></i><i style="height:8px"></i><i style="height:24px"></i><i style="height:16px"></i></span><span class="t">0:02</span></button>
           </div>
           <div style="font-size:3rem; margin:2px 0;" aria-hidden="true">${fg(item)}</div>
           <div class="word-slots">${slotsHtml}</div>
