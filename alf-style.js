@@ -1,7 +1,7 @@
 /* Estilo das ilustrações (acessibilidade): cada aluno escolhe o que prefere. Usa ALF_FIG(chave, alt, px) nas atividades de alfabetização. */
 (function(){
- var ES=[['padrao','🖼️ Ilustração do projeto'],['realista','📷 Realista'],['minecraft','⛏️ Minecraft'],['desenho','✏️ Desenho infantil'],['3d','🧸 3D'],['aquarela','🎨 Aquarela'],['pixel','👾 Pixel art'],['massinha','🧩 Massinha'],['emoji','😀 Emoji']];
- var OK=['padrao','realista','emoji'];/* estilos com o conjunto completo de figuras */
+ var ES=[['padrao','🖼️ Ilustração do projeto'],['realista','📷 Realista'],['minecraft','⛏️ Minecraft'],['desenho','✏️ Desenho infantil'],['3d','🧸 3D'],['roblox','🟦 Roblox'],['aquarela','🎨 Aquarela'],['pixel','👾 Pixel art'],['massinha','🧩 Massinha'],['emoji','😀 Emoji']];
+ var OK=['padrao','realista','minecraft','desenho','emoji'];/* estilos com o conjunto completo de figuras */
  ES=ES.filter(function(x){return OK.indexOf(x[0])>=0});
  var EM={aviao:'✈️',balao:'🎈',bicicleta:'🚲',bola:'⚽',brinquedo:'🧸',cachorro:'🐶',carro:'🚗',casa:'🏠',cebola:'🧅',chapeu:'👒',chave:'🔑',dado:'🎲',dragao:'🐉',enxada:'⛏️',flor:'🌸',folha:'🍃',galinha:'🐔',gelo:'🧊',grama:'🌱',guitarra:'🎸',leite:'🥛',livro:'📖',lua:'🌙',maca:'🍎',ovo:'🥚',pao:'🍞',passaro:'🐦',peixe:'🐟',planta:'🪴',praia:'🏖️',queijo:'🧀',rato:'🐭',sapo:'🐸',sol:'☀️',trem:'🚂',uva:'🍇',zebra:'🦓'};
  var cur='padrao';try{cur=localStorage.getItem('edu_estilo')||'padrao'}catch(e){}
