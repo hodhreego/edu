@@ -569,6 +569,7 @@
     @keyframes zpulse{50%{box-shadow:0 0 0 6px rgba(37,211,102,.35)}}
 </style>
 <script src="alf-gate.js?v=2"></script>
+<script src="alf-style.js?v=2"></script>
 </head>
 <body>
   <header>
@@ -594,8 +595,7 @@
 function zapFalar(b,t){b.classList.add('tocando');clearTimeout(b._z);b._z=setTimeout(function(){b.classList.remove('tocando')},2600);falar(t)}
 </script>
 <script>
-function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');if(k==='brinquedos')k='brinquedo';
-  return '<img src="img32/'+k+'.png" alt="" data-e="'+(it.e||'')+'" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle" onerror="this.replaceWith(document.createTextNode(this.dataset.e))">'}
+function fg(it){var k=String(it.p||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");if(k==="brinquedos")k="brinquedo";return ALF_FIG(k,"",null)||(it.e||"")}
 </script>
 <script>
     // ARRAY DE DADOS FORNECIDO

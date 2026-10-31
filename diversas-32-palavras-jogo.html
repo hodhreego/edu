@@ -107,35 +107,45 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 @keyframes cnvoa{0%{transform:translate(0,0) scale(.4) rotateY(0);opacity:0}15%{opacity:1;transform:translate(var(--ox),var(--oy)) scale(1) rotateY(180deg)}100%{transform:translate(var(--dx),var(--dy)) scale(.6) rotateY(720deg);opacity:.9}}
 .cn.chuva{animation:cnchuva 2.2s linear forwards}
 @keyframes cnchuva{0%{transform:translateY(-40px) rotateY(0)}100%{transform:translateY(112vh) rotateY(1080deg)}}
+.langbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 10px}
+.langbar button{border:3px solid #B0BEC5;background:#fff;border-radius:99px;padding:6px 12px;font:700 .9rem Verdana,Arial,sans-serif;cursor:pointer;min-height:40px}
+.langbar button.on{border-color:var(--azul);background:#E3F2FD;color:var(--azul)}
+.pos{min-width:56px;min-height:56px;padding:6px 14px;border:3px dashed #90A4AE;border-radius:14px;background:#fff;color:#B0BEC5;font:bold 1.3rem Verdana,Arial,sans-serif;cursor:default}
+.pos.alvo-on{border-color:var(--verde);background:#E8F5E9;transform:scale(1.08)}
+.peca{touch-action:none}
+.peca.fantasma{position:fixed;z-index:60;transform:translate(-50%,-50%) scale(1.12);pointer-events:none;box-shadow:0 8px 18px rgba(0,0,0,.3);opacity:.92}
+.alvo .peca{touch-action:manipulation}
 </style>
 <script src="alf-gate.js?v=2"></script>
+<script src="alf-style.js?v=2"></script>
 </head>
 <body>
 <div id="dv-fx" style="position:fixed;left:0;top:0;height:0;z-index:45;pointer-events:none"></div>
 <div id="dv-top"><div class="dv-moedas" id="dv-moedas"><i>$</i><span id="m-n">0</span></div></div>
 
 <section id="t-menu" class="tela on">
-  <h1>🎯 Atividades Diversificadas</h1>
-  <p class="sub">Escolha uma atividade. Cada uma tem fases, e você pode ganhar até 5 estrelas ⭐ em cada fase!</p>
-  <div class="acoes" style="margin:0 0 12px"><button class="btn vd" onclick="abreAlbum()">🏆 Meus prêmios e figurinhas</button></div>
+  <div class="langbar" id="langbar"></div>
+  <h1 data-t="🎯 Atividades Diversificadas">🎯 Atividades Diversificadas</h1>
+  <p class="sub" data-t="Escolha uma atividade. Cada uma tem fases, e você pode ganhar até 5 estrelas ⭐ em cada fase!">Escolha uma atividade. Cada uma tem fases, e você pode ganhar até 5 estrelas ⭐ em cada fase!</p>
+  <div class="acoes" style="margin:0 0 12px"><button class="btn vd" onclick="abreAlbum()" data-t="🏆 Meus prêmios e figurinhas">🏆 Meus prêmios e figurinhas</button></div>
   <div id="g-menu" class="grade"></div>
 </section>
 
 <section id="t-fases" class="tela">
-  <div class="barra"><button class="btn cz" onclick="irMenu()">⬅ Menu</button><div class="tit" id="f-tit"></div></div>
+  <div class="barra"><button class="btn cz" onclick="irMenu()" data-t="⬅ Menu">⬅ Menu</button><div class="tit" id="f-tit"></div></div>
   <p class="sub" id="f-desc"></p>
   <div id="g-fases" class="fases"></div>
 </section>
 
 <section id="t-jogo" class="tela">
-  <div class="barra"><button class="btn cz" onclick="sair()">⬅ Sair</button><div class="tit" id="j-tit"></div><span style="width:52px"></span></div>
+  <div class="barra"><button class="btn cz" onclick="sair()" data-t="⬅ Sair">⬅ Sair</button><div class="tit" id="j-tit"></div><span style="width:52px"></span></div>
   <div class="prog" id="j-prog"></div>
   <div class="quadro" id="j-quadro"></div>
   <div class="msg" id="j-msg"></div>
 </section>
 
 <section id="t-album" class="tela">
-  <div class="barra"><button class="btn cz" onclick="irMenu()">⬅ Menu</button><div class="tit">🏆 Meus prêmios</div></div>
+  <div class="barra"><button class="btn cz" onclick="irMenu()" data-t="⬅ Menu">⬅ Menu</button><div class="tit" data-t="🏆 Meus prêmios">🏆 Meus prêmios</div></div>
   <p class="sub" id="a-txt"></p>
   <div class="medalhas" id="a-med"></div>
   <div class="album" id="a-grade"></div>
@@ -144,7 +154,7 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 <section id="t-fim" class="tela">
   <div class="quadro fim">
     <div style="font-size:3.2rem" id="x-emoji">🎉</div>
-    <h1 id="x-tit">Muito bem!</h1>
+    <h1 id="x-tit"></h1>
     <div class="grande" id="x-est"></div>
     <div id="x-premio"></div>
     <p id="x-txt" class="sub"></p>
@@ -165,7 +175,7 @@ var W=[
 ["sapo","SA-PO","sapo"],["sol","SOL","sol"],["trem","TREM","trem"],["uva","U-VA","uva"],["zebra","ZE-BRA","zebra"]
 ].map(function(a){return{p:a[0],s:a[1].split("-"),i:a[2]}});
 var PW={};W.forEach(function(w){PW[w.i]=w});
-function img(w,cls){return '<img class="'+(cls||'fig')+'" src="img32/'+w.i+'.png" alt="'+w.p+'">'}
+function img(w,cls){return cls===undefined?ALF_FIG(w.i,w.p,Math.min(230,Math.round(innerWidth*.46)),"fig"):ALF_FIG(w.i,w.p,110)}
 
 /* Frases para organizar (3 níveis) */
 var FR=[
@@ -198,11 +208,35 @@ var HI=[
  q:[["O que o leão fazia?",["Dormia","Comia","Corria"],0],["O que o ratinho prometeu?",["Dar queijo","Ajudar o leão","Contar uma piada"],1],["Em que o leão ficou preso?",["Numa rede","Numa casa","Num lago"],0],["O que o ratinho roeu?",["As cordas","O pão","A grama"],0],["O que essa história ensina?",["Pequenos também ajudam","Só os grandes são fortes","Não se deve dormir"],0]]}
 ];
 
-/* ===== Estado, som e fala ===== */
 var $=function(i){return document.getElementById(i)};
+/* ===== Idiomas ===== */
+var LANGS=[["pt","🇧🇷","Português","pt-BR"],["ht","🇭🇹","Kreyòl ayisyen","fr-FR"],["fr","🇫🇷","Français","fr-FR"],["en","🇺🇸","English","en-US"],["es","🇪🇸","Español","es-ES"],["it","🇮🇹","Italiano","it-IT"],["de","🇩🇪","Deutsch","de-DE"]];
+var LANG="pt";try{LANG=localStorage.getItem("div32_lang")||"pt"}catch(e){}
+var PT={W:W,FR:FR,CF:CF,HI:HI};
+function T(s){var d=window.I18N&&I18N[LANG];return(LANG!=="pt"&&d&&d.ui&&d.ui[s])||s}
+function langCode(){for(var i=0;i<LANGS.length;i++)if(LANGS[i][0]===LANG)return LANGS[i][3];return "pt-BR"}
+function aplicaDados(){
+  var d=window.I18N&&I18N[LANG];
+  if(LANG==="pt"||!d){W=PT.W;FR=PT.FR;CF=PT.CF;HI=PT.HI}
+  else{
+    W=PT.W.map(function(w,i){return{p:d.words[i].p,s:d.words[i].s,i:w.i}});FR=d.fr;CF=d.cf;
+    HI=PT.HI.map(function(h,k){var x=d.hi[k];return{t:x.t,e:h.e,g:h.g,c:h.c,tx:x.tx,q:h.q.map(function(q,j){return[x.q[j][0],x.q[j][1],q[2]]})}});
+  }
+  PW={};W.forEach(function(w){PW[w.i]=w});
+}
+function aplicaEstatico(){document.querySelectorAll("[data-t]").forEach(function(e){e.textContent=T(e.getAttribute("data-t"))});document.documentElement.lang=LANG==="ht"?"ht":LANG==="pt"?"pt-BR":LANG}
+function barraLang(){
+  var b=$("langbar");b.innerHTML="";
+  LANGS.forEach(function(l){var x=document.createElement("button");x.type="button";x.className=l[0]===LANG?"on":"";x.textContent=l[1]+" "+l[2];x.onclick=function(){setLang(l[0])};b.appendChild(x)});
+}
+function setLang(l){
+  LANG=l;try{localStorage.setItem("div32_lang",l)}catch(e){}
+  aplicaDados();buildATV();aplicaEstatico();irMenu();
+}
+/* ===== Estado, som e fala ===== */
 var AC=null;
 function tom(f,t,d){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.01,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
-function fala(t){try{speechSynthesis.cancel();var m=new SpeechSynthesisUtterance(t);m.lang="pt-BR";m.rate=.8;speechSynthesis.speak(m)}catch(e){}}
+function fala(t){try{speechSynthesis.cancel();var m=new SpeechSynthesisUtterance(t);m.lang=langCode();m.rate=.8;speechSynthesis.speak(m)}catch(e){}}
 function fanfarra(){[523,659,784,1046].forEach(function(f,i){setTimeout(function(){tom(f,"triangle",.35)},i*150)})}
 var PROG={};try{PROG=JSON.parse(localStorage.getItem("div32_prog")||"{}")}catch(e){}
 var MOEDAS=0;try{MOEDAS=parseInt(localStorage.getItem("div32_moedas"))||0}catch(e){}
@@ -233,32 +267,34 @@ function estrelas(n,max){var s="";for(var i=1;i<=(max||5);i++)s+=i<=n?"★":'<sp
 function tela(id){document.querySelectorAll(".tela").forEach(function(t){t.classList.remove("on")});$(id).classList.add("on");window.scrollTo(0,0)}
 
 /* ===== Atividades: id, nome, cor, ícone, fases ===== */
-var ATV=[
-{id:"letras",n:"Organize as letras",ic:"🔠",c:"#1E88E5",d:"Veja a figura e coloque as letras na ordem certa para formar a palavra.",f:["Palavras curtas","Palavras médias","Palavras longas"]},
-{id:"silabas",n:"Ouça e organize as sílabas",ic:"👂",c:"#E91E63",d:"Ouça o som de cada sílaba e monte a palavra na ordem certa.",f:["2 sílabas","3 sílabas","Só pelo som (sem figura)"]},
-{id:"som",n:"Qual figura tem esse som?",ic:"🎧",c:"#43A047",d:"Ouça a sílaba e toque na figura cuja palavra tem esse som.",f:["Começa com...","Termina com...","Começa ou termina"]},
-{id:"frase",n:"Organize a frase",ic:"📝",c:"#FB8C00",d:"Toque nas palavras para montar a frase na ordem correta.",f:["Frases curtas","Frases médias","Frases longas"]},
-{id:"complete",n:"Complete a frase",ic:"🧩",c:"#8E24AA",d:"Escolha a figura que completa a frase.",f:["Fácil","Médio","Desafio"]},
-{id:"leitura",n:"Fichas de leitura",ic:"📚",c:"#00897B",d:"Leia histórias clássicas e responda às perguntas.",f:HI.map(function(h){return h.t})}
-];
+var ATV=[];
+function buildATV(){ATV=[
+{id:"letras",n:T("Organize as letras"),ic:"🔠",c:"#1E88E5",d:T("Veja a figura e coloque as letras na ordem certa para formar a palavra."),f:[T("Palavras curtas"),T("Palavras médias"),T("Palavras longas")]},
+{id:"silabas",n:T("Ouça e organize as sílabas"),ic:"👂",c:"#E91E63",d:T("Ouça o som de cada sílaba e monte a palavra na ordem certa."),f:[T("2 sílabas"),T("3 sílabas"),T("Só pelo som (sem figura)")]},
+{id:"som",n:T("Qual figura tem esse som?"),ic:"🎧",c:"#43A047",d:T("Ouça a sílaba e toque na figura cuja palavra tem esse som."),f:[T("Começa com..."),T("Termina com..."),T("Começa ou termina")]},
+{id:"frase",n:T("Organize a frase"),ic:"📝",c:"#FB8C00",d:T("Toque nas palavras para montar a frase na ordem correta."),f:[T("Frases curtas"),T("Frases médias"),T("Frases longas")]},
+{id:"complete",n:T("Complete a frase"),ic:"🧩",c:"#8E24AA",d:T("Escolha a figura que completa a frase."),f:[T("Fácil"),T("Médio"),T("Desafio")]},
+{id:"leitura",n:T("Fichas de leitura"),ic:"📚",c:"#00897B",d:T("Leia histórias clássicas e responda às perguntas."),f:HI.map(function(h){return h.t})}
+]}
 function chave(a,f){return a.id+"-"+f}
 function desbloq(a,f){return f===0||PROG[chave(a,f-1)]>0}
 
 function abreAlbum(){
   var n=figurinhas(),e=totalEstrelas(),g=$("a-grade");g.innerHTML="";
-  $("a-txt").textContent="Você tem "+e+" estrelas e "+MOEDAS+" moedas. A cada 2 estrelas ganha uma figurinha nova!";
-  var M=[[10,"🥉","Bronze (10 ⭐)"],[30,"🥈","Prata (30 ⭐)"],[60,"🥇","Ouro (60 ⭐)"],[100,"🏆","Campeão (100 ⭐)"]];
+  $("a-txt").textContent=T("Você tem {e} estrelas e {m} moedas. A cada 2 estrelas ganha uma figurinha nova!").replace("{e}",e).replace("{m}",MOEDAS);
+  var M=[[10,"🥉",T("Bronze (10 ⭐)")],[30,"🥈",T("Prata (30 ⭐)")],[60,"🥇",T("Ouro (60 ⭐)")],[100,"🏆",T("Campeão (100 ⭐)")]];
   $("a-med").innerHTML=M.map(function(m){return '<span class="'+(e>=m[0]?"":"b")+'" title="'+m[2]+'">'+m[1]+'</span>'}).join("");
-  W.forEach(function(w,i){var d=document.createElement("div");d.className="fig-a"+(i<n?"":" bloq");d.innerHTML=img(w,"")+"<br>"+(i<n?w.p:"?");g.appendChild(d)});
+  W.forEach(function(w,i){var d=document.createElement("div");d.className="fig-a"+(i<n?"":" bloq");d.innerHTML=ALF_FIG(w.i,w.p,84)+"<br>"+(i<n?w.p:"?");g.appendChild(d)});
   tela("t-album");
 }
 function irMenu(){
+  barraLang();
   if($("m-n"))$("m-n").textContent=MOEDAS;
   var g=$("g-menu");g.innerHTML="";
   ATV.forEach(function(a,i){
     var tot=0;a.f.forEach(function(_,f){tot+=PROG[chave(a,f)]||0});
     var c=document.createElement("div");c.className="cartao";c.style.setProperty("--c",a.c);
-    c.innerHTML='<span class="ico">'+a.ic+'</span><b>'+a.n+'</b><small>'+a.d+'</small><div class="est">'+estrelas(tot,5*a.f.length).replace(/(<span class="v">★<\/span>)+/,function(m){return ""})+' </div><small>'+tot+' de '+5*a.f.length+' estrelas</small>';
+    c.innerHTML='<span class="ico">'+a.ic+'</span><b>'+a.n+'</b><small>'+a.d+'</small><div class="est">'+estrelas(tot,5*a.f.length).replace(/(<span class="v">★<\/span>)+/,function(m){return ""})+' </div><small>'+T('{a} de {b} estrelas').replace('{a}',tot).replace('{b}',5*a.f.length)+'</small>';
     c.querySelector(".est").innerHTML=tot?"★".repeat(Math.min(5,Math.ceil(tot/a.f.length))):'<span class="v">★★★★★</span>';
     c.onclick=function(){abreFases(i)};g.appendChild(c)});
   tela("t-menu");
@@ -270,7 +306,7 @@ function abreFases(i){
   A.f.forEach(function(nome,f){
     var ok=desbloq(A,f),e=PROG[chave(A,f)]||0,d=document.createElement("div");
     d.className="fase"+(ok?"":" trava");d.style.setProperty("--c",A.c);
-    d.innerHTML='<div class="n">'+(ok?"Fase "+(f+1):"🔒 Fase "+(f+1))+'</div><small>'+nome+'</small><div class="est">'+estrelas(e)+'</div>';
+    d.innerHTML='<div class="n">'+(ok?T("Fase")+" "+(f+1):"🔒 "+T("Fase")+" "+(f+1))+'</div><small>'+nome+'</small><div class="est">'+estrelas(e)+'</div>';
     d.onclick=function(){if(ok)inicia(f);else{tom(160,"sawtooth",.2)}};g.appendChild(d)});
   tela("t-fases");
 }
@@ -278,7 +314,7 @@ function sair(){clearTimeout(AUTO);try{speechSynthesis.cancel()}catch(e){};abreF
 
 /* ===== Montagem das rodadas ===== */
 function pool(f){
-  var L=function(w){return w.p.replace(/[^a-zçãõáéíóúâêôà]/gi,"").length};
+  var L=function(w){return Array.from(w.p).length};
   if(A.id==="letras")return W.filter(function(w){var n=L(w);return f===0?n<=4:f===1?(n>=5&&n<=6):n>=7});
   if(A.id==="silabas")return W.filter(function(w){var n=w.s.length;return f===0?n===2:f===1?n>=3:n>=2});
   return W;
@@ -290,7 +326,7 @@ function inicia(f){
   else if(A.id==="frase"){Q=sh(FR[f]).slice(0,5)}
   else if(A.id==="complete"){Q=sh(CF[f]).slice(0,5)}
   else if(A.id==="leitura"){Q=HI[f].q.map(function(x){return x})}
-  $("j-tit").textContent=A.ic+" Fase "+(f+1);
+  $("j-tit").textContent=A.ic+" "+T("Fase")+" "+(f+1);
   tela("t-jogo");
   if(A.id==="leitura"){mostraHistoria();return}
   proxima(true);
@@ -334,62 +370,96 @@ function proxima(primeira){
   clearTimeout(AUTO);AUTO=setTimeout(ouvir,600);
 }
 function erra(el){
-  ERROS++;ERROS_Q++;tom(160,"sawtooth",.2);moeda(-10);resposta(false);msg("Tente de novo!","ruim");
+  ERROS++;ERROS_Q++;tom(160,"sawtooth",.2);moeda(-10);resposta(false);msg(T("Tente de novo!"),"ruim");
   if(el){el.classList.add("erro");setTimeout(function(){el.classList.remove("erro")},600)}
 }
 function acerta(txt,falar){
-  TRAVA=true;tom(660,"sine",.2);moeda(15);resposta(true);msg("Muito bem! "+(txt||""),"bom");if(falar)fala(falar);
-  setTimeout(function(){proxima()},falar?Math.max(1900,falar.length*90+600):1100);
+  TRAVA=true;tom(660,"sine",.2);moeda(15);resposta(true);msg(T("Muito bem!")+" "+(txt||""),"bom");if(falar)fala(T("Muito bem!")+" ... "+falar);
+  setTimeout(function(){proxima()},falar?Math.max(2600,(falar.length+12)*95+700):1100);
 }
 
 /* Montar sequência de peças (letras, sílabas, palavras) */
 function montador(qd,cab,pecas,certa,cls,aoFim){
-  qd.innerHTML=cab+'<div class="alvo" id="alvo"></div><div class="banco" id="banco"></div><div class="acoes"><button class="btn cz" id="bdesf">↩ Desfazer</button></div>';
+  var n=certa.length;
+  qd.innerHTML=cab+'<div class="alvo" id="alvo"></div><div class="banco" id="banco"></div><div class="acoes"><button class="btn cz" id="bdesf">'+T("↩ Desfazer")+'</button></div>';
   var alvo=$("alvo"),banco=$("banco"),ordem=sh(pecas.map(function(p,i){return i}));
   if(pecas.length>1){var tent=0;while(ordem.every(function(v,i){return v===i})&&tent++<10)ordem=sh(ordem)}
-  var esc=[];
+  var slot=[];for(var i=0;i<n;i++)slot.push(-1);  /* slot[k] = índice da peça colocada na posição k */
   function pinta(){
     alvo.innerHTML="";
-    esc.forEach(function(ix){var b=document.createElement("button");b.className="peca "+cls;b.textContent=pecas[ix];alvo.appendChild(b)});
-    banco.querySelectorAll(".peca").forEach(function(b){b.classList.toggle("usada",esc.indexOf(+b.dataset.i)>=0)});
+    for(var k=0;k<n;k++)(function(k){
+      var d=document.createElement("button");d.type="button";d.dataset.k=k;
+      if(slot[k]>=0){d.className="peca "+cls;d.textContent=pecas[slot[k]];d.title="↩";d.onclick=function(){if(TRAVA)return;slot[k]=-1;pinta()}}
+      else{d.className="pos "+cls;d.textContent=k+1}
+      alvo.appendChild(d)})(k);
+    banco.querySelectorAll(".peca").forEach(function(b){b.classList.toggle("usada",slot.indexOf(+b.dataset.i)>=0)});
   }
-  ordem.forEach(function(ix){var b=document.createElement("button");b.className="peca "+cls;b.textContent=pecas[ix];b.dataset.i=ix;
+  function coloca(ix,k){
+    if(TRAVA||slot[k]>=0||slot.indexOf(ix)>=0)return false;
+    if(pecas[ix]!==certa[k]){erra(banco.querySelector('[data-i="'+ix+'"]'));return false}
+    slot[k]=ix;tom(500+k*60,"sine",.12);if(cls==="sil"||cls==="fr")fala(pecas[ix].toLowerCase());pinta();msg("");
+    if(slot.every(function(v){return v>=0}))aoFim();
+    return true;
+  }
+  function proximoVazio(){return slot.indexOf(-1)}
+  ordem.forEach(function(ix){
+    var b=document.createElement("button");b.type="button";b.className="peca "+cls;b.textContent=pecas[ix];b.dataset.i=ix;
+    var ini=null,gh=null,moveu=false;
+    b.addEventListener("pointerdown",function(e){if(TRAVA||b.classList.contains("usada"))return;ini={x:e.clientX,y:e.clientY};moveu=false;try{b.setPointerCapture(e.pointerId)}catch(x){}});
+    b.addEventListener("pointermove",function(e){
+      if(!ini)return;
+      if(!moveu&&Math.hypot(e.clientX-ini.x,e.clientY-ini.y)>8){
+        moveu=true;gh=b.cloneNode(true);gh.className="peca "+cls+" fantasma";document.body.appendChild(gh);b.style.opacity=".35"}
+      if(moveu){gh.style.left=e.clientX+"px";gh.style.top=e.clientY+"px";e.preventDefault();
+        var el=document.elementFromPoint(e.clientX,e.clientY);alvo.querySelectorAll(".pos").forEach(function(p){p.classList.remove("alvo-on")});
+        var s=el&&el.closest&&el.closest(".pos");if(s)s.classList.add("alvo-on")}
+    });
+    function fim(e){
+      if(!ini)return;
+      if(moveu){
+        var el=document.elementFromPoint(e.clientX,e.clientY),s=el&&el.closest&&el.closest(".pos"),k=s?+s.dataset.k:(el&&el.closest&&el.closest("#alvo")?proximoVazio():-1);
+        if(gh)gh.remove();b.style.opacity="";alvo.querySelectorAll(".pos").forEach(function(p){p.classList.remove("alvo-on")});
+        if(k>=0)coloca(ix,k);
+        b._arrastou=true;
+      }
+      ini=null;gh=null;moveu=false;
+    }
+    b.addEventListener("pointerup",fim);b.addEventListener("pointercancel",function(){if(gh)gh.remove();b.style.opacity="";ini=null;gh=null;moveu=false});
     b.onclick=function(){
-      if(TRAVA)return;
-      var pos=esc.length;
-      if(pecas[ix]===certa[pos]){esc.push(ix);tom(500+pos*60,"sine",.12);if(cls==="sil"||cls==="fr")fala(pecas[ix].toLowerCase());pinta();msg("");
-        if(esc.length===certa.length)aoFim()}
-      else erra(b)};
+      if(b._arrastou){b._arrastou=false;return}
+      if(TRAVA)return;var k=proximoVazio();if(k>=0)coloca(ix,k)};
     banco.appendChild(b)});
-  $("bdesf").onclick=function(){if(!TRAVA){esc.pop();pinta()}};
+  $("bdesf").onclick=function(){if(TRAVA)return;for(var k=n-1;k>=0;k--)if(slot[k]>=0){slot[k]=-1;break}pinta()};
+  pinta();
 }
+
 function rLetras(w,qd){
-  var letras=w.p.toUpperCase().split("");
-  OUVIR=function(){fala("Coloque as letras na ordem, para formar a palavra. ... "+w.p)};
-  montador(qd,img(w)+'<div class="ord">Coloque as letras na ordem para formar a palavra:</div>',letras,letras,"let",function(){acerta(w.p.toUpperCase()+"!",w.p)});
+  var letras=Array.from(w.p.toUpperCase());
+  OUVIR=function(){fala(T("Coloque as letras na ordem, para formar a palavra.")+" ... "+w.p)};
+  montador(qd,img(w)+'<div class="ord">'+T("Coloque as letras na ordem para formar a palavra:")+'</div>',letras,letras,"let",function(){acerta(w.p.toUpperCase()+"!",w.p)});
 }
 function rSilabas(w,qd){
-  OUVIR=function(){fala("Ouça a palavra. ... "+w.p+". ... Agora toque nas sílabas, na ordem certa.")};
+  OUVIR=function(){fala(T("Ouça a palavra.")+" ... "+w.p+". ... "+T("Agora toque nas sílabas, na ordem certa."))};
   var fig=FI===2?'<div style="font-size:4rem">🔊</div>':img(w);
   qd.innerHTML="";
-  montador(qd,fig+'<div class="ord">Ouça a palavra. Toque nas sílabas na ordem certa (cada toque fala a sílaba):</div>',w.s,w.s,"sil",function(){acerta(w.s.join("-")+"!",w.p)});
+  montador(qd,fig+'<div class="ord">'+T("Ouça a palavra. Toque nas sílabas na ordem certa (cada toque fala a sílaba):")+'</div>',w.s,w.s,"sil",function(){acerta(w.s.join("-")+"!",w.p)});
 }
 function rSom(q,qd){
-  OUVIR=function(){fala("Qual figura "+(q.modo==="c"?"começa":"termina")+" com o som: ... "+q.sil+" ... ? Toque na figura certa.")};
-  qd.innerHTML='<div style="font-size:3.4rem">🎧</div><div class="frase-txt">Qual figura '+(q.modo==="c"?"<u>começa</u>":"<u>termina</u>")+' com o som <span style="color:var(--rosa);font-size:1.3em">'+q.sil.toUpperCase()+'</span>?</div><div class="opcoes" id="ops"></div>';
+  OUVIR=function(){fala(T(q.modo==="c"?"Qual figura começa com o som:":"Qual figura termina com o som:")+" ... "+q.sil+" ... "+T("Toque na figura certa."))};
+  qd.innerHTML='<div style="font-size:3.4rem">🎧</div><div class="frase-txt">'+T(q.modo==="c"?"Qual figura começa com o som:":"Qual figura termina com o som:")+' <span style="color:var(--rosa);font-size:1.3em">'+q.sil.toUpperCase()+'</span></div><div class="opcoes" id="ops"></div>';
   q.ops.forEach(function(w){var d=document.createElement("div");d.className="op";d.innerHTML=img(w,"")+"<span>"+w.p+"</span>";
     d.onclick=function(){if(TRAVA)return;if(w===q.w){d.classList.add("certo");acerta(q.w.p.toUpperCase()+"!",q.w.p)}else{erra(d);fala(w.p)}};$("ops").appendChild(d)});
 }
 function rFrase(f,qd){
   var palavras=f.replace(/[.!?]$/,"").split(" "),fim=f.slice(-1);
   var pecas=palavras.slice(),certa=palavras.slice();
-  OUVIR=function(){fala("Organize a frase. Ouça. ... "+f+" ... Agora toque nas palavras, na ordem certa.")};
-  montador(qd,'<div style="font-size:3rem">📝</div><div class="ord">Toque nas palavras para formar a frase correta:</div>',pecas,certa,"fr",function(){acerta("",f)});
+  OUVIR=function(){fala(T("Organize a frase. Ouça.")+" ... "+f+" ... "+T("Agora toque nas palavras, na ordem certa."))};
+  montador(qd,'<div style="font-size:3rem">📝</div><div class="ord">'+T("Toque nas palavras para formar a frase correta:")+'</div>',pecas,certa,"fr",function(){acerta("",f)});
 }
 function rComplete(c,qd){
   var w=PW[c[1]];
   var partes=c[0].split("___");
-  OUVIR=function(){fala("Complete a frase. ... "+c[0].replace("___"," ... qual figura? ... ")+" Toque na figura certa.")};
+  OUVIR=function(){fala(T("Complete a frase.")+" ... "+c[0].replace("___"," ... "+T("qual figura?")+" ... ")+" "+T("Toque na figura certa."))};
   qd.innerHTML='<div class="frase-txt">'+partes[0]+'<span class="lacuna" id="lac">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>'+partes[1]+'</div><div class="opcoes" id="ops"></div>';
   var ops=sh([w].concat(sh(W.filter(function(x){return x!==w})).slice(0,2)));
   ops.forEach(function(x){var d=document.createElement("div");d.className="op";d.innerHTML=img(x,"")+"<span>"+x.p+"</span>";
@@ -399,15 +469,15 @@ function rComplete(c,qd){
 function mostraHistoria(){
   var h=HI[FI];$("j-prog").innerHTML="";msg("");
   OUVIR=function(){fala(h.tx.join(" "))};
-  $("j-quadro").innerHTML=zapHtml()+'<div class="hist" style="--c:'+h.c+';--g1:'+h.g[0]+';--g2:'+h.g[1]+'"><div class="cena">'+h.e+'</div><div class="corpo"><h2>'+h.t+'</h2>'+h.tx.map(function(p){return"<p>"+p+"</p>"}).join("")+'</div></div><div class="acoes"><button class="btn vd" onclick="comecaPerguntas()">Já li! Ir para as perguntas ➡</button></div>';
+  $("j-quadro").innerHTML=zapHtml()+'<div class="hist" style="--c:'+h.c+';--g1:'+h.g[0]+';--g2:'+h.g[1]+'"><div class="cena">'+h.e+'</div><div class="corpo"><h2>'+h.t+'</h2>'+h.tx.map(function(p){return"<p>"+p+"</p>"}).join("")+'</div></div><div class="acoes"><button class="btn vd" onclick="comecaPerguntas()">'+T("Já li! Ir para as perguntas ➡")+'</button></div>';
 }
 function comecaPerguntas(){try{speechSynthesis.cancel()}catch(e){};QI=0;ERROS=0;proxima(true)}
 function rPergunta(q,qd){
-  OUVIR=function(){fala("Pergunta. ... "+q[0]+" ... Opção A. "+q[1][0]+". ... Opção B. "+q[1][1]+". ... Opção C. "+q[1][2]+".")};
+  OUVIR=function(){fala(T("Pergunta.")+" ... "+q[0]+" ... "+T("Opção A.")+" "+q[1][0]+". ... "+T("Opção B.")+" "+q[1][1]+". ... "+T("Opção C.")+" "+q[1][2]+".")};
   var h=HI[FI];
-  qd.innerHTML='<div class="ord">📖 '+h.t+' — pergunta '+(QI+1)+' de '+Q.length+'</div><div class="frase-txt" style="text-align:left">'+q[0]+'</div><div class="opcoes" style="grid-template-columns:1fr" id="ops"></div><div class="acoes"><button class="btn cz" onclick="mostraHistoria()">📖 Reler a história</button></div>';
+  qd.innerHTML='<div class="ord">📖 '+h.t+' — '+T("pergunta {n} de {m}").replace("{n}",QI+1).replace("{m}",Q.length)+'</div><div class="frase-txt" style="text-align:left">'+q[0]+'</div><div class="opcoes" style="grid-template-columns:1fr" id="ops"></div><div class="acoes"><button class="btn cz" onclick="mostraHistoria()">'+T("📖 Reler a história")+'</button></div>';
   q[1].forEach(function(t,i){var d=document.createElement("div");d.className="op texto";d.textContent=t;
-    d.onclick=function(){if(TRAVA)return;if(i===q[2]){d.classList.add("certo");acerta("")}else erra(d)};$("ops").appendChild(d)});
+    d.onclick=function(){if(TRAVA)return;if(i===q[2]){d.classList.add("certo");acerta(t,t)}else erra(d)};$("ops").appendChild(d)});
 }
 
 /* ===== Fim da fase ===== */
@@ -416,23 +486,23 @@ function fimFase(){clearTimeout(AUTO);
   var antes=figurinhas();
   var k=chave(A,FI);if(!PROG[k]||est>PROG[k]){PROG[k]=est;salva()}
   try{if(window.EduReport&&EduReport.enviar)EduReport.enviar({atividade:"Diversificadas: "+A.n+" fase "+(FI+1),nota:est+"/5"})}catch(e){}
-  $("x-tit").textContent=est===5?"Perfeito! 🌟":est>=3?"Muito bem! 👏":"Bom esforço! 💪";
+  $("x-tit").textContent=T(est===5?"Perfeito! 🌟":est>=3?"Muito bem! 👏":"Bom esforço! 💪");
   $("x-est").innerHTML=estrelas(est);
-  $("x-txt").textContent=est+" de 5 estrelas — "+ERROS+(ERROS===1?" erro":" erros")+".";
+  $("x-txt").textContent=T(ERROS===1?"{n} de 5 estrelas — {e} erro.":"{n} de 5 estrelas — {e} erros.").replace("{n}",est).replace("{e}",ERROS);
   var dep=figurinhas(),px=$("x-premio");px.innerHTML="";
-  if(est===5){moeda(50);px.innerHTML='<div class="premio">🏆 <b>Fase perfeita! +50 moedas</b></div>'}
-  if(dep>antes){var nw=W[dep-1];px.innerHTML+='<div class="premio"><b>🎁 Novo prêmio!</b><br><img src="img32/'+nw.i+'.png" alt=""><br><b>Figurinha: '+nw.p.toUpperCase()+'</b></div>'}
+  if(est===5){moeda(50);px.innerHTML='<div class="premio"><b>'+T("🏆 Fase perfeita! +50 moedas")+'</b></div>'}
+  if(dep>antes){var nw=W[dep-1];px.innerHTML+='<div class="premio"><b>'+T("🎁 Novo prêmio!")+'</b><br>'+ALF_FIG(nw.i,nw.p,130)+'<br><b>'+T("Figurinha:")+' '+nw.p.toUpperCase()+'</b></div>'}
   var ac=$("x-acoes");ac.innerHTML="";
   var b=function(t,c,fn){var e=document.createElement("button");e.className="btn "+c;e.textContent=t;e.onclick=fn;ac.appendChild(e)};
-  if(FI+1<A.f.length)b("Próxima fase ➡","vd",function(){inicia(FI+1)});
-  b("🔁 Repetir","az",function(){inicia(FI)});
-  b("📋 Fases","cz",function(){abreFases(ATV.indexOf(A))});
-  tela("t-fim");fanfarra();confete();chuvaMoedas(est===5?40:est*6);setTimeout(function(){fala(est>=4?"Parabéns!":"Muito bem!")},500);
+  if(FI+1<A.f.length)b(T("Próxima fase ➡"),"vd",function(){inicia(FI+1)});
+  b(T("🔁 Repetir"),"az",function(){inicia(FI)});
+  b(T("📋 Fases"),"cz",function(){abreFases(ATV.indexOf(A))});
+  tela("t-fim");fanfarra();confete();chuvaMoedas(est===5?40:est*6);setTimeout(function(){fala(T(est>=4?"Parabéns!":"Muito bem!"))},500);
 }
 function confete(){var e=["⭐","🎉","✨","🌟","🎈"];for(var i=0;i<26;i++){(function(i){setTimeout(function(){var s=document.createElement("span");s.className="confete";s.textContent=e[i%5];s.style.left=Math.random()*100+"vw";document.body.appendChild(s);setTimeout(function(){s.remove()},2600)},i*70)})(i)}}
-irMenu();
+buildATV();aplicaDados();aplicaEstatico();barraLang();irMenu();
 </script>
-<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=9"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+<script src="diversas-i18n.js?v=2"></script><script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=9"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
 <script src="auto-tile.js?v=1"></script>
 </body>
 </html>

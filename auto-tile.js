@@ -1,6 +1,6 @@
 /* Ajusta sozinho o tamanho das letras/sílabas (peças) ao tamanho da tela: nenhuma peça passa da largura do celular. */
 (function(){
- var SEL='.peca,.btn-tile,.slot',T=null,M=1;try{M=parseFloat(localStorage.getItem('edu_tile'))||1}catch(e){}
+ var SEL='.peca,.pos,.btn-tile,.slot',T=null,M=1;try{M=parseFloat(localStorage.getItem('edu_tile'))||1}catch(e){}
  var st=document.createElement('style');
  st.textContent=SEL.split(',').map(function(s){return s+'{min-width:var(--t,56px)!important;min-height:var(--t,56px)!important;font-size:calc(var(--t,56px)*.5)!important;padding-left:2px!important;padding-right:2px!important}'}).join('')+
   '.peca.fr{min-width:0!important;font-size:clamp(14px,4.4vw,24px)!important;padding:6px 10px!important}.peca.sil{min-width:var(--t,56px)!important;padding-left:8px!important;padding-right:8px!important;font-size:calc(var(--t,56px)*.42)!important}'+
