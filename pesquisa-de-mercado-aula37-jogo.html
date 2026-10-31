@@ -367,7 +367,11 @@ function printMode(){
  bar.querySelector('#pmF').oninput=function(){pf=this.value/100;root.style.setProperty('--pf',pf)};bar.querySelector('#pmM').oninput=function(){mg=this.value;root.style.setProperty('--mg',mg+'mm')};bar.querySelector('#pmP').onclick=function(){window.print()};
  render()}
 addEventListener('load',function(){if(window.EDU_IMP)printMode()});
-menu();
+var PK='edu_prog_'+location.pathname.split('/').pop();
+function pSave(){try{localStorage.setItem(PK,JSON.stringify({n:localStorage.getItem('edu_nome')||'',score:score,PEN:PEN,GOT:GOT,R:R,HU:HU,CE:CE,ER:ER,LOG:LOG,tema:tema,dsStep:dsStep,t:Date.now()}))}catch(e){}}
+function pLoad(){try{var s=JSON.parse(localStorage.getItem(PK)||'null');if(!s)return false;var nm=localStorage.getItem('edu_nome')||'';if(nm&&s.n&&nm!==s.n)return false;score=s.score||0;PEN=s.PEN||0;GOT=s.GOT||{};R=s.R||{};HU=s.HU||{};CE=s.CE||0;ER=s.ER||0;LOG=s.LOG||[];dsStep=s.dsStep||0;if(s.tema&&T[s.tema]){tema=s.tema;R[tema]=R[tema]||{}}setPts();return true}catch(e){return false}}
+setInterval(pSave,1500);addEventListener('pagehide',pSave);document.addEventListener('visibilitychange',function(){if(document.hidden)pSave()});
+if(pLoad()&&tema)hub();else menu();
 })();
 </script>
 <script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=7"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
