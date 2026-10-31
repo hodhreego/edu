@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Atividades das 32 Palavras — Ludopédia</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#1E88E5">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: Verdana, Arial, sans-serif;
+      background-color: #FFF8E1;
+      color: #212121;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+    header {
+      background-color: #1E88E5;
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-sub {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      display: block;
+    }
+    .btn-top {
+      background: #FB8C00;
+      color: #fff;
+      border: 3px solid #F57C00;
+      border-radius: 14px;
+      padding: 8px 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 52px;
+      user-select: none;
+      box-shadow: 0 3px 0 #E65100;
+      transition: transform 0.08s, filter 0.08s;
+    }
+    .btn-top:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #E65100;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* MENU PRINCIPAL */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .card-act, .card-link {
+      background: #ffffff;
+      border: 4px solid #1E88E5;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      min-height: 130px;
+      box-shadow: 0 6px 0 #1565C0, 0 10px 18px rgba(0,0,0,0.08);
+      user-select: none;
+      text-decoration: none;
+      color: #212121;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .card-act:active, .card-link:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #1565C0;
+    }
+    .card-act.c2 { border-color: #43A047; box-shadow: 0 6px 0 #2E7D32, 0 10px 18px rgba(0,0,0,0.08); }
+    .card-act.c2:active { box-shadow: 0 3px 0 #2E7D32; }
+    .card-act.c3 { border-color: #FB8C00; box-shadow: 0 6px 0 #EF6C00, 0 10px 18px rgba(0,0,0,0.08); }
+    .card-act.c3:active { box-shadow: 0 3px 0 #EF6C00; }
+    .card-act.c4 { border-color: #8E24AA; box-shadow: 0 6px 0 #6A1B9A, 0 10px 18px rgba(0,0,0,0.08); }
+    .card-act.c4:active { box-shadow: 0 3px 0 #6A1B9A; }
+    .card-act.c5 { border-color: #E53935; box-shadow: 0 6px 0 #C62828, 0 10px 18px rgba(0,0,0,0.08); }
+    .card-act.c5:active { box-shadow: 0 3px 0 #C62828; }
+    .card-act.c6 { border-color: #00ACC1; box-shadow: 0 6px 0 #00838F, 0 10px 18px rgba(0,0,0,0.08); }
+    .card-act.c6:active { box-shadow: 0 3px 0 #00838F; }
+    .card-link {
+      background: #FFF3E0;
+      border-color: #FF6F00;
+      box-shadow: 0 6px 0 #E65100;
+    }
+    .card-link:active { box-shadow: 0 3px 0 #E65100; }
+
+    .card-icon {
+      font-size: 2.6rem;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #0d47a1;
+      margin-bottom: 4px;
+    }
+    .card-stars {
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      color: #FDD835;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+    .card-stars .empty {
+      color: #BDBDBD;
+      text-shadow: none;
+    }
+
+    /* BARRA DE PROGRESSO DO JOGO */
+    .game-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 16px;
+      border: 3px solid #BBDEFB;
+      font-weight: bold;
+    }
+    .progress-track {
+      flex: 1;
+      height: 18px;
+      background: #E0E0E0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 10px;
+      border: 2px solid #B0BEC5;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #43A047, #66BB6A);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .score-badge {
+      background: #FFF3E0;
+      border: 2px solid #FB8C00;
+      color: #E65100;
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 1rem;
+    }
+
+    /* ÁREA DO JOGO */
+    .play-area {
+      flex: 1;
+      background: #ffffff;
+      border: 4px solid #1E88E5;
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 8px 0 #1565C0;
+      min-height: 420px;
+    }
+
+    .act-prompt {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #1565C0;
+      margin-bottom: 12px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-speak {
+      background: #FFD54F;
+      border: 3px solid #FFA000;
+      border-radius: 50%;
+      width: 58px;
+      height: 58px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #FF8F00;
+      user-select: none;
+      flex-shrink: 0;
+      transition: transform 0.08s;
+    }
+    .btn-speak:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #FF8F00;
+    }
+    .btn-speak.pulse {
+      animation: pulseAnim 0.6s infinite alternate;
+    }
+    @keyframes pulseAnim {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+
+    .big-emoji {
+      font-size: 5rem;
+      line-height: 1.1;
+      margin: 8px 0;
+      text-align: center;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+    }
+    .context-tag {
+      font-size: 1rem;
+      color: #555;
+      background: #F5F5F5;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 2px dashed #BDBDBD;
+    }
+
+    /* BOTÕES DE ESCOLHA GERAIS */
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(130px, 1fr));
+      gap: 14px;
+      width: 100%;
+      max-width: 520px;
+      margin-top: 10px;
+    }
+    .choice-grid.single-row {
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    }
+    .btn-choice {
+      background: #1E88E5;
+      color: #fff;
+      border: 3px solid #1565C0;
+      border-radius: 18px;
+      min-height: 72px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 0 #0D47A1;
+      user-select: none;
+      padding: 8px 12px;
+      transition: transform 0.08s, background-color 0.15s;
+    }
+    .btn-choice:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #0D47A1;
+    }
+
+    /* CORES DA ATIVIDADE 4 (FAMÍLIA SILÁBICA) */
+    .color-f0 { background: #E53935; border-color: #B71C1C; box-shadow: 0 5px 0 #7F0000; }
+    .color-f1 { background: #FDD835; color: #212121; border-color: #F57F17; box-shadow: 0 5px 0 #E65100; }
+    .color-f2 { background: #1E88E5; border-color: #0D47A1; box-shadow: 0 5px 0 #002171; }
+    .color-f3 { background: #43A047; border-color: #1B5E20; box-shadow: 0 5px 0 #003300; }
+    .color-f4 { background: #8E24AA; border-color: #4A148C; box-shadow: 0 5px 0 #311B92; }
+
+    /* MONTE A PALAVRA / SLOTS E TILES */
+    .word-slots {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 14px 0;
+      flex-wrap: wrap;
+    }
+    .slot {
+      min-width: 68px;
+      min-height: 68px;
+      padding: 6px 12px;
+      border: 3px dashed #1E88E5;
+      border-radius: 16px;
+      background: #E3F2FD;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #0D47A1;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      transition: background-color 0.15s, transform 0.08s;
+    }
+    .slot.filled {
+      border-style: solid;
+      background: #43A047;
+      color: #fff;
+      border-color: #2E7D32;
+      box-shadow: 0 4px 0 #1B5E20;
+    }
+    .slot.char-slot {
+      min-width: 52px;
+      min-height: 60px;
+      font-size: 1.7rem;
+      padding: 2px 6px;
+    }
+
+    .tile-pool {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      max-width: 600px;
+    }
+    .btn-tile {
+      min-width: 68px;
+      min-height: 68px;
+      padding: 8px 14px;
+      background: #FB8C00;
+      color: #fff;
+      border: 3px solid #E65100;
+      border-radius: 16px;
+      font-size: 1.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 0 #BF360C;
+      user-select: none;
+      transition: transform 0.08s, opacity 0.15s;
+    }
+    .btn-tile:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #BF360C;
+    }
+    .btn-tile.char-tile {
+      min-width: 50px;
+      min-height: 56px;
+      font-size: 1.5rem;
+      padding: 4px 8px;
+    }
+    .btn-tile.used {
+      opacity: 0.25;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
+    .word-preview {
+      font-size: 2.2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #0D47A1;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .word-blank {
+      color: #FB8C00;
+      text-decoration: underline;
+      font-weight: 900;
+    }
+
+    /* TECLADO / CONTROLES DITADO */
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .btn-backspace {
+      background: #E53935;
+      color: #fff;
+      border: 3px solid #B71C1C;
+      border-radius: 14px;
+      min-height: 56px;
+      padding: 6px 18px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #7F0000;
+      user-select: none;
+    }
+    .btn-backspace:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #7F0000;
+    }
+
+    /* FEEDBACK OVERLAY / TOAST */
+    .feedback-banner {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-align: center;
+      color: #fff;
+      display: none;
+      z-index: 20;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+    .feedback-banner.correct {
+      background: #43A047;
+      border: 3px solid #2E7D32;
+      display: block;
+      animation: popIn 0.2s ease;
+    }
+    .feedback-banner.wrong {
+      background: #E53935;
+      border: 3px solid #B71C1C;
+      display: block;
+      animation: shake 0.35s ease;
+    }
+    .play-area.shake-it {
+      animation: shake 0.35s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-12px); }
+      40% { transform: translateX(12px); }
+      60% { transform: translateX(-8px); }
+      80% { transform: translateX(8px); }
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* TELA FINAL */
+    .end-card {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 10px;
+    }
+    .end-title {
+      font-size: 2rem;
+      color: #1565C0;
+      font-weight: bold;
+    }
+    .end-stars {
+      font-size: 3.5rem;
+      letter-spacing: 6px;
+      color: #FDD835;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .end-score {
+      font-size: 1.4rem;
+      color: #424242;
+    }
+    .end-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 14px;
+    }
+    .btn-action {
+      background: #43A047;
+      color: #fff;
+      border: 3px solid #2E7D32;
+      border-radius: 18px;
+      min-height: 64px;
+      padding: 10px 24px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #1B5E20;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-action:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #1B5E20;
+    }
+    .btn-action.sec {
+      background: #1E88E5;
+      border-color: #1565C0;
+      box-shadow: 0 5px 0 #0D47A1;
+    }
+    .btn-action.sec:active {
+      box-shadow: 0 2px 0 #0D47A1;
+    }
+
+    /* ACESSIBILIDADE E UTILITÁRIOS */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+    button {
+      font-family: inherit;
+    }
+    button:focus-visible, a:focus-visible {
+      outline: 4px solid #FFD54F;
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 480px) {
+      .card-icon { font-size: 2.2rem; }
+      .card-title { font-size: 1.1rem; }
+      .big-emoji { font-size: 4rem; }
+      .btn-choice { font-size: 1.35rem; min-height: 64px; }
+      .slot { min-width: 58px; min-height: 58px; font-size: 1.5rem; }
+      .btn-tile { min-width: 58px; min-height: 58px; font-size: 1.5rem; }
+      .slot.char-slot { min-width: 42px; min-height: 52px; font-size: 1.4rem; }
+      .btn-tile.char-tile { min-width: 42px; min-height: 50px; font-size: 1.3rem; }
+    }
+  </style>
+<script src="alf-gate.js?v=1"></script>
+</head>
+<body>
+  <header>
+    <div class="header-title">
+      <span aria-hidden="true">📖</span>
+      <div>
+        <span>32 Palavras</span>
+        <span class="header-sub">Ludopédia Alfabetização</span>
+      </div>
+    </div>
+    <button id="btnVoltar" class="btn-top" style="display:none;" onclick="app.irMenu()" aria-label="Voltar para a tela inicial">
+      ← Menu
+    </button>
+  </header>
+
+  <main id="appMain" role="main">
+    <!-- O conteúdo será injetado pelo JavaScript -->
+  </main>
+
+  <div id="ariaStatus" class="sr-only" aria-live="polite"></div>
+
+  <script>
+    // ARRAY DE DADOS FORNECIDO
+    const D = [
+      {"p":"avião","s":["A","VI","ÃO"],"e":"✈️","f":["VA","VE","VI","VO","VU"],"n":["AVIÃO","AVE","UVA","VIDA","VOVÓ","LUVA"]},
+      {"p":"bicicleta","s":["BI","CI","CLE","TA"],"e":"🚲","f":["CLA","CLE","CLI","CLO","CLU"],"n":[]},
+      {"p":"bola","s":["BO","LA"],"e":"⚽","f":["BA","BE","BI","BO","BU"],"n":["BOLA","BOLO","BALA","BICO","BOCA","BULE"]},
+      {"p":"brinquedos","s":["BRIN","QUE","DOS"],"e":"🧸","f":["BRA","BRE","BRI","BRO","BRU"],"n":[]},
+      {"p":"cachorro","s":["CA","CHO","RRO"],"e":"🐶","f":["CHA","CHE","CHI","CHO","CHU"],"n":["CHAVE","CHUVA","CACHO","BICHO","CARRO","CHÁ"]},
+      {"p":"casa","s":["CA","SA"],"e":"🏠","f":["CA","CO","CU"],"n":["CASA","CACO","COCO","CAMA","COPO","CUCA"]},
+      {"p":"cebola","s":["CE","BO","LA"],"e":"🧅","f":["CA","CE","CI","CO","CU"],"n":["CEBOLA","CENOURA","CIDADE","DOCE","CINCO","CEGO"]},
+      {"p":"chapéu","s":["CHA","PÉU"],"e":"🎩","f":["CHA","CHE","CHI","CHO","CHU"],"n":["CHAPÉU","CHUVA","CHÁ","CHINELO","CACHO","BICHO"]},
+      {"p":"dado","s":["DA","DO"],"e":"🎲","f":["DA","DE","DI","DO","DU"],"n":["DADO","DEDO","DIA","DOCE","DUNA","MOEDA"]},
+      {"p":"dragão","s":["DRA","GÃO"],"e":"🐉","f":["DRA","DRE","DRI","DRO","DRU"],"n":["DRAGÃO","DRAMA","PEDRA","DRIBLE","QUADRO","PADRE"]},
+      {"p":"enxada","s":["EN","XA","DA"],"e":"⛏️","f":["XA","XE","XI","XO","XU"],"n":[]},
+      {"p":"flor","s":["FLOR"],"e":"🌸","f":["FLA","FLE","FLI","FLO","FLU"],"n":[]},
+      {"p":"folha","s":["FO","LHA"],"e":"🍃","f":["LHA","LHE","LHI","LHO","LHU"],"n":["FOLHA","FILHO","MILHO","TELHA","ORELHA","MOLHO"]},
+      {"p":"galinha","s":["GA","LI","NHA"],"e":"🐔","f":["NHA","NHE","NHI","NHO","NHU"],"n":["LINHA","SONHO","BANHO","UNHA","NINHO","MOEDINHA"]},
+      {"p":"gelo","s":["GE","LO"],"e":"🧊","f":["GA","GE","GI","GO","GU"],"n":["GELO","GENTE","GIRAFA","GIGANTE","TIGELA","GELADEIRA"]},
+      {"p":"grama","s":["GRA","MA"],"e":"🌱","f":["GRA","GRE","GRI","GRO","GRU"],"n":["GRAMA","GRILO","GRUPO","GRAVE","GRITO","TIGRE"]},
+      {"p":"guitarra","s":["GUI","TAR","RA"],"e":"🎸","f":["RRA","RRE","RRI","RRO","RRU"],"n":["GUIA","TERRA","CARRO","JARRA","BURRO","SERRA"]},
+      {"p":"livro","s":["LI","VRO"],"e":"📖","f":["VRA","VRE","VRI","VRO","VRU"],"n":["LIVRO","LIVROS","LIVRE","PALAVRA","LAVRA","LIVRARIA"]},
+      {"p":"lua","s":["LU","A"],"e":"🌙","f":["LA","LE","LI","LO","LU"],"n":["LUA","LUVA","BOLA","BALA","LATA","LIMA"]},
+      {"p":"maçã","s":["MA","ÇÃ"],"e":"🍎","f":["ÇA","ÇO","ÇU"],"n":["MAÇÃ","LAÇO","POÇO","BRAÇO","AÇUCAR","CABEÇA"]},
+      {"p":"ovo","s":["O","VO"],"e":"🥚","f":["A","E","I","O","U"],"n":["OVO","OVOS","NOVO","POVO","OVAL","UVA"]},
+      {"p":"pão","s":["PÃO"],"e":"🍞","f":["PA","PE","PI","PO","PU"],"n":["PÃO","PATO","PIPA","PENA","POTE","PULO"]},
+      {"p":"pássaro","s":["PÁS","SA","RO"],"e":"🐦","f":["AS","ES","IS","OS","US"],"n":["PASSO","MASSA","SAPO","SOPA","ASA","OSSO"]},
+      {"p":"peixe","s":["PEI","XE"],"e":"🐟","f":["XA","XE","XI","XO","XU"],"n":["PEIXE","CAIXA","LIXO","BAIXO","XÍCARA","ROXO"]},
+      {"p":"planta","s":["PLAN","TA"],"e":"🪴","f":["PLA","PLE","PLI","PLO","PLU"],"n":["PLANTA","PLACA","PLUMA","PLANETA","PLINIO","DUPLO"]},
+      {"p":"praia","s":["PRAI","A"],"e":"🏖️","f":["PRA","PRE","PRI","PRO","PRU"],"n":["PRAIA","PRATO","PRIMO","PROVA","PREGO","COMPRA"]},
+      {"p":"queijo","s":["QUEI","JO"],"e":"🧀","f":["JA","JE","JI","JO","JU"],"n":["JOGO","JACA","JUBA","JEITO","LOJA","JANELA"]},
+      {"p":"rato","s":["RA","TO"],"e":"🐀","f":["RA","RE","RI","RO","RU"],"n":["RATO","RODA","RUA","REI","RIO","RAIZ"]},
+      {"p":"sapo","s":["SA","PO"],"e":"🐸","f":["SA","SE","SI","SO","SU"],"n":["SAPO","SOPA","SINO","SUCO","SEDA","SALA"]},
+      {"p":"sol","s":["SOL"],"e":"☀️","f":["AL","EL","IL","OL","UL"],"n":["SOL","MEL","SAL","PAPEL","ANEL","FUNIL"]},
+      {"p":"trem","s":["TREM"],"e":"🚂","f":["TRA","TRE","TRI","TRO","TRU"],"n":["TREM","TRIGO","TRAVA","TROCO","TRUQUE","LETRA"]},
+      {"p":"uvas","s":["U","VAS"],"e":"🍇","f":["VA","VE","VI","VO","VU"],"n":[]},
+      {"p":"zebra","s":["ZE","BRA"],"e":"🦓","f":["ZA","ZE","ZI","ZO","ZU"],"n":["ZEBRA","ZERO","AZUL","DOZE","ZINCO","COZINHA"]}
+    ];
+
+    // ÁUDIO SINTETIZADO (Web Audio API)
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC && !this.ctx) this.ctx = new AC();
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(()=>{});
+          }
+        } catch(e) {}
+      },
+      acerto() {
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc1 = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc1.type = 'triangle';
+          osc2.type = 'sine';
+
+          osc1.frequency.setValueAtTime(523.25, t); // C5
+          osc1.frequency.setValueAtTime(659.25, t + 0.12); // E5
+          osc1.frequency.setValueAtTime(783.99, t + 0.24); // G5
+          osc1.frequency.setValueAtTime(1046.50, t + 0.36); // C6
+
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc1.start(t);
+          osc1.stop(t + 0.6);
+        } catch(e){}
+      },
+      erro() {
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const t = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(190, t);
+          osc.frequency.linearRampToValueAtTime(110, t + 0.25);
+
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(t);
+          osc.stop(t + 0.35);
+        } catch(e){}
+      }
+    };
+
+    // SÍNTESE DE VOZ PT-BR
+    function falar(texto, callback) {
+      try {
+        if (!('speechSynthesis' in window)) {
+          if (callback) callback();
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(texto);
+        utter.lang = 'pt-BR';
+        utter.rate = 0.85; // fala um pouco mais pausada para crianças
+        utter.pitch = 1.05;
+        if (callback) {
+          utter.onend = callback;
+          utter.onerror = callback;
+        }
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        if (callback) callback();
+      }
+    }
+
+    // UTILITÁRIOS
+    function embaralhar(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function falarAria(txt) {
+      const el = document.getElementById('ariaStatus');
+      if (el) el.textContent = txt;
+    }
+
+    // APLICAÇÃO PRINCIPAL
+    const app = {
+      progresso: {},
+      atividadeAtual: 0,
+      rodada: 0,
+      totalRodadas: 10,
+      acertos: 0,
+      errouNestaRodada: false,
+      bloqueado: false,
+      listaPalavras: [],
+      estadoRodada: {},
+
+      carregarProgresso() {
+        try {
+          const salvo = localStorage.getItem('at32_prog');
+          if (salvo) this.progresso = JSON.parse(salvo);
+        } catch(e) {
+          this.progresso = {};
+        }
+      },
+
+      salvarProgresso(idAtiv, estrelas) {
+        try {
+          const anterior = this.progresso[idAtiv] || 0;
+          if (estrelas > anterior) {
+            this.progresso[idAtiv] = estrelas;
+            localStorage.setItem('at32_prog', JSON.stringify(this.progresso));
+          }
+        } catch(e) {}
+      },
+
+      renderEstrelas(n) {
+        let h = '';
+        for (let i = 1; i <= 3; i++) {
+          if (i <= n) h += '★';
+          else h += '<span class="empty">☆</span>';
+        }
+        return h;
+      },
+
+      irMenu() {
+        try { window.speechSynthesis.cancel(); } catch(e){}
+        this.atividadeAtual = 0;
+        document.getElementById('btnVoltar').style.display = 'none';
+
+        const infoAtivs = [
+          { id: 1, c: 'c1', icone: '🔤', nome: 'Qual é a palavra?' },
+          { id: 2, c: 'c2', icone: '🧩', nome: 'Monte a palavra' },
+          { id: 3, c: 'c3', icone: '🔍', nome: 'Complete a sílaba' },
+          { id: 4, c: 'c4', icone: '👂', nome: 'Ouça e toque' },
+          { id: 5, c: 'c5', icone: '🅰️', nome: 'Letra inicial' },
+          { id: 6, c: 'c6', icone: '✏️', nome: 'Ditado com letras' }
+        ];
+
+        let html = `
+          <div class="menu-grid" role="region" aria-label="Lista de atividades">
+        `;
+        infoAtivs.forEach(a => {
+          const stars = this.progresso[a.id] || 0;
+          html += `
+            <button class="card-act ${a.c}" onclick="app.iniciarAtividade(${a.id})" aria-label="${a.nome}, recorde: ${stars} estrelas">
+              <span class="card-icon" aria-hidden="true">${a.icone}</span>
+              <span class="card-title">${a.nome}</span>
+              <span class="card-stars" aria-hidden="true">${this.renderEstrelas(stars)}</span>
+            </button>
+          `;
+        });
+
+        // Cartão Trace a Palavra (link fornecido)
+        html += `
+          <a class="card-link" href="trace-palavra-32-palavras-jogo.html" aria-label="Trace a Palavra, atividade externa">
+            <span class="card-icon" aria-hidden="true">✏️</span>
+            <span class="card-title" style="color:#E65100;">Trace a Palavra</span>
+            <span style="font-size:0.95rem; font-weight:bold; color:#795548;">Treine a escrita</span>
+          </a>
+        `;
+        html += `</div>`;
+
+        document.getElementById('appMain').innerHTML = html;
+        falarAria('Tela inicial da Ludopédia. Escolha uma atividade.');
+      },
+
+      iniciarAtividade(id) {
+        AudioEngine.init();
+        this.atividadeAtual = id;
+        this.rodada = 0;
+        this.acertos = 0;
+        document.getElementById('btnVoltar').style.display = 'inline-flex';
+
+        // Prepara lista de palavras (10 rodadas sem repetir)
+        let fonte = D.slice();
+        if (id === 2 || id === 3) {
+          // Apenas palavras com 2 ou mais sílabas
+          fonte = fonte.filter(item => item.s && item.s.length >= 2);
+        }
+        this.listaPalavras = embaralhar(fonte).slice(0, this.totalRodadas);
+
+        this.proximaRodada();
+      },
+
+      proximaRodada() {
+        if (this.rodada >= this.totalRodadas) {
+          this.mostrarFim();
+          return;
+        }
+        this.rodada++;
+        this.errouNestaRodada = false;
+        this.bloqueado = false;
+        const item = this.listaPalavras[this.rodada - 1];
+
+        this.renderLayoutJogo(item);
+      },
+
+      renderLayoutJogo(item) {
+        const perc = ((this.rodada - 1) / this.totalRodadas) * 100;
+        const main = document.getElementById('appMain');
+
+        let html = `
+          <div class="game-bar" aria-label="Progresso da atividade">
+            <span>Rodada ${this.rodada} de ${this.totalRodadas}</span>
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" style="width: ${perc}%;"></div>
+            </div>
+            <span class="score-badge">⭐ ${this.acertos}</span>
+          </div>
+          <div class="play-area" id="areaJogo">
+            <div id="corpoAtividade" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div>
+            <div id="feedbackBanner" class="feedback-banner" aria-hidden="true"></div>
+          </div>
+        `;
+        main.innerHTML = html;
+
+        switch (this.atividadeAtual) {
+          case 1: this.montarAtiv1(item); break;
+          case 2: this.montarAtiv2(item); break;
+          case 3: this.montarAtiv3(item); break;
+          case 4: this.montarAtiv4(item); break;
+          case 5: this.montarAtiv5(item); break;
+          case 6: this.montarAtiv6(item); break;
+        }
+      },
+
+      // FEEDBACK E PONTUAÇÃO
+      acertou() {
+        if (this.bloqueado) return;
+        this.bloqueado = true;
+        if (!this.errouNestaRodada) {
+          this.acertos++;
+        }
+        AudioEngine.acerto();
+        falarAria("Muito bem! Resposta certa.");
+
+        const fb = document.getElementById('feedbackBanner');
+        if (fb) {
+          fb.className = 'feedback-banner correct';
+          fb.textContent = '🎉 Muito bem!';
+        }
+
+        setTimeout(() => {
+          this.proximaRodada();
+        }, 1100);
+      },
+
+      errou(msg) {
+        this.errouNestaRodada = true;
+        AudioEngine.erro();
+        falarAria("Tente de novo!");
+
+        const area = document.getElementById('areaJogo');
+        const fb = document.getElementById('feedbackBanner');
+
+        if (area) {
+          area.classList.remove('shake-it');
+          void area.offsetWidth; // força reflow
+          area.classList.add('shake-it');
+        }
+        if (fb) {
+          fb.className = 'feedback-banner wrong';
+          fb.textContent = msg || 'Tente de novo! 🤔';
+          setTimeout(() => {
+            if (fb) fb.className = 'feedback-banner';
+          }, 900);
+        }
+      },
+
+      // ATIVIDADE 1: QUAL É A PALAVRA?
+      montarAtiv1(item) {
+        const certa = item.p.toUpperCase();
+        // 3 erradas
+        const erradas = embaralhar(D.filter(d => d.p.toUpperCase() !== certa)).slice(0, 3).map(d => d.p.toUpperCase());
+        const opcoes = embaralhar([certa, ...erradas]);
+
+        const corpo = document.getElementById('corpoAtividade');
+        corpo.innerHTML = `
+          <div class="act-prompt">
+            <span>Qual é a palavra?</span>
+            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+          </div>
+          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="choice-grid">
+            ${opcoes.map(pal => `
+              <button class="btn-choice" onclick="app.checarAtiv1('${pal}', '${certa}')">${pal}</button>
+            `).join('')}
+          </div>
+        `;
+        falar(item.p);
+      },
+      checarAtiv1(escolhida, certa) {
+        if (this.bloqueado) return;
+        if (escolhida === certa) {
+          this.acertou();
+        } else {
+          this.errou();
+        }
+      },
+
+      // ATIVIDADE 2: MONTE A PALAVRA (SÍLABAS)
+      montarAtiv2(item) {
+        const silabasCertas = item.s.slice(); // ex: ["BO", "LA"]
+        // Criar tiles com IDs únicos para permitir sílabas repetidas
+        const tiles = embaralhar(silabasCertas.map((s, idx) => ({ id: idx, silaba: s })));
+
+        this.estadoRodada = {
+          certa: silabasCertas,
+          slots: new Array(silabasCertas.length).fill(null),
+          tiles: tiles
+        };
+
+        this.renderAtiv2(item);
+        falar(item.p);
+      },
+      renderAtiv2(item) {
+        const corpo = document.getElementById('corpoAtividade');
+        const st = this.estadoRodada;
+
+        let slotsHtml = st.slots.map((s, idx) => {
+          if (s === null) {
+            return `<div class="slot" onclick="app.clicarSlotAtiv2(${idx})" aria-label="Espaço vazio ${idx+1}">_</div>`;
+          } else {
+            return `<div class="slot filled" onclick="app.clicarSlotAtiv2(${idx})" aria-label="Sílaba ${s.silaba}, toque para devolver">${s.silaba}</div>`;
+          }
+        }).join('');
+
+        let tilesHtml = st.tiles.map(t => {
+          const used = st.slots.some(s => s && s.id === t.id);
+          return `<button class="btn-tile ${used ? 'used' : ''}" onclick="app.clicarTileAtiv2(${t.id})" ${used ? 'disabled' : ''}>${t.silaba}</button>`;
+        }).join('');
+
+        corpo.innerHTML = `
+          <div class="act-prompt">
+            <span>Monte a palavra:</span>
+            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+          </div>
+          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="word-slots">${slotsHtml}</div>
+          <div class="tile-pool">${tilesHtml}</div>
+        `;
+      },
+      clicarTileAtiv2(tileId) {
+        if (this.bloqueado) return;
+        const st = this.estadoRodada;
+        const primeiroVazio = st.slots.indexOf(null);
+        if (primeiroVazio === -1) return;
+
+        const tileObj = st.tiles.find(t => t.id === tileId);
+        st.slots[primeiroVazio] = tileObj;
+
+        const item = this.listaPalavras[this.rodada - 1];
+        this.renderAtiv2(item);
+
+        // Se preencheu todos, confere
+        if (st.slots.indexOf(null) === -1) {
+          const montada = st.slots.map(s => s.silaba).join('');
+          const correta = st.certa.join('');
+          if (montada === correta) {
+            this.acertou();
+          } else {
+            this.errou();
+          }
+        }
+      },
+      clicarSlotAtiv2(idx) {
+        if (this.bloqueado) return;
+        const st = this.estadoRodada;
+        if (st.slots[idx] !== null) {
+          st.slots[idx] = null;
+          const item = this.listaPalavras[this.rodada - 1];
+          this.renderAtiv2(item);
+        }
+      },
+
+      // ATIVIDADE 3: COMPLETE A SÍLABA
+      montarAtiv3(item) {
+        const silabas = item.s;
+        const indiceOculto = Math.floor(Math.random() * silabas.length);
+        const silabaCerta = silabas[indiceOculto];
+
+        // Palavra com lacuna
+        const partes = silabas.map((s, idx) => (idx === indiceOculto ? '____' : s));
+        const palavraLacuna = partes.join(' ');
+
+        // Sílabas distratoras de outras palavras
+        const todasSilabas = [];
+        D.forEach(d => {
+          if (d.s) d.s.forEach(s => {
+            if (s !== silabaCerta && !todasSilabas.includes(s)) todasSilabas.push(s);
+          });
+        });
+        const erradas = embaralhar(todasSilabas).slice(0, 3);
+        const opcoes = embaralhar([silabaCerta, ...erradas]);
+
+        const corpo = document.getElementById('corpoAtividade');
+        corpo.innerHTML = `
+          <div class="act-prompt">
+            <span>Complete a palavra:</span>
+            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+          </div>
+          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="word-preview">${palavraLacuna}</div>
+          <div class="choice-grid">
+            ${opcoes.map(s => `
+              <button class="btn-choice" onclick="app.checarAtiv3('${s}', '${silabaCerta}')">${s}</button>
+            `).join('')}
+          </div>
+        `;
+        falar(item.p);
+      },
+      checarAtiv3(escolhida, certa) {
+        if (this.bloqueado) return;
+        if (escolhida === certa) {
+          this.acertou();
+        } else {
+          this.errou();
+        }
+      },
+
+      // ATIVIDADE 4: OUÇA E TOQUE (FAMÍLIA SILÁBICA)
+      montarAtiv4(item) {
+        // Se a palavra não tiver família ou menos de 2, use fallback padrão
+        const familia = (item.f && item.f.length >= 2) ? item.f : ["BA","BE","BI","BO","BU"];
+        const silabaSorteada = familia[Math.floor(Math.random() * familia.length)];
+
+        this.estadoRodada = {
+          silabaAlvo: silabaSorteada
+        };
+
+        const cores = ['color-f0', 'color-f1', 'color-f2', 'color-f3', 'color-f4'];
+
+        const corpo = document.getElementById('corpoAtividade');
+        corpo.innerHTML = `
+          <div class="act-prompt">
+            <span>Ouça a sílaba e toque:</span>
+            <button class="btn-speak pulse" onclick="falar('${silabaSorteada}')" aria-label="Ouvir a sílaba novamente">🔊</button>
+          </div>
+          <div class="context-tag" aria-label="Palavra de apoio: ${item.p}">
+            <span aria-hidden="true">${item.e}</span> Palavra de apoio: <strong>${item.p.toUpperCase()}</strong>
+          </div>
+          <div class="choice-grid single-row" style="margin-top: 18px;">
+            ${familia.map((s, idx) => `
+              <button class="btn-choice ${cores[idx % cores.length]}" onclick="app.checarAtiv4('${s}')">${s}</button>
+            `).join('')}
+          </div>
+        `;
+
+        // Fala a sílaba sorteada automaticamente
+        setTimeout(() => {
+          falar(silabaSorteada);
+        }, 200);
+      },
+      checarAtiv4(escolhida) {
+        if (this.bloqueado) return;
+        if (escolhida === this.estadoRodada.silabaAlvo) {
+          this.acertou();
+        } else {
+          this.errou();
+        }
+      },
+
+      // ATIVIDADE 5: LETRA INICIAL
+      montarAtiv5(item) {
+        const letraCerta = item.p.charAt(0).toUpperCase();
+
+        const outrasLetras = [];
+        D.forEach(d => {
+          const l = d.p.charAt(0).toUpperCase();
+          if (l !== letraCerta && !outrasLetras.includes(l)) outrasLetras.push(l);
+        });
+        const erradas = embaralhar(outrasLetras).slice(0, 3);
+        const opcoes = embaralhar([letraCerta, ...erradas]);
+
+        const corpo = document.getElementById('corpoAtividade');
+        corpo.innerHTML = `
+          <div class="act-prompt">
+            <span>Qual é a primeira letra?</span>
+            <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+          </div>
+          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="choice-grid">
+            ${opcoes.map(letra => `
+              <button class="btn-choice" onclick="app.checarAtiv5('${letra}', '${letraCerta}')">${letra}</button>
+            `).join('')}
+          </div>
+        `;
+        falar(item.p);
+      },
+      checarAtiv5(escolhida, certa) {
+        if (this.bloqueado) return;
+        if (escolhida === certa) {
+          this.acertou();
+        } else {
+          this.errou();
+        }
+      },
+
+      // ATIVIDADE 6: DITADO COM LETRAS
+      montarAtiv6(item) {
+        const letrasCertas = item.p.toUpperCase().split('');
+        const todasAsLetras = "ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÃÕÇ";
+
+        // Letras extras que não estão na palavra
+        const extrasPossiveis = todasAsLetras.split('').filter(l => !letrasCertas.includes(l));
+        const extras = embaralhar(extrasPossiveis).slice(0, 3);
+
+        const teclado = embaralhar(letrasCertas.concat(extras)).map((char, idx) => ({
+          id: idx,
+          char: char
+        }));
+
+        this.estadoRodada = {
+          certa: letrasCertas,
+          slots: new Array(letrasCertas.length).fill(null),
+          teclado: teclado
+        };
+
+        this.renderAtiv6(item);
+        falar(item.p);
+      },
+      renderAtiv6(item) {
+        const corpo = document.getElementById('corpoAtividade');
+        const st = this.estadoRodada;
+
+        let slotsHtml = st.slots.map((s, idx) => {
+          if (s === null) {
+            return `<div class="slot char-slot" aria-label="Letra ${idx+1} vazia">_</div>`;
+          } else {
+            return `<div class="slot char-slot filled" aria-label="Letra ${s.char}">${s.char}</div>`;
+          }
+        }).join('');
+
+        let tilesHtml = st.teclado.map(t => {
+          const used = st.slots.some(s => s && s.id === t.id);
+          return `<button class="btn-tile char-tile ${used ? 'used' : ''}" onclick="app.clicarLetraAtiv6(${t.id})" ${used ? 'disabled' : ''}>${t.char}</button>`;
+        }).join('');
+
+        corpo.innerHTML = `
+          <div class="act-prompt">
+            <span>Escute e escreva:</span>
+            <button class="btn-speak pulse" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
+          </div>
+          <div style="font-size:3rem; margin:2px 0;" aria-hidden="true">${item.e}</div>
+          <div class="word-slots">${slotsHtml}</div>
+          <div class="tile-pool">${tilesHtml}</div>
+          <div class="controls-row">
+            <button class="btn-backspace" onclick="app.apagarUltimaLetraAtiv6()" aria-label="Apagar última letra">⌫ Apagar</button>
+          </div>
+        `;
+      },
+      clicarLetraAtiv6(tileId) {
+        if (this.bloqueado) return;
+        const st = this.estadoRodada;
+        const primeiroVazio = st.slots.indexOf(null);
+        if (primeiroVazio === -1) return;
+
+        const tileObj = st.teclado.find(t => t.id === tileId);
+        st.slots[primeiroVazio] = tileObj;
+
+        const item = this.listaPalavras[this.rodada - 1];
+        this.renderAtiv6(item);
+
+        // Preencheu tudo: confere
+        if (st.slots.indexOf(null) === -1) {
+          const montada = st.slots.map(s => s.char).join('');
+          const correta = st.certa.join('');
+          if (montada === correta) {
+            this.acertou();
+          } else {
+            this.errou();
+          }
+        }
+      },
+      apagarUltimaLetraAtiv6() {
+        if (this.bloqueado) return;
+        const st = this.estadoRodada;
+        // Encontra o último preenchido
+        for (let i = st.slots.length - 1; i >= 0; i--) {
+          if (st.slots[i] !== null) {
+            st.slots[i] = null;
+            break;
+          }
+        }
+        const item = this.listaPalavras[this.rodada - 1];
+        this.renderAtiv6(item);
+      },
+
+      // TELA DE RESULTADO FINAL
+      mostrarFim() {
+        let estrelas = 1;
+        if (this.acertos >= 9) estrelas = 3;
+        else if (this.acertos >= 6) estrelas = 2;
+
+        this.salvarProgresso(this.atividadeAtual, estrelas);
+
+        let elogio = 'Muito bem!';
+        if (estrelas === 3) elogio = 'Sensacional! 🌟';
+        else if (estrelas === 2) elogio = 'Parabéns! 👏';
+        else elogio = 'Bom esforço! Continue treinando! 💪';
+
+        const main = document.getElementById('appMain');
+        main.innerHTML = `
+          <div class="play-area">
+            <div class="end-card">
+              <span class="end-title">${elogio}</span>
+              <div class="end-stars" aria-label="${estrelas} estrelas de 3">${this.renderEstrelas(estrelas)}</div>
+              <p class="end-score">Você acertou <strong>${this.acertos}</strong> de <strong>${this.totalRodadas}</strong> rodadas!</p>
+              <div class="end-buttons">
+                <button class="btn-action" onclick="app.iniciarAtividade(${this.atividadeAtual})">
+                  🔄 Jogar de novo
+                </button>
+                <button class="btn-action sec" onclick="app.irMenu()">
+                  🏠 Menu Principal
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        falar(elogio);
+        falarAria(`Fim da atividade. Você ganhou ${estrelas} estrelas com ${this.acertos} acertos.`);
+      }
+    };
+
+    // INICIALIZAÇÃO
+    window.addEventListener('DOMContentLoaded', () => {
+      app.carregarProgresso();
+      app.irMenu();
+    });
+
+    // API para testes e depuração
+    window.__a32 = {
+      D: D,
+      iniciar: function(n) {
+        if (n >= 1 && n <= 6) {
+          app.iniciarAtividade(n);
+        } else {
+          console.warn("Informe um número de 1 a 6");
+        }
+      }
+    };
+  </script>
+<script>(function(){var m=location.search.match(/[?&]a=(\d)/);if(!m||+m[1]<1)return;function go(){setTimeout(function(){if(window.__a32)window.__a32.iniciar(+m[1])},150)}if(document.readyState==='complete')go();else window.addEventListener('load',go)})();</script>
+<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=6"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+</body>
+</html>
