@@ -202,7 +202,7 @@ var HI=[
 var $=function(i){return document.getElementById(i)};
 var AC=null;
 function tom(f,t,d){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.01,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
-function fala(t){try{speechSynthesis.cancel();var m=new SpeechSynthesisUtterance(t);m.lang="pt-BR";m.rate=.85;speechSynthesis.speak(m)}catch(e){}}
+function fala(t){try{speechSynthesis.cancel();var m=new SpeechSynthesisUtterance(t);m.lang="pt-BR";m.rate=.8;speechSynthesis.speak(m)}catch(e){}}
 function fanfarra(){[523,659,784,1046].forEach(function(f,i){setTimeout(function(){tom(f,"triangle",.35)},i*150)})}
 var PROG={};try{PROG=JSON.parse(localStorage.getItem("div32_prog")||"{}")}catch(e){}
 var MOEDAS=0;try{MOEDAS=parseInt(localStorage.getItem("div32_moedas"))||0}catch(e){}
@@ -274,7 +274,7 @@ function abreFases(i){
     d.onclick=function(){if(ok)inicia(f);else{tom(160,"sawtooth",.2)}};g.appendChild(d)});
   tela("t-fases");
 }
-function sair(){try{speechSynthesis.cancel()}catch(e){};abreFases(ATV.indexOf(A))}
+function sair(){clearTimeout(AUTO);try{speechSynthesis.cancel()}catch(e){};abreFases(ATV.indexOf(A))}
 
 /* ===== Montagem das rodadas ===== */
 function pool(f){
@@ -316,7 +316,7 @@ function msg(t,c){var m=$("j-msg");m.textContent=t||"";m.className="msg "+(c||""
 var OUVIR=function(){};
 var BARRAS=[10,18,26,14,30,22,12,28,20,8,24,30,16,10,26,18,12,22,28,14,8,20];
 function zapHtml(){return '<button type="button" class="zap" id="zap" aria-label="Ouvir" onclick="ouvir()"><span class="pl"><svg class="pp" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg class="pa" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></span><span class="on">'+BARRAS.map(function(h){return '<i style="height:'+h+'px"></i>'}).join("")+'</span><span class="t">0:03</span></button><br>'}
-var ZT=null;
+var ZT=null,AUTO=null;
 function ouvir(){var z=$("zap");if(z){z.classList.add("tocando");clearTimeout(ZT);ZT=setTimeout(function(){var q=$("zap");if(q)q.classList.remove("tocando")},3200)}OUVIR()}
 function proxima(primeira){
   if(!primeira)QI++;
@@ -331,6 +331,7 @@ function proxima(primeira){
   else if(A.id==="complete")rComplete(q,qd);
   else if(A.id==="leitura")rPergunta(q,qd);
   qd.insertAdjacentHTML("afterbegin",zapHtml());
+  clearTimeout(AUTO);AUTO=setTimeout(ouvir,600);
 }
 function erra(el){
   ERROS++;ERROS_Q++;tom(160,"sawtooth",.2);moeda(-10);resposta(false);msg("Tente de novo!","ruim");
@@ -338,7 +339,7 @@ function erra(el){
 }
 function acerta(txt,falar){
   TRAVA=true;tom(660,"sine",.2);moeda(15);resposta(true);msg("Muito bem! "+(txt||""),"bom");if(falar)fala(falar);
-  setTimeout(function(){proxima()},falar?1900:1100);
+  setTimeout(function(){proxima()},falar?Math.max(1900,falar.length*90+600):1100);
 }
 
 /* Montar sequência de peças (letras, sílabas, palavras) */
@@ -356,7 +357,7 @@ function montador(qd,cab,pecas,certa,cls,aoFim){
     b.onclick=function(){
       if(TRAVA)return;
       var pos=esc.length;
-      if(pecas[ix]===certa[pos]){esc.push(ix);tom(500+pos*60,"sine",.12);if(cls==="sil")fala(pecas[ix].toLowerCase());pinta();msg("");
+      if(pecas[ix]===certa[pos]){esc.push(ix);tom(500+pos*60,"sine",.12);if(cls==="sil"||cls==="fr")fala(pecas[ix].toLowerCase());pinta();msg("");
         if(esc.length===certa.length)aoFim()}
       else erra(b)};
     banco.appendChild(b)});
@@ -364,33 +365,31 @@ function montador(qd,cab,pecas,certa,cls,aoFim){
 }
 function rLetras(w,qd){
   var letras=w.p.toUpperCase().split("");
-  OUVIR=function(){fala(w.p)};
+  OUVIR=function(){fala("Coloque as letras na ordem, para formar a palavra. ... "+w.p)};
   montador(qd,img(w)+'<div class="ord">Coloque as letras na ordem para formar a palavra:</div>',letras,letras,"let",function(){acerta(w.p.toUpperCase()+"!",w.p)});
 }
 function rSilabas(w,qd){
-  OUVIR=function(){fala(w.p)};
+  OUVIR=function(){fala("Ouça a palavra. ... "+w.p+". ... Agora toque nas sílabas, na ordem certa.")};
   var fig=FI===2?'<div style="font-size:4rem">🔊</div>':img(w);
   qd.innerHTML="";
   montador(qd,fig+'<div class="ord">Ouça a palavra. Toque nas sílabas na ordem certa (cada toque fala a sílaba):</div>',w.s,w.s,"sil",function(){acerta(w.s.join("-")+"!",w.p)});
-  setTimeout(function(){fala(w.p)},300);
 }
 function rSom(q,qd){
-  OUVIR=function(){fala(q.sil)};
+  OUVIR=function(){fala("Qual figura "+(q.modo==="c"?"começa":"termina")+" com o som: ... "+q.sil+" ... ? Toque na figura certa.")};
   qd.innerHTML='<div style="font-size:3.4rem">🎧</div><div class="frase-txt">Qual figura '+(q.modo==="c"?"<u>começa</u>":"<u>termina</u>")+' com o som <span style="color:var(--rosa);font-size:1.3em">'+q.sil.toUpperCase()+'</span>?</div><div class="opcoes" id="ops"></div>';
   q.ops.forEach(function(w){var d=document.createElement("div");d.className="op";d.innerHTML=img(w,"")+"<span>"+w.p+"</span>";
     d.onclick=function(){if(TRAVA)return;if(w===q.w){d.classList.add("certo");acerta(q.w.p.toUpperCase()+"!",q.w.p)}else{erra(d);fala(w.p)}};$("ops").appendChild(d)});
-  setTimeout(function(){fala(q.sil)},300);
 }
 function rFrase(f,qd){
   var palavras=f.replace(/[.!?]$/,"").split(" "),fim=f.slice(-1);
   var pecas=palavras.slice(),certa=palavras.slice();
-  OUVIR=function(){fala(f)};
+  OUVIR=function(){fala("Organize a frase. Ouça. ... "+f+" ... Agora toque nas palavras, na ordem certa.")};
   montador(qd,'<div style="font-size:3rem">📝</div><div class="ord">Toque nas palavras para formar a frase correta:</div>',pecas,certa,"fr",function(){acerta("",f)});
 }
 function rComplete(c,qd){
   var w=PW[c[1]];
   var partes=c[0].split("___");
-  OUVIR=function(){fala(c[0].replace("___","qual?"))};
+  OUVIR=function(){fala("Complete a frase. ... "+c[0].replace("___"," ... qual figura? ... ")+" Toque na figura certa.")};
   qd.innerHTML='<div class="frase-txt">'+partes[0]+'<span class="lacuna" id="lac">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>'+partes[1]+'</div><div class="opcoes" id="ops"></div>';
   var ops=sh([w].concat(sh(W.filter(function(x){return x!==w})).slice(0,2)));
   ops.forEach(function(x){var d=document.createElement("div");d.className="op";d.innerHTML=img(x,"")+"<span>"+x.p+"</span>";
@@ -404,7 +403,7 @@ function mostraHistoria(){
 }
 function comecaPerguntas(){try{speechSynthesis.cancel()}catch(e){};QI=0;ERROS=0;proxima(true)}
 function rPergunta(q,qd){
-  OUVIR=function(){fala(q[0])};
+  OUVIR=function(){fala("Pergunta. ... "+q[0]+" ... Opção A. "+q[1][0]+". ... Opção B. "+q[1][1]+". ... Opção C. "+q[1][2]+".")};
   var h=HI[FI];
   qd.innerHTML='<div class="ord">📖 '+h.t+' — pergunta '+(QI+1)+' de '+Q.length+'</div><div class="frase-txt" style="text-align:left">'+q[0]+'</div><div class="opcoes" style="grid-template-columns:1fr" id="ops"></div><div class="acoes"><button class="btn cz" onclick="mostraHistoria()">📖 Reler a história</button></div>';
   q[1].forEach(function(t,i){var d=document.createElement("div");d.className="op texto";d.textContent=t;
@@ -412,7 +411,7 @@ function rPergunta(q,qd){
 }
 
 /* ===== Fim da fase ===== */
-function fimFase(){
+function fimFase(){clearTimeout(AUTO);
   var est=Math.max(1,5-ERROS);
   var antes=figurinhas();
   var k=chave(A,FI);if(!PROG[k]||est>PROG[k]){PROG[k]=est;salva()}
