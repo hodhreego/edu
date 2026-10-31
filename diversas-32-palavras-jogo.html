@@ -118,6 +118,7 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 </style>
 <script src="alf-gate.js?v=2"></script>
 <script src="alf-style.js?v=2"></script>
+<script src="alf-a11y.js?v=1"></script>
 </head>
 <body>
 <div id="dv-fx" style="position:fixed;left:0;top:0;height:0;z-index:45;pointer-events:none"></div>
@@ -370,7 +371,7 @@ function proxima(primeira){
   clearTimeout(AUTO);AUTO=setTimeout(ouvir,600);
 }
 function erra(el){
-  ERROS++;ERROS_Q++;tom(160,"sawtooth",.2);moeda(-10);resposta(false);msg(T("Tente de novo!"),"ruim");
+  ERROS++;ERROS_Q++;tom(160,"sawtooth",.2);resposta(false);var mc=$("dv-moedas");if(mc){mc.classList.remove("up","down");void mc.offsetWidth;mc.classList.add("down")}msg(T("Tente de novo!"),"ruim");
   if(el){el.classList.add("erro");setTimeout(function(){el.classList.remove("erro")},600)}
 }
 function acerta(txt,falar){
