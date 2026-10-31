@@ -50,13 +50,13 @@ button:active{opacity:.8}
       <div class="title" id="game-title"></div>
       <button class="btn-gray" id="btn-case">abc</button>
     </div>
-    <div class="canvas-container"><canvas id="main-canvas"></canvas></div>
+    <div class="canvas-container"><canvas id="main-canvas" role="img" aria-label="Área para traçar a letra com o dedo ou o mouse"></canvas></div>
     <div class="controls">
       <button class="btn-orange" id="btn-clear">Apagar</button>
       <button class="btn-blue" id="btn-check">Conferir</button>
     </div>
   </div>
-  <div id="feedback"></div>
+  <div id="feedback" role="status" aria-live="polite"></div>
   <div id="celebration-overlay">
     <canvas id="confetti-canvas"></canvas>
     <div id="final-emoji" style="font-size:5rem;position:relative"></div>
@@ -94,7 +94,7 @@ function menu(){
   WORDS.forEach(function(w,i){
     var n=S.prog[w[0]]||0,c=document.createElement("div");c.className="card"+(n?" feita":"");
     c.innerHTML='<span class="card-emoji">'+w[2]+'</span><span class="card-word">'+w[0]+'</span><div class="stars">'+"★".repeat(n)+"☆".repeat(3-n)+'</div>';
-    c.onclick=function(){inicia(i)};g.appendChild(c)});
+    c.setAttribute("role","button");c.tabIndex=0;c.setAttribute("aria-label","Traçar a palavra "+w[0]);c.onclick=function(){inicia(i)};c.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();inicia(i)}};g.appendChild(c)});
 }
 
 /* ===== Jogo ===== */
@@ -182,7 +182,7 @@ function aprova(){
   tom(660,"sine",.2);msg("Muito bem!");S.tracos=[];S.pts=[];S.letra++;
   if(S.letra>=S.box.length){desenha();setTimeout(termina,350)}else desenha();
 }
-function apaga(){S.tracos=[];S.pts=[];S.apagou++;desenha()}
+function apaga(){if(S.tracos.length)S.apagou++;S.tracos=[];S.pts=[];desenha()}
 function msg(t){var f=$("feedback");f.textContent=t;f.style.opacity=1;clearTimeout(msg.t);msg.t=setTimeout(function(){f.style.opacity=0},1500)}
 
 /* ===== Final ===== */
@@ -205,11 +205,12 @@ function confete(){
 $("btn-back").onclick=menu;$("btn-menu").onclick=function(){cf=false;menu()};
 $("btn-next").onclick=function(){cf=false;inicia((S.idx+1)%WORDS.length)};
 $("btn-clear").onclick=apaga;$("btn-check").onclick=confere;
-$("btn-case").onclick=function(){S.maius=!S.maius;$("btn-case").textContent=S.maius?"abc":"ABC";S.letra=0;S.tracos=[];S.pts=[];layout();desenha()};
-addEventListener("resize",function(){if($("game-screen").classList.contains("active"))ajusta()});
+$("btn-case").onclick=function(){S.maius=!S.maius;$("btn-case").textContent=S.maius?"abc":"ABC";S.letra=0;S.apagou=0;S.tracos=[];S.pts=[];layout();desenha()};
+addEventListener("resize",function(){if($("game-screen").classList.contains("active")){S.tracos=[];S.pts=[];ajusta()}});
 menu();
 /* gancho p/ testes: window.__tr32 */
 window.__tr32={S:S,avalia:avalia,inicia:inicia};
 </script>
+<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=6"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
 </body>
 </html>
