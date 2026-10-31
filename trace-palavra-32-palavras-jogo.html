@@ -79,7 +79,7 @@ button:active{opacity:.8}
 <script>
 /* ===== Dados: as 33 palavras da apostila (palavra, sílabas, emoji) ===== */
 var WORDS=[["avião","A-VI-ÃO","✈️"],["bicicleta","BI-CI-CLE-TA","🚲"],["bola","BO-LA","⚽"],["brinquedos","BRIN-QUE-DOS","🧸"],["cachorro","CA-CHO-RRO","🐶"],["casa","CA-SA","🏠"],["cebola","CE-BO-LA","🧅"],["chapéu","CHA-PÉU","🎩"],["dado","DA-DO","🎲"],["dragão","DRA-GÃO","🐉"],["enxada","EN-XA-DA","⛏️"],["flor","FLOR","🌸"],["folha","FO-LHA","🍃"],["galinha","GA-LI-NHA","🐔"],["gelo","GE-LO","🧊"],["grama","GRA-MA","🌱"],["guitarra","GUI-TAR-RA","🎸"],["livro","LI-VRO","📖"],["lua","LU-A","🌙"],["maçã","MA-ÇÃ","🍎"],["ovo","O-VO","🥚"],["pão","PÃO","🍞"],["pássaro","PÁS-SA-RO","🐦"],["peixe","PEI-XE","🐟"],["planta","PLAN-TA","🪴"],["praia","PRAIA","🏖️"],["queijo","QUEI-JO","🧀"],["rato","RA-TO","🐀"],["sapo","SA-PO","🐸"],["sol","SOL","☀️"],["trem","TREM","🚂"],["uva","U-VA","🍇"],["zebra","ZE-BRA","🦓"]];
-var IMGK={"avião":"aviao","chapéu":"chapeu","maçã":"maca","pão":"pao","pássaro":"passaro","brinquedos":"brinquedo"};function FIG(w,px){return ALF_FIG(w[3]||IMGK[w[0]]||w[0],"",px||90,"")}
+var IMGK={"avião":"aviao","chapéu":"chapeu","maçã":"maca","pão":"pao","pássaro":"passaro","brinquedos":"brinquedo","dragão":"dragao"};function FIG(w,px){return ALF_FIG(w[3]||IMGK[w[0]]||w[0],"",px||90,"")}
 var FONTES={bastao:["bold ","Verdana, Arial, sans-serif"],cursiva:["400 ","'Playwrite BR','Segoe Print',cursive"]},FT="cursiva";try{FT=localStorage.getItem("edu_fonte")||"cursiva"}catch(e){}
 if(!FONTES[FT])FT="cursiva";var FONT=FONTES[FT][1],FW=FONTES[FT][0];
 function setFonte(k){FT=k;FONT=FONTES[k][1];FW=FONTES[k][0];try{localStorage.setItem("edu_fonte",k)}catch(e){}}
@@ -223,7 +223,7 @@ function termina(){
   $("final-stars").textContent="★".repeat(est)+"☆".repeat(5-est);
   var d=$("syllable-display");d.innerHTML="";var cor=["#E91E63","#1E88E5","#43A047","#FB8C00","#8E24AA"];
   w[1].split("-").forEach(function(s,i){var e=document.createElement("span");e.className="syllable";e.style.color=cor[i%5];e.textContent=s;d.appendChild(e)});
-  fanfarra();confete();setTimeout(function(){fala(w[0])},600);
+  try{ALF_POTE.ganhar(3)}catch(e){}fanfarra();confete();setTimeout(function(){fala(w[0])},600);
 }
 var cf=false;
 function confete(){
@@ -241,6 +241,6 @@ aplicaLang();menu();
 /* gancho p/ testes: window.__tr32 */
 window.__tr32={S:S,avalia:avalia,inicia:inicia};
 </script>
-<script src="diversas-i18n.js?v=2"></script><script src="trace-i18n.js?v=1"></script><script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=9"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=7"></script>
+<script src="diversas-i18n.js?v=2"></script><script src="trace-i18n.js?v=1"></script><script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=9"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=7"></script><script src="alf-pote.js?v=1"></script>
 </body>
 </html>
