@@ -13,7 +13,8 @@ window.EDU_COD=function(){var f=decodeURIComponent(location.pathname.split('/').
  css.textContent=`
 :root{--eh:56px}
 body{padding-top:var(--eh)!important}
-#edu-nav{transition:transform .2s ease}:root.edu-navoff{--eh:0px!important}html.edu-navoff #edu-nav{transform:translateY(-100%);box-shadow:none}#edu-nav #edu-show{display:none;position:absolute;top:100%;right:10px;border:0;border-radius:0 0 12px 12px;background:#16213a;color:#fff;font:800 12px Arial,sans-serif;padding:4px 12px;cursor:pointer;opacity:.85}html.edu-navoff #edu-nav #edu-show{display:block}#edu-nav #edu-show:hover{opacity:1}@media print{#edu-nav #edu-show{display:none!important}}
+#edu-nav{transition:transform .2s ease}
+html.edu-navoff #painel,html.edu-navoff #toggle{margin-top:46px}:root.edu-navoff{--eh:0px!important}html.edu-navoff #edu-nav{transform:translateY(-100%);box-shadow:none}#edu-nav #edu-show{display:none;position:absolute;top:100%;right:6px;margin-top:6px;width:38px;height:38px;border:0;border-radius:10px;background:#16213a;color:#fff;cursor:pointer;opacity:.85;align-items:center;justify-content:center;box-shadow:0 2px 8px #0005}html.edu-navoff #edu-nav #edu-show{display:flex}#edu-nav #edu-show:hover{opacity:1}@media print{#edu-nav #edu-show{display:none!important}}
 #edu-nav{position:fixed;top:0;left:0;right:0;z-index:2147483000;display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:8px 16px;
  background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.6) blur(12px);backdrop-filter:saturate(1.6) blur(12px);border-bottom:1px solid #e1e7f3;
  box-shadow:0 2px 14px rgba(22,33,58,.08);font:600 13px "Segoe UI",Roboto,Arial,sans-serif;color:#16213a;box-sizing:border-box}
@@ -44,6 +45,8 @@ body{padding-top:var(--eh)!important}
 #edu-nav a.n{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 12px;border-radius:99px;text-decoration:none;color:#fff;background:var(--ec,#1f4fd8);font-weight:800;white-space:nowrap}
 #edu-nav a.n.off{background:#cfd6e6;pointer-events:none}
 #edu-nav a.n:hover{filter:brightness(1.1)}
+html #edu-nav{padding-right:56px}
+#edu-nav #en-h{position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#16213a;color:#fff}
 #edu-nav button.ac{border:0;border-radius:99px;width:34px;height:34px;background:#e8edf8;font-size:17px;cursor:pointer;flex:none}
 #edu-ac{position:fixed;top:calc(var(--eh) + 6px);right:12px;z-index:2147483001;background:#fff;color:#16213a;border:2px solid #1f4fd8;border-radius:16px;padding:12px 14px;box-shadow:0 12px 32px #0004;display:none;font:700 14px "Segoe UI",Roboto,Arial,sans-serif;min-width:230px}
 #edu-ac.on{display:block}#edu-ac h4{margin:0 0 8px;font-size:15px}#edu-ac .r{display:flex;gap:6px;margin-bottom:8px}
@@ -112,14 +115,14 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   (cur.cod?'<span class="tag k" id="en-k" title="Clique para aumentar o código">'+cur.cod+'</span>':'')+
   '<form class="cod" id="en-c" autocomplete="off" title="Digite o código de 4 números de uma atividade">'+
    '<input id="en-cv" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Código" aria-label="Código da atividade"><button type="submit">Ir ▶</button></form>'+
-  '<button class="ac" id="en-h" title="Ocultar o cabeçalho" aria-label="Ocultar o cabeçalho">▲</button>'+
   '<button class="ac" id="en-r" title="Ajustar à tela (reiniciar o layout)" aria-label="Ajustar à tela">⟲</button>'+
   '<button class="ac" id="en-a" title="Acessibilidade" aria-label="Acessibilidade">♿</button>'+
   '<a class="n pr" id="en-p" href="'+cur.href+'?imp=1" title="Versão para imprimir (PDF)">🖨️</a>'+
   '<div class="pn"><a class="n'+(prev?'':' off')+'" href="'+(prev?prev.href:'#')+'" title="Jogo anterior">◀</a>'+
   '<a class="n nx'+(next?'':' off')+'" href="'+(next?next.href:'#')+'" title="Próximo jogo">Próximo ▶</a></div>';
  document.body.insertBefore(nav,document.body.firstChild);
- (function(){var sh=document.createElement('button');sh.id='edu-show';sh.type='button';sh.textContent='▼ Mostrar cabeçalho';nav.appendChild(sh);
+ (function(){var hb=document.createElement('button');hb.id='en-h';hb.type='button';hb.className='ac';hb.title='Ocultar o cabeçalho (tela cheia)';hb.setAttribute('aria-label','Ocultar o cabeçalho');hb.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';nav.appendChild(hb);
+  var sh=document.createElement('button');sh.id='edu-show';sh.type='button';sh.title='Mostrar o cabeçalho';sh.setAttribute('aria-label','Mostrar o cabeçalho');sh.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';nav.appendChild(sh);
   var R=document.documentElement;function set(v){R.classList.toggle('edu-navoff',v);try{sessionStorage.setItem('edu_navoff',v?'1':'0')}catch(e){}window.dispatchEvent(new Event('resize'))}
   try{if(sessionStorage.getItem('edu_navoff')==='1')R.classList.add('edu-navoff')}catch(e){}
   document.getElementById('en-h').onclick=function(){set(true)};sh.onclick=function(){set(false)}})();
