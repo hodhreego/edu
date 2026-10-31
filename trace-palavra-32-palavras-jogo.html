@@ -37,7 +37,7 @@ button:active{opacity:.8}
 #confetti-canvas{position:absolute;inset:0;pointer-events:none}
 .acoes{width:100%;max-width:420px;display:flex;gap:10px;padding:14px;position:relative}
 </style>
-<script src="alf-gate.js?v=1"></script>
+<script src="alf-gate.js?v=2"></script>
 </head>
 <body>
 <div id="app">
@@ -72,6 +72,7 @@ button:active{opacity:.8}
 <script>
 /* ===== Dados: as 33 palavras da apostila (palavra, sílabas, emoji) ===== */
 var WORDS=[["avião","A-VI-ÃO","✈️"],["bicicleta","BI-CI-CLE-TA","🚲"],["bola","BO-LA","⚽"],["brinquedos","BRIN-QUE-DOS","🧸"],["cachorro","CA-CHO-RRO","🐶"],["casa","CA-SA","🏠"],["cebola","CE-BO-LA","🧅"],["chapéu","CHA-PÉU","🎩"],["dado","DA-DO","🎲"],["dragão","DRA-GÃO","🐉"],["enxada","EN-XA-DA","⛏️"],["flor","FLOR","🌸"],["folha","FO-LHA","🍃"],["galinha","GA-LI-NHA","🐔"],["gelo","GE-LO","🧊"],["grama","GRA-MA","🌱"],["guitarra","GUI-TAR-RA","🎸"],["livro","LI-VRO","📖"],["lua","LU-A","🌙"],["maçã","MA-ÇÃ","🍎"],["ovo","O-VO","🥚"],["pão","PÃO","🍞"],["pássaro","PÁS-SA-RO","🐦"],["peixe","PEI-XE","🐟"],["planta","PLAN-TA","🪴"],["praia","PRAIA","🏖️"],["queijo","QUEI-JO","🧀"],["rato","RA-TO","🐀"],["sapo","SA-PO","🐸"],["sol","SOL","☀️"],["trem","TREM","🚂"],["uva","U-VA","🍇"],["zebra","ZE-BRA","🦓"]];
+var IMGK={"avião":"aviao","chapéu":"chapeu","maçã":"maca","pão":"pao","pássaro":"passaro","brinquedos":"brinquedo"};function FIG(w){var k=IMGK[w[0]]||w[0];return '<img src="img32/'+k+'.png" alt="" style="width:90px;height:90px;object-fit:contain;display:block;margin:0 auto">'}
 var FONT="Verdana, Arial, sans-serif";
 var S={prog:{},idx:0,letra:0,maius:true,apagou:0,ptr:null,pts:[],tracos:[],box:[],fs:60,W:0,H:0};
 var $=function(i){return document.getElementById(i)};
@@ -94,7 +95,7 @@ function menu(){
   var g=$("word-grid");g.innerHTML="";
   WORDS.forEach(function(w,i){
     var n=S.prog[w[0]]||0,c=document.createElement("div");c.className="card"+(n?" feita":"");
-    c.innerHTML='<span class="card-emoji">'+w[2]+'</span><span class="card-word">'+w[0]+'</span><div class="stars">'+"★".repeat(n)+"☆".repeat(3-n)+'</div>';
+    c.innerHTML='<span class="card-emoji">'+FIG(w)+'</span><span class="card-word">'+w[0]+'</span><div class="stars">'+"★".repeat(n)+"☆".repeat(5-n)+'</div>';
     c.setAttribute("role","button");c.tabIndex=0;c.setAttribute("aria-label","Traçar a palavra "+w[0]);c.onclick=function(){inicia(i)};c.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();inicia(i)}};g.appendChild(c)});
 }
 
@@ -188,10 +189,10 @@ function msg(t){var f=$("feedback");f.textContent=t;f.style.opacity=1;clearTimeo
 
 /* ===== Final ===== */
 function termina(){
-  var w=WORDS[S.idx],est=S.apagou===0?3:S.apagou<=2?2:1;
+  var w=WORDS[S.idx],est=S.apagou===0?5:S.apagou===1?4:S.apagou===2?3:S.apagou<=4?2:1;
   if(!S.prog[w[0]]||est>S.prog[w[0]]){S.prog[w[0]]=est;salva()}
-  $("celebration-overlay").style.display="flex";$("final-emoji").textContent=w[2];
-  $("final-stars").textContent="★".repeat(est)+"☆".repeat(3-est);
+  $("celebration-overlay").style.display="flex";$("final-emoji").innerHTML=FIG(w).replace("90px","150px").replace("90px","150px");
+  $("final-stars").textContent="★".repeat(est)+"☆".repeat(5-est);
   var d=$("syllable-display");d.innerHTML="";var cor=["#E91E63","#1E88E5","#43A047","#FB8C00","#8E24AA"];
   w[1].split("-").forEach(function(s,i){var e=document.createElement("span");e.className="syllable";e.style.color=cor[i%5];e.textContent=s;d.appendChild(e)});
   fanfarra();confete();setTimeout(function(){fala(w[0])},600);
@@ -212,6 +213,6 @@ menu();
 /* gancho p/ testes: window.__tr32 */
 window.__tr32={S:S,avalia:avalia,inicia:inicia};
 </script>
-<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=7"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=9"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
 </body>
 </html>

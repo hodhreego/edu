@@ -1,7 +1,7 @@
 /* Bloqueio por código + seletor de atividades de alfabetização (páginas do Método das 32 Palavras).
    O código abre todas as páginas deste conjunto; fica lembrado no aparelho. */
 (function(){
-  var OK=['9999','9998'], CH='alf_ok_v1';
+  var OK=['9999','9998','9997'], CH='alf_ok_v1';
   var ATIVS=[
     ['0','🏠 Menu das atividades','atividades-32-palavras-jogo.html'],
     ['1','🔤 Qual é a palavra?','atividades-32-palavras-jogo.html?a=1'],
@@ -10,12 +10,13 @@
     ['4','👂 Ouça e toque','atividades-32-palavras-jogo.html?a=4'],
     ['5','🅰️ Letra inicial','atividades-32-palavras-jogo.html?a=5'],
     ['6','✏️ Ditado com letras','atividades-32-palavras-jogo.html?a=6'],
-    ['t','🖐️ Trace a Palavra (dedo)','trace-palavra-32-palavras-jogo.html']
+    ['t','🖐️ Trace a Palavra (dedo)','trace-palavra-32-palavras-jogo.html'],
+    ['d','🎯 Atividades Diversificadas (fases)','diversas-32-palavras-jogo.html']
   ];
   function liberado(){try{return localStorage.getItem(CH)==='1'}catch(e){return false}}
   function barra(){
     if(document.getElementById('alf-nav'))return;
-    var atual=/trace-palavra/.test(location.pathname)?'t':((location.search.match(/[?&]a=(\d)/)||[])[1]||'0');
+    var atual=/diversas-32/.test(location.pathname)?'d':/trace-palavra/.test(location.pathname)?'t':((location.search.match(/[?&]a=(\d)/)||[])[1]||'0');
     var b=document.createElement('div');b.id='alf-nav';
     b.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;background:#FFF3E0;border-bottom:2px solid #FB8C00;font:600 15px Verdana,Arial,sans-serif;color:#5D4037;position:relative;z-index:50';
     var l=document.createElement('label');l.textContent='Atividade de alfabetização:';l.htmlFor='alf-sel';

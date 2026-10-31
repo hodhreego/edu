@@ -236,6 +236,7 @@
       to { transform: scale(1.08); }
     }
 
+    .big-emoji img{width:2.2em!important;height:2.2em!important}
     .big-emoji {
       font-size: 5rem;
       line-height: 1.1;
@@ -553,7 +554,7 @@
       .btn-tile.char-tile { min-width: 42px; min-height: 50px; font-size: 1.3rem; }
     }
   </style>
-<script src="alf-gate.js?v=1"></script>
+<script src="alf-gate.js?v=2"></script>
 </head>
 <body>
   <header>
@@ -576,6 +577,10 @@
   <div id="ariaStatus" class="sr-only" aria-live="polite"></div>
 
   <script>
+function fg(it){var k=String(it.p||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');if(k==='brinquedos')k='brinquedo';
+  return '<img src="img32/'+k+'.png" alt="" data-e="'+(it.e||'')+'" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle" onerror="this.replaceWith(document.createTextNode(this.dataset.e))">'}
+</script>
+<script>
     // ARRAY DE DADOS FORNECIDO
     const D = [
       {"p":"avião","s":["A","VI","ÃO"],"e":"✈️","f":["VA","VE","VI","VO","VU"],"n":["AVIÃO","AVE","UVA","VIDA","VOVÓ","LUVA"]},
@@ -747,7 +752,7 @@
 
       renderEstrelas(n) {
         let h = '';
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 5; i++) {
           if (i <= n) h += '★';
           else h += '<span class="empty">☆</span>';
         }
@@ -914,7 +919,7 @@
             <span>Qual é a palavra?</span>
             <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
           </div>
-          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="choice-grid">
             ${opcoes.map(pal => `
               <button class="btn-choice" onclick="app.checarAtiv1('${pal}', '${certa}')">${pal}</button>
@@ -969,7 +974,7 @@
             <span>Monte a palavra:</span>
             <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
           </div>
-          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="word-slots">${slotsHtml}</div>
           <div class="tile-pool">${tilesHtml}</div>
         `;
@@ -1033,7 +1038,7 @@
             <span>Complete a palavra:</span>
             <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
           </div>
-          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="word-preview">${palavraLacuna}</div>
           <div class="choice-grid">
             ${opcoes.map(s => `
@@ -1071,7 +1076,7 @@
             <button class="btn-speak pulse" onclick="falar('${silabaSorteada}')" aria-label="Ouvir a sílaba novamente">🔊</button>
           </div>
           <div class="context-tag" aria-label="Palavra de apoio: ${item.p}">
-            <span aria-hidden="true">${item.e}</span> Palavra de apoio: <strong>${item.p.toUpperCase()}</strong>
+            <span aria-hidden="true">${fg(item)}</span> Palavra de apoio: <strong>${item.p.toUpperCase()}</strong>
           </div>
           <div class="choice-grid single-row" style="margin-top: 18px;">
             ${familia.map((s, idx) => `
@@ -1112,7 +1117,7 @@
             <span>Qual é a primeira letra?</span>
             <button class="btn-speak" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
           </div>
-          <div class="big-emoji" aria-hidden="true">${item.e}</div>
+          <div class="big-emoji" aria-hidden="true">${fg(item)}</div>
           <div class="choice-grid">
             ${opcoes.map(letra => `
               <button class="btn-choice" onclick="app.checarAtiv5('${letra}', '${letraCerta}')">${letra}</button>
@@ -1175,7 +1180,7 @@
             <span>Escute e escreva:</span>
             <button class="btn-speak pulse" onclick="falar('${item.p}')" aria-label="Ouvir palavra">🔊</button>
           </div>
-          <div style="font-size:3rem; margin:2px 0;" aria-hidden="true">${item.e}</div>
+          <div style="font-size:3rem; margin:2px 0;" aria-hidden="true">${fg(item)}</div>
           <div class="word-slots">${slotsHtml}</div>
           <div class="tile-pool">${tilesHtml}</div>
           <div class="controls-row">
@@ -1223,14 +1228,16 @@
       // TELA DE RESULTADO FINAL
       mostrarFim() {
         let estrelas = 1;
-        if (this.acertos >= 9) estrelas = 3;
-        else if (this.acertos >= 6) estrelas = 2;
+        if (this.acertos >= 10) estrelas = 5;
+        else if (this.acertos >= 9) estrelas = 4;
+        else if (this.acertos >= 7) estrelas = 3;
+        else if (this.acertos >= 5) estrelas = 2;
 
         this.salvarProgresso(this.atividadeAtual, estrelas);
 
         let elogio = 'Muito bem!';
-        if (estrelas === 3) elogio = 'Sensacional! 🌟';
-        else if (estrelas === 2) elogio = 'Parabéns! 👏';
+        if (estrelas >= 4) elogio = 'Sensacional! 🌟';
+        else if (estrelas >= 2) elogio = 'Parabéns! 👏';
         else elogio = 'Bom esforço! Continue treinando! 💪';
 
         const main = document.getElementById('appMain');
@@ -1238,7 +1245,7 @@
           <div class="play-area">
             <div class="end-card">
               <span class="end-title">${elogio}</span>
-              <div class="end-stars" aria-label="${estrelas} estrelas de 3">${this.renderEstrelas(estrelas)}</div>
+              <div class="end-stars" aria-label="${estrelas} estrelas de 5">${this.renderEstrelas(estrelas)}</div>
               <p class="end-score">Você acertou <strong>${this.acertos}</strong> de <strong>${this.totalRodadas}</strong> rodadas!</p>
               <div class="end-buttons">
                 <button class="btn-action" onclick="app.iniciarAtividade(${this.atividadeAtual})">
@@ -1275,6 +1282,6 @@
     };
   </script>
 <script>(function(){var m=location.search.match(/[?&]a=(\d)/);if(!m||+m[1]<1)return;function go(){setTimeout(function(){if(window.__a32)window.__a32.iniciar(+m[1])},150)}if(document.readyState==='complete')go();else window.addEventListener('load',go)})();</script>
-<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=7"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=9"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
 </body>
 </html>
