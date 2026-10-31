@@ -104,7 +104,7 @@ function aplicaLang(){
   document.querySelectorAll("[data-al]").forEach(function(e){e.setAttribute("aria-label",T(e.getAttribute("data-al")))});
   document.documentElement.lang=LANG==="pt"?"pt-BR":LANG;
 }
-function barraLang(){var b=$("langbar");b.innerHTML="";var fb=document.createElement("button");fb.type="button";fb.textContent=FT==="cursiva"?"✍️ Letra cursiva":"🔤 Letra bastão";fb.onclick=function(){setFonte(FT==="cursiva"?"bastao":"cursiva");barraLang()};b.appendChild(fb);LANGS.forEach(function(l){var x=document.createElement("button");x.type="button";x.className=l[0]===LANG?"on":"";x.textContent=l[1]+" "+l[2];x.onclick=function(){LANG=l[0];try{localStorage.setItem("div32_lang",LANG)}catch(e){}aplicaLang();menu()};b.appendChild(x)})}
+function barraLang(){var b=$("langbar");b.innerHTML="";var bc=document.getElementById("btn-case");if(bc)bc.style.display=FT==="cursiva"?"none":"";var fb=document.createElement("button");fb.type="button";fb.textContent=FT==="cursiva"?"✍️ Letra cursiva":"🔤 Letra bastão";fb.onclick=function(){setFonte(FT==="cursiva"?"bastao":"cursiva");barraLang()};b.appendChild(fb);LANGS.forEach(function(l){var x=document.createElement("button");x.type="button";x.className=l[0]===LANG?"on":"";x.textContent=l[1]+" "+l[2];x.onclick=function(){LANG=l[0];try{localStorage.setItem("div32_lang",LANG)}catch(e){}aplicaLang();menu()};b.appendChild(x)})}
 /* ===== Áudio e fala ===== */
 var AC=null;
 function tom(f,tipo,d){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.type=tipo;o.frequency.value=f;g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.01,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
@@ -128,7 +128,7 @@ function menu(){
 }
 
 /* ===== Jogo ===== */
-function palavra(){var w=WORDS[S.idx][0];return S.maius?w.toUpperCase():w.toLowerCase()}
+function palavra(){var w=WORDS[S.idx][0];if(FT==="cursiva")return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();return S.maius?w.toUpperCase():w.toLowerCase()}
 function inicia(i){
   S.idx=i;S.letra=0;S.apagou=0;S.tracos=[];S.pts=[];S.ptr=null;
   document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active")});
@@ -139,13 +139,13 @@ function inicia(i){
 /* Mede a palavra: acha o tamanho de fonte que cabe e a caixa de cada letra (em px CSS) */
 function layout(){
   var W=S.W,H=S.H,p=palavra(),fs=Math.min(H*.62,W*.9),larg;
-  do{ctx.font=FW+fs+"px "+FONT;larg=ctx.measureText(p).width+fs*.08*(p.length-1);fs-=2}while(larg>W*.92&&fs>20);
+  do{ctx.font=FW+fs+"px "+FONT;larg=ctx.measureText(p).width+(FT==="cursiva"?0:fs*.08*(p.length-1));fs-=2}while(larg>W*.92&&fs>20);
   fs+=2;ctx.font=FW+fs+"px "+FONT;
-  var gap=fs*.08,tot=0,ws=[];
-  for(var i=0;i<p.length;i++){ws.push(ctx.measureText(p[i]).width);tot+=ws[i]}
-  tot+=gap*(p.length-1);
-  var x=(W-tot)/2,y=H/2+fs*.35;S.fs=fs;S.box=[];
-  for(i=0;i<p.length;i++){S.box.push({c:p[i],x:x,y:y,w:ws[i]});x+=ws[i]+gap}
+  var cur=FT==="cursiva",gap=cur?0:fs*.08,tot=0,ws=[];
+  if(cur){tot=ctx.measureText(p).width;for(var i=0;i<p.length;i++)ws.push(ctx.measureText(p.slice(0,i+1)).width-ctx.measureText(p.slice(0,i)).width)}
+  else{for(var i=0;i<p.length;i++){ws.push(ctx.measureText(p[i]).width);tot+=ws[i]}tot+=gap*(p.length-1)}
+  var x=(W-tot)/2,y=H/2+fs*.35,x0=x;S.fs=fs;S.box=[];
+  for(i=0;i<p.length;i++){S.box.push({c:p[i],x:cur?x0+ctx.measureText(p.slice(0,i)).width:x,y:y,w:ws[i]});x+=ws[i]+gap}
 }
 function ajusta(){
   var r=cv.parentElement.getBoundingClientRect(),d=window.devicePixelRatio||1;
