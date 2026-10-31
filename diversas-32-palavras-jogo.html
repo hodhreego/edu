@@ -102,10 +102,16 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 @keyframes onda{50%{transform:scaleY(.4)}}
 .zap .t{font:600 .8rem Verdana,Arial,sans-serif;color:#667781;align-self:flex-end;margin-left:2px}
 .zap .mic{font-size:1.2rem;align-self:flex-start}
+
+.cn{position:fixed;z-index:45;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7c2,#ffc400 60%,#c98a00);border:2px solid #9a6a00;display:flex;align-items:center;justify-content:center;font:900 .95rem Verdana,sans-serif;color:#8a5a00;pointer-events:none;box-shadow:0 2px 4px rgba(0,0,0,.3);animation:cnvoa .9s cubic-bezier(.5,0,.8,.6) forwards}
+@keyframes cnvoa{0%{transform:translate(0,0) scale(.4) rotateY(0);opacity:0}15%{opacity:1;transform:translate(var(--ox),var(--oy)) scale(1) rotateY(180deg)}100%{transform:translate(var(--dx),var(--dy)) scale(.6) rotateY(720deg);opacity:.9}}
+.cn.chuva{animation:cnchuva 2.2s linear forwards}
+@keyframes cnchuva{0%{transform:translateY(-40px) rotateY(0)}100%{transform:translateY(112vh) rotateY(1080deg)}}
 </style>
 <script src="alf-gate.js?v=2"></script>
 </head>
 <body>
+<div id="dv-fx" style="position:fixed;left:0;top:0;height:0;z-index:45;pointer-events:none"></div>
 <div id="dv-top"><div class="dv-moedas" id="dv-moedas"><i>$</i><span id="m-n">0</span></div></div>
 
 <section id="t-menu" class="tela on">
@@ -201,11 +207,20 @@ function fanfarra(){[523,659,784,1046].forEach(function(f,i){setTimeout(function
 var PROG={};try{PROG=JSON.parse(localStorage.getItem("div32_prog")||"{}")}catch(e){}
 var MOEDAS=0;try{MOEDAS=parseInt(localStorage.getItem("div32_moedas"))||0}catch(e){}
 function salvaM(){try{localStorage.setItem("div32_moedas",MOEDAS)}catch(e){}}
+function moedasVoam(n){
+  var al=$("dv-moedas").getBoundingClientRect(),cx=innerWidth/2,cy=innerHeight/2;
+  for(var i=0;i<n;i++)(function(i){setTimeout(function(){
+    var c=document.createElement("div");c.className="cn";c.textContent="$";c.style.left=cx-15+"px";c.style.top=cy-15+"px";
+    c.style.setProperty("--ox",(Math.random()*160-80)+"px");c.style.setProperty("--oy",(Math.random()*-90-10)+"px");
+    c.style.setProperty("--dx",(al.left+al.width/2-cx)+"px");c.style.setProperty("--dy",(al.top+al.height/2-cy)+"px");
+    $("dv-fx").appendChild(c);setTimeout(function(){c.remove();tom(1200+i*80,"sine",.06)},900)},i*90)})(i)
+}
+function chuvaMoedas(n){for(var i=0;i<n;i++)(function(i){setTimeout(function(){var c=document.createElement("div");c.className="cn chuva";c.textContent="$";c.style.left=Math.random()*96+"vw";c.style.top="0";$("dv-fx").appendChild(c);setTimeout(function(){c.remove()},2300)},i*70)})(i)}
 function moeda(d){
   MOEDAS=Math.max(0,MOEDAS+d);salvaM();var m=$("dv-moedas"),n=$("m-n");if(n)n.textContent=MOEDAS;
   if(m){m.classList.remove("up","down");void m.offsetWidth;m.classList.add(d>0?"up":"down")}
   var v=document.createElement("div");v.className="voa "+(d>0?"mais":"menos");v.textContent=(d>0?"+":"−")+Math.abs(d);document.body.appendChild(v);setTimeout(function(){v.remove()},1300);
-  if(d>0&&window.requestAnimationFrame)tom(880,"sine",.1)
+  if(d>0)moedasVoam(d>=50?8:5)
 }
 var CERTO_SVG='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#22c55e"/><path d="M6 12.5l4 4 8-9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     ERRO_SVG='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ef4444"/><path d="M7.5 7.5l9 9M16.5 7.5l-9 9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>';
@@ -413,7 +428,7 @@ function fimFase(){
   if(FI+1<A.f.length)b("Próxima fase ➡","vd",function(){inicia(FI+1)});
   b("🔁 Repetir","az",function(){inicia(FI)});
   b("📋 Fases","cz",function(){abreFases(ATV.indexOf(A))});
-  tela("t-fim");fanfarra();confete();setTimeout(function(){fala(est>=4?"Parabéns!":"Muito bem!")},500);
+  tela("t-fim");fanfarra();confete();chuvaMoedas(est===5?40:est*6);setTimeout(function(){fala(est>=4?"Parabéns!":"Muito bem!")},500);
 }
 function confete(){var e=["⭐","🎉","✨","🌟","🎈"];for(var i=0;i<26;i++){(function(i){setTimeout(function(){var s=document.createElement("span");s.className="confete";s.textContent=e[i%5];s.style.left=Math.random()*100+"vw";document.body.appendChild(s);setTimeout(function(){s.remove()},2600)},i*70)})(i)}}
 irMenu();
