@@ -13,6 +13,7 @@ window.EDU_COD=function(){var f=decodeURIComponent(location.pathname.split('/').
  css.textContent=`
 :root{--eh:56px}
 body{padding-top:var(--eh)!important}
+#edu-nav{transition:transform .2s ease}:root.edu-navoff{--eh:0px!important}html.edu-navoff #edu-nav{transform:translateY(-100%);box-shadow:none}#edu-nav #edu-show{display:none;position:absolute;top:100%;right:10px;border:0;border-radius:0 0 12px 12px;background:#16213a;color:#fff;font:800 12px Arial,sans-serif;padding:4px 12px;cursor:pointer;opacity:.85}html.edu-navoff #edu-nav #edu-show{display:block}#edu-nav #edu-show:hover{opacity:1}@media print{#edu-nav #edu-show{display:none!important}}
 #edu-nav{position:fixed;top:0;left:0;right:0;z-index:2147483000;display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:8px 16px;
  background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(1.6) blur(12px);backdrop-filter:saturate(1.6) blur(12px);border-bottom:1px solid #e1e7f3;
  box-shadow:0 2px 14px rgba(22,33,58,.08);font:600 13px "Segoe UI",Roboto,Arial,sans-serif;color:#16213a;box-sizing:border-box}
@@ -111,12 +112,17 @@ html.edu-hc #edu-nav a.n,html.edu-hc #edu-nav form.cod button{background:#ffeb3b
   (cur.cod?'<span class="tag k" id="en-k" title="Clique para aumentar o código">'+cur.cod+'</span>':'')+
   '<form class="cod" id="en-c" autocomplete="off" title="Digite o código de 4 números de uma atividade">'+
    '<input id="en-cv" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Código" aria-label="Código da atividade"><button type="submit">Ir ▶</button></form>'+
+  '<button class="ac" id="en-h" title="Ocultar o cabeçalho" aria-label="Ocultar o cabeçalho">▲</button>'+
   '<button class="ac" id="en-r" title="Ajustar à tela (reiniciar o layout)" aria-label="Ajustar à tela">⟲</button>'+
   '<button class="ac" id="en-a" title="Acessibilidade" aria-label="Acessibilidade">♿</button>'+
   '<a class="n pr" id="en-p" href="'+cur.href+'?imp=1" title="Versão para imprimir (PDF)">🖨️</a>'+
   '<div class="pn"><a class="n'+(prev?'':' off')+'" href="'+(prev?prev.href:'#')+'" title="Jogo anterior">◀</a>'+
   '<a class="n nx'+(next?'':' off')+'" href="'+(next?next.href:'#')+'" title="Próximo jogo">Próximo ▶</a></div>';
  document.body.insertBefore(nav,document.body.firstChild);
+ (function(){var sh=document.createElement('button');sh.id='edu-show';sh.type='button';sh.textContent='▼ Mostrar cabeçalho';nav.appendChild(sh);
+  var R=document.documentElement;function set(v){R.classList.toggle('edu-navoff',v);try{sessionStorage.setItem('edu_navoff',v?'1':'0')}catch(e){}window.dispatchEvent(new Event('resize'))}
+  try{if(sessionStorage.getItem('edu_navoff')==='1')R.classList.add('edu-navoff')}catch(e){}
+  document.getElementById('en-h').onclick=function(){set(true)};sh.onclick=function(){set(false)}})();
  (function(){var c=document.querySelector('.coin,.jcoin');if(!c)return;var k=nav.querySelector('.tag.k')||nav.querySelector('form.cod');
   c.classList.add('en-coin');nav.insertBefore(c,k);})();
  var ac=document.createElement('div');ac.id='edu-ac';ac.innerHTML='<button type="button" class="x" id="en-ax" aria-label="Fechar acessibilidade" title="Fechar (Esc)">✕</button><h4>♿ Acessibilidade</h4><div class="r"><button data-z="1">Texto normal</button><button data-z="1.25">Grande</button><button data-z="1.5">Enorme</button><button data-z="1.75">Gigante</button></div><div class="r"><button id="en-hc">◐ Alto contraste</button></div>';

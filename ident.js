@@ -27,3 +27,14 @@ try{if(/^\s*teste( de aluno)?\s*$/i.test(localStorage.getItem('edu_nome')||''))l
   var v=ls('edu_escola');if(v)b.textContent=v;b.addEventListener('input',function(){ls('edu_escola',b.textContent.replace(/\s+/g,' ').trim())});b.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Enter'){e.preventDefault();b.blur()}},true)});
  window.EDU_ALUNO=function(){return{nome:ls(K[0]),turma:ls(K[1]),data:ls(K[2])||hoje,escola:ls('edu_escola')}};
 })();
+
+/* Na tela o cabeçalho Nome/Turma/Escola não aparece (os dados vêm da janela "Antes de começar"); fica só na impressão/PDF. */
+(function(){
+ if(/[?&]imp=1/.test(location.search))return;
+ var st=document.createElement('style');st.textContent='@media screen{html .edu-idoc,html .ident.edu-idoc,html .jogo .ident.edu-idoc{display:none!important}}';document.head.appendChild(st);
+ [].forEach.call(document.querySelectorAll('.ident'),function(id){
+  if(!id.querySelector('.coin,.jcoin,button,input,select,a,[id]')){id.classList.add('edu-idoc');return}
+  [].slice.call(id.childNodes).forEach(function(n){if(n.nodeType===3&&n.textContent.trim()){var sp=document.createElement('span');sp.className='edu-idoc';n.parentNode.replaceChild(sp,n);sp.appendChild(n)}});
+  [].forEach.call(id.children,function(c){if(c.tagName==='B'||c.tagName==='BR'||c.classList.contains('esc-w')||c.classList.contains('g2'))c.classList.add('edu-idoc')});
+ });
+})();
