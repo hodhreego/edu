@@ -99,6 +99,8 @@ var T={
 var HIVE=['PESQUISA','PUBLICO','AMOSTRA','CLIENTE','PRECO','DEMANDA','LUCRO','NICHO'];
 var stage=document.getElementById('stage'),pts=document.getElementById('pts'),tema=null,score=0,R={},GOT={};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function numOf(s){s=String(s==null?'':s).toLowerCase().replace(/r\$|reais|pessoas|%|\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.');var m=s.match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):NaN}
+function sameNum(a,b){var x=numOf(a),y=numOf(b);return !isNaN(x)&&!isNaN(y)&&Math.abs(x-y)<0.0001}
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9,.]/g,'')}
 function setPts(){pts.textContent=score+' pontos'}
 function award(key,n){if(GOT[tema+key])return false;GOT[tema+key]=1;score+=n;setPts();return true}
@@ -272,9 +274,9 @@ function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});var la
   wait(fb0,function(){busy=false;btn.disabled=false;var ok=0,need=6;
    function val(k){return norm(stage.querySelector('[data-q="'+k+'"]').value).replace('%','')}
    function mark(el,good,key,txt){el.style.borderColor=good?'#1f9d55':'#d93025';logIt(txt+': '+el.value,good);if(good){award('tb'+key,4);ok++}return good}
-   mark(stage.querySelector('[data-q="o1"]'),val('o1')===String(last),'o1','Tabela · Outro (respostas)');
-   mark(stage.querySelector('[data-q="o2"]'),val('o2')===String(Math.round(last/tot*100)),'o2','Tabela · Outro (%)');
-   Q.forEach(function(x){var el=stage.querySelector('[data-q="'+x[0]+'"]'),good=norm(el.value)===norm(x[2]);var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'✘ Confira a conta';fb.className='fb '+(good?'ok':'no');mark(el,good,x[0],'Tabela · '+x[0])});
+   mark(stage.querySelector('[data-q="o1"]'),sameNum(val('o1'),String(last)),'o1','Tabela · Outro (respostas)');
+   mark(stage.querySelector('[data-q="o2"]'),sameNum(val('o2'),String(Math.round(last/tot*100))),'o2','Tabela · Outro (%)');
+   Q.forEach(function(x){var el=stage.querySelector('[data-q="'+x[0]+'"]'),good=sameNum(el.value,x[2])||(x[0]==='q1'&&sameNum(el.value,String(tot-last)));var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'✘ Confira a conta';fb.className='fb '+(good?'ok':'no');mark(el,good,x[0],'Tabela · '+x[0])});
    var g=stage.querySelector('.bxs[data-i="tbq2"]'),w=[].map.call(g.querySelectorAll('input'),function(z){return z.value}).join('');if(w===FW){ok++;award('tbq2',4)}
    var o=stage.querySelector('#tbOpen').value.trim();if(o)logIt('Tabela · conclusão: '+o.slice(0,120));
    fb0.textContent=ok===6?'✔ Tudo certo!':ok+' de 6 certas';fb0.className='fb '+(ok===6?'ok':'no');if(ok===6)fimAct('tb')})}}
