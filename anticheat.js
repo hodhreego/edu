@@ -4,6 +4,8 @@
    Limite técnico: o Google Lens do Android/Chrome roda fora da página; só dá para detectar os sinais acima. */
 (function(){
  if(/[?&]imp=1/.test(location.search))return;
+ /* Modo áudio (aluno cego): sem anti-cola, o leitor de tela/voz e o toque longo precisam funcionar */
+ try{if(localStorage.getItem('imp_audio')==='1')return}catch(e){}
  /* Endereço que recebe o relatório (ex.: formulário do Formspree que encaminha para o seu e-mail). Vazio = só avisa e guarda no aparelho. */
  var REPORT_URL='';
  var jogo=decodeURIComponent(location.pathname.split('/').pop()||'jogo');
