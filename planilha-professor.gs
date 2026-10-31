@@ -282,14 +282,19 @@ function resumo_(ss) {
     return a;
   });
   function nota_(a) { return a.media === '' ? -1 : a.media; }
+  // ordem da lista: quem fez a ÚLTIMA atividade por último fica em cima (facilita lançar as notas de quem você viu por último)
   lista.sort(function (a, b) {
+    return (b.last - a.last) || String(a.aluno).localeCompare(String(b.aluno));
+  });
+  // a posição (ranking) continua sendo por nota
+  var porNota = lista.slice().sort(function (a, b) {
     return (b.vivo - a.vivo) || (nota_(b) - nota_(a)) || (b.soma - a.soma) || String(a.aluno).localeCompare(String(b.aluno));
   });
   // posição por nota (empates dividem a posição), dentro do bloco "ao vivo" e dentro do restante
   var pos = {}, ult = null, ultPos = 0;
   [true, false].forEach(function (blk) {
     ult = null; ultPos = 0; var n = 0;
-    lista.forEach(function (a) {
+    porNota.forEach(function (a) {
       if (a.vivo !== blk) return;
       n++; if (nota_(a) !== ult) { ult = nota_(a); ultPos = n; }
       pos[a.aluno + '|' + a.turma] = ultPos;
@@ -299,7 +304,7 @@ function resumo_(ss) {
     return [a.turma, a.aluno, a.escola, a.jogos, a.soma, a.melhor, a.media, a.gasto,
       Utilities.formatDate(new Date(a.last), TZ, 'dd/MM HH:mm'), a.vivo ? '🟢 AGORA' : '', pos[a.aluno + '|' + a.turma]];
   });
-  var b = base_(ss, 'Resumo', RES, '📊 Resumo ao vivo — quem jogou nos últimos ' + MIN_AO_VIVO + ' min (mesma série da jogada mais recente) em cima; depois, por nota');
+  var b = base_(ss, 'Resumo', RES, '📊 Resumo ao vivo — última atividade primeiro (🟢 = jogou nos últimos ' + MIN_AO_VIVO + ' min); a posição continua por nota');
   var sh = b.sh, n = RES.length, max = sh.getMaxRows();
   if (linhas.length > max - HR) sh.insertRowsAfter(max, linhas.length - (max - HR));
   max = sh.getMaxRows();

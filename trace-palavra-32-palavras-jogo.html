@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Trace a Palavra - Ludopédia</title>
+<style>
+:root{--bg:#FFF8E1;--primary:#1E88E5;--secondary:#FB8C00;--success:#43A047;--text:#263238;--card:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;font-family:Verdana,Arial,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;display:flex;flex-direction:column}
+#app{flex:1;display:flex;flex-direction:column;min-height:0}
+.screen{display:none;flex:1;flex-direction:column;padding:14px;overflow-y:auto;min-height:0}
+.screen.active{display:flex}
+h1{text-align:center;color:var(--primary);margin:4px 0 12px;font-size:clamp(1.4rem,4vw,2.2rem)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;padding-bottom:30px}
+.card{background:var(--card);border-radius:16px;padding:12px 8px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,.12);cursor:pointer;border:3px solid transparent}
+.card:active{transform:scale(.96)}
+.card.feita{border-color:#FFD54F}
+.card-emoji{font-size:2.8rem;display:block}
+.card-word{font-weight:bold;text-transform:uppercase;font-size:.95rem;letter-spacing:1px}
+.stars{color:#FFB300;font-size:1.2rem;min-height:1.5rem}
+#game-screen{overflow:hidden;padding:8px}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.toolbar .title{flex:1;text-align:center;font-weight:bold;font-size:clamp(1.3rem,4vw,2rem)}
+.canvas-container{position:relative;flex:1;min-height:0;background:#fff;border-radius:16px;box-shadow:inset 0 0 10px rgba(0,0,0,.08);overflow:hidden}
+canvas#main-canvas{touch-action:none;display:block;width:100%;height:100%}
+.controls{display:flex;gap:10px;padding:10px 0 2px}
+button{flex:1;min-height:56px;border:0;border-radius:14px;font:bold 1.1rem Verdana,Arial,sans-serif;color:#fff;cursor:pointer;padding:0 14px}
+button:active{opacity:.8}
+.btn-blue{background:var(--primary)}.btn-orange{background:var(--secondary)}.btn-gray{background:#78909C}
+.toolbar button{flex:none;min-width:56px}
+#feedback{position:fixed;top:18%;left:50%;transform:translate(-50%,-50%);padding:14px 28px;border-radius:30px;background:rgba(0,0,0,.82);color:#fff;font-weight:bold;font-size:1.2rem;z-index:100;pointer-events:none;opacity:0;transition:opacity .3s;text-align:center}
+#celebration-overlay{position:fixed;inset:0;background:rgba(255,248,225,.96);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px}
+#syllable-display{font-size:clamp(2rem,8vw,3.6rem);font-weight:bold;margin:12px 0}
+.syllable{display:inline-block;padding:0 6px}
+#confetti-canvas{position:absolute;inset:0;pointer-events:none}
+.acoes{width:100%;max-width:420px;display:flex;gap:10px;padding:14px;position:relative}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="menu-screen" class="screen active">
+    <h1>✏️ Trace a Palavra</h1>
+    <div id="word-grid" class="grid"></div>
+  </div>
+  <div id="game-screen" class="screen">
+    <div class="toolbar">
+      <button class="btn-gray" id="btn-back" aria-label="Voltar">←</button>
+      <div class="title" id="game-title"></div>
+      <button class="btn-gray" id="btn-case">abc</button>
+    </div>
+    <div class="canvas-container"><canvas id="main-canvas"></canvas></div>
+    <div class="controls">
+      <button class="btn-orange" id="btn-clear">Apagar</button>
+      <button class="btn-blue" id="btn-check">Conferir</button>
+    </div>
+  </div>
+  <div id="feedback"></div>
+  <div id="celebration-overlay">
+    <canvas id="confetti-canvas"></canvas>
+    <div id="final-emoji" style="font-size:5rem;position:relative"></div>
+    <div id="syllable-display" style="position:relative"></div>
+    <div id="final-stars" class="stars" style="font-size:3rem;position:relative"></div>
+    <div class="acoes">
+      <button class="btn-gray" id="btn-menu">Menu</button>
+      <button class="btn-blue" id="btn-next">Próxima</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ===== Dados: as 33 palavras da apostila (palavra, sílabas, emoji) ===== */
+var WORDS=[["avião","A-VI-ÃO","✈️"],["bicicleta","BI-CI-CLE-TA","🚲"],["bola","BO-LA","⚽"],["brinquedos","BRIN-QUE-DOS","🧸"],["cachorro","CA-CHO-RRO","🐶"],["casa","CA-SA","🏠"],["cebola","CE-BO-LA","🧅"],["chapéu","CHA-PÉU","🎩"],["dado","DA-DO","🎲"],["dragão","DRA-GÃO","🐉"],["enxada","EN-XA-DA","⛏️"],["flor","FLOR","🌸"],["folha","FO-LHA","🍃"],["galinha","GA-LI-NHA","🐔"],["gelo","GE-LO","🧊"],["grama","GRA-MA","🌱"],["guitarra","GUI-TAR-RA","🎸"],["livro","LI-VRO","📖"],["lua","LU-A","🌙"],["maçã","MA-ÇÃ","🍎"],["ovo","O-VO","🥚"],["pão","PÃO","🍞"],["pássaro","PÁS-SA-RO","🐦"],["peixe","PEI-XE","🐟"],["planta","PLAN-TA","🪴"],["praia","PRAIA","🏖️"],["queijo","QUEI-JO","🧀"],["rato","RA-TO","🐀"],["sapo","SA-PO","🐸"],["sol","SOL","☀️"],["trem","TREM","🚂"],["uva","U-VA","🍇"],["zebra","ZE-BRA","🦓"]];
+var FONT="Verdana, Arial, sans-serif";
+var S={prog:{},idx:0,letra:0,maius:true,apagou:0,ptr:null,pts:[],tracos:[],box:[],fs:60,W:0,H:0};
+var $=function(i){return document.getElementById(i)};
+var cv=$("main-canvas"),ctx=cv.getContext("2d");
+
+/* ===== Áudio e fala ===== */
+var AC=null;
+function tom(f,tipo,d){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.type=tipo;o.frequency.value=f;g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.01,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function fala(t){try{speechSynthesis.cancel();var m=new SpeechSynthesisUtterance(t);m.lang="pt-BR";speechSynthesis.speak(m)}catch(e){}}
+function fanfarra(){[523,659,784,1046].forEach(function(f,i){setTimeout(function(){tom(f,"triangle",.35)},i*150)})}
+
+/* ===== Progresso ===== */
+try{S.prog=JSON.parse(localStorage.getItem("tr32_prog")||"{}")}catch(e){}
+function salva(){try{localStorage.setItem("tr32_prog",JSON.stringify(S.prog))}catch(e){}}
+
+/* ===== Menu ===== */
+function menu(){
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active")});
+  $("menu-screen").classList.add("active");$("celebration-overlay").style.display="none";
+  var g=$("word-grid");g.innerHTML="";
+  WORDS.forEach(function(w,i){
+    var n=S.prog[w[0]]||0,c=document.createElement("div");c.className="card"+(n?" feita":"");
+    c.innerHTML='<span class="card-emoji">'+w[2]+'</span><span class="card-word">'+w[0]+'</span><div class="stars">'+"★".repeat(n)+"☆".repeat(3-n)+'</div>';
+    c.onclick=function(){inicia(i)};g.appendChild(c)});
+}
+
+/* ===== Jogo ===== */
+function palavra(){var w=WORDS[S.idx][0];return S.maius?w.toUpperCase():w.toLowerCase()}
+function inicia(i){
+  S.idx=i;S.letra=0;S.apagou=0;S.tracos=[];S.pts=[];S.ptr=null;
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active")});
+  $("game-screen").classList.add("active");$("celebration-overlay").style.display="none";
+  $("game-title").textContent=WORDS[i][2];
+  ajusta();fala(WORDS[i][0]);
+}
+/* Mede a palavra: acha o tamanho de fonte que cabe e a caixa de cada letra (em px CSS) */
+function layout(){
+  var W=S.W,H=S.H,p=palavra(),fs=Math.min(H*.62,W*.9),larg;
+  do{ctx.font="bold "+fs+"px "+FONT;larg=ctx.measureText(p).width+fs*.08*(p.length-1);fs-=2}while(larg>W*.92&&fs>20);
+  fs+=2;ctx.font="bold "+fs+"px "+FONT;
+  var gap=fs*.08,tot=0,ws=[];
+  for(var i=0;i<p.length;i++){ws.push(ctx.measureText(p[i]).width);tot+=ws[i]}
+  tot+=gap*(p.length-1);
+  var x=(W-tot)/2,y=H/2+fs*.35;S.fs=fs;S.box=[];
+  for(i=0;i<p.length;i++){S.box.push({c:p[i],x:x,y:y,w:ws[i]});x+=ws[i]+gap}
+}
+function ajusta(){
+  var r=cv.parentElement.getBoundingClientRect(),d=window.devicePixelRatio||1;
+  S.W=r.width;S.H=r.height;cv.width=Math.round(S.W*d);cv.height=Math.round(S.H*d);
+  ctx.setTransform(d,0,0,d,0,0);layout();desenha();
+}
+function desenha(){
+  ctx.clearRect(0,0,S.W,S.H);ctx.font="bold "+S.fs+"px "+FONT;ctx.textBaseline="alphabetic";ctx.textAlign="left";
+  ctx.lineJoin="round";ctx.lineCap="round";
+  S.box.forEach(function(b,i){
+    if(i<S.letra){ctx.fillStyle="#43A047";ctx.fillText(b.c,b.x,b.y)}
+    else if(i===S.letra){ctx.fillStyle="rgba(30,136,229,.13)";ctx.fillText(b.c,b.x,b.y);
+      ctx.setLineDash([S.fs*.05,S.fs*.05]);ctx.lineWidth=Math.max(2,S.fs*.02);ctx.strokeStyle="#1E88E5";ctx.strokeText(b.c,b.x,b.y);ctx.setLineDash([])}
+    else{ctx.fillStyle="#E0E0E0";ctx.fillText(b.c,b.x,b.y)}
+  });
+  ctx.strokeStyle="#E53935";ctx.lineWidth=Math.max(10,S.fs*.09);
+  S.tracos.concat(S.pts.length?[S.pts]:[]).forEach(function(t){
+    if(!t.length)return;ctx.beginPath();ctx.moveTo(t[0].x,t[0].y);
+    if(t.length===1)ctx.lineTo(t[0].x+.1,t[0].y);
+    for(var i=1;i<t.length-1;i++){var mx=(t[i].x+t[i+1].x)/2,my=(t[i].y+t[i+1].y)/2;ctx.quadraticCurveTo(t[i].x,t[i].y,mx,my)}
+    if(t.length>1)ctx.lineTo(t[t.length-1].x,t[t.length-1].y);ctx.stroke()});
+}
+/* ===== Entrada (toque, caneta, mouse): só o primeiro ponteiro conta ===== */
+function pos(e){var r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+cv.addEventListener("pointerdown",function(e){if(S.ptr!==null)return;e.preventDefault();S.ptr=e.pointerId;try{cv.setPointerCapture(e.pointerId)}catch(x){}S.pts=[pos(e)];desenha()});
+cv.addEventListener("pointermove",function(e){if(e.pointerId!==S.ptr)return;e.preventDefault();S.pts.push(pos(e));desenha()});
+function fim(e){if(e.pointerId!==S.ptr)return;S.ptr=null;if(S.pts.length){S.tracos.push(S.pts)}S.pts=[];desenha();auto()}
+cv.addEventListener("pointerup",fim);cv.addEventListener("pointercancel",fim);
+["touchstart","touchmove","gesturestart"].forEach(function(n){cv.addEventListener(n,function(e){e.preventDefault()},{passive:false})});
+
+/* ===== Avaliação: máscara da letra desenhada no MESMO sistema de coordenadas do canvas ===== */
+function avalia(){
+  var b=S.box[S.letra],W=Math.ceil(S.W),H=Math.ceil(S.H),oc=document.createElement("canvas");oc.width=W;oc.height=H;
+  var o=oc.getContext("2d");o.font="bold "+S.fs+"px "+FONT;o.textBaseline="alphabetic";o.textAlign="left";
+  o.fillStyle="#000";o.fillText(b.c,b.x,b.y);
+  var m=o.getImageData(0,0,W,H).data,alvo=[],passo=Math.max(3,Math.round(S.fs/28));
+  for(var y=0;y<H;y+=passo)for(var x=0;x<W;x+=passo)if(m[(y*W+x)*4+3]>100)alvo.push([x,y]);
+  var pts=[];S.tracos.forEach(function(t){t.forEach(function(p){pts.push(p)})});
+  if(!alvo.length)return{cob:1,exc:0};
+  if(!pts.length)return{cob:0,exc:0};
+  var R=Math.max(16,S.fs*.125),R2=R*R,tol=Math.max(10,S.fs*.08);
+  /* grade espacial para achar pontos do traço perto de cada ponto-alvo */
+  var cel=R,gr={};pts.forEach(function(p){var k=Math.floor(p.x/cel)+","+Math.floor(p.y/cel);(gr[k]=gr[k]||[]).push(p)});
+  var cob=0;
+  alvo.forEach(function(a){var cx=Math.floor(a[0]/cel),cy=Math.floor(a[1]/cel),ok=false;
+    for(var i=-1;i<=1&&!ok;i++)for(var j=-1;j<=1&&!ok;j++){var l=gr[(cx+i)+","+(cy+j)];if(l)for(var q=0;q<l.length;q++){var dx=l[q].x-a[0],dy=l[q].y-a[1];if(dx*dx+dy*dy<R2){ok=true;break}}}
+    if(ok)cob++});
+  /* excesso: pontos do traço longe de qualquer pixel da letra */
+  var fora=0;
+  pts.forEach(function(p){var ok=false;
+    for(var dy=-tol;dy<=tol&&!ok;dy+=tol/2)for(var dx=-tol;dx<=tol;dx+=tol/2){var x=Math.round(p.x+dx),y=Math.round(p.y+dy);
+      if(x>=0&&y>=0&&x<W&&y<H&&m[(y*W+x)*4+3]>100){ok=true;break}}
+    if(!ok)fora++});
+  return{cob:cob/alvo.length,exc:fora/pts.length};
+}
+function auto(){if(!S.tracos.length)return;var r=avalia();if(r.cob>=.9&&r.exc<=.25)aprova()}
+function confere(){
+  if(!S.tracos.length){msg("Passe o dedo sobre a letra!");return}
+  var r=avalia();
+  if(r.cob>=.72&&r.exc<=.30)aprova();
+  else{msg(r.cob<.72?"Quase! Cubra toda a letra":"Fique dentro da letra");tom(160,"sawtooth",.2)}
+}
+function aprova(){
+  tom(660,"sine",.2);msg("Muito bem!");S.tracos=[];S.pts=[];S.letra++;
+  if(S.letra>=S.box.length){desenha();setTimeout(termina,350)}else desenha();
+}
+function apaga(){S.tracos=[];S.pts=[];S.apagou++;desenha()}
+function msg(t){var f=$("feedback");f.textContent=t;f.style.opacity=1;clearTimeout(msg.t);msg.t=setTimeout(function(){f.style.opacity=0},1500)}
+
+/* ===== Final ===== */
+function termina(){
+  var w=WORDS[S.idx],est=S.apagou===0?3:S.apagou<=2?2:1;
+  if(!S.prog[w[0]]||est>S.prog[w[0]]){S.prog[w[0]]=est;salva()}
+  $("celebration-overlay").style.display="flex";$("final-emoji").textContent=w[2];
+  $("final-stars").textContent="★".repeat(est)+"☆".repeat(3-est);
+  var d=$("syllable-display");d.innerHTML="";var cor=["#E91E63","#1E88E5","#43A047","#FB8C00","#8E24AA"];
+  w[1].split("-").forEach(function(s,i){var e=document.createElement("span");e.className="syllable";e.style.color=cor[i%5];e.textContent=s;d.appendChild(e)});
+  fanfarra();confete();setTimeout(function(){fala(w[0])},600);
+}
+var cf=false;
+function confete(){
+  var c=$("confetti-canvas"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+  var ps=[];for(var i=0;i<110;i++)ps.push({x:Math.random()*c.width,y:-Math.random()*c.height,s:6+Math.random()*9,c:"hsl("+Math.random()*360+",75%,55%)",v:2+Math.random()*3});
+  cf=true;(function f(){if(!cf)return;x.clearRect(0,0,c.width,c.height);ps.forEach(function(p){p.y+=p.v;if(p.y>c.height)p.y=-20;x.fillStyle=p.c;x.fillRect(p.x,p.y,p.s,p.s)});requestAnimationFrame(f)})();
+  setTimeout(function(){cf=false;x.clearRect(0,0,c.width,c.height)},4500);
+}
+$("btn-back").onclick=menu;$("btn-menu").onclick=function(){cf=false;menu()};
+$("btn-next").onclick=function(){cf=false;inicia((S.idx+1)%WORDS.length)};
+$("btn-clear").onclick=apaga;$("btn-check").onclick=confere;
+$("btn-case").onclick=function(){S.maius=!S.maius;$("btn-case").textContent=S.maius?"abc":"ABC";S.letra=0;S.tracos=[];S.pts=[];layout();desenha()};
+addEventListener("resize",function(){if($("game-screen").classList.contains("active"))ajusta()});
+menu();
+/* gancho p/ testes: window.__tr32 */
+window.__tr32={S:S,avalia:avalia,inicia:inicia};
+</script>
+</body>
+</html>
