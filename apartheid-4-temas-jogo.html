@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Apartheid — história, geografia e filosofia</title>
+<style>
+:root{--ink:#1b2440;--mut:#5b6585;--c:#1f4fd8;--fs:clamp(14px,min(1.7vw,2.7vh),21px)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#eef2fb;color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;font-size:var(--fs);padding-bottom:40px}
+.jogo{max-width:900px;margin:0 auto;padding:12px 14px}
+h1{margin:4px 0;font-size:clamp(22px,4vw,32px);color:#1f3a8a;line-height:1.1}
+h2{margin:6px 0;font-size:1.25em}
+.ident{font-size:14px;color:var(--mut);line-height:1.8}
+.ident b{display:inline-block;border-bottom:1px solid #99a;min-width:120px;min-height:20px;vertical-align:bottom}
+.coin{background:#ffd24d;color:#16213a;border-radius:99px;padding:4px 14px;font-weight:900;display:inline-block}
+.temas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+@media (max-width:700px){.temas{grid-template-columns:1fr}}
+.tema{border:6px solid var(--c);background:#fff;border-radius:26px;padding:16px 10px;text-align:center;cursor:pointer;font:800 1em inherit;color:var(--ink);box-shadow:0 6px 0 #0002}
+.tema:active{transform:translateY(4px);box-shadow:0 2px 0 #0002}
+.tema .em{font-size:3.2em;display:block}
+.tema>span{font-size:1.25em;font-family:inherit}
+.tema .ti{display:block;width:min(100%,190px);height:auto;margin:0 auto 6px;border-radius:14px;pointer-events:none}
+.tema small{display:block;font-weight:600;color:var(--mut);margin-top:4px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.pill{border:3px solid var(--c);background:#fff;border-radius:99px;min-width:2.3em;height:2.3em;font:800 1em inherit;cursor:pointer;color:var(--c)}
+.pill.on{background:var(--c);color:#fff}.pill.ok{background:#d6f5e0}.pill.on.ok{background:var(--c)}
+.btn{border:0;border-radius:99px;padding:10px 20px;font:800 1em inherit;cursor:pointer;background:var(--c);color:#fff}
+.btn.alt{background:#fff;color:var(--c);border:3px solid var(--c)}
+.btn:disabled{opacity:.4;cursor:default}
+.card{background:#fff;border:4px solid var(--c);border-radius:20px;padding:14px 16px;margin:8px 0}
+.card p{margin:4px 0}
+.dica{background:#fff8dc;border-left:6px solid #f5a300;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.92em}
+textarea,input.n{width:100%;font:inherit;border:3px solid #9fb0e8;border-radius:12px;padding:8px 10px;margin:4px 0;background:#fff;color:var(--ink)}
+textarea{min-height:3.2em;resize:vertical}
+input.n{max-width:14em}
+.nav{display:flex;justify-content:space-between;gap:10px;margin:12px 0;flex-wrap:wrap}
+.fb{font-weight:800;margin:2px 0}.fb.ok{color:#1f9d55}.fb.no{color:#d93025}
+.sum li{margin:6px 0}
+
+.mut{color:var(--mut);font-size:.85em}
+.temas.h{grid-template-columns:repeat(4,1fr)}@media (max-width:800px){.temas.h{grid-template-columns:repeat(2,1fr)}}
+.tema.okk{background:#e8fbee}
+.tema .em{font-size:2.4em}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;border:3px solid #9fb0e8;background:#fff;border-radius:14px;padding:10px 12px;font:700 1em inherit;color:var(--ink);cursor:pointer}
+.opt.pick{background:#e0e8ff;border-color:#1f4fd8}.opt.ok{background:#d6f5e0;border-color:#1f9d55}.opt.no{background:#fde2e0;border-color:#d93025;opacity:.7}
+.bank{display:flex;flex-wrap:wrap;gap:8px;min-height:3em;background:#fff;border:3px dashed #9fb0e8;border-radius:14px;padding:8px;margin:8px 0}
+.chip{background:#ffd24d;border-radius:99px;padding:6px 16px;font-weight:800;cursor:grab;user-select:none}.chip.sel{outline:4px solid #1f4fd8}
+.slot{display:inline-block;min-width:8em;min-height:2em;border-bottom:4px solid #1f4fd8;background:#eef2ff;border-radius:8px;vertical-align:middle;margin:0 4px;text-align:center}
+.slot.ok{background:#d6f5e0}.slot.no{background:#fde2e0}.slot .chip{margin:2px}
+.bxs{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}.bxs input{width:2.1em;height:2.3em;text-align:center;font:700 16px Arial,Helvetica,sans-serif;border:3px solid #1f4fd8;border-radius:8px;padding:0;text-transform:uppercase}.bxs input.ok{background:#d6f5e0;border-color:#1f9d55}
+.jornal{background:#f4efe1;border:5px double #222;padding:10px 12px;margin:8px 0;font-family:Georgia,"Times New Roman",serif;color:#111}
+.jh{text-align:center;border-bottom:3px solid #111;margin-bottom:8px}.jh span{display:block;font:900 clamp(20px,3.4vw,30px) Georgia,serif;letter-spacing:1px}.jh small{display:block;font:700 .75em Georgia,serif;border-top:1px solid #111;padding:2px}
+.jc{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.jg{display:grid;grid-template-columns:repeat(var(--n),1fr);border:3px solid #111;background:#fff;width:min(100%,430px);flex:none}
+.jg b{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid #bbb;font:700 clamp(11px,2.2vw,18px) Georgia,serif;cursor:pointer;user-select:none}
+.jgw{position:relative;width:min(100%,430px);flex:none}.jgw .jg{width:100%}.jm{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.jg b.s{background:#ffd24d}.jg{touch-action:none}
+.jd{flex:1;min-width:200px;margin:0;padding:0;list-style:none;column-rule:1px solid #111;font-size:.9em}.jd li{margin:4px 0;padding-bottom:3px;border-bottom:1px dotted #777}.jd li.f{text-decoration:line-through;color:#777}.jd i{font-weight:900}
+.hv{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}#hx{width:min(100%,430px);flex:none}
+.hc polygon{fill:#fff7cf;stroke:#d99a00;stroke-width:2;cursor:pointer}.hc text{font:800 17px Arial;text-anchor:middle;dominant-baseline:central;pointer-events:none;fill:#333}
+.hc.s polygon{fill:#ffd24d}#hx{touch-action:none}.hw li.f,.jd li.f{border-left:10px solid var(--mk,#888);padding-left:6px}
+.hw{list-style:none;margin:0;padding:0;font-weight:800;columns:2;flex:1;min-width:180px}.hw li{margin:4px 0}.hw li.f{text-decoration:line-through;color:#888}
+.slide{background:#fff;border:6px solid #1f3a8a;border-radius:18px;padding:18px 24px;min-height:min(60vh,420px);font-size:1.05em;line-height:1.45}
+.slide.ed{outline:4px dashed #f5a300}.slide h2{color:#1f3a8a;font-size:1.5em;margin:0 0 8px}
+.slide table{border-collapse:collapse;width:100%;font-size:.95em}.slide th,.slide td{border:2px solid #9fb0e8;padding:5px 8px;text-align:left}.slide th{background:#e8eefc}
+.slide .dica{background:#fff8dc}
+.tab{border-collapse:collapse;margin:8px 0;background:#fff}.tab th,.tab td{border:2px solid #9fb0e8;padding:6px 12px;text-align:left}.tab th{background:#e8eefc}.tab input.n{max-width:6em;margin:0}
+.fsbar{display:none}
+#sWrap:fullscreen,#sWrap.fake{background:#fff;overflow:auto;padding:10px;box-sizing:border-box}
+#sWrap.fake{position:fixed;inset:0;z-index:2147483000}
+#sWrap:fullscreen .fsbar,#sWrap.fake .fsbar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;position:sticky;top:0;background:#fff;padding:6px 0 10px;z-index:2}
+.fsbar .sair{background:#d00000;color:#fff;margin-left:auto}
+#sWrap:fullscreen .slide,#sWrap.fake .slide{font-size:2.2vh;min-height:75vh}
+</style></head><body>
+<div class="jogo">
+<div class="ident">Nome: <b></b> &nbsp; Turma: <b></b> &nbsp; <span class="coin" id="pts">0 pontos</span></div>
+<h1>Apartheid: história, geografia e filosofia</h1>
+<div id="stage"></div>
+</div>
+<script>
+(function(){
+var T={
+ a:{em:'⚖️',nome:'Origem e leis do apartheid',cor:'#b45309',neg:'as origens e as leis do apartheid (1948-1994)',tbTit:'População da África do Sul por grupo, a cada 100 habitantes (valores aproximados, anos 1980)',tbCol:['Grupo','Habitantes','%'],tbOpen:'Por que um país com tantos negros era governado só pela minoria branca?',
+  n1:['O Partido Nacional venceu a eleição de 1948 e criou o apartheid. Quantos anos se passaram até 2026? (só o número)','78'],n2:['O apartheid durou de 1948 a 1994. Quantos anos durou? (só o número)','46'],
+  tb:[['Negros',74],['Brancos',14],['Mestiços',9],['Indianos',3]],
+  jn:[['APARTHEID','Regime de separação racial na África do Sul'],['SEGREGACAO','Separação de pessoas por raça ou grupo'],['AFRICANER','Branco sul-africano de língua africâner'],['RACISMO','Ideia de que uma raça é superior a outra'],['PASSE','Documento que o negro era obrigado a portar'],['LEIS','O apartheid foi imposto por elas'],['BRANCOS','Minoria que governava o país'],['NACIONAL','Nome do partido que criou o apartheid']]},
+ b:{em:'🗺️',nome:'Geografia: bantustões e townships',cor:'#0e7490',neg:'a divisão do espaço: bantustões, townships e áreas separadas por raça',tbTit:'Cidade imaginária dividida pela Lei de Áreas de Grupos: 100 moradores sorteados, por local de moradia (dados ilustrativos)',tbCol:['Local de moradia','Moradores','%'],tbOpen:'Como a divisão do espaço fortalece a desigualdade entre os grupos?',
+  n1:['Os bantustões reuniam cerca de 13% da terra do país. Se o país tivesse 400 mil km², quantos mil km² seriam dos bantustões? (só o número)','52'],n2:['Na cidade imaginária, 55 de cada 100 moradores vivem no township. Se a cidade tem 2000 moradores, quantos vivem no township? (só o número)','1100'],
+  tb:[['Township negro',55],['Bairro branco',20],['Bairro mestiço',17],['Bairro indiano',8]],
+  jn:[['BANTUSTAO','Território reservado à população negra'],['TOWNSHIP','Bairro periférico onde os negros eram obrigados a morar'],['TERRA','Recurso desigualmente dividido'],['BAIRRO','Os grupos eram obrigados a morar em bairros separados'],['FRONTEIRA','Linha que separava os territórios'],['MORADIA','Local onde cada grupo podia viver'],['REMOCAO','Expulsão forçada de famílias de suas casas'],['GUETO','Área onde um grupo é isolado']]},
+ c:{em:'✊',nome:'Resistência: Mandela e Soweto',cor:'#b91c1c',neg:'a resistência ao apartheid: Mandela, o CNA e o levante de Soweto',tbTit:'Pesquisa imaginária com 100 estudantes: o que mais marcou a luta contra o apartheid? (dados ilustrativos)',tbCol:['Marco da luta','Respostas','%'],tbOpen:'Por que a luta pacífica e a pressão internacional foram importantes?',
+  n1:['Mandela foi libertado em 1990 e eleito presidente em 1994. Quantos anos depois? (só o número)','4'],n2:['Em uma marcha de cerca de 20000 estudantes (estimativa), 25% eram do ensino médio. Quantos estudantes? (só o número)','5000'],
+  tb:[['Soweto 1976',40],['Mandela preso',30],['Boicotes e sanções',20],['Outro',10]],
+  jn:[['MANDELA','Líder preso e depois presidente'],['SOWETO','Cidade do levante de estudantes em 1976'],['CNA','Sigla do Congresso Nacional Africano'],['BOICOTE','Recusa em comprar ou participar como protesto'],['GREVE','Parada de trabalhadores como protesto'],['PRISAO','Destino de Mandela por 27 anos'],['ESTUDANTES','Protagonistas do levante de 1976'],['RESISTENCIA','Luta contra a opressão']]},
+ d:{em:'🕊️',nome:'Fim, memória e Ubuntu',cor:'#15803d',neg:'o fim do apartheid, a memória e a filosofia Ubuntu',tbTit:'Pesquisa imaginária com 100 pessoas: qual momento marcou o fim do apartheid? (dados ilustrativos)',tbCol:['Momento','Respostas','%'],tbOpen:'Como a memória e o perdão ajudam um país a se reconstruir?',
+  n1:['Em 1994 cerca de 20 milhões de pessoas votaram (valor aproximado). Se o CNA teve 60%, quantos milhões votaram nele? (só o número)','12'],n2:['O apartheid acabou em 1994. Quantos anos se passaram até 2026? (só o número)','32'],
+  tb:[['Eleições de 1994',45],['Fim das leis',25],['Comissão da Verdade',20],['Outro',10]],
+  jn:[['UBUNTU','Eu sou porque nós somos'],['TUTU','Bispo, Nobel da Paz em 1984'],['ELEICAO','Em 1994 todos puderam votar'],['VERDADE','Palavra do nome da comissão de 1996'],['PERDAO','Passo da reconciliação'],['SANCOES','Punições internacionais ao regime'],['DEMOCRACIA','Governo escolhido por todos'],['IGUALDADE','Direito igual para todos']]}
+};
+var HIVE=['RACISMO','MANDELA','UBUNTU','SOWETO','AFRICA','TUTU','PASSE','VOTO'];
+var stage=document.getElementById('stage'),pts=document.getElementById('pts'),tema=null,score=0,R={},GOT={};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function numOf(s){s=String(s==null?'':s).toLowerCase().replace(/r\$|reais|pessoas|%|\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.');var m=s.match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):NaN}
+function sameNum(a,b){var x=numOf(a),y=numOf(b);return !isNaN(x)&&!isNaN(y)&&Math.abs(x-y)<0.0001}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9,.]/g,'')}
+var PEN=0;function setPts(){pts.textContent=Math.max(0,score-PEN)+' pontos'}
+function award(key,n){if(GOT[tema+key])return false;GOT[tema+key]=1;score+=n;setPts();return true}
+function rng(seed){var a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function seedOf(s){var h=7;for(var i=0;i<s.length;i++)h=Math.imul(h,31)+s.charCodeAt(i)|0;return h}
+function shuf(a,r){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---------- botao "dica da resposta" (custa 5 pontos; vale para ~metade das respostas de cada atividade) ---------- */
+var HINT=null,HU={},hBtn=document.createElement('button');
+hBtn.id='hintBtn';hBtn.type='button';hBtn.style.cssText='position:fixed;right:10px;bottom:10px;left:auto;width:auto;z-index:2147481000;border:0;border-radius:99px;padding:5px 12px;font:700 13px Arial,sans-serif;background:#ffffffd9;color:#8a4b00;box-shadow:0 1px 6px #0003;cursor:pointer;opacity:.85;display:none';
+(document.querySelector('.jogo')||document.body).appendChild(hBtn);
+(function(){var st=document.createElement('style');st.textContent='@media print{#hintBtn{display:none!important}}#hintBtn:disabled{opacity:.45;cursor:default}#hintBtn.pop{animation:hpop .5s}@keyframes hpop{40%{transform:scale(1.12)}}';document.head.appendChild(st)})();
+function hintUi(){if(!HINT){hBtn.style.display='none';return}var left=HINT.max-HINT.used;hBtn.style.display='block';hBtn.disabled=left<=0;hBtn.textContent=left>0?'🔎 Dica da resposta (−5 pts) · '+left:'🔎 Sem mais dicas aqui'}
+function setHint(max,fn){HINT={max:max,used:HU[tema+'|'+cur]||0,fn:fn};hintUi()}
+hBtn.onclick=function(){if(!HINT||HINT.used>=HINT.max)return;if(HINT.fn()){HINT.used++;HU[tema+'|'+cur]=HINT.used;PEN+=5;setPts();hBtn.classList.remove('pop');void hBtn.offsetWidth;hBtn.classList.add('pop');hintUi()}else{hBtn.textContent='Nenhuma pergunta precisa de dica agora';setTimeout(hintUi,1800)}};
+function hintBoxes(max,tag){setHint(max,function(){var gs=stage.querySelectorAll('.bxs');for(var i=0;i<gs.length;i++){var g=gs[i];if(g.dataset.hint||g.dataset.busy||g.dataset.i==='tbq2')continue;var ins=g.querySelectorAll('input');if(ins[0].classList.contains('ok')||ins[0].disabled)continue;ins[0].value=g.dataset.a[0];ins[0].dispatchEvent(new Event('input',{bubbles:true}));g.dataset.hint=1;logIt('Dica (−5) '+tag+' '+(+g.dataset.i+1)+': 1ª letra',null);return true}return false})}
+/* ---------- telas ---------- */
+function bar(extra){var t=T[tema];return '<div class="bar" style="--c:'+t.cor+'"><button class="btn alt" id="bTema">🔄 Trocar tema</button><button class="btn alt" id="bHub">🏠 Atividades</button>'+(extra||'')+'</div>'}
+function wireBar(){var a=stage.querySelector('#bTema'),b=stage.querySelector('#bHub');if(a)a.onclick=menu;if(b)b.onclick=hub}
+function menu(){tema=null;cur=null;HINT=null;hintUi();stage.innerHTML='<h2 id="pergunta">Escolha o tema que você vai estudar</h2><p>Você pode trocar de tema a qualquer momento. Seus pontos e respostas ficam guardados.</p><div class="temas">'+Object.keys(T).map(function(k){var t=T[k];return '<button class="tema" data-k="'+k+'" style="--c:'+t.cor+'"><span class="em">'+t.em+'</span><span>'+t.nome+'</span></button>'}).join('')+'</div><p style="text-align:center"><button class="btn alt" id="aulaB">📊 Ver a aula em slides</button></p>';
+ [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){tema=b.dataset.k;R[tema]=R[tema]||{};hub()}});stage.querySelector('#aulaB').onclick=function(){slides(menu)};window.scrollTo(0,0)}
+var ACTS=[['aula','📊','Aula em slides','Leia e edite as anotações'],['mc','🔘','Escolha','Marque a resposta certa'],['tp','⌨️','Digite','Escreva a resposta'],['dg','🧲','Arraste e solte','Complete as frases'],['bx','🔠','Quadrinhos','Uma letra em cada quadrinho'],['hv','🐝','Mini colmeia','Caça-palavras com 8 palavras'],['tb','📋','Analise a tabela','Responda com os dados'],['jn','📰','Caça-palavras do jornal','8 palavras com dicas'],['ds','✍️','Pesquisa escrita','Reflita e escreva com suas palavras']];
+function hub(){cur=null;HINT=null;hintUi();var t=T[tema];stage.innerHTML=bar()+'<h2 id="pergunta" style="margin-top:12px">'+t.em+' '+t.nome+' — escolha uma atividade</h2><div class="temas h">'+ACTS.map(function(a){var ok=GOT[tema+'done_'+a[0]];return '<button class="tema'+(ok?' okk':'')+'" data-a="'+a[0]+'" style="--c:'+t.cor+'"><span class="em">'+a[1]+'</span>'+a[2]+(ok?' ✔':'')+'<small>'+a[3]+'</small></button>'}).join('')+'</div>';wireBar();
+ [].forEach.call(stage.querySelectorAll('.tema'),function(b){b.onclick=function(){run(b.dataset.a)}});window.scrollTo(0,0)}
+var cur=null;
+function run(a){cur=a;HINT=null;hintUi();({aula:function(){slides(hub)},mc:actMc,tp:actTp,dg:actDg,bx:actBx,hv:actHv,jn:actJn,tb:actTb,ds:actDs})[a]();window.scrollTo(0,0)}
+function nextBtn(){if(!cur||!tema)return;var st=document.getElementById('stage');if(!st||document.getElementById('nextAct'))return;
+ var ks=ACTS.map(function(x){return x[0]}),i=ks.indexOf(cur),last=i<0||i===ks.length-1,nx=last?null:ACTS[i+1];
+ var d=document.createElement('div');d.id='nextAct';d.style.cssText='text-align:center;margin:22px 0 10px';
+ var b=document.createElement('button');b.className='btn';b.style.cssText='font-size:1.15em;padding:.7em 1.4em';b.textContent=last?'🏁 Voltar ao menu de atividades':'Avançar para a próxima atividade: '+nx[1]+' '+nx[2]+' ▶';
+ b.onclick=function(){if(last){cur=null;hub()}else run(nx[0])};d.appendChild(b);st.appendChild(d)}
+new MutationObserver(function(){nextBtn()}).observe(document.getElementById('stage'),{childList:true});
+function fimAct(a){if(GOT[tema+'done_'+a])return;GOT[tema+'done_'+a]=1;score+=5;setPts()}
+
+/* ---------- slides da aula (editáveis) ---------- */
+var SL=[
+ '<h2>Apartheid: história, geografia e filosofia</h2><p><b>Filosofia e Geografia · Ensino Médio</b></p><p>Como um país organizou a desigualdade por lei, e como foi derrotado.</p><p><b>Objetivo:</b> compreender o apartheid na África do Sul (1948-1994): suas leis, a divisão do espaço, a resistência e o legado, refletindo sobre justiça, dignidade e igualdade.</p><p>🌍⚖️ <i>Apartheid</i> é uma palavra africâner que significa <b>separação</b>.</p>',
+ '<h2>1. Origem: de onde vem o apartheid</h2><ul><li>A África do Sul foi colonizada por holandeses (africâneres) e depois por britânicos.</li><li>1910: nasce a União Sul-Africana, governada pela minoria branca.</li><li>1913: a Lei da Terra reserva a maior parte do território para brancos.</li><li><b>1948:</b> o Partido Nacional vence a eleição (só brancos votavam) e transforma a segregação em política oficial: o <b>apartheid</b>.</li></ul><p class="dica"><b>Lembre:</b> o apartheid não foi um costume. Foi um sistema criado por leis.</p>',
+ '<h2>2. As leis do apartheid</h2><table><tr><th>Lei</th><th>O que fazia</th></tr><tr><td>Registro da População (1950)</td><td>classificava cada pessoa em um grupo racial</td></tr><tr><td>Áreas de Grupos (1950)</td><td>cada grupo só podia morar em seu bairro</td></tr><tr><td>Leis do passe</td><td>negros precisavam de um documento para circular</td></tr><tr><td>Educação Bantu (1953)</td><td>escolas separadas e de pior qualidade</td></tr><tr><td>Comodidades Separadas (1953)</td><td>praias, banheiros e transportes separados</td></tr></table><p class="dica">Os grupos oficiais eram: brancos, negros, mestiços e indianos.</p>',
+ '<h2>3. Geografia do apartheid</h2><p><b>Bantustões:</b> territórios reservados à população negra, cerca de 13% da terra, para a maioria da população. Quem morava neles perdia a cidadania sul-africana.</p><p><b>Townships:</b> bairros periféricos e pobres, longe dos centros, onde os negros eram obrigados a morar (ex.: Soweto, perto de Joanesburgo).</p><p><b>Remoções forçadas:</b> milhões de pessoas foram expulsas de suas casas.</p><p class="dica"><b>Mapa:</b> o país tem 3 capitais: Pretória (executiva), Cidade do Cabo (legislativa) e Bloemfontein (judiciária). O Lesoto é um país dentro do território sul-africano.</p>',
+ '<h2>4. Resistência</h2><ul><li><b>CNA</b> (Congresso Nacional Africano): principal organização contra o regime; foi proibido.</li><li><b>1960 — Sharpeville:</b> a polícia atirou em manifestantes contra as leis do passe e matou dezenas de pessoas.</li><li><b>Nelson Mandela</b> foi preso e ficou 27 anos na cadeia, quase todos na ilha de Robben.</li><li><b>1976 — Soweto:</b> estudantes protestaram contra o ensino em africâner; a repressão matou centenas.</li><li><b>Boicotes e sanções</b> internacionais isolaram o país.</li></ul>',
+ '<h2>5. O fim e o legado</h2><ul><li><b>1990:</b> Mandela é libertado.</li><li><b>1993:</b> Mandela e de Klerk recebem o Nobel da Paz.</li><li><b>1994:</b> primeiras eleições para todos; Mandela é eleito presidente.</li><li><b>1996:</b> Comissão da Verdade e Reconciliação, presidida por Desmond Tutu: ouvir vítimas e responsáveis, buscando a verdade e a reconciliação.</li></ul><p class="dica"><b>Legado:</b> as leis acabaram, mas a desigualdade de renda, terra e moradia continua alta.</p>',
+ '<h2>6. Filosofia: justiça, lei e Ubuntu</h2><ul><li><b>Lei e justiça:</b> uma lei pode ser legal e injusta? Quando é correto desobedecer (desobediência civil)?</li><li><b>Dignidade:</b> todos os seres humanos têm o mesmo valor, sem exceção.</li><li><b>Ubuntu:</b> filosofia africana que diz <i>eu sou porque nós somos</i>: a humanidade de cada um depende dos outros.</li></ul><p class="dica"><b>Atividade:</b> escolha um dos quatro temas e responda as atividades.</p>'];
+
+/* ---------- gaveta "Dica": mostra os slides da aula; fecha ao clicar de novo ou apos 10 s ---------- */
+(function(){var st=document.createElement('style');
+ st.textContent='#dkBtn{position:fixed;left:10px;right:auto;width:auto;bottom:10px;z-index:2147481000;border:0;border-radius:99px;padding:5px 12px;font:700 13px Arial,sans-serif;background:#ffffffd9;color:#1f3a8a;box-shadow:0 1px 6px #0003;cursor:pointer;opacity:.8;transition:opacity .2s,transform .2s}#dkBtn:hover,#dkBtn.on{opacity:1;transform:translateY(-1px)}'+
+ '#dkBox{position:fixed;left:10px;bottom:46px;z-index:2147481000;width:min(430px,calc(100vw - 20px));max-height:68vh;display:flex;flex-direction:column;background:#fff;border:4px solid #1f3a8a;border-radius:18px;box-shadow:0 10px 34px #0005;transform:translateY(24px) scale(.94);transform-origin:bottom left;opacity:0;visibility:hidden;transition:transform .38s cubic-bezier(.2,1.2,.3,1),opacity .28s,visibility 0s .38s}'+
+ '#dkBox.on{transform:none;opacity:1;visibility:visible;transition:transform .38s cubic-bezier(.2,1.2,.3,1),opacity .28s,visibility 0s}'+
+ '#dkBox .dkh{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#1f3a8a;color:#fff;font:800 14px Arial,sans-serif;border-radius:10px 10px 0 0}#dkBox .dkh span{flex:1}#dkBox .dkh button{border:0;background:#ffffff26;color:#fff;border-radius:99px;min-width:28px;height:28px;font:800 14px Arial;cursor:pointer}'+
+ '#dkBox .dkc{overflow:auto;padding:10px 14px;font-size:14px;line-height:1.4}#dkBox .dkc h2{font-size:1.2em;color:#1f3a8a;margin:0 0 6px}#dkBox .dkc table{border-collapse:collapse;width:100%;font-size:.92em}#dkBox .dkc th,#dkBox .dkc td{border:1.5px solid #9fb0e8;padding:3px 6px;text-align:left}#dkBox .dkc th{background:#e8eefc}#dkBox .dkc .dica{background:#fff8dc;border-left:5px solid #f5a300;border-radius:8px;padding:5px 9px;margin:6px 0}#dkBox .dkc p,#dkBox .dkc ol,#dkBox .dkc ul{margin:5px 0}'+
+ '#dkBox .dkt{height:4px;background:#e8eefc;border-radius:0 0 10px 10px;overflow:hidden}#dkBox .dkt i{display:block;height:100%;width:100%;background:#ffd24d;transform-origin:left}'+
+ '@media print{#dkBtn,#dkBox{display:none!important}}';document.head.appendChild(st);
+ var btn=document.createElement('button');btn.id='dkBtn';btn.type='button';btn.textContent='💡 Dica';btn.title='Ver os slides da aula';
+ var box=document.createElement('div');box.id='dkBox';box.innerHTML='<div class="dkh"><span>💡 Dica · slides da aula</span><button id="dkP" aria-label="Slide anterior">◀</button><b id="dkN" style="font-weight:700"></b><button id="dkF" aria-label="Próximo slide">▶</button></div><div class="dkc" id="dkC"></div><div class="dkt"><i id="dkI"></i></div>';
+ var JG=document.querySelector('.jogo')||document.body;JG.appendChild(box);JG.appendChild(btn);
+ var i=0,tm=null,on=false,C=box.querySelector('#dkC'),bar=box.querySelector('#dkI');
+ function load(){var sv=null;try{sv=localStorage.getItem('apt_slide'+i)}catch(e){}C.innerHTML=sv||SL[i];C.scrollTop=0;box.querySelector('#dkN').textContent=(i+1)+'/'+SL.length}
+ function arm(){clearTimeout(tm);bar.style.transition='none';bar.style.transform='scaleX(1)';void bar.offsetWidth;bar.style.transition='transform 10s linear';bar.style.transform='scaleX(0)';tm=setTimeout(function(){set(false)},10000)}
+ function set(v){on=v;box.classList.toggle('on',v);btn.classList.toggle('on',v);btn.textContent=v?'✖ Dica':'💡 Dica';clearTimeout(tm);if(v){load();arm()}}
+ btn.onclick=function(){set(!on)};
+ box.querySelector('#dkP').onclick=function(){i=(i+SL.length-1)%SL.length;load();arm()};
+ box.querySelector('#dkF').onclick=function(){i=(i+1)%SL.length;load();arm()};
+ box.addEventListener('pointerdown',function(){if(on)arm()});box.addEventListener('scroll',function(){if(on)arm()},true);
+ document.addEventListener('keydown',function(e){if(on&&e.key==='Escape')set(false)})})();
+var slideI=0,editing=false;
+function slides(back){var h='<div class="bar"><button class="btn alt" id="sBack">◀ Voltar</button><button class="btn alt" id="sEdit">✏️ Editar anotações</button><button class="btn alt" id="sFull">⛶ Tela cheia</button></div><div id="sWrap"><div class="fsbar"><button class="btn alt" id="fPrev">◀ Anterior</button><span id="fCnt"></span><button class="btn" id="fNext">Próximo ▶</button><button class="btn sair" id="fExit">✕ Sair da tela cheia</button></div><div class="slide" id="slide" contenteditable="false"></div></div><div class="nav"><button class="btn alt" id="sPrev">◀ Slide anterior</button><span id="sCnt"></span><button class="btn" id="sNext">Próximo slide ▶</button></div><p class="mut">Dica: ative "Editar anotações" para alterar o texto do slide. As mudanças ficam neste aparelho.</p>';
+ stage.innerHTML=h;var sl=stage.querySelector('#slide');
+ function load(){var sv=null;try{sv=localStorage.getItem('apt_slide'+slideI)}catch(e){}sl.innerHTML=sv||SL[slideI];stage.querySelector('#sCnt').textContent=stage.querySelector('#fCnt').textContent=(slideI+1)+' / '+SL.length;stage.querySelector('#sPrev').disabled=!slideI;stage.querySelector('#sNext').textContent=slideI===SL.length-1?'Terminar ✔':'Próximo slide ▶'}
+ function save(){try{localStorage.setItem('apt_slide'+slideI,sl.innerHTML)}catch(e){}}
+ sl.addEventListener('input',save);sl.addEventListener('keydown',function(e){e.stopPropagation()});
+ stage.querySelector('#sEdit').onclick=function(){editing=!editing;sl.contentEditable=editing;sl.classList.toggle('ed',editing);this.textContent=editing?'✔ Salvar':'✏️ Editar anotações';if(editing)sl.focus()};
+ stage.querySelector('#sPrev').onclick=function(){save();slideI--;load()};
+ stage.querySelector('#sNext').onclick=function(){save();if(slideI===SL.length-1){slideI=0;if(tema)fimAct('aula');back()}else{slideI++;load()}};
+ stage.querySelector('#sBack').onclick=function(){save();back()};
+ var wr=stage.querySelector('#sWrap');
+ function fsOut(){try{(document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document)}catch(e){}wr.classList.remove('fake')}
+ stage.querySelector('#sFull').onclick=function(){var q=wr.requestFullscreen||wr.webkitRequestFullscreen;if(q){try{var r=q.call(wr);if(r&&r.catch)r.catch(function(){wr.classList.add('fake')})}catch(e){wr.classList.add('fake')}}else wr.classList.add('fake')};
+ stage.querySelector('#fExit').onclick=fsOut;
+ stage.querySelector('#fPrev').onclick=function(){stage.querySelector('#sPrev').click()};
+ stage.querySelector('#fNext').onclick=function(){if(slideI===SL.length-1)fsOut();stage.querySelector('#sNext').click()};
+ load()}
+
+/* ---------- apoio: relatorio para a planilha, espera de 5 s ---------- */
+var CE=0,ER=0,LOG=[],T0=Date.now();
+function mm(){var q=Math.round((Date.now()-T0)/1000);return ('0'+Math.floor(q/60)).slice(-2)+':'+('0'+q%60).slice(-2)}
+function logIt(txt,ok){if(ok===true)CE++;else if(ok===false)ER++;LOG.push('['+mm()+'] '+(tema?T[tema].nome+' · ':'')+txt+(ok===true?' ✔':(ok===false?' ✘':'')));if(LOG.length>70)LOG.shift()}
+window.EDU_EXTRA=function(){return {certas:CE,erradas:ER,acoes:LOG.join('\n').slice(-3800),cenario:tema?T[tema].nome:'',fase:'Apartheid'}};
+function wait(fb,cb){var n=5;fb.className='fb';fb.textContent='⏳ Enviando a sua resposta ao professor... '+n;var iv=setInterval(function(){n--;if(n>0)fb.textContent='⏳ Enviando a sua resposta ao professor... '+n;else{clearInterval(iv);cb()}},1000)}
+function fw(t){return norm(t.tb[0][0].split(' ')[0]).toUpperCase()}
+function pct(t){return t.sim*5}
+function mcQs(t){var a=+t.n1[1];return [
+ {q:'O que significa a palavra apartheid, em africâner?',ok:'Separação',wr:['União entre os povos','Liberdade de expressão']},
+ {q:'Em que país vigorou o apartheid?',ok:'África do Sul',wr:['Brasil','Estados Unidos']},
+ {q:'Em que ano o Partido Nacional venceu a eleição e criou o apartheid?',ok:'1948',wr:['1913','1976']},
+ {q:'Quem foi o principal líder contra o apartheid e presidente em 1994?',ok:'Nelson Mandela',wr:['Mahatma Gandhi','Martin Luther King']},
+ {q:'O que eram os bantustões?',ok:'Territórios reservados à população negra',wr:['Bairros nobres dos brancos','Partidos políticos negros']},
+ {q:'O que foi o levante de Soweto, em 1976?',ok:'Protesto de estudantes contra o ensino em africâner',wr:['Uma eleição presidencial','Um acordo de paz']},
+ {q:'Qual é a ideia central do Ubuntu?',ok:'Eu sou porque nós somos',wr:['Cada um por si','O mais forte manda']},
+ {q:t.n1[0].replace(' (só o número)',''),ok:String(a),wr:[String(a+10),String(Math.max(1,a-5))]}]}
+function tpQs(t){return [
+ ['Em africâner, separação é ______ (9 letras).','APARTHEID'],
+ ['Território reservado à população negra é o ______ (9 letras).','BANTUSTAO'],
+ ['Líder que ficou 27 anos preso e foi presidente em 1994: ______ (7 letras).','MANDELA'],
+ ['Filosofia africana: eu sou porque nós somos: ______ (6 letras).','UBUNTU'],
+ [t.n1[0],t.n1[1]],
+ [t.n2[0],t.n2[1]]]}
+function dgQs(){return [['Em 1948 o Partido Nacional criou o regime do ___.','apartheid'],['Os territórios reservados aos negros eram os ___.','bantustões'],['O documento que os negros eram obrigados a portar era o ___.','passe'],['O líder Nelson ___ foi presidente em 1994.','Mandela'],['A comissão de 1996 buscava a verdade e a ___.','reconciliação'],['Ubuntu: eu sou porque nós ___.','somos']]}
+function bxQs(){return [['Regime de segregação racial na África do Sul','APARTHEID'],['Território reservado aos negros','BANTUSTAO'],['Líder preso por lutar contra o regime','MANDELA'],['Bairro periférico onde os negros moravam','TOWNSHIP'],['Filosofia africana: humanidade nos outros','UBUNTU'],['Bispo e Nobel da Paz 1984','TUTU']]}
+
+/* ---------- 1) escolha ---------- */
+function actMc(){var t=T[tema],q=mcQs(t),r=rng(seedOf(tema+'mc')),h=bar()+'<h2 id="pergunta">🔘 Escolha a resposta certa</h2><p class="mut">Depois de escolher, aguarde 5 segundos para saber se acertou.</p>';
+ q.forEach(function(x,i){x.o=shuf([x.ok].concat(x.wr),r);h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x.q)+'</p>'+x.o.map(function(v){return '<button class="opt" data-i="'+i+'" data-v="'+esc(v)+'">'+esc(v)+'</button>'}).join('')+'<div class="fb"></div></div>'});
+ stage.innerHTML=h;wireBar();var n=0;
+ setHint(4,function(){var cs=stage.querySelectorAll('.card');for(var i=0;i<cs.length;i++){var c=cs[i];if(c.dataset.done||c.dataset.hint||c.dataset.busy)continue;var os=[].filter.call(c.querySelectorAll('.opt'),function(o){return o.dataset.v!==q[i].ok&&o.style.display!=='none'&&!o.classList.contains('no')});if(!os.length)continue;os[0].style.display='none';c.dataset.hint=1;logIt('Dica (−5) na escolha '+(i+1),null);return true}return false});
+ [].forEach.call(stage.querySelectorAll('.opt'),function(b){b.onclick=function(){var c=b.parentNode,i=+b.dataset.i,fb=c.querySelector('.fb');if(c.dataset.busy||c.dataset.done)return;c.dataset.busy=1;b.classList.add('pick');[].forEach.call(c.querySelectorAll('.opt'),function(x){x.disabled=true});
+  wait(fb,function(){c.dataset.busy='';b.classList.remove('pick');var ok=b.dataset.v===q[i].ok;logIt('Escolha '+(i+1)+': '+b.dataset.v,ok);
+   if(ok){c.dataset.done=1;b.classList.add('ok');fb.textContent='✔ Certo!';fb.className='fb ok';award('mc'+i,5);if(++n===q.length)fimAct('mc')}
+   else{b.classList.add('no');fb.textContent='✘ Ainda não. Tente outra.';fb.className='fb no';[].forEach.call(c.querySelectorAll('.opt'),function(x){if(!x.classList.contains('no'))x.disabled=false})}})}})}
+
+/* ---------- 2) digite (quadrinhos individuais) ---------- */
+function boxHtml(i,ans){return '<div class="bxs" data-i="'+i+'" data-a="'+esc(ans)+'">'+ans.split('').map(function(_,k){return '<input maxlength="1" data-k="'+k+'" autocomplete="off" autocapitalize="characters" inputmode="'+(/^\d+$/.test(ans)?'numeric':'text')+'">'}).join('')+'</div>'}
+function wireBoxes(root,onOk,onNo){[].forEach.call(root.querySelectorAll('.bxs'),function(g){var i=g.dataset.i,ans=g.dataset.a,num=/^\d+$/.test(ans),ins=g.querySelectorAll('input'),fb=g.parentNode.querySelector('.fb');
+ [].forEach.call(ins,function(inp,k){inp.addEventListener('keydown',function(e){e.stopPropagation();if(e.key==='Backspace'&&!inp.value&&k>0){ins[k-1].focus();ins[k-1].value=''}else if(e.key==='ArrowLeft'&&k>0)ins[k-1].focus();else if(e.key==='ArrowRight'&&k<ins.length-1)ins[k+1].focus()});
+  inp.addEventListener('input',function(){inp.value=inp.value.toUpperCase().replace(num?/[^0-9]/g:/[^A-Z]/g,'');if(inp.value&&k<ins.length-1)ins[k+1].focus();var w=[].map.call(ins,function(x){return x.value}).join('');
+   if(w.length===ans.length&&!g.dataset.busy){g.dataset.busy=1;[].forEach.call(ins,function(x){x.disabled=true});wait(fb,function(){g.dataset.busy='';var ok=w===ans;
+    if(ok){fb.textContent='✔ Certo!';fb.className='fb ok';[].forEach.call(ins,function(x){x.classList.add('ok')});onOk(i,w)}
+    else{fb.textContent='✘ Confira as letras e corrija.';fb.className='fb no';[].forEach.call(ins,function(x){x.disabled=false});if(onNo)onNo(i,w);ins[ins.length-1].focus()}})}
+   else if(w.length<ans.length&&!g.dataset.busy)fb.textContent=''})})})}
+function actTp(){var t=T[tema],q=tpQs(t),h=bar()+'<h2 id="pergunta">⌨️ Digite a resposta, uma letra (ou número) em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 5 segundos para saber se acertou.</p>';
+ q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+(/^\d+$/.test(x[1])?' dígitos':' letras')+')</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
+ stage.innerHTML=h;wireBar();var n=0;hintBoxes(3,'digite');wireBoxes(stage,function(i,w){logIt('Digite '+(+i+1)+': '+w,true);award('tp'+i,5);if(++n===q.length)fimAct('tp')},function(i,w){logIt('Digite '+(+i+1)+': '+w,false)})}
+
+/* ---------- 3) arraste e solte ---------- */
+function actDg(){var t=T[tema],q=dgQs(),bank=shuf(q.map(function(x){return x[1]}).concat(['ignorar']),rng(seedOf(tema+'dg')));
+ var h=bar()+'<h2 id="pergunta">🧲 Arraste a palavra para o lugar certo</h2><p>No celular, toque na palavra e depois no espaço. Ao tocar em Conferir, aguarde 5 segundos.</p><div class="bank" id="bank">'+bank.map(function(w){return '<span class="chip" draggable="true" data-w="'+w+'">'+w+'</span>'}).join('')+'</div>';
+ q.forEach(function(x,i){var p=x[0].split('___');h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(p[0])+'<span class="slot" data-i="'+i+'"></span>'+esc(p[1])+' <span class="fb"></span></p></div>'});
+ h+='<div class="nav"><span class="fb" id="dgfb"></span><button class="btn" id="dgChk">Conferir ✔</button></div>';stage.innerHTML=h;wireBar();
+ var sel=null,bk=stage.querySelector('#bank');
+ setHint(3,function(){var ss=stage.querySelectorAll('.slot');for(var i=0;i<ss.length;i++){var s=ss[i];if(s.firstChild||s.dataset.hint)continue;var w=q[+s.dataset.i][1],ch=[].filter.call(stage.querySelectorAll('.chip'),function(c){return c.dataset.w===w})[0];if(!ch)continue;ch.style.outline=s.style.outline='4px solid #ff9500';s.dataset.hint=1;setTimeout(function(){ch.style.outline=s.style.outline=''},4500);logIt('Dica (−5) no arraste '+(+s.dataset.i+1),null);return true}return false});
+
+ function place(slot,chip){if(slot.firstChild)bk.appendChild(slot.firstChild);slot.appendChild(chip);slot.classList.remove('no');if(sel)sel.classList.remove('sel');sel=null}
+ [].forEach.call(stage.querySelectorAll('.chip'),function(c){c.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',c.dataset.w);sel=c});c.onclick=function(e){e.stopPropagation();if(sel&&sel!==c)sel.classList.remove('sel');sel=c;c.classList.add('sel')}});
+ [].forEach.call(stage.querySelectorAll('.slot'),function(s){s.addEventListener('dragover',function(e){e.preventDefault()});s.addEventListener('drop',function(e){e.preventDefault();if(sel)place(s,sel)});s.onclick=function(){if(sel)place(s,sel);else if(s.firstChild)bk.appendChild(s.firstChild)}});
+ bk.addEventListener('dragover',function(e){e.preventDefault()});bk.addEventListener('drop',function(e){e.preventDefault();if(sel)bk.appendChild(sel)});
+ var busy=false;stage.querySelector('#dgChk').onclick=function(){if(busy)return;busy=true;var btn=this;btn.disabled=true;var fb0=stage.querySelector('#dgfb');
+  wait(fb0,function(){busy=false;btn.disabled=false;var ok=0;[].forEach.call(stage.querySelectorAll('.slot'),function(s){var i=+s.dataset.i,c=s.firstChild,fb=s.parentNode.querySelector('.fb'),good=!!c&&c.dataset.w===q[i][1];logIt('Arraste '+(i+1)+': '+(c?c.dataset.w:'(vazio)'),good);
+    if(good){ok++;s.classList.remove('no');s.classList.add('ok');fb.textContent='✔';fb.className='fb ok';award('dg'+i,5)}else{s.classList.add('no');fb.textContent=c?'✘ tente outra':'falta';fb.className='fb no'}});
+   fb0.textContent=ok===q.length?'✔ Tudo certo!':ok+' de '+q.length+' certas';fb0.className='fb '+(ok===q.length?'ok':'no');if(ok===q.length)fimAct('dg')})}}
+
+/* ---------- 4) quadrinhos ---------- */
+function actBx(){var t=T[tema],q=bxQs(),h=bar()+'<h2 id="pergunta">🔠 Descubra a palavra: uma letra em cada quadrinho</h2><p class="mut">Quando terminar de preencher, aguarde 5 segundos para saber se acertou.</p>';
+ q.forEach(function(x,i){h+='<div class="card" style="--c:'+t.cor+'"><p><b>'+(i+1)+'.</b> '+esc(x[0])+' <small>('+x[1].length+' letras)</small></p>'+boxHtml(i,x[1])+'<span class="fb"></span></div>'});
+ stage.innerHTML=h;wireBar();var n=0;hintBoxes(3,'quadrinhos');wireBoxes(stage,function(i,w){logIt('Quadrinhos '+(+i+1)+': '+w,true);award('bx'+i,5);if(++n===q.length)fimAct('bx')},function(i,w){logIt('Quadrinhos '+(+i+1)+': '+w,false)})}
+
+/* ---------- caça-palavras: geração ---------- */
+var D8=[[0,1],[1,0],[1,1],[0,-1],[-1,0],[1,-1],[-1,1],[-1,-1]];
+function gridWords(words,N,dirs,r){var g,pl,att=0;do{g=[];for(var i=0;i<N;i++){g.push([]);for(var j=0;j<N;j++)g[i].push('')}
+ pl={};words.slice().sort(function(a,b){return b.length-a.length}).forEach(function(w){for(var tr=0;tr<400;tr++){var d=dirs[Math.floor(r()*dirs.length)],y=Math.floor(r()*N),x=Math.floor(r()*N),ex=y+d[0]*(w.length-1),ey=x+d[1]*(w.length-1);if(ex<0||ex>=N||ey<0||ey>=N)continue;var ok=true;for(var k=0;k<w.length;k++){var c=g[y+d[0]*k][x+d[1]*k];if(c&&c!==w[k]){ok=false;break}}if(!ok)continue;for(k=0;k<w.length;k++)g[y+d[0]*k][x+d[1]*k]=w[k];pl[w]=[y,x,d];return}});att++}while(Object.keys(pl).length<words.length&&att<100);
+ var L='ABCDEFGHIJLMNOPQRSTUVX';for(var a=0;a<N;a++)for(var b=0;b<N;b++)if(!g[a][b])g[a][b]=L[Math.floor(r()*L.length)];return {g:g,pl:pl}}
+function lineCells(a,b){var dy=b[0]-a[0],dx=b[1]-a[1],n=Math.max(Math.abs(dy),Math.abs(dx));if(!n)return null;if(dy&&dx&&Math.abs(dy)!==Math.abs(dx))return null;var sy=Math.sign(dy),sx=Math.sign(dx),o=[];for(var k=0;k<=n;k++)o.push([a[0]+sy*k,a[1]+sx*k]);return o}
+
+/* marcador colorido (estilo das colmeias): arraste do primeiro ao ultimo, ou toque no primeiro e no ultimo */
+var MK=['#ff3b30','#ff9500','#34c759','#007aff','#af52de','#ff2d92','#00c7be','#e6b800'];
+function dragSel(root,sel,get,done,prev){var A=null,pend=null,cur=null;
+ function cellAt(e){var el=document.elementFromPoint(e.clientX,e.clientY);return el&&el.closest?el.closest(sel):null}
+ root.style.touchAction='none';
+ root.addEventListener('pointerdown',function(e){var c=cellAt(e);if(!c)return;e.preventDefault();A=c;cur=c;prev(get(A),get(A))});
+ root.addEventListener('pointermove',function(e){if(!A)return;var c=cellAt(e);if(c&&c!==cur){cur=c;prev(get(A),get(c))}});
+ function up(e){if(!A)return;var c=cellAt(e)||cur;prev(null,null);var a=A;A=null;if(!c)return;if(c!==a){if(pend){pend.classList.remove('s');pend=null}done(get(a),get(c))}else if(pend&&pend!==c){var p0=pend;pend.classList.remove('s');pend=null;done(get(p0),get(c))}else if(pend===c){c.classList.remove('s');pend=null}else{pend=c;c.classList.add('s')}}
+ window.addEventListener('pointerup',up);root.addEventListener('pointercancel',function(){A=null;prev(null,null)})}
+function svgLine(g,x1,y1,x2,y2,w,col,op){var l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke',col);l.setAttribute('stroke-width',w);l.setAttribute('stroke-linecap','round');l.setAttribute('stroke-opacity',op);g.appendChild(l);return l}
+
+/* ---------- 6) cacapalavras estilo jornal ---------- */
+function actJn(){var t=T[tema],N=12,words=t.jn.map(function(x){return x[0]}),G=gridWords(words,N,D8.slice(0,5),rng(seedOf(tema+'jn')));
+ var h=bar()+'<div class="jornal"><div class="jh"><span>O DIÁRIO DO EMPREENDEDOR</span><small>CAÇA-PALAVRAS · '+esc(t.nome.toUpperCase())+'</small></div><div class="jc"><div class="jgw"><div class="jg" id="jg" style="--n:'+N+'">'+G.g.map(function(row,y){return row.map(function(c,x){return '<b data-y="'+y+'" data-x="'+x+'">'+c+'</b>'}).join('')}).join('')+'</div><svg class="jm" viewBox="0 0 '+N+' '+N+'"><g id="jmg"></g><g id="jmp"></g></svg></div><ol class="jd">'+t.jn.map(function(x,i){return '<li data-w="'+x[0]+'"><i>'+(i+1)+'.</i> '+esc(x[1])+' <small>('+x[0].length+' letras)</small></li>'}).join('')+'</ol></div><p class="mut" style="margin:6px 0 0">Passe o dedo (ou o mouse) da primeira à última letra, ou toque na primeira e na última. Pode estar na horizontal, vertical ou diagonal, para a frente ou para trás.</p></div>';
+ stage.innerHTML=h;wireBar();var found=0,jmg=stage.querySelector('#jmg'),jmp=stage.querySelector('#jmp');
+ function get(c){return [+c.dataset.y,+c.dataset.x]}
+ setHint(4,function(){var ls=stage.querySelectorAll('.jd li');for(var i=0;i<ls.length;i++){var li=ls[i];if(li.classList.contains('f')||li.dataset.hint)continue;var p=G.pl[li.dataset.w];if(!p)continue;var cell=stage.querySelector('#jg b[data-y="'+p[0]+'"][data-x="'+p[1]+'"]');if(!cell)continue;cell.style.background='#ff9500';li.dataset.hint=1;logIt('Dica (−5) no caça-palavras: '+(i+1)+'ª palavra',null);return true}return false});
+
+ function prev(a,b){jmp.innerHTML='';if(!a)return;var ln=lineCells(a,b);if(!ln)return;var f=ln[0],l=ln[ln.length-1];svgLine(jmp,f[1]+.5,f[0]+.5,l[1]+.5,l[0]+.5,.7,'#888',.35)}
+ dragSel(stage.querySelector('#jg'),'b',get,function(a,b){var ln=lineCells(a,b);if(!ln)return;var wd=ln.map(function(q){return G.g[q[0]][q[1]]}).join(''),rv=wd.split('').reverse().join(''),hit=words.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('li[data-w="'+hit+'"]');
+  if(hit&&!li.classList.contains('f')){var col=MK[found%MK.length];li.classList.add('f');li.style.setProperty('--mk',col);svgLine(jmg,ln[0][1]+.5,ln[0][0]+.5,ln[ln.length-1][1]+.5,ln[ln.length-1][0]+.5,.7,col,.45);found++;award('jn'+hit,3);if(found===words.length)fimAct('jn')}},prev)}
+
+/* ---------- 5) mini colmeia ---------- */
+function actHv(){var t=T[tema],R_=4,cells=[],idx={};for(var q=-R_;q<=R_;q++)for(var r=Math.max(-R_,-q-R_);r<=Math.min(R_,-q+R_);r++){idx[q+','+r]=cells.length;cells.push({q:q,r:r,c:''})}
+ var DIR=[[1,0],[0,1],[-1,1],[-1,0],[0,-1],[1,-1]],rd,att=0,all;
+ do{cells.forEach(function(c){c.c=''});rd=rng(seedOf(tema+'hv'+(att?att:'')));all=0;
+ HIVE.slice().sort(function(a,b){return b.length-a.length}).forEach(function(w){for(var tr=0;tr<600;tr++){var d=DIR[Math.floor(rd()*6)],s=cells[Math.floor(rd()*cells.length)],ok=true,path=[];for(var k=0;k<w.length;k++){var i=idx[(s.q+d[0]*k)+','+(s.r+d[1]*k)];if(i===undefined||(cells[i].c&&cells[i].c!==w[k])){ok=false;break}path.push(i)}if(ok){path.forEach(function(i,k){cells[i].c=w[k]});all++;return}}});att++}while(all<HIVE.length&&att<300);
+ var L='ABCDEFGHIJLMNOPQRSTUVX';cells.forEach(function(c){if(!c.c)c.c=L[Math.floor(rd()*L.length)]});
+ var S=26,W=Math.round(S*Math.sqrt(3)*(2*R_+1))+10,H=Math.round(S*1.5*(2*R_)+S*2)+10;
+ function pos(c){return [W/2+S*Math.sqrt(3)*(c.q+c.r/2),H/2+S*1.5*c.r]}
+ function poly(x,y){var p=[];for(var k=0;k<6;k++){var a=Math.PI/180*(60*k-30);p.push((x+(S-1)*Math.cos(a)).toFixed(1)+','+(y+(S-1)*Math.sin(a)).toFixed(1))}return p.join(' ')}
+ var h=bar()+'<h2 id="pergunta">🐝 Mini colmeia: ache as 8 palavras</h2><div class="hv"><svg id="hx" viewBox="0 0 '+W+' '+H+'">'+cells.map(function(c,i){var p=pos(c);return '<g class="hc" data-i="'+i+'"><polygon points="'+poly(p[0],p[1])+'"/><text x="'+p[0].toFixed(1)+'" y="'+(p[1]+1).toFixed(1)+'">'+c.c+'</text></g>'}).join('')+'<g id="hmg" pointer-events="none"></g><g id="hmp" pointer-events="none"></g></svg><ul class="hw">'+HIVE.map(function(w){return '<li data-w="'+w+'">'+w+'</li>'}).join('')+'</ul></div><p class="mut">Passe o dedo (ou o mouse) da primeira à última letra, ou toque na primeira e na última. Em linha reta, em qualquer direção.</p>';
+ stage.innerHTML=h;wireBar();var found=0,hmg=stage.querySelector('#hmg'),hmp=stage.querySelector('#hmp');
+ function get(g){return +g.dataset.i}
+ function path(i,j){var a=cells[i],c=cells[j],dq=c.q-a.q,dr=c.r-a.r,n=Math.max(Math.abs(dq),Math.abs(dr),Math.abs(dq+dr));if(!n)return null;var dd=[dq/n,dr/n];if(DIR.every(function(d){return d[0]!==dd[0]||d[1]!==dd[1]}))return null;var pt=[];for(var k=0;k<=n;k++){var x=idx[(a.q+dd[0]*k)+','+(a.r+dd[1]*k)];if(x===undefined)return null;pt.push(x)}return pt}
+ function prev(i,j){hmp.innerHTML='';if(i===null)return;var pt=path(i,j);if(!pt)return;var a=pos(cells[pt[0]]),b=pos(cells[pt[pt.length-1]]);svgLine(hmp,a[0],a[1],b[0],b[1],S*1.15,'#888',.35)}
+ dragSel(stage.querySelector('#hx'),'.hc',get,function(i,j){var pt=path(i,j);if(!pt)return;var wd=pt.map(function(x){return cells[x].c}).join(''),rv=wd.split('').reverse().join(''),hit=HIVE.filter(function(w){return w===wd||w===rv})[0],li=hit&&stage.querySelector('.hw li[data-w="'+hit+'"]');
+  if(hit&&!li.classList.contains('f')){var col=MK[found%MK.length],a=pos(cells[pt[0]]),b=pos(cells[pt[pt.length-1]]);li.classList.add('f');li.style.setProperty('--mk',col);svgLine(hmg,a[0],a[1],b[0],b[1],S*1.15,col,.45);found++;award('hv'+hit,3);if(found===HIVE.length)fimAct('hv')}},prev)}
+
+/* ---------- tabela do tema ---------- */
+function actTb(){var t=T[tema],tot=0;t.tb.forEach(function(x){tot+=x[1]});var last=t.tb[3][1],FW=fw(t);
+ var h=bar()+'<h2 id="pergunta">📋 Analise a tabela e responda</h2><p>'+esc(t.tbTit)+'</p><table class="tab"><tr><th>'+esc(t.tbCol[0])+'</th><th>'+esc(t.tbCol[1])+'</th><th>'+esc(t.tbCol[2])+'</th></tr>'+t.tb.map(function(x,i){return i<3?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td><input class="n" data-q="o1" inputmode="numeric" placeholder="?"></td><td><input class="n" data-q="o2" inputmode="numeric" placeholder="?"></td></tr>'}).join('')+'</table><p class="mut">Complete a última linha: quantas respostas e qual porcentagem. Ao tocar em Conferir, aguarde 5 segundos.</p>';
+ var Q=[['q1','1. Quantas pessoas responderam no total?',String(tot)],['q3','2. Quantas pessoas a mais escolheram "'+t.tb[0][0]+'" do que "'+t.tb[2][0]+'"?',String(t.tb[0][1]-t.tb[2][1])],['q4','3. Se fossem 300 pessoas na mesma proporção, quantas escolheriam "'+t.tb[0][0]+'"?',String(300*t.tb[0][1]/tot)]];
+ h+='<div class="card" style="--c:'+t.cor+'"><p>4. Qual foi a opção mais escolhida? Escreva a 1ª palavra, uma letra em cada quadrinho. <small>('+FW.length+' letras)</small></p>'+boxHtml('tbq2',FW)+' <span class="fb"></span></div>';
+ Q.forEach(function(x){h+='<div class="card" style="--c:'+t.cor+'"><p>'+esc(x[1])+'</p><input class="n" data-q="'+x[0]+'" inputmode="numeric" autocomplete="off" style="max-width:10em"> <span class="fb"></span></div>'});
+ h+='<div class="card" style="--c:'+t.cor+'"><p>5. '+esc(t.tbOpen)+' Explique em uma frase.</p><textarea rows="2" id="tbOpen"></textarea></div><div class="nav"><span class="fb" id="tbfb"></span><button class="btn" id="tbChk">Conferir ✔</button></div><p class="mut">A pergunta 5 é aberta: chame o professor para conferir.</p>';
+ stage.innerHTML=h;wireBar();wireBoxes(stage,function(i,w){logIt('Tabela: opção mais escolhida = '+w,true);award('tbq2',4)},function(i,w){logIt('Tabela: preferência = '+w,false)});
+ [].forEach.call(stage.querySelectorAll('input,textarea'),function(e){e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
+ var busy=false;stage.querySelector('#tbChk').onclick=function(){if(busy)return;busy=true;var btn=this;btn.disabled=true;var fb0=stage.querySelector('#tbfb');
+  wait(fb0,function(){busy=false;btn.disabled=false;var ok=0,need=6;
+   function val(k){return norm(stage.querySelector('[data-q="'+k+'"]').value).replace('%','')}
+   function mark(el,good,key,txt){el.style.borderColor=good?'#1f9d55':'#d93025';logIt(txt+': '+el.value,good);if(good){award('tb'+key,4);ok++}return good}
+   mark(stage.querySelector('[data-q="o1"]'),sameNum(val('o1'),String(last)),'o1','Tabela · Outro (respostas)');
+   mark(stage.querySelector('[data-q="o2"]'),sameNum(val('o2'),String(Math.round(last/tot*100))),'o2','Tabela · Outro (%)');
+   Q.forEach(function(x){var el=stage.querySelector('[data-q="'+x[0]+'"]'),good=sameNum(el.value,x[2])||(x[0]==='q1'&&sameNum(el.value,String(tot-last)));var fb=el.parentNode.querySelector('.fb');fb.textContent=good?'✔ Certo!':'✘ Confira a conta';fb.className='fb '+(good?'ok':'no');mark(el,good,x[0],'Tabela · '+x[0])});
+   var g=stage.querySelector('.bxs[data-i="tbq2"]'),w=[].map.call(g.querySelectorAll('input'),function(z){return z.value}).join('');if(w===FW){ok++;award('tbq2',4)}
+   var o=stage.querySelector('#tbOpen').value.trim();if(o)logIt('Tabela · conclusão: '+o.slice(0,120));
+   fb0.textContent=ok===6?'✔ Tudo certo!':ok+' de 6 certas';fb0.className='fb '+(ok===6?'ok':'no');if(ok===6)fimAct('tb')})}}
+
+/* ---------- 7) pesquisa escrita (discursiva) ---------- */
+function steps(t){return[
+ {id:'mapa',t:'Mapa de ideias',q:'Escreva 10 palavras ou ideias que você associa ao tema: '+t.neg+'.',dica:'Pode ser lei, lugar, pessoa, sentimento. Não precisa estar certo agora.',multi:10,min:3},
+ {id:'explica',t:'Explique com suas palavras',q:'O que foi o apartheid e por que foi injusto? Use pelo menos duas leis ou fatos.',min:40},
+ {id:'geo',t:'Olhar geográfico',q:'Como o apartheid organizou o espaço (bantustões, townships, áreas separadas)? Que efeitos isso pode ter até hoje?',min:40},
+ {id:'fil',t:'Olhar filosófico',q:'Uma lei pode ser legal e injusta? Relacione com a desobediência civil e com o Ubuntu.',min:40},
+ {id:'hoje',t:'E hoje?',q:'Que formas de discriminação ainda existem (no Brasil ou no mundo)? Proponha uma atitude que você pode tomar. Responda: '+t.tbOpen,min:30}]}
+function dsDone(id,s){var v=R[tema][id];if(s.multi)return (v||[]).filter(function(x){return (x||'').trim().length>=s.min}).length>=s.multi;return !!v&&v.trim().length>=s.min}
+var dsStep=0;
+function actDs(){var t=T[tema],S=steps(t);if(dsStep>=S.length){dsStep=0;fimAct('ds');return hub()}var s=S[dsStep],v=R[tema][s.id];
+ var h=bar(S.map(function(x,i){return '<button class="pill'+(i===dsStep?' on':'')+(dsDone(x.id,x)?' ok':'')+'" data-i="'+i+'">'+(i+1)+'</button>'}).join(''))+'<div class="card" style="--c:'+t.cor+'"><h2>'+t.em+' '+(dsStep+1)+'. '+esc(s.t)+'</h2><p id="pergunta">'+esc(s.q)+'</p>'+(s.dica?'<div class="dica">'+esc(s.dica)+'</div>':'');
+ if(s.multi)h+=Array.apply(null,Array(s.multi)).map(function(_,i){return '<textarea data-m="'+i+'" rows="1" placeholder="Pergunta '+(i+1)+'">'+esc((v||[])[i]||'')+'</textarea>'}).join('');else h+='<textarea rows="4" data-s="1">'+esc(v||'')+'</textarea>';
+ h+='</div><div class="nav"><button class="btn alt" id="ant"'+(dsStep?'':' disabled')+'>◀ Anterior</button><button class="btn" id="prox">'+(dsStep===S.length-1?'Terminar ✔':'Próximo ▶')+'</button></div><p class="mut">Estas respostas são abertas: chame o professor para conferir.</p>';
+ stage.innerHTML=h;wireBar();
+ function save(){R[tema][s.id]=s.multi?[].map.call(stage.querySelectorAll('[data-m]'),function(x){return x.value}):stage.querySelector('[data-s]').value;if(dsDone(s.id,s))award('ds'+s.id,6)}
+ [].forEach.call(stage.querySelectorAll('textarea'),function(e){e.addEventListener('input',save);e.addEventListener('keydown',function(ev){ev.stopPropagation()})});
+ stage.querySelector('#ant').onclick=function(){save();dsStep--;actDs()};stage.querySelector('#prox').onclick=function(){save();dsStep++;actDs()};
+ [].forEach.call(stage.querySelectorAll('.pill'),function(b){b.onclick=function(){save();dsStep=+b.dataset.i;actDs()}})}
+/* ---------- versao para imprimir (so apos a senha do professor, via botao da impressora) ---------- */
+function printMode(){
+ var sel='all',gab=true,pf=1,mg=10;
+ var css=document.createElement('style');
+ css.textContent='#pm-bar{position:sticky;top:0;z-index:2147483000;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 14px;font:700 14px Arial}#pm-bar select,#pm-bar button{font:700 14px Arial;padding:6px 10px;border-radius:99px;border:0}#pm-bar button{background:#ffd24d;cursor:pointer}'+
+ '.pmp{background:#fff;color:#000;max-width:794px;margin:12px auto;padding:var(--mg,10mm);font-family:"Segoe UI",Arial,sans-serif;font-size:calc(12.5px*var(--pf,1));line-height:1.3;box-sizing:border-box}.pmp.pg{break-before:page}.pmp h1{font-size:1.6em;margin:0}.pmp .id{display:flex;gap:16px;margin:6px 0 8px}.pmp .id span{flex:1;border-bottom:1px solid #000;padding-bottom:2px}.pmp h2{font-size:1.1em;border-bottom:2px solid #000;margin:8px 0 4px}.pmp ol{margin:0;padding-left:22px}.pmp li{margin:3px 0;break-inside:avoid}.pmp .bx{display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px}.pmp .bx i{width:19px;height:21px;border:1.5px solid #000;display:inline-block}.pmp .ln{border-bottom:1px solid #000;height:23px;margin:3px 0}.pmp table{border-collapse:collapse}.pmp td,.pmp th{border:1.5px solid #000;padding:3px 10px}.pmp .jgp{display:grid;grid-template-columns:repeat(12,22px);border:2px solid #000;width:max-content}.pmp .jgp b{width:22px;height:22px;border:.5px solid #999;display:flex;align-items:center;justify-content:center;font:700 13px Georgia,serif}.pmp .cols{display:flex;gap:14px;align-items:flex-start}.pmp.gk,.pmp.gk *{font-family:Arial,Helvetica,sans-serif!important}.pmp.gk .rd{color:#d00000!important;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pmp.gk .rd{color:#d00000!important;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pmp.gk h3{margin:8px 0 2px;font-size:1.05em}.pmp small{font-size:.85em}.pmp .zg{display:flex;align-items:stretch;border:2px solid #000;height:38mm;margin:3px 0 4px;break-inside:avoid}.pmp .zg .zt{writing-mode:vertical-rl;transform:rotate(180deg);background:#000;color:#fff;font:700 .8em Arial;text-align:center;padding:0 3px;letter-spacing:1px}.pmp .zg .zq{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;border-left:1px solid #000;font:700 .85em Arial}.pmp .zg .zq i{width:15px;height:15px;border:1.5px solid #000;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 9px Arial;font-style:normal;color:#555}'+
+ '@media print{#pm-bar{display:none!important}.pmp{margin:0;max-width:none}@page{size:A4;margin:8mm}}';
+ document.head.appendChild(css);
+ [].forEach.call(document.querySelectorAll('body>*'),function(e){if(e.id!=='imp-bar'&&e.tagName!=='SCRIPT'&&e.tagName!=='STYLE')e.style.display='none'});
+ var ib=document.getElementById('imp-bar');if(ib)ib.style.display='none';
+ var bar=document.createElement('div');bar.id='pm-bar';
+ bar.innerHTML='<span>🖨️ Apartheid — versão para imprimir</span><select id="pmSel"><option value="all">Todos os 4 temas</option>'+Object.keys(T).map(function(k){return '<option value="'+k+'">'+T[k].em+' '+T[k].nome+'</option>'}).join('')+'</select><label><input type="checkbox" id="pmG" checked> Incluir gabarito (só você vê)</label><label>Letra <input type="range" id="pmF" min="70" max="130" value="100" style="width:90px"></label><label>Margem <input type="range" id="pmM" min="4" max="20" value="10" style="width:90px"></label><button id="pmP">Imprimir / Salvar PDF</button>';
+ var root=document.createElement('div');root.id='pm-root';document.body.appendChild(bar);document.body.appendChild(root);
+ function opts(t,k){var r=rng(seedOf(k+'print')),L='ABCD';return mcQs(t).map(function(x){var o=shuf([x.ok].concat(x.wr),r);return {q:x.q,o:o,a:L[o.indexOf(x.ok)]}})}
+ function boxes(n){return '<span class="bx">'+Array(n+1).join('<i></i>')+'</span>'}
+ function sheet(k){var t=T[k],mc=opts(t,k),tp=tpQs(t),tot=0;t.tb.forEach(function(x){tot+=x[1]});var G=gridWords(t.jn.map(function(x){return x[0]}),12,D8.slice(0,5),rng(seedOf(k+'jn')));
+  var h='<div class="pmp pg"><h1>'+t.em+' Apartheid — '+esc(t.nome)+'</h1><div class="id"><span>Nome:</span><span>Turma:</span><span>Data:</span></div><div class="zg"><div class="zt">FOLHA DE RESPOSTAS · PARTE 1</div>'+mc.map(function(x,i){return '<div class="zq"><b>'+(i+1)+'</b>'+'ABCD'.split('').map(function(L){return '<i>'+L+'</i>'}).join('')+'</div>'}).join('')+'</div><p style="margin:0">Tema: '+esc(t.neg)+'. Responda às atividades.</p>';
+  h+='<h2>Parte 1 — Marque a alternativa certa</h2><ol>'+mc.map(function(x){return '<li>'+esc(x.q)+'<br>'+x.o.map(function(v,i){return '<b>'+'ABCD'[i]+')</b> '+esc(v)}).join(' &nbsp; ')+'</li>'}).join('')+'</ol>';
+  h+='<h2>Parte 2 — Escreva uma letra (ou número) em cada quadrinho</h2><ol>'+tp.map(function(x){return '<li>'+esc(x[0])+boxes(x[1].length)+'</li>'}).join('')+'</ol>';
+  h+='<h2>Parte 3 — Analise a tabela</h2><p style="margin:2px 0">'+esc(t.tbTit)+'</p><table><tr><th>'+esc(t.tbCol[0])+'</th><th>'+esc(t.tbCol[1])+'</th><th>'+esc(t.tbCol[2])+'</th></tr>'+t.tb.map(function(x,i){return i<3?'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+Math.round(x[1]/tot*100)+'%</td></tr>':'<tr><td>'+esc(x[0])+'</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>'}).join('')+'</table><ol><li>Quantas pessoas responderam no total? ____________</li><li>Quantas pessoas a mais escolheram "'+esc(t.tb[0][0])+'" do que "'+esc(t.tb[2][0])+'"? ____________</li><li>Se pesquisassem 300 pessoas na mesma proporção, quantas prefeririam "'+esc(t.tb[0][0])+'"? ____________</li><li>Qual foi a opção mais escolhida? '+boxes(fw(t).length)+'</li></ol>';
+  h+='</div><div class="pmp pg"><h2>Parte 4 — Caça-palavras: ache as 8 respostas</h2><div class="cols"><div class="jgp">'+G.g.map(function(r){return r.map(function(c){return '<b>'+c+'</b>'}).join('')}).join('')+'</div><ol>'+t.jn.map(function(x){return '<li>'+esc(x[1])+' <small>('+x[0].length+' letras)</small></li>'}).join('')+'</ol></div>';
+  h+='<h2>Parte 5 — Pesquisa escrita</h2><p style="margin:2px 0">Mapa de ideias: escreva 10 palavras ou ideias que você associa ao tema.</p><ol>'+[1,2,3,4,5,6,7,8,9,10].map(function(){return '<li><div class="ln" style="height:19px"></div></li>'}).join('')+'</ol><p style="margin:2px 0">O que foi o apartheid e por que foi injusto? Cite duas leis ou fatos.</p><div class="ln"></div><div class="ln"></div><p style="margin:2px 0">Como o apartheid organizou o espaço (bantustões, townships)? Que efeitos isso tem até hoje?</p><div class="ln"></div><div class="ln"></div><p style="margin:2px 0">Uma lei pode ser legal e injusta? Relacione com a desobediência civil e o Ubuntu.</p><div class="ln"></div><div class="ln"></div><p style="margin:2px 0">'+esc(t.tbOpen)+' Que atitude você pode tomar hoje contra a discriminação?</p><div class="ln"></div><div class="ln"></div></div>';
+  return h}
+ function key(k){var t=T[k],mc=opts(t,k),tp=tpQs(t),tot=0;t.tb.forEach(function(x){tot+=x[1]});
+  return '<h3>'+t.em+' '+esc(t.nome)+'</h3><p style="margin:0"><b>Parte 1:</b> '+mc.map(function(x,i){return (i+1)+'-'+'<span class="rd">'+(x.a)+'</span>'}).join(' &nbsp; ')+'</p><p style="margin:0"><b>Parte 2:</b> '+tp.map(function(x,i){return (i+1)+') '+'<span class="rd">'+(x[1])+'</span>'}).join(' &nbsp; ')+'</p><p style="margin:0"><b>Parte 3:</b> Última linha = '+'<span class="rd">'+(t.tb[3][1])+'</span>'+' respostas e '+'<span class="rd">'+(Math.round(t.tb[3][1]/tot*100)+'%')+'</span>'+'; total = '+'<span class="rd">'+(tot)+'</span>'+'; diferença = '+'<span class="rd">'+(t.tb[0][1]-t.tb[2][1])+'</span>'+'; em 300 pessoas = '+'<span class="rd">'+(300*t.tb[0][1]/tot)+'</span>'+'; mais escolhida = '+'<span class="rd">'+(fw(t))+'</span>'+'</p><p style="margin:0"><b>Parte 4:</b> '+t.jn.map(function(x){return '<span class="rd">'+(x[0])+'</span>'}).join(', ')+'</p><p style="margin:0"><b>Parte 5:</b> resposta pessoal (o professor confere: 10 ideias, explicação com duas leis ou fatos, olhar geográfico, olhar filosófico e atitude concreta).</p>'}
+ function render(){var ks=sel==='all'?Object.keys(T):[sel],h=ks.map(sheet).join('');
+  if(gab)h+='<div class="pmp gk pg"><h1>GABARITO — uso do professor</h1><p style="margin:2px 0 6px">Apartheid · Filosofia e Geografia · Ensino Médio</p>'+ks.map(key).join('')+'</div>';
+  root.innerHTML=h;root.style.setProperty('--pf',pf);root.style.setProperty('--mg',mg+'mm')}
+ bar.querySelector('#pmSel').onchange=function(){sel=this.value;render()};bar.querySelector('#pmG').onchange=function(){gab=this.checked;render()};
+ bar.querySelector('#pmF').oninput=function(){pf=this.value/100;root.style.setProperty('--pf',pf)};bar.querySelector('#pmM').oninput=function(){mg=this.value;root.style.setProperty('--mg',mg+'mm')};bar.querySelector('#pmP').onclick=function(){window.print()};
+ render()}
+addEventListener('load',function(){if(window.EDU_IMP)printMode()});
+menu();
+})();
+</script>
+<script src="config.js?v=4"></script><script src="ident.js?v=6"></script><script src="catalogo.js?v=7"></script><script src="edu-report.js?v=7"></script><script src="menu.js?v=26"></script><script src="edu-lang.js?v=4"></script><script src="imprimir.js?v=6"></script><script src="anticheat.js?v=6"></script>
+</html>
