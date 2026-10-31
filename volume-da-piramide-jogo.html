@@ -271,7 +271,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
 </script>
 <script>
 (function(){
-  const TODAS=ITEMS.map(it=>it.en),OFF=[0, 5, 9, 13],NR=OFF.length-1;
+  const AUD=(()=>{try{return localStorage.getItem('imp_audio')==='1'}catch(e){return false}})();const TODAS=ITEMS.map(it=>it.en);let OFF=[0, 5, 9, 13];if(AUD){const O=[0],F=[];for(let i=0;i<OFF.length-1;i++){const k=Math.ceil((OFF[i+1]-OFF[i])/5);for(let s=OFF[i],j=1;s<OFF[i+1];s+=5,j++){O.push(Math.min(s+5,OFF[i+1]));const f=FASES[i].slice();if(k>1)f[1]+=' · '+j+'/'+k;F.push(f)}}OFF=O;FASES.splice(0,FASES.length,...F)}const NR=OFF.length-1;
   const L=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ','AA','AB'].flatMap(x=>x.length>1&&x!=='AA'&&x!=='AB'?[x]:[x]);
   let rodada=0,pick,idx,o,let_of,cards=[],chips=[],N=0;
   const msg=document.getElementById('jmsg'),fol=document.getElementById('folhaJogo');
@@ -443,7 +443,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
  b.style.cssText='margin-left:6px;cursor:pointer;border:2px solid #1f5fbf;border-radius:99px;background:#fff;font:700 13px sans-serif;padding:2px 10px';
  function ui(){b.textContent=on?'🦯 Modo áudio: ligado':'🦯 Modo áudio';b.style.background=on?'#c9f5d6':'#fff';b.title='Arrastando, a voz lê o cartão em português; solte quando ouvir o certo'}
  ui();(fb&&fb.parentNode?fb.parentNode:document.body).insertBefore(b,fb?fb.nextSibling:null);
- b.addEventListener('click',function(){on=!on;try{localStorage.setItem('imp_audio',on?'1':'0')}catch(e){}ui();if(on)say('Modo áudio ligado. Segure uma resposta, arraste sobre os cartões e solte quando ouvir a frase certa.')});
+ b.addEventListener('click',function(){on=!on;try{localStorage.setItem('imp_audio',on?'1':'0')}catch(e){}ui();if(on)say('Modo áudio ligado. Poucas perguntas por vez.');setTimeout(function(){location.reload()},on?2500:200)});
  function say(t){if(!S)return;S.cancel();var u=new SpeechSynthesisUtterance(' , '+t);u.lang='pt-BR';try{var v=window.EDU_VOICE&&EDU_VOICE('pt-BR');if(v)u.voice=v}catch(e){}u.rate=.85;setTimeout(function(){S.speak(u)},120)}
  function txt(c){return [].map.call(c.querySelectorAll('text'),function(t){return t.textContent}).join(' ').replace(/\s+/g,' ').trim()}
  addEventListener('pointermove',function(e){
