@@ -439,7 +439,7 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
  var on=false,S=window.speechSynthesis,last=null,b=document.createElement('button');
  try{on=localStorage.getItem('imp_audio')==='1'}catch(e){}
  var fb=document.getElementById('falaBtn');
- b.type='button';b.id='audioBtn';b.setAttribute('aria-label','Modo áudio para quem não enxerga: ao arrastar, a voz lê o cartão sob o dedo');
+ if(on){var st=document.createElement('style');st.textContent='.jgrid{grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:2vh 2vw!important}.jbank{grid-template-columns:repeat(3,1fr)!important;gap:1.6vh 1.6vw!important;padding:1.4vh 1.4vw!important}.jbank div{white-space:normal!important;font-size:clamp(20px,3.6vh,36px)!important;line-height:1.15;text-align:center;padding:1.2vh .6vw!important;overflow:visible!important}.jc{padding:1vh!important}';document.head.appendChild(st);setTimeout(function(){try{fitChips()}catch(e){}},50)}b.type='button';b.id='audioBtn';b.setAttribute('aria-label','Modo áudio para quem não enxerga: ao arrastar, a voz lê o cartão sob o dedo');
  b.style.cssText='margin-left:6px;cursor:pointer;border:2px solid #1f5fbf;border-radius:99px;background:#fff;font:700 13px sans-serif;padding:2px 10px';
  function ui(){b.textContent=on?'🦯 Modo áudio: ligado':'🦯 Modo áudio';b.style.background=on?'#c9f5d6':'#fff';b.title='Arrastando, a voz lê o cartão em português; solte quando ouvir o certo'}
  ui();(fb&&fb.parentNode?fb.parentNode:document.body).insertBefore(b,fb?fb.nextSibling:null);
