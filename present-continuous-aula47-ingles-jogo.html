@@ -517,7 +517,7 @@ function rMt(){
  function mk(col,arr,side){arr.forEach(function(it){var b=document.createElement('button');b.type='button';b.innerHTML=lab(it.v).replace(/^(?!<svg|<img)(.*)$/,function(m){return esc(m)});b.dataset.i=it.i;b.dataset.s=side;
   b.onclick=function(){if(b.classList.contains('done'))return;
    if(sel&&sel.dataset.s!==side){var a=sel;sel=null;a.classList.remove('sel');
-    if(a.dataset.i===b.dataset.i){a.classList.add('done');b.classList.add('done');setPts(S.extra?5:10);beep(1);done++;var fb=$('msg');fb.className='fb ok';fb.textContent='Muito bem!';
+    if(a.dataset.i===b.dataset.i){a.classList.add('done');b.classList.add('done');var PC=[['#c9f5d6','#13a538'],['#ffe3a8','#e09b00'],['#d6e4ff','#2f6fe0'],['#ffd0e6','#d6368a'],['#e6d4ff','#7a3fd0'],['#c8f2f2','#0e9aa0']][done%6];[a,b].forEach(function(e){e.style.background=PC[0];e.style.borderColor=PC[1]});setPts(S.extra?5:10);beep(1);done++;var fb=$('msg');fb.className='fb ok';fb.textContent='Muito bem!';
      var tx=Pp[+b.dataset.i],ss=/___/.test(tx[0])?tx[0].replace('___',tx[1]):(tx[0].indexOf('pic:')===0?tx[1]:tx[0]+' '+tx[1]);say(ss);
      if(done===Pp.length){$('nx').hidden=false;$('nx').focus()}}
     else{a.classList.add('sh');b.classList.add('sh');setTimeout(function(){a.classList.remove('sh');b.classList.remove('sh')},350);var f2=$('msg');f2.className='fb no';f2.textContent='Tente outro.'}}
