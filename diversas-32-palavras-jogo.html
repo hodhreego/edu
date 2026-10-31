@@ -115,6 +115,7 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 .peca{touch-action:none}
 .peca.fantasma{position:fixed;z-index:60;transform:translate(-50%,-50%) scale(1.12);pointer-events:none;box-shadow:0 8px 18px rgba(0,0,0,.3);opacity:.92}
 .alvo .peca{touch-action:manipulation}
+.cn{width:60px!important;height:60px!important;background:#e0b84a center/cover no-repeat;border:2px solid #0006!important;font-size:0!important;box-shadow:0 3px 8px #0005}.dv-moedas i{background:url(img/aula47/m1.webp) center/cover!important;width:40px!important;height:40px!important;border:2px solid #0006!important}
 </style>
 <script src="alf-gate.js?v=2"></script>
 <script src="alf-style.js?v=2"></script>
@@ -122,7 +123,7 @@ h1{text-align:center;color:var(--azul);margin:6px 0 4px;font-size:clamp(1.4rem,4
 </head>
 <body>
 <div id="dv-fx" style="position:fixed;left:0;top:0;height:0;z-index:45;pointer-events:none"></div>
-<div id="dv-top"><div class="dv-moedas" id="dv-moedas"><i>$</i><span id="m-n">0</span></div></div>
+<div id="dv-top"><div class="dv-moedas" id="dv-moedas"><i></i><span id="m-n">0</span></div></div>
 
 <section id="t-menu" class="tela on">
   <div class="langbar" id="langbar"></div>
@@ -242,15 +243,16 @@ function fanfarra(){[523,659,784,1046].forEach(function(f,i){setTimeout(function
 var PROG={};try{PROG=JSON.parse(localStorage.getItem("div32_prog")||"{}")}catch(e){}
 var MOEDAS=0;try{MOEDAS=parseInt(localStorage.getItem("div32_moedas"))||0}catch(e){}
 function salvaM(){try{localStorage.setItem("div32_moedas",MOEDAS)}catch(e){}}
+var MI=["m1","m50","m25","m10","m5"];function moedaImg(){return "url(img/aula47/"+MI[Math.floor(Math.random()*5)]+".webp)"}
 function moedasVoam(n){
   var al=$("dv-moedas").getBoundingClientRect(),cx=innerWidth/2,cy=innerHeight/2;
   for(var i=0;i<n;i++)(function(i){setTimeout(function(){
-    var c=document.createElement("div");c.className="cn";c.textContent="$";c.style.left=cx-15+"px";c.style.top=cy-15+"px";
+    var c=document.createElement("div");c.className="cn";c.style.backgroundImage=moedaImg();c.style.left=cx-30+"px";c.style.top=cy-30+"px";
     c.style.setProperty("--ox",(Math.random()*160-80)+"px");c.style.setProperty("--oy",(Math.random()*-90-10)+"px");
     c.style.setProperty("--dx",(al.left+al.width/2-cx)+"px");c.style.setProperty("--dy",(al.top+al.height/2-cy)+"px");
     $("dv-fx").appendChild(c);setTimeout(function(){c.remove();tom(1200+i*80,"sine",.06)},900)},i*90)})(i)
 }
-function chuvaMoedas(n){for(var i=0;i<n;i++)(function(i){setTimeout(function(){var c=document.createElement("div");c.className="cn chuva";c.textContent="$";c.style.left=Math.random()*96+"vw";c.style.top="0";$("dv-fx").appendChild(c);setTimeout(function(){c.remove()},2300)},i*70)})(i)}
+function chuvaMoedas(n){for(var i=0;i<n;i++)(function(i){setTimeout(function(){var c=document.createElement("div");c.className="cn chuva";c.style.backgroundImage=moedaImg();c.style.left=Math.random()*96+"vw";c.style.top="0";$("dv-fx").appendChild(c);setTimeout(function(){c.remove()},2300)},i*70)})(i)}
 function moeda(d){
   MOEDAS=Math.max(0,MOEDAS+d);salvaM();var m=$("dv-moedas"),n=$("m-n");if(n)n.textContent=MOEDAS;
   if(m){m.classList.remove("up","down");void m.offsetWidth;m.classList.add(d>0?"up":"down")}
