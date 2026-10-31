@@ -49,6 +49,7 @@ const TEMAS=[
  {id:'colmeia-en',mat:'en',nome:'Colmeias (caça-palavras)',icon:'🐝',cor:'#c62828',desc:'Ache as palavras na colmeia pelas dicas, com correção automática e pontos.'},
  {id:'colmeia-mat',mat:'mat',nome:'Colmeias (caça-palavras)',icon:'🐝',cor:'#1f4fd8',desc:'Ache as palavras na colmeia pelas dicas, com correção automática e pontos.'},
  {id:'present-continuous',mat:'en',nome:'Present Continuous',icon:'✍️',cor:'#c62828',desc:'Teoria curta e perguntas sobre o present continuous. Tem versões adaptadas (Tipo 2 e Tipo 3).'},
+ {id:'atividades-32',mat:'alf',nome:'Atividades das 32 Palavras',icon:'🔤',cor:'#e65100',desc:'Seis atividades de toque: qual é a palavra, monte a palavra, complete a sílaba, ouça e toque, letra inicial e ditado com letras.'},
  {id:'tracado-32',mat:'alf',nome:'Trace a Palavra',icon:'✏️',cor:'#e65100',desc:'Trace cada letra das 33 palavras do Método das 32 Palavras com o dedo ou o mouse. Ganhe estrelas!'},
  {id:'ingles',mat:'en',nome:'Vocabulary and Grammar',icon:sm(FUS),cor:'#c62828',desc:'Ligue a frase ou o número à figura certa. Clique na palavra para ouvir.'},
  {id:'es',mat:'es',nome:'Español',icon:sm(FES),cor:'#c2410c',desc:'Preposiciones de lugar y colmenas de vocabulario: profesiones, ropa, comida, casa, viajes y negocios.'},
@@ -470,7 +471,7 @@ const JOGOS=[
  J('colmeia-fil','🐝','Colmeia: Obras dos filósofos','Caça-palavras em colmeia com correção automática: ache as palavras pelas dicas.','colmeia-fil-1-serie-em-obras-filosoficas-jogo.html','1ª série EM',undefined,''),
  J('present-continuous','✍️','Present Continuous (aula 47)','Revisão do verbo to be, teoria e perguntas sobre o present continuous. Tipo 1 (padrão), Tipo 2 e Tipo 3 (adaptadas).','present-continuous-aula47-ingles-jogo.html','6º ano',undefined,'47'),
  J('colmeia-en','🐝','Colmeia: Present Continuous (aula 47)','Caça-palavras em colmeia com correção automática: ache os verbos com -ing pelas dicas.','colmeia-en-6-ano-aula47-present-continuous-jogo.html','6º ano',undefined,'47'),
- J('tracado-32','🔤','Atividades das 32 Palavras (6 jogos de toque)','Seis atividades de alfabetização em tela de toque: qual é a palavra, monte a palavra, complete a sílaba, ouça e toque, letra inicial e ditado com letras.','atividades-32-palavras-jogo.html','Alfabetização',undefined,undefined),
+ J('atividades-32','🔤','Atividades das 32 Palavras (6 jogos de toque)','Seis atividades de alfabetização em tela de toque: qual é a palavra, monte a palavra, complete a sílaba, ouça e toque, letra inicial e ditado com letras.','atividades-32-palavras-jogo.html','Alfabetização',undefined,undefined),
  J('tracado-32','✏️','Trace a Palavra: Método das 32 Palavras','Trace com o dedo (tablet) ou o mouse cada letra das 33 palavras da apostila. Letra por letra, com sílabas coloridas, som e estrelas.','trace-palavra-32-palavras-jogo.html','Alfabetização',undefined,undefined)
 ];
 

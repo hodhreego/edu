@@ -593,7 +593,7 @@
       {"p":"folha","s":["FO","LHA"],"e":"🍃","f":["LHA","LHE","LHI","LHO","LHU"],"n":["FOLHA","FILHO","MILHO","TELHA","ORELHA","MOLHO"]},
       {"p":"galinha","s":["GA","LI","NHA"],"e":"🐔","f":["NHA","NHE","NHI","NHO","NHU"],"n":["LINHA","SONHO","BANHO","UNHA","NINHO","MOEDINHA"]},
       {"p":"gelo","s":["GE","LO"],"e":"🧊","f":["GA","GE","GI","GO","GU"],"n":["GELO","GENTE","GIRAFA","GIGANTE","TIGELA","GELADEIRA"]},
-      {"p":"grama","s":["GRA","MA"],"e":"🌱","f":["GRA","GRE","GRI","GRO","GRU"],"n":["GRAMA","GRILO","GRUPO","GRAVE","GRITO","TIGRE"]},
+      {"p":"grama","s":["GRA","MA"],"e":"🌿","f":["GRA","GRE","GRI","GRO","GRU"],"n":["GRAMA","GRILO","GRUPO","GRAVE","GRITO","TIGRE"]},
       {"p":"guitarra","s":["GUI","TAR","RA"],"e":"🎸","f":["RRA","RRE","RRI","RRO","RRU"],"n":["GUIA","TERRA","CARRO","JARRA","BURRO","SERRA"]},
       {"p":"livro","s":["LI","VRO"],"e":"📖","f":["VRA","VRE","VRI","VRO","VRU"],"n":["LIVRO","LIVROS","LIVRE","PALAVRA","LAVRA","LIVRARIA"]},
       {"p":"lua","s":["LU","A"],"e":"🌙","f":["LA","LE","LI","LO","LU"],"n":["LUA","LUVA","BOLA","BALA","LATA","LIMA"]},
@@ -755,6 +755,7 @@
       },
 
       irMenu() {
+        clearTimeout(this._tProx);
         try { window.speechSynthesis.cancel(); } catch(e){}
         this.atividadeAtual = 0;
         document.getElementById('btnVoltar').style.display = 'none';
@@ -797,6 +798,7 @@
       },
 
       iniciarAtividade(id) {
+        clearTimeout(this._tProx);
         AudioEngine.init();
         this.atividadeAtual = id;
         this.rodada = 0;
@@ -872,7 +874,7 @@
           fb.textContent = '🎉 Muito bem!';
         }
 
-        setTimeout(() => {
+        this._tProx = setTimeout(() => {
           this.proximaRodada();
         }, 1100);
       },
