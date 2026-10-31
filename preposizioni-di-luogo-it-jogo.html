@@ -543,6 +543,26 @@ document.getElementById("abrir").onclick=()=>document.getElementById("painel").c
 @media screen and (max-width:820px){#falaBtn{top:auto;bottom:10px;right:auto;left:100px}}
 @media print{#fala-w{display:none}}
 </style>
+<script id="audioMode">
+(function(){
+ var on=false,S=window.speechSynthesis,last=null,b=document.createElement('button');
+ try{on=localStorage.getItem('imp_audio')==='1'}catch(e){}
+ var fb=document.getElementById('falaBtn');
+ b.type='button';b.id='audioBtn';b.setAttribute('aria-label','Modo áudio para quem não enxerga: ao arrastar, a voz lê o cartão sob o dedo');
+ b.style.cssText='margin-left:6px;cursor:pointer;border:2px solid #1f5fbf;border-radius:99px;background:#fff;font:700 13px sans-serif;padding:2px 10px';
+ function ui(){b.textContent=on?'🦯 Modo áudio: ligado':'🦯 Modo áudio';b.style.background=on?'#c9f5d6':'#fff';b.title='Arrastando, a voz lê o cartão em português; solte quando ouvir o certo'}
+ ui();(fb&&fb.parentNode?fb.parentNode:document.body).insertBefore(b,fb?fb.nextSibling:null);
+ b.addEventListener('click',function(){on=!on;try{localStorage.setItem('imp_audio',on?'1':'0')}catch(e){}ui();if(on)say('Modo áudio ligado. Segure uma resposta, arraste sobre os cartões e solte quando ouvir a frase certa.')});
+ function say(t){if(!S)return;S.cancel();var u=new SpeechSynthesisUtterance(' , '+t);u.lang='pt-BR';try{var v=window.EDU_VOICE&&EDU_VOICE('pt-BR');if(v)u.voice=v}catch(e){}u.rate=.85;setTimeout(function(){S.speak(u)},120)}
+ function txt(c){return [].map.call(c.querySelectorAll('text'),function(t){return t.textContent}).join(' ').replace(/\s+/g,' ').trim()}
+ addEventListener('pointermove',function(e){
+  if(!on||!document.querySelector('div.ch.drag')){last=null;return}
+  var el=document.elementFromPoint(e.clientX,e.clientY),c=el&&el.closest&&el.closest('.jc');
+  if(c===last)return;last=c;if(c&&!c.classList.contains('ok')){var t=txt(c);if(t)say(t)}else if(!c&&S){S.cancel()}
+ },true);
+ addEventListener('pointerup',function(){last=null},true);
+})();
+</script>
 <script id="fala">
 (function(){
  var on=true,voz=null,S=window.speechSynthesis;
