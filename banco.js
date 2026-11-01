@@ -487,8 +487,8 @@ var ACT=[],ACTN=0,T0=Date.now();
   return m})();
   var D=[['ip18','🍎','iPhone 18 Pro Max','Dynamic Island · gestos',1],['duo','🍎','iPhone Duo','Dobrável · tela dividida',1],['s26u','🤖','Galaxy S26 Ultra','Samsung',0],['s26','🤖','Galaxy S26','Samsung',0],['fold8','🤖','Galaxy Z Fold8','Dobrável · tela dividida',0],['fold8u','🤖','Galaxy Z Fold8 Ultra','Dobrável · tela dividida',0],['xi','🤖','Xiaomi 18 Pro Max','Xiaomi',0],['pocket','🤖','Samsung Galaxy Pocket','Antigo e lento · trava muito',0],['aw','⌚','Apple Watch','Relógio Apple · tela pequena',1],['gw','⌚','Galaxy Watch','Relógio Samsung · Wear OS',0]],d=document.createElement('div'),dv=DEV||'ip18',nn=(NAV==='gst'||NAV==='btn')?NAV:'btn';d.id='navpick';
   function paint(){d.querySelectorAll('[data-dv]').forEach(function(b){b.classList.toggle('on',b.dataset.dv===dv)});d.querySelectorAll('[data-nv]').forEach(function(b){b.classList.toggle('on',b.dataset.nv===nn)});var ios=dv==='ip18'||dv==='duo'||dv==='aw';d.querySelector('.nvs').style.display=ios?'none':''}
-  d.innerHTML='<div class="nvbox"><h3>Qual é o seu celular?</h3><p>Escolha o aparelho. Os dobráveis mostram dois apps em tela dividida. Dá para trocar depois no botão 📱.</p><div class="dvg">'+D.map(function(o){return '<button type="button" data-dv="'+o[0]+'"><i>'+(DVI[o[0]]||o[1])+'</i><b>'+o[2]+'</b><small>'+o[3]+'</small></button>'}).join('')+'</div><div class="nvs"><span>Navegação:</span><button type="button" data-nv="btn">◁ ○ □ Botões</button><button type="button" data-nv="gst">▬ Gestos</button></div><button type="button" class="nvgo">Começar ▶</button></div>';
-  d.addEventListener('click',function(e){var a=e.target.closest('[data-dv]'),b=e.target.closest('[data-nv]'),g=e.target.closest('.nvgo');if(a){dv=a.dataset.dv;paint()}else if(b){nn=b.dataset.nv;paint()}else if(g){DEV=dv;NAV=(dv==='ip18'||dv==='duo'||dv==='aw')?'ios':nn;try{localStorage.setItem('edu_dev',DEV);localStorage.setItem('edu_nav',NAV)}catch(x){}d.remove();if(ph.app==='home'&&FOLD())ph.app='bank';draw()}});
+  d.innerHTML='<div class="nvbox"><h3>Qual é o seu celular?</h3><p>Toque no seu aparelho para começar. Os dobráveis mostram dois apps em tela dividida. Dá para trocar depois no botão 📱.</p><div class="dvg">'+D.map(function(o){return '<button type="button" data-dv="'+o[0]+'"><i>'+(DVI[o[0]]||o[1])+'</i><b>'+o[2]+'</b><small>'+o[3]+'</small></button>'}).join('')+'</div><div class="nvs"><span>Android, navegação (escolha antes de tocar):</span><button type="button" data-nv="btn">◁ ○ □ Botões</button><button type="button" data-nv="gst">▬ Gestos</button></div></div>';
+  d.addEventListener('click',function(e){var a=e.target.closest('[data-dv]'),b=e.target.closest('[data-nv]'),g=e.target.closest('.nvgo');if(b){nn=b.dataset.nv;paint()}else if(a||g){if(a)dv=a.dataset.dv;if(!nn)nn='gst';DEV=dv;NAV=(dv==='ip18'||dv==='duo'||dv==='aw')?'ios':nn;try{localStorage.setItem('edu_dev',DEV);localStorage.setItem('edu_nav',NAV)}catch(x){}d.remove();if(ph.app==='home'&&FOLD())ph.app='bank';draw()}});
   document.body.appendChild(d);paint()}
  var CAL={e:'',r:null};
  function scaleShots(){[].forEach.call($('phone').querySelectorAll('.shth'),function(t){var i=t.firstChild,w=+t.dataset.w,k=t.clientWidth/w;i.style.transform='scale('+k+')';t.style.height=(+t.dataset.h*k)+'px'})}
@@ -569,17 +569,24 @@ var ACT=[],ACTN=0,T0=Date.now();
 function gval(id){var h=0,i;id=String(id||'');for(i=0;i<id.length;i++)h=(h*31+id.charCodeAt(i))>>>0;return [2500,5000,7500,10000][h%4]}
 function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d6862a','#fbe3c2'],[2000,'20','#e3bf2f','#fff4c4'],[1000,'10','#d4564e','#fad4d0'],[500,'5','#8a58b4','#e6d6f4'],[200,'2','#7f8b9c','#e3e8ef']],o=[],r=v,i;DN.forEach(function(d){while(r>=d[0]&&o.length<5){o.push(d);r-=d[0]}});
  return '<div class="cedz">'+o.map(function(d,k){return '<svg class="ced" style="transform:rotate('+((k%2?1:-1)*(2+k*2))+'deg);margin-left:'+(k?-18:0)+'px" viewBox="0 0 120 56" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cg'+d[1]+k+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+d[3]+'"/><stop offset="1" stop-color="'+d[2]+'"/></linearGradient></defs><rect x="1" y="1" width="118" height="54" rx="5" fill="url(#cg'+d[1]+k+')" stroke="'+d[2]+'" stroke-width="2"/><rect x="6" y="6" width="108" height="44" rx="3" fill="none" stroke="#fff" stroke-opacity=".6"/><circle cx="82" cy="28" r="17" fill="'+d[2]+'" opacity=".35"/><path d="M70 36q8-16 24-10-6 4-8 14z" fill="'+d[2]+'" opacity=".55"/><text x="14" y="38" font-family="Georgia,serif" font-weight="700" font-size="28" fill="#222" opacity=".85">'+d[1]+'</text><text x="104" y="16" text-anchor="end" font-family="Arial" font-size="7" font-weight="700" fill="#222" opacity=".6">REAL</text></svg>'}).join('')+'<span class="cedt">'+fmt(v)+'</span></div>'}
- function sciHtml(id){var a=SCI[id];if(!a)return '';if(!XS.sq)XS.sq={};if(XS.sq[id]==null)XS.sq[id]=rnd(0,a.q.length-1);var q=a.q[XS.sq[id]],done=PRIZE['sci-'+id];
-  return '<div class="xapp sc">'+xh(a.t)+'<div class="wb"><h3>📚 Você sabia?</h3><ul>'+a.f.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><div class="sch"><b>🎁 Desafio valendo Pix de '+fmt(q.pz)+'</b>'+notasHtml(q.pz)+'<p>'+q.q+'</p>'+(done?'<p class="ok">✅ Você já recebeu o prêmio deste app!</p>':'<input id="sA" type="text" placeholder="Sua resposta" autocomplete="off"><input id="sK" type="text" placeholder="Cole aqui a sua chave Pix" autocomplete="off"><button type="button" data-x="sci:'+id+'">📨 Enviar resposta</button>')+'<div id="sM" class="dmsg"></div></div></div></div>'}
+ var SJ={};
+ function sciNext(id){var a=SCI[id],k;for(k=0;k<a.q.length;k++)if(!PRIZE['sci-'+id+'-'+k])return k;return -1}
+ function sciHtml(id){var a=SCI[id];if(!a)return '';if(!XS.sq)XS.sq={};var k=sciNext(id),q=k<0?null:a.q[k],j=SJ[id]||0;XS.sq[id]=k;
+  return '<div class="xapp sc">'+xh(a.t)+'<div class="wb"><h3>📚 Você sabia?</h3><ul>'+a.f.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><div class="sjk"><span>🎰 Jackpot do app: <b id="sJ">'+fmt(j)+'</b></span></div><div class="sch">'+(q?'<b>🎁 Desafio valendo '+fmt(q.pz)+' no jackpot ('+(k+1)+'/'+a.q.length+')</b>'+notasHtml(q.pz)+'<p>'+q.q+'</p><input id="sA" type="text" placeholder="Sua resposta" autocomplete="off"><button type="button" data-x="sci:'+id+'">📨 Enviar resposta</button>':'<p class="ok">✅ Você respondeu todos os desafios deste app!</p>')+'<div id="sM" class="dmsg"></div></div>'+
+  '<div class="sch sq"><b>💸 Sacar o jackpot</b><p>Cole a chave Pix do banco que vai receber.</p><input id="sK" type="text" placeholder="Cole aqui a sua chave Pix" autocomplete="off"><button type="button" data-x="scs:'+id+'">💸 Sacar '+fmt(j)+'</button><div id="sN" class="dmsg"></div></div></div></div>'}
  function nrm2(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
- function sciSend(id){var a=SCI[id],q=a.q[XS.sq[id]],out=$('phone').querySelector('#sM');if(!out)return;if(PRIZE['sci-'+id]){out.innerHTML='✅ Prêmio já recebido!';return}
-  var r=nrm2(($('phone').querySelector('#sA')||{}).value),k=norm(($('phone').querySelector('#sK')||{}).value);
+ function sciSend(id){var a=SCI[id],k=sciNext(id),out=$('phone').querySelector('#sM');if(!out)return;if(k<0){out.innerHTML='✅ Você já respondeu tudo!';return}
+  var q=a.q[k],r=nrm2(($('phone').querySelector('#sA')||{}).value);
   if(!r){out.innerHTML='⚠️ Escreva a sua resposta.';return}
+  if(!q.a.some(function(x){return dzEq(nrm2(x),r)})){setPts(-3);out.innerHTML='❌ Resposta errada. Releia o “Você sabia?” e tente de novo!';return}
+  PRIZE['sci-'+id+'-'+k]=true;SJ[id]=(SJ[id]||0)+q.pz;JTOT+=q.pz;setPts(5);toast('🎰 +'+fmt(q.pz)+' no jackpot — '+a.t);sciRefresh(id,'🎉 <b>Acertou!</b> +'+fmt(q.pz)+' no jackpot do app.')}
+ function sciRefresh(id,msg){var P=$('phone'),b=P.querySelector('.xapp.sc');if(!b)return;var t=document.createElement('div');t.innerHTML=sciHtml(id);b.replaceWith(t.firstChild);var m=P.querySelector('#sM');if(m&&msg)m.innerHTML=msg}
+ function sciSaque(id){var a=SCI[id],j=SJ[id]||0,out=$('phone').querySelector('#sN');if(!out)return;if(j<=0){out.innerHTML='⚠️ O jackpot deste app está vazio. Resolva os desafios primeiro!';return}
+  var k=norm(($('phone').querySelector('#sK')||{}).value);if(!k){out.innerHTML='⚠️ Cole a sua chave Pix.';return}
   var bk=Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0];
   if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
-  if(!q.a.some(function(x){return nrm2(x)===r})){setPts(-3);out.innerHTML='❌ Resposta errada. Releia o “Você sabia?” e tente de novo!';return}
-  PRIZE['sci-'+id]=true;SAL[bk]+=q.pz;LEDGER.push({f:fi,bk:bk,cr:1,n:a.t+' (app)',b:'prêmio do app',v:q.pz,ok:true,h:nowS(),id:eid()});setPts(5);dash();
-  out.innerHTML='🎉 <b>Acertou!</b> Você recebeu um Pix de <b>'+fmt(q.pz)+'</b> no <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(q.pz)+' — '+a.t)}
+  SAL[bk]+=j;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot '+a.t+' (app)',b:'prêmio do app',v:j,ok:true,h:nowS(),id:eid()});SJ[id]=0;setPts(5);dash();
+  sciRefresh(id,'');var o2=$('phone').querySelector('#sN');if(o2)o2.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — '+a.t)}
  function sysList(){var ios=NAV==='ios';return [['web',ios?'Safari':'Chrome',ios?'#1e90ff':'#fff',ios?'#fff':'#1a73e8',ios?'🧭':'🌐'],['store',ios?'App Store':'Play Store',ios?'#1c8cf6':'#fff',ios?'#fff':'#01875f',ios?'A':'▶'],['cam','Câmera','#2b2b2b','#fff','📷'],['gal',ios?'Fotos':'Galeria','#fff','#e8710a',ios?'🌸':'🖼️'],['clk','Relógio','#111','#fff','🕒'],['map','Mapas','#4caf50','#fff','🗺️'],['set',ios?'Ajustes':'Configurações','#8e8e93','#fff','⚙️'],['clima',ios?'Tempo':'Clima','#3a8dde','#fff','🌤️'],['note',ios?'Notas':'Bloco de Notas','#ffd60a','#222','📝']].concat(swOn()?[]:[['zap','WhatsApp','#25d366','#fff','💬']]).concat([['msg','Messenger','#a033ff','#fff','💬'],['tel','Telegram','#1d93d2','#fff','✈️'],['sms','Mensagens','#2fbf55','#fff','💬']])}
  var ICU=0;
  function icoSvg(id,ios){var u='ic'+(ICU++)+'_',S='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">',
@@ -616,10 +623,12 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
  function dzAll(){var o=[];['WhatsApp','Telegram','Messenger','Mensagens'].forEach(function(a){o=o.concat(dzList(a))});return o}
  function dzTot(){var n=0;dzAll().forEach(function(g){g.msgs.forEach(function(m){if(m.id)n++})});return n}
  function dzMsg(id){var f=null;dzAll().forEach(function(g){g.msgs.forEach(function(m){if(m.id===id)f=m})});return f}
- function dznz(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/−/g,'-').replace(/r\$/g,'').replace(/,/g,'.').replace(/[^a-z0-9.\/\-]/g,'')}
+ function dznz(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/−/g,'-').replace(/r\$/g,'').replace(/,/g,'.').replace(/[^a-z0-9.\/\-]/g,'').replace(/^[.\-]+|[.\-]+$/g,'')}
+ function dzLev(a,b){var p=[],i,j,c;for(j=0;j<=b.length;j++)p[j]=j;for(i=1;i<=a.length;i++){c=[i];for(j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[b.length]}
+ function dzEq(a,b){if(a===b)return true;var R=/^-?\d+(\.\d+)?$/;if(R.test(a)&&R.test(b))return parseFloat(a)===parseFloat(b);if(!a||!b||/^[\d.\/\-]+$/.test(a)||/^[\d.\/\-]+$/.test(b))return false;var n=Math.max(a.length,b.length),m=n>=9?2:n>=5?1:0;return m>0&&Math.abs(a.length-b.length)<=m&&dzLev(a,b)<=m}
  function dzCheck(m,raw){if(m.t==='qz')return +raw===m.ok;
-  if(m.t==='tx'){var r=dznz(raw);return [].concat(m.resp).some(function(x){return dznz(x)===r})}
-  function cnt(toks){var seen={},c=0;toks.forEach(function(t){if(!t)return;m.lista.forEach(function(g,i){if(seen[i])return;if([].concat(g).some(function(x){return dznz(x)===t})){seen[i]=1;c++}})});return c}
+  if(m.t==='tx'){var r=dznz(raw);return [].concat(m.resp).some(function(x){return dzEq(dznz(x),r)})}
+  function cnt(toks){var seen={},c=0;toks.forEach(function(t){if(!t)return;m.lista.forEach(function(g,i){if(seen[i])return;if([].concat(g).some(function(x){return dzEq(dznz(x),t)})){seen[i]=1;c++}})});return c}
   var a=cnt(String(raw).split(/[,;\n]+|\s+e\s+/i).map(dznz)),b=cnt(String(raw).split(/[\s,;]+/).map(dznz));return Math.max(a,b)>=m.need}
 
  var NVT={par:1,drag:1,ord:1,vf:1};
@@ -735,7 +744,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(swOn()){var nd=0;try{GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&!PRIZE[x.id])nd++})})}catch(e){}ap.push({k:'wa',n:appNm(),ic:appIc(),bd:nd})}
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi sy svgic">'+calcSvg(ios)+'</span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
-  INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:(SCI[k]&&!PRIZE['sci-'+k])?1:0})});
+  INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:(SCI[k]&&(sciNext(k)>=0||(SJ[k]||0)>0))?1:0})});
   var dt=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
   dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});
   function bt(a){return '<button type="button" data-l="'+a.k+'">'+a.ic+(a.bd?'<b class="bdg">'+a.bd+'</b>':'')+'<em>'+a.n+'</em></button>'}
@@ -833,6 +842,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   P.addEventListener('click',function(e){var b=e.target.closest('[data-x]');if(!b||(ph.app!=='x'&&!FOLD()))return;e.stopPropagation();var a=b.dataset.x.split(':'),k=a[0],v=a[1];
    if(k==='back'){if(XS.pg){XS.pg=null}else{xHome(b)}draw();return}
    if(k==='sci'){sciSend(v);return}
+   if(k==='scs'){sciSaque(v);return}
     if(k==='go'){var u=document.getElementById('wUrl');XS.q=u?u.value.trim():'';XS.pg=null;draw();return}
    if(k==='pg'){XS.pg=b.dataset.x.slice(3);draw();return}
    if(k==='inst'){if(INST.indexOf(v)<0)INST.push(v);try{localStorage.setItem('edu_inst',JSON.stringify(INST))}catch(x){}toast('✔ '+IAPP[v][0]+' instalado! Veja na tela inicial.');draw();return}

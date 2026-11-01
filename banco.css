@@ -737,3 +737,7 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .phone.land:not(.fold){width:calc(var(--ph)*.98);height:calc(var(--ph)*.56);font-size:calc(var(--ph)/52);transition:width .25s,height .25s}
 .phone.land.fold,.phone.dv-aw.land,.phone.dv-gw.land{width:auto}
 #rotb{cursor:pointer}
+
+.sjk{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fde047;border-radius:1em;padding:.6em .8em;margin:.5em 0;font-weight:700;text-align:center}.sjk b{font-size:1.25em}.sch.sq{margin-top:.6em;border-color:#7c3aed;background:#f5f3ff}.sch.sq button{background:#7c3aed}
+
+#navpick h3,#navpick .nvbox>p{order:-3}#navpick .nvs{order:-2}
