@@ -177,7 +177,7 @@ function rainbowArch(z,R0){var g=new THREE.Group(),i;for(i=0;i<7;i++){var t=new 
 function portal(x,z,col,wd){var g=new THREE.Group(),mt=new THREE.MeshLambertMaterial({color:col}),a=new THREE.Mesh(new THREE.BoxGeometry(.5,4.4,.5),mt),b=a.clone(),c=new THREE.Mesh(new THREE.BoxGeometry(wd,.6,.6),mt),dr=new THREE.Mesh(new THREE.PlaneGeometry(wd-.6,4.2),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.38,side:THREE.DoubleSide}));
   a.position.set(-wd/2+.25,2.2,0);b.position.set(wd/2-.25,2.2,0);c.position.set(0,4.4,0);dr.position.set(0,2.2,0);[a,b,c].forEach(function(m){m.castShadow=true});g.add(a,b,c,dr);g.position.set(x,0,z);S.add(g);return {g:g,door:dr}}
 /* ---------- segmentos de obstáculo (bem diferentes entre si) ---------- */
-function segs(s,ws){var all=['hop','moving','zmove','beam','rainbow','steps','crumble'],ok=s<1?['hop','moving','rainbow','crumble']:s<2?['hop','moving','zmove','rainbow','crumble']:all,out=[],n=2+(s>=4?1:0)+(s>=8?1:0),prev='',k;
+function segs(s,ws){var all=['hop','moving','zmove','beam','rainbow','steps','crumble','stones','balls','wall','tiny','stairs'],ok=s<1?['hop','moving','rainbow','stairs','tiny','stones']:s<2?['hop','moving','zmove','rainbow','crumble','stairs','balls','stones','wall']:all,out=[],n=2+(s>=4?1:0)+(s>=8?1:0),prev='',k;
   for(k=0;k<n;k++){var c=pick(ok.filter(function(x){return x!==prev}));out.push(c);prev=c}
   if(!out.some(function(x){return x==='moving'||x==='zmove'}))out[ri(0,out.length-1)]=s>=1&&Math.random()<.5?'zmove':'moving';return out}
 function gapMul(){var m=[.5,.62,.78,1][ST.dif==null?2:ST.dif]||.78;if(errs>=3)m*=.85;if(errs>=6)m*=.85;return m}
@@ -196,6 +196,11 @@ function build(w){
       else if(t==='beam'){cur-=3*GM;addP({x:0,z:cur-5,w:1.7,d:10,col:0xfb923c,edge:true});coin(0,cur-5);coinHi(0,cur-3);coinHi(0,cur-7);cur-=10}
       else if(t==='rainbow'){for(k2=0;k2<6;k2++){cur-=2.5*GM;x=Math.round(Math.sin(k2*1.1+q)*30)/10;addP({x:x,z:cur-1.2,w:2.8,d:2.4,col:RB[k2],edge:true});if(k2%2)coin(x,cur-1.2);if(k2===2)coinHi(x,cur-1.2);cur-=2.4}}
       else if(t==='steps'){var hs=[.9,1.8,2.7,1.8,.9];for(k2=0;k2<5;k2++){cur-=2.6*GM;x=ri(-2,2);addP({x:x,z:cur-1.6,w:3.4,d:3.2,col:col(s+k2*2),top:hs[k2],edge:true});if(k2===2)coin(x,cur-1.6,hs[k2]);cur-=3.2}}
+      else if(t==='stones'){for(k2=0;k2<6;k2++){cur-=2.8*GM;x=(k2%2?-3:3);addP({x:x,z:cur-1.1,w:ri(18,24)/10,d:ri(18,24)/10,col:(k2%2?0x94a3b8:0x78716c),edge:true});if(k2%3===1)coinHi(x,cur-1.1);else coin(x,cur-1.1);cur-=2.2}}
+      else if(t==='balls'){for(k2=0;k2<5;k2++){cur-=3*GM;x=ri(-2,2);addP({x:x,z:cur-1,w:2,d:2,col:RB[k2%7],type:'move',amp:(8+k2)/10,sp:1.2+s*.05,ph:Math.random()*6,edge:true});coin(x,cur-1);cur-=2}}
+      else if(t==='wall'){var hw=[.9,1.8,2.7,2.7,1.8,.9];for(k2=0;k2<6;k2++){cur-=3.2*GM;x=(k2===3?0:(k2%2?-3:3));addP({x:x,z:cur-1.5,w:(k2===3?5:3),d:(k2===3?3:2.6),top:hw[k2],col:col(s+k2),edge:true});if(k2===3)coinHi(x,cur-1.5,hw[k2]);else coin(x,cur-1.5,hw[k2]);cur-=2.6}}
+      else if(t==='tiny'){for(k2=0;k2<7;k2++){cur-=3.2*GM;x=ri(-2,2);addP({x:x,z:cur-.8,w:1.6,d:1.6,col:col(s+k2),edge:true});if(k2%3===1)coinHi(x,cur-.8);else coin(x,cur-.8);cur-=1.6}}
+      else if(t==='stairs'){for(k2=0;k2<14;k2++){var th=(k2<7?.45*(k2+1):.45*(13-k2));addP({x:0,z:cur-1.1,w:5,d:2.2,top:th,col:col(s+k2),edge:true});if(k2%2===0)coin(0,cur-1.1,th);cur-=2.2}}
       else{for(k2=0;k2<3;k2++){cur-=3*GM;x=ri(-3,3);addP({x:x,z:cur-1.7,w:3.6,d:3.4,col:0xe5e7eb,type:'crumble',edge:true});coin(x,cur-1.7);if(k2===1)coinHi(x,cur-1.7);cur-=3.4}}
     });
     cur-=3;var rd=addP({x:0,z:cur-3,w:14,d:6,col:0xfde68a,type:'read',st:s,edge:true});pg[s]=rd;cur-=6;
