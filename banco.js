@@ -804,6 +804,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(swOn()){var nd=0;try{GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&!PRIZE[x.id])nd++})})}catch(e){}ap.push({k:'wa',n:appNm(),ic:appIc(),bd:nd})}
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi sy svgic">'+calcSvg(ios)+'</span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
+  if(INST.indexOf('rbx')<0)INST.push('rbx');
   INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:appBd(k)})});
   var dt=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
   dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});var ri2=-1;ap.forEach(function(x,i){if(x.k==='ins:rbx')ri2=i});if(ri2>=0){var rx=ap.splice(ri2,1)[0];ap.splice(Math.floor(ap.length/2),0,rx)}
