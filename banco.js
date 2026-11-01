@@ -634,7 +634,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(!r){out.innerHTML='⚠️ Escreva a sua resposta.';return}
   if(!q.a.some(function(x){return dzEq(nrm2(x),r)})){setPts(-3);out.innerHTML='❌ Resposta errada. Releia o “Você sabia?” e tente de novo!';return}
   PRIZE['sci-'+id+'-'+k]=true;SJ[id]=(SJ[id]||0)+q.pz;JTOT+=q.pz;setPts(5);toast('🎰 +'+fmt(q.pz)+' no jackpot — '+a.t);sciRefresh(id,'🎉 <b>Acertou!</b> +'+fmt(q.pz)+' no jackpot do app.')}
- function cgoGo(){var i=$('cdV'),e=$('cdE');if(!i)return;var c=String(i.value||'').trim(),n=c.replace(/\D/g,''),u=null;if(/^rob[il]ox$/i.test(c)||n==='7676')u='robiox.html';else if(n==='7777')u='index.html?c=7777';else if(window.jogoPorCodigo){var j=window.jogoPorCodigo(n);if(j)u=j.href}
+ function cgoGo(){var i=$('cdV'),e=$('cdE');if(!i)return;var c=String(i.value||'').trim(),n=c.replace(/\D/g,''),u=null;if(/^rob[il]ox$/i.test(c)||n==='7676')u='robiox.html?ok=1';else if(n==='7777')u='index.html?c=7777';else if(window.jogoPorCodigo){var j=window.jogoPorCodigo(n);if(j)u=j.href}
   if(!u){if(e)e.innerHTML='❌ Código não encontrado. Confira os 4 números.';return}
   if(e)e.innerHTML='⏳ Abrindo…';location.href=u}
  document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='cdV'){e.preventDefault();cgoGo()}});

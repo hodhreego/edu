@@ -33,6 +33,7 @@ function doPost(e) {
   var d = {};
   try { d = JSON.parse(e.postData.contents); } catch (err) { return ok_('json inválido'); }
   if (d.acao === 'pontos') return rkPontos_(d);
+  if (d.acao === 'rbxsave') return rbxSave_(d);
   var lock = LockService.getScriptLock();
   try { lock.waitLock(100000); } catch (err) { return ok_('ocupado'); }
   try { return gravaResultado_(d); } finally { lock.releaseLock(); }
@@ -119,6 +120,7 @@ function reconstruir_() {
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
   return ok_('Planilha do professor ativa.');
 }
 function ok_(t) { return ContentService.createTextOutput(t); }
@@ -347,4 +349,36 @@ function rkTop_(p){
   var o=Object.keys(m).map(function(k){return m[k]});
   o.sort(function(a,b){return b.pontos-a.pontos});
   return ContentService.createTextOutput(JSON.stringify({ranking:o.slice(0,10)})).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+// ---- RobIox: progresso por login (aba "RobIox": login | ts | json) ----
+function rbxAba_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('RobIox');
+  if (!sh) { sh = ss.insertSheet('RobIox'); sh.appendRow(['login', 'ts', 'json']); sh.setFrozenRows(1); }
+  return sh;
+}
+function rbxSave_(d) {
+  var login = String(d.login || '').toLowerCase();
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre)$/.test(login)) return ok_('login inválido');
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
+  try {
+    var sh = rbxAba_(), n = sh.getLastRow(), ids = n > 1 ? sh.getRange(2, 1, n - 1, 1).getValues() : [], row = 0;
+    for (var i = 0; i < ids.length; i++) if (ids[i][0] === login) { row = i + 2; break; }
+    var js = JSON.stringify(d.st || {});
+    if (js.length > 45000) return ok_('grande demais');
+    var linha = [login, Number(d.ts) || Date.now(), js];
+    if (row) sh.getRange(row, 1, 1, 3).setValues([linha]); else sh.appendRow(linha);
+    return ok_('ok');
+  } finally { lock.releaseLock(); }
+}
+function rbxLoad_(p) {
+  var login = String(p.login || '').toLowerCase(), sh = rbxAba_(), n = sh.getLastRow();
+  var out = { ok: 0 };
+  if (n > 1) {
+    var v = sh.getRange(2, 1, n - 1, 3).getValues();
+    for (var i = 0; i < v.length; i++) if (v[i][0] === login) { try { out = { ok: 1, ts: Number(v[i][1]), st: JSON.parse(v[i][2]) }; } catch (e) {} break; }
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }

@@ -51,6 +51,55 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
 </style>
 </head>
 <body>
+<div id="lgn"><div class="lgb"><div class="lgl">RobIox</div><h2>Entrar</h2><p class="lgs">Use o login do RCO (ex.: <b>7cla6b</b>) e a senha da turma.</p>
+<label>Login<input id="lgU" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: 7cla6b"></label>
+<label>Senha<input id="lgP" type="password" autocomplete="current-password" placeholder="senha"></label>
+<button type="button" id="lgG">▶ Entrar</button><div class="lgo">ou</div><button type="button" id="lgQ" class="lg2">📷 Entrar com QR code</button>
+<div id="lgV" style="display:none"><video id="lgvid" playsinline muted></video><button type="button" id="lgX" class="lg2">Fechar câmera</button></div>
+<div id="lgE"></div></div></div>
+<style>#lgn{display:none;position:fixed;inset:0;z-index:2147483000;background:linear-gradient(160deg,#0b1020,#1b2a5a);align-items:center;justify-content:center;font-family:Arial,sans-serif}#lgn.on{display:flex}.lgb{width:min(92vw,360px);background:#fff;border-radius:18px;padding:22px 20px;box-shadow:0 10px 40px #000a;text-align:center}.lgl{font:900 30px Arial,sans-serif;color:#e53935;letter-spacing:1px}.lgb h2{margin:.2em 0}.lgs{color:#555;font-size:14px;margin:0 0 10px}.lgb label{display:block;text-align:left;font-weight:700;font-size:13px;color:#222;margin:8px 0}.lgb input{width:100%;box-sizing:border-box;font:700 18px Arial,sans-serif;padding:10px;border:2px solid #cbd5e1;border-radius:10px;margin-top:4px}.lgb button{width:100%;padding:12px;border:0;border-radius:12px;background:#16a34a;color:#fff;font:800 17px Arial,sans-serif;margin-top:10px;cursor:pointer}.lgb .lg2{background:#1e3a8a}.lgo{margin:10px 0 0;color:#888;font-size:13px}#lgE{color:#c62828;font-weight:700;min-height:1.2em;margin-top:8px;font-size:14px}#lgvid{width:100%;border-radius:12px;margin-top:10px;background:#000}</style>
+<script>
+(function(){
+ var QS=new URLSearchParams(location.search),emb=QS.get('embed')==='1'||window.parent!==window,ok=false,lg='';
+ try{if(QS.get('ok')==='1')sessionStorage.setItem('rbx_ok','1')}catch(e){}
+ try{ok=sessionStorage.getItem('rbx_ok')==='1';lg=sessionStorage.getItem('rbx_login')||''}catch(e){}
+ var RE=/^(\d{1,3}[a-z]{3}\d[a-z]|mestre)$/,SENHA='2026.2026',MESTRA='45999699444';
+ if(lg&&RE.test(lg))window.RBX_LOGIN=lg;
+ if(emb||ok||window.RBX_LOGIN)return;
+ var $=function(i){return document.getElementById(i)},o=$('lgn');o.className='on';
+ ['keydown','keyup','keypress'].forEach(function(t){o.addEventListener(t,function(e){e.stopPropagation()})});
+ function err(t){$('lgE').textContent=t||''}
+ var stream=null,raf=0;
+ function stopCam(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}$('lgV').style.display='none'}
+ function entra(login){
+  err('');$('lgG').disabled=true;$('lgG').textContent='⏳ Entrando…';
+  try{sessionStorage.setItem('rbx_login',login)}catch(e){}
+  var done=false,fim=function(){if(done)return;done=true;location.reload()};
+  setTimeout(fim,4500);
+  try{var u=(window.EDU_ENDPOINT||'')+'?acao=rbxload&login='+encodeURIComponent(login);
+   if(!window.EDU_ENDPOINT)return fim();
+   fetch(u).then(function(r){return r.json()}).then(function(j){
+    if(j&&j.ok&&j.st){var k='robiox_v2_'+login,loc=null;try{loc=JSON.parse(localStorage.getItem(k))}catch(e){}
+     if(!loc||(j.ts||0)>(loc._ts||0)){try{j.st._ts=j.ts||0;localStorage.setItem(k,JSON.stringify(j.st))}catch(e){}}}
+    fim()}).catch(fim)}catch(e){fim()}}
+ function tenta(){var u=$('lgU').value.trim().toLowerCase().replace(/\s+/g,''),p=$('lgP').value;
+  if(u===MESTRA||p===MESTRA)return entra(/^\d{1,3}[a-z]{3}\d[a-z]$/.test(u)?u:'mestre');
+  if(!/^\d{1,3}[a-z]{3}\d[a-z]$/.test(u))return err('Login inválido. Use o formato do RCO, ex.: 7cla6b.');
+  if(p!==SENHA)return err('Senha incorreta.');entra(u)}
+ $('lgG').onclick=tenta;$('lgP').addEventListener('keydown',function(e){if(e.key==='Enter')tenta()});$('lgU').addEventListener('keydown',function(e){if(e.key==='Enter')$('lgP').focus()});
+ function lerQR(txt){var t=String(txt||'').trim().toLowerCase().replace(/^rbx:/,'');var m=t.match(/(?:[?&#]l=)?(\d{1,3}[a-z]{3}\d[a-z])\b/);if(m&&RE.test(m[1])){stopCam();entra(m[1]);return true}return false}
+ $('lgX').onclick=stopCam;
+ $('lgQ').onclick=function(){err('');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return err('Este aparelho não deixa usar a câmera aqui. Digite o login e a senha.');
+  var go=function(){navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:960}},audio:false}).then(function(s){
+    stream=s;var v=$('lgvid');v.srcObject=s;$('lgV').style.display='block';v.play();
+    var c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});
+    (function lp(){if(!stream)return;if(v.videoWidth){var sc=Math.min(1,640/v.videoWidth);c.width=Math.round(v.videoWidth*sc);c.height=Math.round(v.videoHeight*sc);x.drawImage(v,0,0,c.width,c.height);var d=x.getImageData(0,0,c.width,c.height),r=window.jsQR&&jsQR(d.data,c.width,c.height,{inversionAttempts:'dontInvert'});if(r&&r.data){if(lerQR(r.data))return;err('QR não reconhecido. Use o QR do seu login.')}}raf=requestAnimationFrame(lp)})()
+   }).catch(function(){err('Não consegui abrir a câmera. Permita o acesso ou digite o login.')})};
+  if(window.jsQR)go();else{var sc=document.createElement('script');sc.src='jsQR.js?v=1';sc.onload=go;sc.onerror=function(){err('Leitor de QR indisponível. Digite o login e a senha.')};document.head.appendChild(sc)}};
+})();
+</script>
+<script src="config.js"></script>
 <canvas id="c"></canvas>
 <div id="hud"><div id="bar"><span id="bF">Fase 1/10</span><span id="bE">❌ 0</span><button id="bC" type="button" title="Meu cofrinho">R$ 0,00</button><button id="qB" type="button" title="Ver a pergunta">🔍</button><button id="rB" type="button" title="Recomeçar esta fase">🔄</button><button id="pB" type="button" title="Menu">⏸</button></div><div id="tp"></div><div id="cmb"></div></div>
 <div id="qpop"></div><div id="msg"></div>
@@ -65,10 +114,10 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
 var B=RBXB,ri=B.ri,pick=B.pick,shuf=B.shuf,QS=new URLSearchParams(location.search),EMB=QS.get('embed')==='1',N=10;
 function $(i){return document.getElementById(i)}
 /* ---------- progresso salvo ---------- */
-var KEY='robiox_v2',ST={};
+var KEY='robiox_v2'+(window.RBX_LOGIN?'_'+window.RBX_LOGIN:''),ST={};var __cl=0;function cloudSave(){if(!window.RBX_LOGIN||!window.EDU_ENDPOINT)return;clearTimeout(__cl);__cl=setTimeout(function(){try{fetch(window.EDU_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({acao:'rbxsave',login:window.RBX_LOGIN,ts:ST._ts||Date.now(),st:ST}),keepalive:true})}catch(e){}},6000)}
 function ymd(d){d=d||new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
 function ld(){try{ST=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){ST={}}var d={xp:0,coins:0,sk:{},stars:{},own:{red:1},eq:'red',bd:{},st:{n:0,best:0,last:'',ms:{}},dy:{},stat:{correct:0,fases:0,mundos:0,combo:0,perfeitas:0,volta:0,missoes:0,ganhas:0},ano:7,ch:null,cash:0,jar:{a:0,b:0,c:0},cc:{},pst:{}};for(var k in d)if(ST[k]==null)ST[k]=d[k];if(QS.get('ano'))ST.ano=+QS.get('ano');if([6,7,8,9].indexOf(ST.ano)<0)ST.ano=7}
-function sv(){try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}}
+function sv(){ST._ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}cloudSave()}
 ld();
 var ANO=ST.ano,W=0,rvq=[];
 function lvl(xp){var l=1,need=100;while(xp>=need){xp-=need;l++;need=100+30*l}return {l:l,cur:xp,need:need}}
