@@ -11,8 +11,8 @@
 .ro{display:none;background:#fff;padding:10px 14px}.ro.on{display:block}.ro textarea{width:100%;height:140px;border:1px solid #bbb}
 .pg{width:210mm;margin:8px auto;background:#fff;padding:7mm;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:auto repeat(6,44mm);gap:2mm;page-break-after:always;break-after:page}
 .cd{border:1.5px dashed #888;border-radius:2.5mm;padding:1.6mm;text-align:center;height:44mm;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
-.cd .t{font:800 7pt Arial,sans-serif;line-height:1.1;max-height:3.4em;overflow:hidden;width:100%}.cd .t.vz{color:#999;font-weight:700}
-.cd .q{width:24mm;height:24mm}.cd .q img,.cd .q canvas{width:24mm!important;height:24mm!important}.cd .k{font:700 6.5pt Arial,sans-serif;color:#111;line-height:1.1;word-break:break-all}
+.cd>*{flex:none}.cd .t{font:800 7pt Arial,sans-serif;line-height:1.15;height:2.3em;overflow:hidden;width:100%}.cd .t.vz{color:#999;font-weight:700}
+.cd .q{width:21mm;height:21mm}.cd .q img,.cd .q canvas{width:21mm!important;height:21mm!important}.cd .k{font:700 6pt Arial,sans-serif;color:#111;line-height:1.1;word-break:break-all}
 .cd .l{font:900 11pt 'Courier New',monospace;letter-spacing:.5px}.cd .n{font:700 8pt Arial,sans-serif;color:#555}
 .ti{grid-column:1/-1;font:800 11pt Arial,sans-serif;display:flex;justify-content:space-between;border-bottom:2px solid #1b2a5a;padding-bottom:1mm}
 @media print{body{background:#fff}.pn,.ro{display:none!important}.pg{margin:0;width:auto;padding:6mm}@page{size:A4;margin:0}}
@@ -42,7 +42,7 @@ function cards(esc,tur,max,nomes,out){
   for(var i=0;i<30&&n<=max;i++,n++){
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
-   c.innerHTML='<div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="l">'+lg+'</div><div class="n">nº '+n+'</div>'+(LK()?'<div class="k">Digite: <b>'+LK()+'</b></div>':'');
+   c.innerHTML='<div class="l">'+lg+'</div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b>'+LK()+'</b></div>':'');
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
