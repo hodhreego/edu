@@ -12,10 +12,11 @@
 .pg{width:210mm;margin:8px auto;background:#fff;padding:7mm;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:auto repeat(6,44mm);gap:2mm;page-break-after:always;break-after:page}
 .cd{border:1.5px dashed #888;border-radius:2.5mm;padding:1.6mm;text-align:center;height:44mm;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
 .cd>*{flex:none}.cd .t{font:800 7pt Arial,sans-serif;line-height:1.15;height:2.3em;overflow:hidden;width:100%}.cd .t.vz{color:#999;font-weight:700}
-.cd .q{width:21mm;height:21mm}.cd .q img,.cd .q canvas{width:21mm!important;height:21mm!important}.cd .k{font:700 6pt Arial,sans-serif;color:#0033ff;line-height:1.1;word-break:break-all}
+.cd .q{width:20mm;height:20mm}.cd .q img,.cd .q canvas{width:20mm!important;height:20mm!important}.cd .k{font:700 6pt Arial,sans-serif;color:#0033ff;line-height:1.1;word-break:break-all}
 .cd .l{font:900 11pt 'Courier New',monospace;letter-spacing:.5px}.cd .n{font:700 8pt Arial,sans-serif;color:#555}
 .ti{grid-column:1/-1;font:800 11pt Arial,sans-serif;display:flex;justify-content:space-between;border-bottom:2px solid #1b2a5a;padding-bottom:1mm}
 @media print{body{background:#fff}.pn,.ro{display:none!important}.pg{margin:0;width:auto;padding:6mm}@page{size:A4;margin:0}}
+.cd .pw{font:700 7pt Arial,sans-serif;color:#e00000;line-height:1.1}.cd .pw b{font-size:8pt;color:#e00000}
 </style></head><body>
 <div class="pn">
 <label>Turma<select id="tu"></select></label>
@@ -42,7 +43,7 @@ function cards(esc,tur,max,nomes,out){
   for(var i=0;i<30&&n<=max;i++,n++){
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
-   c.innerHTML='<div class="l">'+lg+'</div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
+   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
