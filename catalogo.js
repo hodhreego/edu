@@ -15,12 +15,12 @@ const FIT='<svg viewBox="0 0 30 20"><rect width="10" height="20" fill="#009246"/
 const FDE='<svg viewBox="0 0 30 20"><rect width="30" height="7" fill="#000"/><rect y="7" width="30" height="6.5" fill="#dd0000"/><rect y="13.5" width="30" height="6.5" fill="#ffce00"/></svg>';
 const sm=s=>s.replace('<svg','<svg width="24" height="14" style="border-radius:2px"');
 const MATS=[
- {id:'mat',nome:'Matemática',ic:'<span>➗</span>',cor:'#1f4fd8',sub:'6º, 7º e 9º ano'},
- {id:'fin',nome:'Educação Financeira',ic:'<span>💰</span>',cor:'#0f9d58',sub:'Dinheiro, lojas e juros'},
- {id:'fil',nome:'Filosofia',ic:'<span>🏛️</span>',cor:'#7c3aed',sub:'2ª série EM'},
- {id:'geo',nome:'Geografia',ic:'<span>🌍</span>',cor:'#0e7490',sub:'9º ano e 1ª série'},
- {id:'his',nome:'História',ic:'<span>📜</span>',cor:'#b45309',sub:'6º ano'},
- {id:'alf',nome:'Alfabetização',ic:'<span>✏️</span>',cor:'#e65100',sub:'Método das 32 Palavras'},
+ {id:'mat',nome:'Matemática',ic:'<img class="i3d" src="ico/mat.png" alt="">',cor:'#1f4fd8',sub:'6º, 7º e 9º ano'},
+ {id:'fin',nome:'Educação Financeira',ic:'<img class="i3d" src="ico/fin.png" alt="">',cor:'#0f9d58',sub:'Dinheiro, lojas e juros'},
+ {id:'fil',nome:'Filosofia',ic:'<img class="i3d" src="ico/fil.png" alt="">',cor:'#7c3aed',sub:'2ª série EM'},
+ {id:'geo',nome:'Geografia',ic:'<img class="i3d" src="ico/geo.png" alt="">',cor:'#0e7490',sub:'9º ano e 1ª série'},
+ {id:'his',nome:'História',ic:'<img class="i3d" src="ico/his.png" alt="">',cor:'#b45309',sub:'6º ano'},
+ {id:'alf',nome:'Alfabetização',ic:'<img class="i3d" src="ico/alf.png" alt="">',cor:'#e65100',sub:'Método das 32 Palavras'},
  {id:'en',nome:'English',ic:FUS,cor:'#c62828',sub:'6º e 8º ano',cls:'eng',play:'Play'},
  {id:'es',nome:'Español',ic:FES,cor:'#c2410c',sub:'Preposiciones y vocabulario',play:'Jugar'},
  {id:'fr',nome:'Français',ic:FFR,cor:'#1d4ed8',sub:'Prépositions',play:'Jouer'},

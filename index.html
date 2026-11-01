@@ -24,6 +24,7 @@ main{max-width:1280px;margin:-48px auto 40px;padding:0 16px;position:relative;z-
 .mat:hover{transform:translateY(-4px) scale(1.02)}
 .mat.on{outline:6px solid var(--ink);outline-offset:3px;transform:scale(1.04)}
 .mat .ic{height:104px;display:flex;align-items:center;justify-content:center;font-size:92px;line-height:1;filter:drop-shadow(0 4px 6px #0004)}
+.mat .ic img.i3d{height:112px;width:auto;max-width:150px;object-fit:contain;filter:drop-shadow(0 5px 6px #0005)}
 .mat .ic svg{width:min(100%,138px);height:auto;border-radius:8px;box-shadow:0 4px 10px #0005}
 .mat small{font:600 14px "Segoe UI",Roboto,Arial,sans-serif;opacity:.92;text-align:center}
 .mat.eng{animation:pulso 2.2s infinite}@keyframes pulso{50%{transform:scale(1.035)}}
@@ -49,7 +50,7 @@ section>p{margin:0 0 12px;color:var(--muted);font-size:14.5px}
 .empty{display:none;text-align:center;color:var(--muted);padding:30px}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 @media (prefers-color-scheme:dark){.card:hover{box-shadow:0 10px 24px #0008}}
-@media(max-width:600px){.mats{grid-template-columns:repeat(2,1fr);gap:10px}.mat{min-height:160px;padding:12px 8px}.mat .ic{height:72px;font-size:64px}.mat .ic svg{height:62px}}
+@media(max-width:600px){.mats{grid-template-columns:repeat(2,1fr);gap:10px}.mat{min-height:160px;padding:12px 8px}.mat .ic{height:72px;font-size:64px}.mat .ic img.i3d{height:76px}.mat .ic svg{height:62px}}
 .cod{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--brand);border-radius:20px;padding:14px 18px;margin:0 0 18px;box-shadow:0 8px 24px #1f4fd81f}
 .cod b{font-size:clamp(17px,2.4vw,22px)}.cod span{color:var(--muted);font-size:14px;flex-basis:100%;order:3}
 .cod input{flex:1;min-width:150px;max-width:260px;font:800 clamp(24px,4vw,34px) "Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.3em;text-align:center;border:3px solid var(--line);border-radius:14px;padding:6px 10px;background:var(--bg);color:var(--ink)}
@@ -83,7 +84,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <div class="empty" id="empty">Nada por aqui ainda.</div>
 </main>
 <footer>Ludopédia — uma marca da Loja de Matemática · Prof. Rodrigo · Novos jogos entram aqui a cada atualização.</footer>
-<script src="config.js?v=4"></script><script src="catalogo.js?v=9"></script><script src="imprimir.js?v=6"></script>
+<script src="config.js?v=4"></script><script src="catalogo.js?v=10"></script><script src="imprimir.js?v=6"></script>
 <script>
 /* ===== COMO ATUALIZAR =====
    Jogo novo: acrescente um J(...) em JOGOS no tema certo (TEMAS). Cada tema pertence a uma matéria (MATS). */
@@ -96,7 +97,7 @@ let fm='todos',fs='todas';
 const mats=document.getElementById('mats'),bar=document.getElementById('bar'),out=document.getElementById('out'),empty=document.getElementById('empty');
 function drawMats(){
  mats.innerHTML='';
- [{id:'todos',nome:'Tudo',ic:'<span>🎲</span>',cor:'#6a3df0',sub:'Todos os jogos'}].concat(MATS).forEach(m=>{
+ [{id:'todos',nome:'Tudo',ic:'<img class="i3d" src="ico/tudo.png" alt="">',cor:'#6a3df0',sub:'Todos os jogos'}].concat(MATS).forEach(m=>{
   const n=m.id==='todos'?JOGOS.length:JOGOS.filter(j=>matOf[j.tema]===m.id).length;
   const b=document.createElement('button');b.className='mat'+(m.cls?' '+m.cls:'')+(fm===m.id?' on':'');b.style.setProperty('--c',m.cor);
   b.innerHTML='<div class="ic">'+m.ic+'</div>'+m.nome+'<small>'+m.sub+' · '+n+(n===1?" jogo":" jogos")+'</small>';
