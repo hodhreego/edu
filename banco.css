@@ -765,3 +765,6 @@ body.pfull #edu-nav,body.pfull .edu-nav,body.pfull #en-m{display:none!important}
 .xapp.sc .sopt{display:grid;grid-template-columns:1fr;gap:.4em;margin:.4em 0}.xapp.sc .sopt button{text-align:left;background:#fff;color:#14532d;border:2px solid #16a34a;border-radius:.8em;padding:.55em .8em;font:700 .95em Arial,sans-serif}.xapp.sc .sopt button b{display:inline-block;min-width:1.5em;height:1.5em;line-height:1.5em;text-align:center;border-radius:50%;background:#16a34a;color:#fff;margin-right:.4em}
 
 .xapp.cdx input{width:100%;box-sizing:border-box;font:800 1.5em Arial,sans-serif;text-align:center;letter-spacing:.2em;padding:.4em;border:2px solid #16a34a;border-radius:.7em;margin:.5em 0}.xapp.cdx button{width:100%;background:#16a34a;color:#fff;border:0;border-radius:.8em;padding:.7em;font:800 1em Arial,sans-serif}
+/* conversa em janela ao lado: celular e mensagens juntos, centralizados (sem vão no meio) */
+.main:has(#txt .wa){grid-template-columns:auto auto;justify-content:center;gap:24px}
+.main:has(#txt .wa) #ped{overflow:visible}
