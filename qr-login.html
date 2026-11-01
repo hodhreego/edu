@@ -12,7 +12,7 @@
 .pg{width:210mm;margin:8px auto;background:#fff;padding:7mm;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:auto repeat(6,44mm);gap:2mm;page-break-after:always;break-after:page}
 .cd{border:1.5px dashed #888;border-radius:2.5mm;padding:1.6mm;text-align:center;height:44mm;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
 .cd>*{flex:none}.cd .t{font:800 7pt Arial,sans-serif;line-height:1.15;height:2.3em;overflow:hidden;width:100%}.cd .t.vz{color:#999;font-weight:700}
-.cd .q{width:21mm;height:21mm}.cd .q img,.cd .q canvas{width:21mm!important;height:21mm!important}.cd .k{font:700 6pt Arial,sans-serif;color:#111;line-height:1.1;word-break:break-all}
+.cd .q{width:21mm;height:21mm}.cd .q img,.cd .q canvas{width:21mm!important;height:21mm!important}.cd .k{font:700 6pt Arial,sans-serif;color:#0033ff;line-height:1.1;word-break:break-all}
 .cd .l{font:900 11pt 'Courier New',monospace;letter-spacing:.5px}.cd .n{font:700 8pt Arial,sans-serif;color:#555}
 .ti{grid-column:1/-1;font:800 11pt Arial,sans-serif;display:flex;justify-content:space-between;border-bottom:2px solid #1b2a5a;padding-bottom:1mm}
 @media print{body{background:#fff}.pn,.ro{display:none!important}.pg{margin:0;width:auto;padding:6mm}@page{size:A4;margin:0}}
@@ -32,7 +32,7 @@ var $=function(i){return document.getElementById(i)},R=window.RCO_ALUNOS||{},BAS
 var tu=$('tu');tu.innerHTML='<option value="">— manual —</option>'+Object.keys(R).map(function(k){return '<option value="'+k+'">'+k+'</option>'}).join('');
 tu.onchange=function(){var k=tu.value;if(!k)return;var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){$('es').value=m[1];$('sr').value=m[2]}};
 $('rs').onclick=function(){$('ro').classList.toggle('on')};
-var MAN={};function LK(){return ($('lk').value||'').trim().replace(/^https?:\/\//,'')}try{$('lk').value=localStorage.getItem('qr_lk')||''}catch(e){}$('lk').oninput=function(){try{localStorage.setItem('qr_lk',$('lk').value)}catch(e){}};
+var MAN={};function LK(){return ($('lk').value||'').trim().replace(/^https?:\/\//,'')}$('lk').value='bit.ly/xus26';try{var _l=localStorage.getItem('qr_lk2');if(_l)$('lk').value=_l}catch(e){}$('lk').oninput=function(){try{localStorage.setItem('qr_lk2',$('lk').value)}catch(e){}};
 $('ok').onclick=function(){MAN={};$('ta').value.split(/\n/).forEach(function(l){var m=l.trim().match(/^(\d{1,2})\s*[-.;:\t ]\s*(.+)$/);if(m)MAN[+m[1]]=m[2].trim()});$('ro').classList.remove('on');gera()};
 function nomeAbrev(n){return String(n||'').trim().split(/\s+/).map(function(w,i,a){return (i&&['da','de','do','das','dos','e'].indexOf(w.toLowerCase())>=0)?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}).join(' ')}
 function cards(esc,tur,max,nomes,out){
@@ -42,7 +42,7 @@ function cards(esc,tur,max,nomes,out){
   for(var i=0;i<30&&n<=max;i++,n++){
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
-   c.innerHTML='<div class="l">'+lg+'</div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b>'+LK()+'</b></div>':'');
+   c.innerHTML='<div class="l">'+lg+'</div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
