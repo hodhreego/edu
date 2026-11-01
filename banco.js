@@ -578,7 +578,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
   SAL[bk]+=j;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot RobIox (app)',b:'prêmio do app',v:j,ok:true,h:nowS(),id:eid()});SJ.rbx=0;setPts(5);dash();
   var e=$('phone').querySelector('#rJ');if(e)e.textContent=fmt(0);out.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — RobIox')}
- window.addEventListener('message',function(ev){var d=ev.data;if(!d||d.robiox!==1||!d.stage)return;var k='rbx-'+d.ano+'-'+d.stage;if(PRIZE[k])return;PRIZE[k]=true;SJ.rbx=(SJ.rbx||0)+300;JTOT+=300;setPts(3);var e=$('phone')&&$('phone').querySelector('#rJ');if(e)e.textContent=fmt(SJ.rbx);toast('🎰 +'+fmt(300)+' no jackpot do RobIox')});
+ window.addEventListener('message',function(ev){var d=ev.data;if(!d||d.robiox!==1)return;var k,v;if(d.stage){k='rbx-'+d.ano+'-'+d.stage;v=500}else if(d.cents&&d.k){k='rbc-'+d.ano+'-'+d.k;v=d.cents}else return;if(PRIZE[k])return;PRIZE[k]=true;SJ.rbx=(SJ.rbx||0)+v;JTOT+=v;setPts(3);var e=$('phone')&&$('phone').querySelector('#rJ');if(e)e.textContent=fmt(SJ.rbx);toast('🎰 +'+fmt(v)+' no jackpot do RobIox')});
 
  function sciNext(id){var a=SCI[id],k;for(k=0;k<a.q.length;k++)if(!PRIZE['sci-'+id+'-'+k])return k;return -1}
  function sciHtml(id){var a=SCI[id];if(!a)return '';if(!XS.sq)XS.sq={};var k=sciNext(id),q=k<0?null:a.q[k],j=SJ[id]||0;XS.sq[id]=k;
@@ -756,7 +756,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
   INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:(SCI[k]&&(sciNext(k)>=0||(SJ[k]||0)>0))?1:0})});
   var dt=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
-  dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});
+  dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});var ri2=-1;ap.forEach(function(x,i){if(x.k==='ins:rbx')ri2=i});if(ri2>=0){var rx=ap.splice(ri2,1)[0];ap.splice(Math.floor(ap.length/2),0,rx)}
   function bt(a){return '<button type="button" data-l="'+a.k+'">'+a.ic+(a.bd?'<b class="bdg">'+a.bd+'</b>':'')+'<em>'+a.n+'</em></button>'}
   var clk='',top=wide?'<div class="wtop">'+wgtHtml(ios)+'</div>':(FOLD()?'<div class="fhint">👆 Escolha o app deste lado · arraste a divisória para mudar a largura</div>':'')+clk+wgtHtml(ios);
   if(DEV==='aw'||DEV==='gw'){var wa=ap.concat(dk).map(bt),hx='',wi=0,wr=0;while(wi<wa.length){var wn=wr%2?2:3;hx+='<div class="hr">'+wa.slice(wi,wi+wn).join('')+'</div>';wi+=wn;wr++}return '<div class="wlnc"><div class="stt" data-q="shade"><span>'+hm+'</span></div><div class="hxs">'+hx+'</div></div>'}
