@@ -727,3 +727,9 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 #dash .dt{gap:4px;margin-top:3px;font-size:11px}#dash .dt .btn{padding:3px 8px;font-size:10px}
 #dash .dh{height:22px}
 }
+
+.dcrk{--x:50%}
+.dcrk.vb .dv1,.dcrk.vb .dkn{display:none}.dcrk.vb .dv2{left:var(--x);top:var(--y);background:#fff;box-shadow:0 0 5px #fff,0 0 10px #fffb}
+.dcrk.vb .ddm{left:var(--x);background:rgba(255,255,255,.13)}
+.dcrk.vb .dhw{left:var(--x);height:3px;transform-origin:left top;transform:rotate(1.4deg);background:#fff;box-shadow:0 0 5px #fff,0 0 10px #fffb}
+.dcrk.vb .dhw::after{top:7px;height:2px;background:#fff;box-shadow:0 0 4px #fff}

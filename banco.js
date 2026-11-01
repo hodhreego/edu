@@ -188,8 +188,8 @@ window.BANK={run:function(cfg){
  function iniSal(){BLOQ={};INV={};var v=[125000,98050,210075,56030,342010,87500,150025,73540,64020,118030];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
  var OKEY={};
  (function(){var P=$('phone'),dec=null;
-  function crack(){if(P.querySelector('.dcrk'))return;var o=document.createElement('div'),y=52+Math.random()*16,v=Math.random()<.5;o.className='dcrk'+(Math.random()<.5?' gr':'');o.style.setProperty('--y',y.toFixed(1)+'%');
-   o.innerHTML='<i class="dv1"></i><i class="dv2"></i><i class="dkn"></i><i class="ddm"></i>'+(v?'<i class="dhb"></i>':'<i class="dhw"></i>');P.appendChild(o)}
+  function crack(){if(P.querySelector('.dcrk'))return;var o=document.createElement('div'),y=52+Math.random()*16,vb=Math.random()<.4,v=Math.random()<.5;o.className='dcrk'+(vb?' vb':Math.random()<.5?' gr':'');o.style.setProperty('--y',y.toFixed(1)+'%');o.style.setProperty('--x',(28+Math.random()*20).toFixed(1)+'%');
+   o.innerHTML='<i class="dv1"></i><i class="dv2"></i><i class="dkn"></i><i class="ddm"></i>'+(v&&!vb?'<i class="dhb"></i>':'<i class="dhw"></i>');P.appendChild(o)}
   setInterval(function(){if(DEV!=='duo'||P.querySelector('.dcrk')||(DZN<3&&!/[?&]trinca=1/.test(location.search)))return;if(dec===null){try{dec=sessionStorage.getItem('edu_duo_crack')}catch(x){}if(dec===null){dec=Math.random()<.3?'1':'0';try{sessionStorage.setItem('edu_duo_crack',dec)}catch(x){}}}if(dec==='1'||/[?&]trinca=1/.test(location.search))crack()},1000)})();
  (function(){var P=$('phone'),by=false,c=0,nd=0;
   function home(){by=true;var h=P.querySelector('.nvb [data-n=home]');if(h)h.click();by=false}
