@@ -145,7 +145,7 @@ function build(w){
       else{for(k2=0;k2<3;k2++){cur-=3;x=ri(-3,3);addP({x:x,z:cur-1.7,w:3.6,d:3.4,col:0xe5e7eb,type:'crumble',edge:true});coin(x,cur-1.7);if(k2===1)coinHi(x,cur-1.7);cur-=3.4}}
     });
     cur-=3;var rd=addP({x:0,z:cur-3,w:14,d:6,col:0xfde68a,type:'read',st:s,edge:true});pg[s]=rd;cur-=6;
-    cur-=3;var gt=s===0?'pads':s===N-1?'portals':pick(['pads','stagger','portals'].filter(function(x){return x!==prevG}));prevG=gt;gtype[s]=gt;
+    cur-=1.4;var gt=s===0?'pads':s===N-1?'portals':pick(['pads','stagger','portals'].filter(function(x){return x!==prevG}));prevG=gt;gtype[s]=gt;
     gate[s]=[];gate[s].z=cur-4;cur-=8;cur-=3;
     buildGate(s)}
   var total=-cur,k;for(k=0;k<26;k++)cloud(ri(-60,60),ri(14,34),-ri(0,total+60));
@@ -163,7 +163,7 @@ function buildGate(i){
   var k=easy[i]?2:(i>=5?4:3),opts=shuf([q.a].concat(q.d.slice(0,k-1))),list=[],gt=gtype[i];list.z=zc;
   if(gt==='portals'){var wd=12/k,strip=addP({x:0,z:zc,w:12,d:8,col:0xfde68a,type:'pstrip',st:i,edge:true});strip.line=zc-1.4;strip.done=false;list.strip=strip;
     opts.forEach(function(o,n){var x=-6+wd*(n+.5),pr=portal(x,zc-1.4,ROPT[n%4],wd);list.push({ok:o===q.a,val:o,x:x,z:zc,g:pr.g,door:pr.door,pl:floorPlane(ansTex(o),wd-.4,3.4,x,zc+1.3)})});list.n=k}
-  else{var xs=k===2?[-4,4]:k===3?[-6.5,0,6.5]:[-10,-3.4,3.4,10],zo=gt==='stagger'?[-1.6,1.6,-1.6,1.6]:[0,0,0,0];
+  else{var xs=k===2?[-4,4]:k===3?[-6.5,0,6.5]:[-10,-3.4,3.4,10],zo=gt==='stagger'?[-.9,.9,-.9,.9]:[0,0,0,0];
     opts.forEach(function(o,n){var z=zc+zo[n],p=addP({x:xs[n],z:z,w:5.2,d:4.6,col:ROPT[n%4],type:'ans',st:i,edge:true});p.ok=o===q.a;p.val=o;p.pl=floorPlane(ansTex(o),5.2,4.6,xs[n],z);list.push(p)})}
   gate[i]=list;dirty[i]=false;
   var rp=pg[i];qpl[i]=floorPlane(qTex(q.q,14,6),14,6,rp.x,rp.z);
