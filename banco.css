@@ -768,3 +768,6 @@ body.pfull #edu-nav,body.pfull .edu-nav,body.pfull #en-m{display:none!important}
 /* conversa em janela ao lado: celular e mensagens juntos, centralizados (sem vão no meio) */
 .main:has(#txt .wa){grid-template-columns:auto auto;justify-content:center;gap:24px}
 .main:has(#txt .wa) #ped{overflow:visible}
+.main:has(#txt .wa){gap:6px}
+.main:has(#txt .wa) #ped{padding-left:4px;padding-right:4px}
+@media screen and (max-width:900px){.main:has(#txt .wa){grid-template-columns:1fr;gap:10px}}
