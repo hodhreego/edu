@@ -88,6 +88,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <script>
 /* ===== COMO ATUALIZAR =====
    Jogo novo: acrescente um J(...) em JOGOS no tema certo (TEMAS). Cada tema pertence a uma matéria (MATS). */
+var CEL_SVG='<svg viewBox="0 0 64 96" width="64" height="96" style="filter:drop-shadow(0 4px 6px #0005)"><rect x="6" y="2" width="52" height="92" rx="11" fill="#1b1f2a"/><rect x="11" y="10" width="42" height="74" rx="5" fill="#0f9d58"/><rect x="24" y="5" width="16" height="3" rx="1.5" fill="#444"/><g fill="#fff"><rect x="15" y="16" width="14" height="14" rx="4" fill="#820AD1"/><rect x="35" y="16" width="14" height="14" rx="4" fill="#e11d48"/><rect x="15" y="36" width="14" height="14" rx="4" fill="#fbbf24"/><rect x="35" y="36" width="14" height="14" rx="4" fill="#3b82f6"/><rect x="15" y="56" width="14" height="14" rx="4" fill="#f97316"/><rect x="35" y="56" width="14" height="14" rx="4" fill="#ec4899"/></g><rect x="26" y="88" width="12" height="2" rx="1" fill="#777"/></svg>';
+MATS.splice(MATS.findIndex(m=>m.id==='fin')+1,0,{id:'cel',nome:'Celular',ic:CEL_SVG,cor:'#0f766e',sub:'Contas, Pix, apps e RobIox',cel:1});
+const CELS=[['6º ano','pix-celular-6ano-jogo.html'],['7º ano','pix-celular-7ano-jogo.html'],['8º ano','pix-celular-8ano-jogo.html'],['9º ano','pix-celular-9ano-jogo.html'],['1ª série EM','pix-celular-1em-jogo.html'],['2ª série EM','pix-celular-2em-jogo.html'],['3ª série EM','pix-celular-3em-jogo.html']];
+function celPick(){var o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:#000a;z-index:99;display:flex;align-items:center;justify-content:center;padding:16px';o.innerHTML='<div style="background:#fff;border-radius:18px;padding:20px;max-width:420px;width:100%;text-align:center"><h2 style="margin:0 0 4px">📱 Meu celular</h2><p style="margin:0 0 12px;color:#555">Escolha o seu ano. Lá dentro: contas, Pix, apps e o RobIox.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+CELS.map(c=>'<a href="'+c[1]+'" style="background:#0f766e;color:#fff;font-weight:800;padding:12px;border-radius:12px;text-decoration:none">'+c[0]+'</a>').join('')+'</div><button type="button" style="margin-top:12px;border:0;background:#eee;padding:8px 16px;border-radius:10px">Fechar</button></div>';o.onclick=e=>{if(e.target===o||e.target.tagName==='BUTTON')o.remove()};document.body.appendChild(o)}
 const matOf={};TEMAS.forEach(t=>matOf[t.id]=t.mat);
 const SERIES=['6º','7º','8º','9º','1ª série','2ª série','3ª série'];
 function anos(s){const r=[];const m=s.match(/(\d)º ao (\d)º/);
@@ -100,8 +104,8 @@ function drawMats(){
  [{id:'todos',nome:'Tudo',ic:'<img class="i3d" src="ico/tudo.png" alt="">',cor:'#6a3df0',sub:'Todos os jogos'}].concat(MATS).forEach(m=>{
   const n=m.id==='todos'?JOGOS.length:JOGOS.filter(j=>matOf[j.tema]===m.id).length;
   const b=document.createElement('button');b.className='mat'+(m.cls?' '+m.cls:'')+(fm===m.id?' on':'');b.style.setProperty('--c',m.cor);
-  b.innerHTML='<div class="ic">'+m.ic+'</div>'+m.nome+'<small>'+m.sub+' · '+n+(n===1?" jogo":" jogos")+'</small>';
-  b.onclick=()=>{fm=m.id;fs='todas';drawMats();chips();draw();if(fm!=='todos')bar.scrollIntoView({behavior:'smooth',block:'start'})};mats.appendChild(b)})}
+  b.innerHTML='<div class="ic">'+m.ic+'</div>'+m.nome+'<small>'+m.sub+(m.cel?'':' · '+n+(n===1?" jogo":" jogos"))+'</small>';
+  b.onclick=()=>{if(m.cel){celPick();return}fm=m.id;fs='todas';drawMats();chips();draw();if(fm!=='todos')bar.scrollIntoView({behavior:'smooth',block:'start'})};mats.appendChild(b)})}
 function chips(){
  bar.innerHTML='<span class="lab">Série:</span>';
  ['todas'].concat(SERIES).forEach(x=>{
