@@ -1139,4 +1139,4 @@ $('navb').onclick=function(){navAsk(true)};
  $('nivel').value=cfg.niveis[0];if(DZ)$('nivel').style.display='none';
  if(window.PROF_GAB&&window.PROF_GAB()){gabPage();return}
  if(!BK)BK='nubank';theme();bkbar();fase();navAsk()}};
-})();
+})();(function(){document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('#tipm .tipx');if(!t)return;var m=document.getElementById('tipm');m.classList.toggle('min');try{sessionStorage.setItem('edu_tipmin',m.classList.contains('min')?'1':'')}catch(x){}});try{if(sessionStorage.getItem('edu_tipmin')){var m=document.getElementById('tipm');if(m)m.classList.add('min')}}catch(x){}})();

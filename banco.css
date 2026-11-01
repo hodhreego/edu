@@ -743,3 +743,8 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 #navpick h3,#navpick .nvbox>p{order:-3}#navpick .nvs{order:-2}
 
 .xapp.rb{display:flex;flex-direction:column;height:100%}.xapp.rb .rbxf{flex:1;min-height:0;width:100%;border:0;background:#7ec8ff}.rbj{display:flex;gap:.4em;align-items:center;padding:.4em .5em;background:#4c1d95;color:#fde047;font-weight:700;font-size:.85em}.rbj span{white-space:nowrap}.rbj input{flex:1;min-width:0;padding:.35em;border:0;border-radius:.5em;font:inherit;color:#222}.rbj button{border:0;border-radius:.6em;background:#fde047;color:#4c1d95;font:700 1em Arial;padding:.4em .6em;cursor:pointer}.xapp.rb .dmsg{background:#4c1d95;color:#fff;padding:0 .5em}
+.szb{right:auto!important;left:8px;flex-direction:row!important}
+#tipm .tipx{cursor:pointer;position:sticky}
+#tipm .tipx::after{content:" ▾ recolher";color:#9a7b00;font-size:11px;font-weight:700;white-space:nowrap}
+#tipm.min .tipx{max-height:1.9em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#tipm.min .tipx::after{content:" ▸ abrir"}
