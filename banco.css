@@ -733,3 +733,7 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .dcrk.vb .ddm{left:var(--x);background:rgba(255,255,255,.13)}
 .dcrk.vb .dhw{left:var(--x);height:3px;transform-origin:left top;transform:rotate(1.4deg);background:#fff;box-shadow:0 0 5px #fff,0 0 10px #fffb}
 .dcrk.vb .dhw::after{top:7px;height:2px;background:#fff;box-shadow:0 0 4px #fff}
+
+.phone.land:not(.fold){width:calc(var(--ph)*.98);height:calc(var(--ph)*.56);font-size:calc(var(--ph)/52);transition:width .25s,height .25s}
+.phone.land.fold,.phone.dv-aw.land,.phone.dv-gw.land{width:auto}
+#rotb{cursor:pointer}

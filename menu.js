@@ -1,3 +1,13 @@
+/* Reconhece o aparelho do aluno (Chromebook, tablet, PC, celular) e marca o <html> para o CSS se adaptar. */
+(function(){try{var ua=navigator.userAgent||'',R=document.documentElement,t='pc';
+ if(/CrOS/.test(ua))t='chromebook';else if(/iPad|SM-X\d|SM-T\d|Tablet/i.test(ua)||(/Android/.test(ua)&&!/Mobile/.test(ua)))t='tablet';else if(/Android|iPhone|iPod|Mobile/.test(ua))t='celular';
+ var nav=/Firefox\//.test(ua)?'Firefox':/Edg\//.test(ua)?'Edge':/Chrome\//.test(ua)?'Chrome':/Safari\//.test(ua)?'Safari':'navegador';
+ var so=/CrOS/.test(ua)?'ChromeOS':/Android/.test(ua)?'Android':/Linux|X11/.test(ua)?'Linux':/Windows/.test(ua)?'Windows':/Mac OS|iPhone|iPad/.test(ua)?'Apple':'';
+ var rot={chromebook:'Chromebook',tablet:'Tablet',pc:'Computador',celular:'Celular'}[t];
+ window.EDU_DISP={tipo:t,rotulo:rot+(so?' '+so:'')+' · '+nav+' · tela '+screen.width+'x'+screen.height+' · janela '+innerWidth+'x'+innerHeight};
+ R.setAttribute('data-disp',t);
+ function size(){var w=innerWidth,h=innerHeight;R.classList.toggle('disp-curto',h<760);R.classList.toggle('disp-estreito',w<900);R.classList.toggle('disp-retrato',h>w);R.classList.toggle('disp-fhd',w>=1700)}
+ size();addEventListener('resize',size)}catch(e){}})();
 try{if(/^\s*teste( de aluno)?\s*$/i.test(localStorage.getItem('edu_nome')||''))localStorage.removeItem('edu_nome')}catch(e){}
 window.EDU_COD=function(){var f=decodeURIComponent(location.pathname.split('/').pop()),r='';if(typeof JOGOS!=='undefined')JOGOS.forEach(function(j){if(j.href===f)r=j.cod});return r};
 /* Menu superior dos jogos (Prof. Rodrigo). Depende de catalogo.js (MATS, TEMAS, JOGOS, jogoPorCodigo). */
