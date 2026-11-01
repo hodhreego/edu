@@ -52,7 +52,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="hud"><div id="bar"><span id="bF">Fase 1/10</span><span id="bE">❌ 0</span><span id="bC">🪙 0</span><button id="qB" type="button" title="Ver a pergunta">🔍</button><button id="pB" type="button" title="Menu">⏸</button></div><div id="tp"></div><div id="cmb"></div></div>
+<div id="hud"><div id="bar"><span id="bF">Fase 1/10</span><span id="bE">❌ 0</span><span id="bC">🪙 0</span><button id="qB" type="button" title="Ver a pergunta">🔍</button><button id="rB" type="button" title="Recomeçar esta fase">🔄</button><button id="pB" type="button" title="Menu">⏸</button></div><div id="tp"></div><div id="cmb"></div></div>
 <div id="qpop"></div><div id="msg"></div>
 <div id="joy"><i></i></div><button id="jmp" type="button">PULAR</button>
 <div class="ov" id="ovS"><div class="box" id="mb"></div></div>
@@ -239,7 +239,9 @@ function avatar(){var L=look(),h=function(c){return '#'+('000000'+c.toString(16)
   return o+'</svg>'}
 var pl={x:0,y:0,z:0,vx:0,vy:0,vz:0,gr:false,coy:0,ride:null,face:0,st:0},errs=0,tNow=0,run=false,combo=0,inGame=false,sesT=0,wasT=0;
 var inp={x:0,z:0,jump:false},keys={};
-function resp(){pl.x=0;pl.y=.01;pl.z=safeZ[pl.st];pl.vx=pl.vy=pl.vz=0;pl.ride=null;if(dirty[pl.st]&&pl.st<N)buildGate(pl.st);hud()}
+function restoreCr(){plats.forEach(function(p){if(p.type!=='crumble')return;var dy=(p.top-.5)-p.mesh.position.y;if(p.pl){p.pl.position.y+=dy;p.pl.position.x=p.x0;p.pl.visible=true}p.mesh.position.set(p.x0,p.top-.5,p.z0);p.mesh.rotation.z=0;p.shake=undefined;p.fall=false;p.alive=true})}
+function resetFase(){restoreCr();resp();say('🔄 Fase reiniciada! Tente de novo.',2000)}
+function resp(){pl.x=0;restoreCr();pl.y=.01;pl.z=safeZ[pl.st];pl.vx=pl.vy=pl.vz=0;pl.ride=null;if(dirty[pl.st]&&pl.st<N)buildGate(pl.st);hud()}
 function say(t,ms){var m=$('msg');m.textContent=t;m.classList.add('on');clearTimeout(say.t);say.t=setTimeout(function(){m.classList.remove('on')},ms||1600)}
 function beep(f,d,ty,v){try{var A=beep.a||(beep.a=new(window.AudioContext||window.webkitAudioContext)()),o=A.createOscillator(),g=A.createGain();o.frequency.value=f;o.type=ty||'square';g.gain.value=v||.05;o.connect(g);g.connect(A.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+(d||.15));o.stop(A.currentTime+(d||.15))}catch(e){}}
 function jingle(){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){beep(f,.18,'triangle',.07)},i*90)})}
@@ -370,6 +372,7 @@ $('mb').addEventListener('click',function(e){var t=e.target.closest('[data-t],[d
   if(t.dataset.c){if(t.dataset.c==='all'){ST.dy.c.all=1;gain(0,40)}else{ST.dy.c[t.dataset.c]=1;ST.stat.missoes++;gain(30,15);bdg()}conf(20);jingle();return menu('m')}
   if(t.dataset.s){var s=B.SK.filter(function(k){return k.id===t.dataset.s})[0];if(!ST.own[s.id]){if(ST.coins<s.c){say('Faltam '+(s.c-ST.coins)+' moedas! Jogue mais para juntar 🪙',2000);return}ST.coins-=s.c;ST.own[s.id]=1;jingle()}ST.eq=s.id;sv();skin();return menu('l')}});
 $('wb').addEventListener('click',function(e){if(e.target.id==='bMenu'){$('ovW').style.display='none';inGame=false;menu('j')}});
+$('rB').onclick=function(){if(inGame)resetFase()};
 $('pB').onclick=function(){run=false;menu()};
 $('qB').onclick=function(){var q=stageQ[Math.min(pl.st,N-1)],p=$('qpop');if(!q)return;p.textContent=q.q;p.style.display='block';clearTimeout($('qB').t);$('qB').t=setTimeout(function(){p.style.display='none'},5000)};
 /* ---------- controles (teclado + toque detectado automaticamente) ---------- */
