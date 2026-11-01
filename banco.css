@@ -751,3 +751,12 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 #tipm.min .tipx::after{content:"💡 Dica ▸";font-size:12px;line-height:1.4;color:#7a5c00}
 #tipm{position:fixed;right:10px;bottom:10px;left:auto;top:auto;z-index:60;max-width:min(340px,86vw);margin:0!important;width:auto}
 #tipm .tipx{position:static!important;box-shadow:0 6px 18px #0004}
+
+#fsb{cursor:pointer}
+body.pfull{overflow:hidden;background:#0b1020}
+body.pfull .top,body.pfull #inst,body.pfull #tipm,body.pfull .pnote,body.pfull #dash,body.pfull #dash2,body.pfull .szb,body.pfull footer,body.pfull #bkbar{display:none!important}
+body.pfull #stage,body.pfull #app{position:static}
+body.pfull .phone{position:fixed!important;left:50%;top:50%;transform:translate(-50%,-50%);z-index:950;zoom:1!important;margin:0!important}
+body.pfull #fsb,body.pfull #rotb{position:fixed;z-index:960;top:8px;display:inline-block!important}
+body.pfull #fsb{right:8px}body.pfull #rotb{right:56px}
+body.pfull #edu-nav,body.pfull .edu-nav,body.pfull #en-m{display:none!important}
