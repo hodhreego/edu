@@ -257,6 +257,29 @@ function onRight(p){var i=p.st,q=stageQ[i],first=stErr[i]===0;combo++;ST.stat.co
 function onWrong(p){var i=p.st,q=stageQ[i];errs++;stErr[i]++;combo=0;sks(q.topic,skg(q.topic)-.5);rvq.push({t:q.topic,due:i+2});dirty[i]=true;if(stErr[i]>=2)easy[i]=true;
   beep(160,.4,'sawtooth');paint(p,0xdc2626);
   say('❌ '+pick(TRY)+'\n💡 '+(q.e||('A resposta era '+q.a))+(stErr[i]>=2?'\nVou facilitar: menos opções!':''),4200);hud()}
+var BS={
+p1:['circle','#22c55e','#14532d','<path d="M50 70V45M50 52c-14 0-18-10-18-18 12 0 18 6 18 18zM50 48c12 0 16-8 16-16-12 0-16 6-16 16z" fill="#fff"/>'],
+s3:['star','#facc15','#a16207','<path d="M50 30l6 13 14 2-10 10 3 14-13-7-13 7 3-14-10-10 14-2z" fill="#fff"/>'],
+c5:['shield','#f97316','#7c2d12','<path d="M50 28c4 10 14 14 14 26a14 14 0 0 1-28 0c0-8 5-10 6-18 4 3 6 6 8 10 2-6 0-12 0-18z" fill="#fff"/>'],
+c10:['shield','#dc2626','#450a0a','<path d="M30 70l14-30 6 10 6-14 14 34z" fill="#fff"/><circle cx="50" cy="32" r="4" fill="#fde047"/><circle cx="40" cy="28" r="3" fill="#fde047"/><circle cx="60" cy="27" r="3" fill="#fde047"/>'],
+m1:['hex','#0ea5e9','#0c4a6e','<path d="M30 36l13-4 14 4 13-4v32l-13 4-14-4-13 4z" fill="#fff"/><path d="M43 32v32M57 36v32" stroke="#0ea5e9" stroke-width="3"/>'],
+m5:['crown','#a855f7','#3b0764','<path d="M28 64V40l12 12 10-18 10 18 12-12v24z" fill="#fff"/><rect x="28" y="66" width="44" height="5" fill="#fde047"/>'],
+d3:['circle','#14b8a6','#134e4a','<rect x="30" y="34" width="40" height="36" rx="5" fill="#fff"/><rect x="30" y="34" width="40" height="10" rx="5" fill="#0f766e"/><text x="50" y="64" font-size="20" font-weight="900" text-anchor="middle" fill="#0f766e" font-family="Arial">3</text>'],
+d7:['medal','#eab308','#713f12','<text x="50" y="62" font-size="30" font-weight="900" text-anchor="middle" fill="#fff" font-family="Arial">7</text>'],
+n5:['shield','#3b82f6','#1e3a8a','<text x="50" y="62" font-size="14" font-weight="900" text-anchor="middle" fill="#fff" font-family="Arial">NV</text><text x="50" y="76" font-size="20" font-weight="900" text-anchor="middle" fill="#fde047" font-family="Arial">5</text>'],
+r1:['circle','#f59e0b','#78350f','<circle cx="50" cy="50" r="19" fill="#fde047" stroke="#fff" stroke-width="3"/><text x="50" y="58" font-size="22" font-weight="900" text-anchor="middle" fill="#92400e" font-family="Arial">R$</text>'],
+dom:['hex','#ec4899','#831843','<path d="M50 30c-12 0-18 8-16 16-4 4-2 12 4 14 2 6 10 8 12 4 2 4 10 2 12-4 6-2 8-10 4-14 2-8-4-16-16-16z" fill="#fff"/><path d="M50 32v34" stroke="#ec4899" stroke-width="3"/>'],
+vol:['star','#10b981','#064e3b','<path d="M34 62l8-14 6 8 8-16 10 22z" fill="#fff"/><path d="M34 66h32" stroke="#fff" stroke-width="4"/>'],
+mis:['circle','#6366f1','#1e1b4b','<rect x="34" y="30" width="32" height="40" rx="4" fill="#fff"/><path d="M40 44l4 4 8-8M40 58l4 4 8-8" stroke="#6366f1" stroke-width="4" fill="none"/>']};
+function bsvg(id,on){var b=BS[id]||BS.p1,c=on?b[1]:'#9ca3af',d=on?b[2]:'#4b5563',sh;
+ if(b[0]==='shield')sh='<path d="M50 8l36 10v28c0 22-16 38-36 46C30 84 14 68 14 46V18z" fill="'+c+'" stroke="'+d+'" stroke-width="5"/>';
+ else if(b[0]==='hex')sh='<path d="M50 6l38 22v44L50 94 12 72V28z" fill="'+c+'" stroke="'+d+'" stroke-width="5"/>';
+ else if(b[0]==='star')sh='<path d="M50 6l12 26 28 3-21 19 6 28-25-14-25 14 6-28L10 35l28-3z" fill="'+c+'" stroke="'+d+'" stroke-width="4"/>';
+ else if(b[0]==='crown')sh='<path d="M10 78V26l24 22 16-34 16 34 24-22v52z" fill="'+c+'" stroke="'+d+'" stroke-width="5"/>';
+ else if(b[0]==='medal')sh='<path d="M30 4h14l6 24-14 8zM70 4H56l-6 24 14 8z" fill="#dc2626"/><circle cx="50" cy="62" r="32" fill="'+c+'" stroke="'+d+'" stroke-width="5"/>';
+ else sh='<circle cx="50" cy="50" r="42" fill="'+c+'" stroke="'+d+'" stroke-width="5"/><circle cx="50" cy="50" r="34" fill="none" stroke="#fff6" stroke-width="2"/>';
+ var g=b[3];if(b[0]==='medal')g='<g transform="translate(0,12)">'+g+'</g>';if(b[0]==='crown')g='<g transform="translate(0,6)">'+g+'</g>';
+ return '<svg viewBox="0 0 100 100" width="62" height="62">'+sh+g+(on?'':'<rect x="38" y="50" width="24" height="20" rx="4" fill="#374151"/><path d="M42 50v-7a8 8 0 0 1 16 0v7" fill="none" stroke="#374151" stroke-width="4"/>')+'</svg>'}
 function bdgList(){var s=ST,mx=0,k;for(k in s.sk)mx=Math.max(mx,s.sk[k]);return [
 {id:'p1',i:'🌱',n:'Primeiro passo',d:'Complete sua 1ª fase',t:s.stat.fases>=1},{id:'s3',i:'⭐',n:'Três estrelas',d:'Complete uma fase sem errar',t:s.stat.perfeitas>=1},
 {id:'c5',i:'🔥',n:'Combo 5',d:'5 acertos seguidos',t:s.stat.combo>=5},{id:'c10',i:'🌋',n:'Combo 10',d:'10 acertos seguidos',t:s.stat.combo>=10},
@@ -326,7 +349,7 @@ function tabHTML(tab){var h='',i;
     if(all&&!ST.dy.c.all)h+='<button class="go" data-c="all">🎁 Baú do dia completo! (+40 🪙)</button>';if(ST.dy.c.all)h+='<p>🏆 Todas as missões de hoje concluídas! Volte amanhã.</p>';
     h+='<p>🔥 Sequência: <b>'+ST.st.n+'</b> dia(s) · recorde '+ST.st.best+'. Bônus nos dias 3, 7, 14 e 30!</p>'}
   if(tab==='l'){h+='<p>🇬🇧 Moedas extras: faça a atividade de inglês <b>4747</b> (cada ponto vira 1 🪙).</p><p>🪙 Você tem <b>'+ST.coins+'</b> moedas. Escolha o visual do seu personagem:</p><div class="grid">'+B.SK.map(function(s){var own=ST.own[s.id],eq=ST.eq===s.id;return '<div class="it'+(eq?' on':'')+'"><div class="e" style="color:#'+('000000'+s.col.toString(16)).slice(-6)+'">🧍'+(s.hat?'🎩':'')+'</div>'+s.n+'<br><button data-s="'+s.id+'">'+(eq?'✔ Em uso':own?'Usar':'🪙 '+s.c)+'</button></div>'}).join('')+'</div>'}
-  if(tab==='c'){h+='<div class="grid">'+bdgList().map(function(b){return '<div class="it'+(ST.bd[b.id]?' on':' off')+'"><div class="e">'+(ST.bd[b.id]?b.i:'🔒')+'</div><b>'+b.n+'</b><br><small>'+b.d+'</small></div>'}).join('')+'</div>'}
+  if(tab==='c'){h+='<div class="grid">'+bdgList().map(function(b){return '<div class="it'+(ST.bd[b.id]?' on':' off')+'"><div class="e">'+bsvg(b.id,!!ST.bd[b.id])+'</div><b>'+b.n+'</b><br><small>'+b.d+'</small></div>'}).join('')+'</div>'}
   if(tab==='p'){var c=ST.ch;h+='<div style="display:flex;justify-content:center;margin:6px 0">'+avatar()+'</div><p><b>Gênero</b></p><div class="anos" style="grid-template-columns:1fr 1fr"><button data-g="m" class="'+(c.g==='m'?'on':'')+'">👦 Menino</button><button data-g="f" class="'+(c.g==='f'?'on':'')+'">👧 Menina</button></div>'
     +'<p><b>Cor da pele</b></p><div class="sw">'+SKN.map(function(v,i){return '<button data-k="'+i+'" class="'+(c.sk===i?'on':'')+'" style="background:#'+('000000'+v.toString(16)).slice(-6)+'"></button>'}).join('')+'</div>'
     +'<p><b>Cabelo</b></p><div class="sw">'+HRC.map(function(v,i){return '<button data-h="'+i+'" title="'+HRN[i]+'" class="'+(c.hr===i?'on':'')+'" style="background:#'+('000000'+v.toString(16)).slice(-6)+'"></button>'}).join('')+'</div>'
