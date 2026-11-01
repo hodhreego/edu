@@ -578,7 +578,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
   SAL[bk]+=j;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot RobIox (app)',b:'prêmio do app',v:j,ok:true,h:nowS(),id:eid()});SJ.rbx=0;setPts(5);dash();
   var e=$('phone').querySelector('#rJ');if(e)e.textContent=fmt(0);out.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — RobIox')}
- window.addEventListener('message',function(ev){var d=ev.data;if(!d||d.robiox!==1||!d.stage)return;var k='rbx-'+d.ano+'-'+d.stage;if(PRIZE[k])return;PRIZE[k]=true;SJ.rbx=(SJ.rbx||0)+1000;JTOT+=1000;setPts(3);var e=$('phone')&&$('phone').querySelector('#rJ');if(e)e.textContent=fmt(SJ.rbx);toast('🎰 +'+fmt(1000)+' no jackpot do RobIox')});
+ window.addEventListener('message',function(ev){var d=ev.data;if(!d||d.robiox!==1||!d.stage)return;var k='rbx-'+d.ano+'-'+d.stage;if(PRIZE[k])return;PRIZE[k]=true;SJ.rbx=(SJ.rbx||0)+300;JTOT+=300;setPts(3);var e=$('phone')&&$('phone').querySelector('#rJ');if(e)e.textContent=fmt(SJ.rbx);toast('🎰 +'+fmt(300)+' no jackpot do RobIox')});
 
  function sciNext(id){var a=SCI[id],k;for(k=0;k<a.q.length;k++)if(!PRIZE['sci-'+id+'-'+k])return k;return -1}
  function sciHtml(id){var a=SCI[id];if(!a)return '';if(!XS.sq)XS.sq={};var k=sciNext(id),q=k<0?null:a.q[k],j=SJ[id]||0;XS.sq[id]=k;
