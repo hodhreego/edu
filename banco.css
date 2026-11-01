@@ -771,3 +771,6 @@ body.pfull #edu-nav,body.pfull .edu-nav,body.pfull #en-m{display:none!important}
 .main:has(#txt .wa){gap:6px}
 .main:has(#txt .wa) #ped{padding-left:4px;padding-right:4px}
 @media screen and (max-width:900px){.main:has(#txt .wa){grid-template-columns:1fr;gap:10px}}
+/* aplicativo de mensagens e celular com a MESMA altura (--pht é medida pelo JS) */
+#txt>.wa{box-sizing:border-box;height:var(--pht,var(--ph))!important}
+@media screen and (max-width:900px){#txt>.wa{height:auto!important;min-height:60vh}}

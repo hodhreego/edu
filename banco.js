@@ -1200,3 +1200,6 @@ function set(v){on=v;var d=document.documentElement,P=document.getElementById('p
 document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('#fsb')){e.stopPropagation();set(!on)}});
 addEventListener('resize',function(){if(on)fit()});document.addEventListener('fullscreenchange',function(){if(on&&!document.fullscreenElement&&innerHeight<screen.height-80){}});document.addEventListener('click',function(e){if(on&&e.target.closest&&e.target.closest('#rotb'))setTimeout(fit,50)});
 document.addEventListener('keydown',function(e){if(on&&e.key==='Escape')set(false)})})();
+
+/* iguala a altura da janela de mensagens à do celular */
+(function(){var last=0;setInterval(function(){var p=document.getElementById('phone');if(!p)return;var h=p.offsetHeight;if(h&&h!==last){last=h;document.documentElement.style.setProperty('--pht',h+'px')}},300)})();
