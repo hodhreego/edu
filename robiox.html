@@ -112,7 +112,7 @@ var CK=[{v:4,r:.46,o:0xd9dde3,i:0xe0a800,t:'1'},{v:2,r:.4,o:0xc9ced6,i:0xc9ced6,
 function cFace(k){if(cTx[k.t])return cTx[k.t];var c=cnv(128,128),g=c.getContext('2d');g.fillStyle='#'+('000000'+k.i.toString(16)).slice(-6);g.beginPath();g.arc(64,64,64,0,7);g.fill();g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=4;g.beginPath();g.arc(64,64,58,0,7);g.stroke();g.font='900 '+(k.t.length>1?58:80)+'px Nunito,Arial';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#7a4a00';g.fillText(k.t,64,k.t.length>1?58:62);if(k.t.length>1){g.font='900 26px Nunito,Arial';g.fillText('CENT',64,100)}else{g.font='900 26px Nunito,Arial';g.fillText('REAL',64,104)}return cTx[k.t]=tex(c)}
 function coin(x,z,y,kind,hi){var k=CK[kind==null?(Math.random()<.2?0:Math.random()<.55?1:2):kind],g=new THREE.Group(),m=new THREE.Mesh(new THREE.CylinderGeometry(k.r,k.r,.12,24),new THREE.MeshLambertMaterial({color:k.o,emissive:0x222222})),f,fm=new THREE.MeshBasicMaterial({map:cFace(k)}),rr=k.t==='1'?.62:.86;
   m.rotation.x=Math.PI/2;g.add(m);f=new THREE.Mesh(new THREE.CircleGeometry(k.r*rr,24),fm);f.position.z=.07;g.add(f);f=f.clone();f.position.z=-.07;f.rotation.y=Math.PI;g.add(f);
-  y=(y||0)+(hi?4.2:1.5);g.position.set(x,y,z);S.add(g);COINS.push({m:g,x:x,z:z,y:y,got:false,v:k.v})}
+  y=(y||0)+(hi?3.3:1.5);g.position.set(x,y,z);S.add(g);COINS.push({m:g,x:x,z:z,y:y,got:false,v:k.v})}
 function coinHi(x,z,y){coin(x,z,y,null,1)}
 function cloud(x,y,z){var g=new THREE.Group(),i,m=new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.92});for(i=0;i<4;i++){var s=new THREE.Mesh(new THREE.SphereGeometry(ri(20,34)/10,10,8),m);s.position.set(i*2.2-3,ri(0,10)/10,ri(-8,8)/10);g.add(s)}g.position.set(x,y,z);S.add(g);DEC.push(g)}
 function pillar(x,y,z,col){var h=ri(6,18),m=mk(new THREE.BoxGeometry(ri(3,7),h,ri(3,7)),col,x,y-h/2,z);m.castShadow=false;DEC.push(m)}
@@ -297,7 +297,7 @@ function step(dt){
     if(py>=p.top-.08&&pl.y<=p.top&&Math.abs(pl.x-p.x)<=p.w/2+.3&&Math.abs(pl.z-p.z)<=p.d/2+.3){pl.y=p.top;pl.vy=0;pl.gr=true;pl.ride=p;landOn(p);break}}}
   var gs=gate[pl.st];if(gs&&gs.strip&&!gs.strip.done&&pl.ride===gs.strip&&pl.z<gs.strip.line){gs.strip.done=true;var wd=12/gs.n,ix=Math.max(0,Math.min(gs.n-1,Math.floor((pl.x+6)/wd))),o=gs[ix],po={st:pl.st,door:o.door};
     if(o.ok){answered[pl.st]=true;onRight(po)}else{onWrong(po);pl.vx=pl.vz=0;pl.ride=null;resp()}}
-  COINS.forEach(function(c){c.m.rotation.y+=dt*3.2;c.m.position.y=c.y+Math.sin(tNow*3+c.x)*.12;if(!c.got&&Math.abs(pl.x-c.x)<1&&Math.abs(pl.z-c.z)<1&&pl.y+1.2>c.y-.9&&pl.y<c.y+.9){c.got=true;S.remove(c.m);ST.coins+=c.v;ST.stat.ganhas+=c.v;mp('mo',1);beep(1320,.08,'triangle',.06);hud();sv()}});
+  COINS.forEach(function(c){c.m.rotation.y+=dt*3.2;c.m.position.y=c.y+Math.sin(tNow*3+c.x)*.12;if(!c.got&&Math.abs(pl.x-c.x)<1.4&&Math.abs(pl.z-c.z)<1.4&&pl.y+1.2>c.y-.9&&pl.y<c.y+.9){c.got=true;S.remove(c.m);ST.coins+=c.v;ST.stat.ganhas+=c.v;mp('mo',1);beep(1320,.08,'triangle',.06);hud();sv()}});
   if(pl.y<-9){say('💥 Caiu! Sem problema, volte ao início da fase e tente de novo.',1400);beep(120,.3);combo=0;resp()}
   var sp2=Math.hypot(pl.vx,pl.vz);if(sp2>.6)pl.face=Math.atan2(pl.vx,pl.vz);
   SG.forEach(function(g){g.visible=g.position.z<pl.z-3});
