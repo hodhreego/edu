@@ -580,6 +580,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   var e=$('phone').querySelector('#rJ');if(e)e.textContent=fmt(0);out.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — RobIox')}
  window.addEventListener('message',function(ev){var d=ev.data;if(!d||d.robiox!==1)return;var k,v;if(d.stage){k='rbx-'+d.ano+'-'+d.stage;v=500}else if(d.cents&&d.k){k='rbc-'+d.ano+'-'+d.k;v=d.cents}else return;if(PRIZE[k])return;PRIZE[k]=true;SJ.rbx=(SJ.rbx||0)+v;JTOT+=v;setPts(3);var e=$('phone')&&$('phone').querySelector('#rJ');if(e)e.textContent=fmt(SJ.rbx);toast('🎰 +'+fmt(v)+' no jackpot do RobIox')});
 
+ function appBd(k){if(SCI[k]){var n=0,i;for(i=0;i<SCI[k].q.length;i++)if(!PRIZE['sci-'+k+'-'+i])n++;return n}if(k==='rbx'){var d=0;try{var s=JSON.parse(localStorage.getItem('robiox_v2')||'{}'),an=rbxAno(),p;for(p in (s.pst||{}))if(p.indexOf(an+'-')===0)d++}catch(e){}return Math.max(0,50-d)}return 0}
  function sciNext(id){var a=SCI[id],k;for(k=0;k<a.q.length;k++)if(!PRIZE['sci-'+id+'-'+k])return k;return -1}
  function sciHtml(id){var a=SCI[id];if(!a)return '';if(!XS.sq)XS.sq={};var k=sciNext(id),q=k<0?null:a.q[k],j=SJ[id]||0;XS.sq[id]=k;
   return '<div class="xapp sc">'+xh(a.t)+'<div class="wb"><h3>📚 Você sabia?</h3><ul>'+a.f.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul><div class="sjk"><span>🎰 Jackpot do app: <b id="sJ">'+fmt(j)+'</b></span></div><div class="sch">'+(q?'<b>🎁 Desafio valendo '+fmt(q.pz)+' no jackpot ('+(k+1)+'/'+a.q.length+')</b>'+notasHtml(q.pz)+'<p>'+q.q+'</p><input id="sA" type="text" placeholder="Sua resposta" autocomplete="off"><button type="button" data-x="sci:'+id+'">📨 Enviar resposta</button>':'<p class="ok">✅ Você respondeu todos os desafios deste app!</p>')+'<div id="sM" class="dmsg"></div></div>'+
@@ -754,7 +755,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(swOn()){var nd=0;try{GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&!PRIZE[x.id])nd++})})}catch(e){}ap.push({k:'wa',n:appNm(),ic:appIc(),bd:nd})}
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi sy svgic">'+calcSvg(ios)+'</span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
-  INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:(SCI[k]&&(sciNext(k)>=0||(SJ[k]||0)>0))?1:0})});
+  INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:appBd(k)})});
   var dt=new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
   dk=ap.filter(function(a){return a.d});ap=ap.filter(function(a){return !a.d});var ri2=-1;ap.forEach(function(x,i){if(x.k==='ins:rbx')ri2=i});if(ri2>=0){var rx=ap.splice(ri2,1)[0];ap.splice(Math.floor(ap.length/2),0,rx)}
   function bt(a){return '<button type="button" data-l="'+a.k+'">'+a.ic+(a.bd?'<b class="bdg">'+a.bd+'</b>':'')+'<em>'+a.n+'</em></button>'}
