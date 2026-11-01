@@ -226,7 +226,7 @@ window.BANK={run:function(cfg){
  function bicon(k,sz){var b=BANKS[k];return '<span class="bi" style="--c:'+b.h+';--t:'+b.f+(sz?';--z:'+sz+'px':'')+'"><img src="bancos/'+k+'.png" alt="'+b.n+'" draggable="false" onerror="this.remove()"><i>'+(MONO[k]||b.n.charAt(0))+'</i></span>'}
  function bkbar(){var bb=$('bkbar');if(!bb)return;if(cfg.appswitch){bb.style.display='none';return}bb.innerHTML=Object.keys(BANKS).map(function(k){var st='';return '<button type="button" class="bkb'+(k===BK?' on':'')+'" data-bk="'+k+'" title="'+BANKS[k].n+' — ver extrato">'+bicon(k,30)+st+'</button>'}).join('')}
  function setBank(k){if(!BANKS[k])return;BK=k;try{localStorage.setItem('edu_banco',k)}catch(x){}ph.chave='';theme();bkbar();draw()}
- function swOn(){return !!(cfg.appswitch&&T&&T.chat)}
+ function swOn(){return !!((cfg.appswitch||/[?&]zap=dentro/.test(location.search))&&T&&T.chat)}
  function dockAdd(){var o0=document.getElementById('dock');if(o0)o0.remove();return;var P=$('phone'),o=document.getElementById('dock');if(o)o.remove();
   P.insertAdjacentHTML('beforeend','<div id="dock"><small>Trocar de aplicativo</small><div class="dk"><button type="button" class="'+(ph.app==='wa'?'on':'')+'" data-d="wa"><span class="bi wapp"><i>💬</i></span><em>WhatsApp</em></button>'+Object.keys(BANKS).map(function(k){return '<button type="button" class="'+(ph.app==='bank'&&k===BK?'on':'')+'" data-d="'+k+'">'+bicon(k)+'<em>'+BANKS[k].n.split(' ')[0]+'</em></button>'}).join('')+'</div></div>')}
  function swapTo(app,k){var P=$('phone');P.classList.remove('appsw');void P.offsetWidth;P.classList.add('appsw');if(app==='wa'){ph.app='wa'}else{if(k!==BK){BK=k;try{localStorage.setItem('edu_banco',k)}catch(x){}ph.s='home';ph.chave='';ph.c=null}ph.app='bank'}theme();draw()}
@@ -634,6 +634,10 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(!r){out.innerHTML='⚠️ Escreva a sua resposta.';return}
   if(!q.a.some(function(x){return dzEq(nrm2(x),r)})){setPts(-3);out.innerHTML='❌ Resposta errada. Releia o “Você sabia?” e tente de novo!';return}
   PRIZE['sci-'+id+'-'+k]=true;SJ[id]=(SJ[id]||0)+q.pz;JTOT+=q.pz;setPts(5);toast('🎰 +'+fmt(q.pz)+' no jackpot — '+a.t);sciRefresh(id,'🎉 <b>Acertou!</b> +'+fmt(q.pz)+' no jackpot do app.')}
+ function cgoGo(){var i=$('cdV'),e=$('cdE');if(!i)return;var c=String(i.value||'').trim(),n=c.replace(/\D/g,''),u=null;if(/^rob[il]ox$/i.test(c)||n==='7676')u='robiox.html';else if(n==='7777')u='index.html?c=7777';else if(window.jogoPorCodigo){var j=window.jogoPorCodigo(n);if(j)u=j.href}
+  if(!u){if(e)e.innerHTML='❌ Código não encontrado. Confira os 4 números.';return}
+  if(e)e.innerHTML='⏳ Abrindo…';location.href=u}
+ document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='cdV'){e.preventDefault();cgoGo()}});
  function sciPick(id,i){var a=SCI[id],k=sciNext(id),out=$('phone').querySelector('#sM');if(!out||k<0)return;var q=a.q[k];if(+i!==q.c){setPts(-3);out.innerHTML='❌ Não foi essa. '+(q.e?'<small>Dica: releia o “Você sabia?” e tente de novo.</small>':'');return}
   PRIZE['sci-'+id+'-'+k]=true;SJ[id]=(SJ[id]||0)+q.pz;JTOT+=q.pz;setPts(5);toast('🎰 +'+fmt(q.pz)+' no jackpot — '+a.t);sciRefresh(id,'🎉 <b>Acertou!</b> +'+fmt(q.pz)+' no jackpot. '+(q.e||''))}
  function sciRefresh(id,msg){var P=$('phone'),b=P.querySelector('.xapp.sc');if(!b)return;var t=document.createElement('div');t.innerHTML=sciHtml(id);b.replaceWith(t.firstChild);var m=P.querySelector('#sM');if(m&&msg)m.innerHTML=msg}
@@ -643,7 +647,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
   SAL[bk]+=j;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot '+a.t+' (app)',b:'prêmio do app',v:j,ok:true,h:nowS(),id:eid()});SJ[id]=0;setPts(5);dash();
   sciRefresh(id,'');var o2=$('phone').querySelector('#sN');if(o2)o2.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — '+a.t)}
- function sysList(){var ios=NAV==='ios';return [['web',ios?'Safari':'Chrome',ios?'#1e90ff':'#fff',ios?'#fff':'#1a73e8',ios?'🧭':'🌐'],['store',ios?'App Store':'Play Store',ios?'#1c8cf6':'#fff',ios?'#fff':'#01875f',ios?'A':'▶'],['cam','Câmera','#2b2b2b','#fff','📷'],['gal',ios?'Fotos':'Galeria','#fff','#e8710a',ios?'🌸':'🖼️'],['clk','Relógio','#111','#fff','🕒'],['map','Mapas','#4caf50','#fff','🗺️'],['set',ios?'Ajustes':'Configurações','#8e8e93','#fff','⚙️'],['clima',ios?'Tempo':'Clima','#3a8dde','#fff','🌤️'],['note',ios?'Notas':'Bloco de Notas','#ffd60a','#222','📝']].concat(swOn()?[]:[['zap','WhatsApp','#25d366','#fff','💬']]).concat([['msg','Messenger','#a033ff','#fff','💬'],['tel','Telegram','#1d93d2','#fff','✈️'],['sms','Mensagens','#2fbf55','#fff','💬']])}
+ function sysList(){var ios=NAV==='ios';return [['web',ios?'Safari':'Chrome',ios?'#1e90ff':'#fff',ios?'#fff':'#1a73e8',ios?'🧭':'🌐'],['store',ios?'App Store':'Play Store',ios?'#1c8cf6':'#fff',ios?'#fff':'#01875f',ios?'A':'▶'],['cam','Câmera','#2b2b2b','#fff','📷'],['gal',ios?'Fotos':'Galeria','#fff','#e8710a',ios?'🌸':'🖼️'],['clk','Relógio','#111','#fff','🕒'],['map','Mapas','#4caf50','#fff','🗺️'],['set',ios?'Ajustes':'Configurações','#8e8e93','#fff','⚙️'],['clima',ios?'Tempo':'Clima','#3a8dde','#fff','🌤️'],['note',ios?'Notas':'Bloco de Notas','#ffd60a','#222','📝'],['cod','Códigos','#16a34a','#fff','🔑']].concat(swOn()?[]:[['zap','WhatsApp','#25d366','#fff','💬']]).concat([['msg','Messenger','#a033ff','#fff','💬'],['tel','Telegram','#1d93d2','#fff','✈️'],['sms','Mensagens','#2fbf55','#fff','💬']])}
  var ICU=0;
  function icoSvg(id,ios){var u='ic'+(ICU++)+'_',S='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">',
   gr=function(i,a,b){return '<defs><linearGradient id="'+u+i+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient></defs>'},
@@ -796,7 +800,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(ios)return '<div class="wgt ios" data-l="sys:clima"><div class="w1"><small>'+w.loc+'</small><b>'+w.t+'°</b><span>'+w.e+'</span><small>'+w.c+'<br>Máx '+w.max+'° Mín '+w.min+'°</small></div><div class="w2">'+w.days.slice(0,4).map(function(x){return '<div><small>'+x.d+'</small><span>'+x.e+'</span><b>'+x.max+'°</b></div>'}).join('')+'</div></div>';
   return '<div class="wgt and" data-l="sys:clima"><div class="w1"><b>'+w.t+'°</b><div><span>'+w.e+' '+w.c+'</span><small>'+w.loc+' · '+w.min+'° / '+w.max+'°</small></div></div><div class="w2">'+w.days.map(function(x){return '<div><small>'+x.d+'</small><span>'+x.e+'</span><small>'+x.max+'°</small></div>'}).join('')+'</div></div>'}
  function launcherHtml(wide){var ios=NAV==='ios',hm=hmNow(),ap=[],dk=[];
-  sysList().forEach(function(a){ap.push({k:'sys:'+a[0],n:a[1],ic:sysIc2(a),d:ios?/web|cam|store|note/.test(a[0]):/web|cam|gal|store/.test(a[0])})});
+  sysList().forEach(function(a){ap.push({k:'sys:'+a[0],n:a[1],ic:sysIc2(a),d:ios?/web|cam|store|cod/.test(a[0]):/web|cam|gal|cod/.test(a[0])})});
   if(swOn()){var nd=0;try{GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&!PRIZE[x.id])nd++})})}catch(e){}ap.push({k:'wa',n:appNm(),ic:appIc(),bd:nd})}
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi sy svgic">'+calcSvg(ios)+'</span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
@@ -883,6 +887,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(id==='set'){return '<div class="xapp set">'+xh(ios?'Ajustes':'Configurações')+'<div class="wb"><div class="tg"><span>📶 Wi-Fi</span><button type="button" data-q="wifi" class="'+(QS.wifi?'on':'')+'"></button></div><div class="tg"><span>🔷 Bluetooth</span><button type="button" data-q="bt" class="'+(QS.bt?'on':'')+'"></button></div><div class="tg"><span>🌓 Modo escuro</span><button type="button" data-q="dm" class="'+(DM?'on':'')+'"></button></div><div class="tg"><span>☀️ Brilho</span><input type="range" min="40" max="100" value="'+BRI+'" data-q="bri"></div><p class="wn">Simulador educativo · versão demonstrativa</p></div></div>'}
   if(id==='clima'){var w=wxData();return '<div class="xapp wx">'+xh(NAV==='ios'?'Tempo':'Clima')+'<div class="wxh"><small>'+w.loc+'</small><b>'+w.t+'°</b><span>'+w.e+' '+w.c+'</span><small>Máx '+w.max+'° · Mín '+w.min+'°</small></div><div class="wb">'+w.days.map(function(x){return '<div class="wxr"><span>'+x.d+'</span><i>'+x.e+'</i><b>'+x.min+'° / '+x.max+'°</b></div>'}).join('')+'<p class="wn">Previsão demonstrativa do simulador (sem internet).</p></div></div>'}
   if(id==='note'){return '<div class="xapp nt2">'+xh(NAV==='ios'?'Notas':'Bloco de Notas')+'<textarea id="nTx" placeholder="Escreva aqui…">'+NOTE.replace(/</g,'&lt;')+'</textarea></div>'}
+  if(id==='cod'){return '<div class="xapp cdx">'+xh('Códigos')+'<div class="wb"><p class="wn">🔑 Digite o <b>código</b> da atividade da Ludopédia e toque em <b>Abrir</b>.</p><input id="cdV" type="text" inputmode="numeric" maxlength="7" placeholder="Ex.: 7777" autocomplete="off"><button type="button" data-x="cgo">▶ Abrir atividade</button><p class="wn" id="cdE"></p></div></div>'}
   if(id==='msg'||id==='zap'||id==='tel'||id==='sms'){var an=({msg:'Messenger',zap:'WhatsApp',tel:'Telegram',sms:'Mensagens'})[id],on=T&&T.chat&&appNm()===an;if(on)setTimeout(function(){var t=$('txt');if(t){t.classList.add('flashw');t.scrollIntoView({behavior:'smooth',block:'nearest'});setTimeout(function(){t.classList.remove('flashw')},2200)}},60);
    return '<div class="xapp zp">'+xh(an)+'<div class="wb">'+(on?'<p class="wn">💬 <b>Conversa aberta na janela ao lado!</b></p><p class="wn">◀ Leia a mensagem no painel <b>Pedido</b> (à esquerda do celular), copie a chave e volte para o banco.</p>':'<p class="wn">💬 Nenhuma conversa nova neste aplicativo.</p><p class="wn">Esta atividade chegou pelo <b>'+(T&&T.chat?appNm():'aplicativo de mensagens')+'</b>.</p>')+'</div></div>'}
      if(id==='rbx')return rbxHtml();
@@ -900,6 +905,7 @@ if(SCI[id])return sciHtml(id);
    if(k==='back'){if(XS.pg){XS.pg=null}else{xHome(b)}draw();return}
    if(k==='sci'){sciSend(v);return}
    if(k==='scm'){sciPick(v,a[2]);return}
+   if(k==='cgo'){cgoGo();return}
    if(k==='scs'){sciSaque(v);return}
    if(k==='rbs'){rbxSaque();return}
     if(k==='go'){var u=document.getElementById('wUrl');XS.q=u?u.value.trim():'';XS.pg=null;draw();return}

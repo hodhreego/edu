@@ -128,7 +128,7 @@ function draw(){
   s.appendChild(g);out.appendChild(s)});
  empty.style.display=n?'none':'block'}
 function usar(c){var i=document.getElementById('codv');i.value=c;i.scrollIntoView({behavior:'smooth',block:'center'});i.focus()}
-function entrar(c){if(/^\s*rob[il]ox\s*$/i.test(c)||String(c).trim()==='7676'){location.href='robiox.html';return true}var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
+function entrar(c){if(String(c).trim()==='7777'){celPick();return true}if(/^\s*rob[il]ox\s*$/i.test(c)||String(c).trim()==='7676'){location.href='robiox.html';return true}var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
 document.getElementById('codp').onclick=function(){var j=jogoPorCodigo(document.getElementById('codv').value);function go(){if(j)location.href=j.href+'?imp=1';else alert('Impressão liberada neste aparelho. Digite o código da atividade e clique em Imprimir.')}if(EDU_PROF_OK())go();else EDU_PROF_ASK(function(ok){if(ok)go()})};
 document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=document.getElementById('codv').value;document.getElementById('coderr').style.display=entrar(v)?'none':'block'};
 var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
