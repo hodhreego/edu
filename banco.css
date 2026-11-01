@@ -760,3 +760,6 @@ body.pfull .phone{position:fixed!important;left:50%;top:50%;transform:translate(
 body.pfull #fsb,body.pfull #rotb{position:fixed;z-index:960;top:8px;display:inline-block!important}
 body.pfull #fsb{right:8px}body.pfull #rotb{right:56px}
 body.pfull #edu-nav,body.pfull .edu-nav,body.pfull #en-m{display:none!important}
+
+.xapp.sc .sfig{background:#fff;border:2px solid #16a34a;border-radius:.8em;margin:.4em 0;padding:.2em;text-align:center}.xapp.sc .sfig svg{width:100%;height:auto;max-height:11em;display:block}
+.xapp.sc .sopt{display:grid;grid-template-columns:1fr;gap:.4em;margin:.4em 0}.xapp.sc .sopt button{text-align:left;background:#fff;color:#14532d;border:2px solid #16a34a;border-radius:.8em;padding:.55em .8em;font:700 .95em Arial,sans-serif}.xapp.sc .sopt button b{display:inline-block;min-width:1.5em;height:1.5em;line-height:1.5em;text-align:center;border-radius:50%;background:#16a34a;color:#fff;margin-right:.4em}
