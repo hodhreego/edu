@@ -677,3 +677,6 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 .phone.dv-aw .scr,.phone.dv-gw .scr{padding-bottom:1.4em}
 .phone.dv-aw .sbar,.phone.dv-gw .sbar{mix-blend-mode:normal!important;font-size:.8em!important;height:auto!important}
 .phone.dv-aw .sbar,.phone.dv-gw .sbar{background:linear-gradient(#000b,#0000)!important}
+/* comprovante dentro da bolha do chat: os <small> do recibo não podem virar "hora" absoluta da bolha */
+.bub .rec small,.bub .rec dd small{position:static!important;display:block;right:auto;bottom:auto;font-size:12px;color:#667}
+.bub .rec{max-width:100%}
