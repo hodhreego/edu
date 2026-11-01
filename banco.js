@@ -188,9 +188,9 @@ window.BANK={run:function(cfg){
  function iniSal(){BLOQ={};INV={};var v=[125000,98050,210075,56030,342010,87500,150025,73540,64020,118030];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
  var OKEY={};
  (function(){var P=$('phone'),dec=null;
-  function crack(){if(P.querySelector('.dcrk'))return;var o=document.createElement('div');o.className='dcrk';
-   o.innerHTML='<svg viewBox="0 0 100 200" preserveAspectRatio="none"><path d="M50 0 L47 22 L53 40 L46 66 L54 90 L48 118 L55 142 L47 170 L51 200" fill="none" stroke="#fff" stroke-width=".7"/><path d="M50 0 L47 22 L53 40 L46 66 L54 90 L48 118 L55 142 L47 170 L51 200" fill="none" stroke="#111" stroke-width="1.8" opacity=".55"/><path d="M53 40 L66 52 L74 50 M46 66 L33 78 L24 77 M54 90 L68 99 M48 118 L36 130 L30 128 M55 142 L64 154 L73 153" fill="none" stroke="#fff" stroke-width=".45"/><rect x="47" y="0" width="6" height="200" fill="#7bffd0" opacity=".14"/></svg><div class="dct">⚠️ A tela trincou na dobra</div>';P.appendChild(o);setTimeout(function(){var t=o.querySelector('.dct');if(t)t.remove()},4500)}
-  setInterval(function(){if(DEV!=='duo'||P.querySelector('.dcrk')||DZN<3)return;if(dec===null){try{dec=sessionStorage.getItem('edu_duo_crack')}catch(x){}if(dec===null){dec=Math.random()<.3?'1':'0';try{sessionStorage.setItem('edu_duo_crack',dec)}catch(x){}}}if(dec==='1')crack()},1000)})();
+  function crack(){if(P.querySelector('.dcrk'))return;var o=document.createElement('div'),y=52+Math.random()*16,v=Math.random()<.5;o.className='dcrk';o.style.setProperty('--y',y.toFixed(1)+'%');
+   o.innerHTML='<i class="dv1"></i><i class="dv2"></i><i class="dkn"></i><i class="ddm"></i>'+(v?'<i class="dhb"></i>':'<i class="dhw"></i>');P.appendChild(o)}
+  setInterval(function(){if(DEV!=='duo'||P.querySelector('.dcrk')||(DZN<3&&!/[?&]trinca=1/.test(location.search)))return;if(dec===null){try{dec=sessionStorage.getItem('edu_duo_crack')}catch(x){}if(dec===null){dec=Math.random()<.3?'1':'0';try{sessionStorage.setItem('edu_duo_crack',dec)}catch(x){}}}if(dec==='1'||/[?&]trinca=1/.test(location.search))crack()},1000)})();
  (function(){var P=$('phone'),by=false,c=0,nd=0;
   function home(){by=true;var h=P.querySelector('.nvb [data-n=home]');if(h)h.click();by=false}
   function reboot(){var o=document.createElement('div');o.className='pkw pkr';o.innerHTML='<div class="pkl"><b>SAMSUNG</b><span>Galaxy Pocket</span><div class="pkp"><i></i></div><small>Reiniciando...</small></div>';P.appendChild(o);setTimeout(function(){o.remove();home()},5500)}
