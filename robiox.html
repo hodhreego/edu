@@ -243,7 +243,7 @@ function avatar(){var L=look(),h=function(c){return '#'+('000000'+c.toString(16)
   return o+'</svg>'}
 var pl={x:0,y:0,z:0,vx:0,vy:0,vz:0,gr:false,coy:0,ride:null,face:0,st:0},errs=0,tNow=0,run=false,combo=0,inGame=false,sesT=0,wasT=0;
 var inp={x:0,z:0,jump:false},keys={};
-var PEND=[];
+var PEND=[],PAY={6:1000,7:2000,8:5000,9:10000};
 function pendVal(){return PEND.reduce(function(a,c){return a+c.v*25},0)}
 function bankPend(){PEND.forEach(function(c){ST.coins+=c.v;ST.stat.ganhas+=c.v;cashIn(c)});PEND=[]}
 function dropPend(){PEND.forEach(function(c){c.got=false;S.add(c.m)});PEND=[]}
@@ -251,7 +251,7 @@ function cashIn(c){var ck=ANO+'-'+W+'-'+c.id;if(ST.cc[ck])return;ST.cc[ck]=1;var
 function jarHTML(){var j=ST.jar,i,o='',cs=[[j.a,'#e0a800','#d9dde3','1'],[j.b,'#c9ced6','#9ca3af','50'],[j.c,'#b87333','#8a5a2b','25']],n=0,r=function(a,b){return a+((n*7919)%b)};
  cs.forEach(function(q){for(i=0;i<Math.min(q[0],30);i++){n++;var x=24+(n*37)%92,y=150-Math.floor(n/3.4)*9-((n*13)%7);if(y<52)y=52+(n%9);o+='<circle cx="'+x+'" cy="'+y+'" r="9" fill="'+q[1]+'" stroke="'+q[2]+'" stroke-width="3"/><text x="'+x+'" y="'+(y+3.5)+'" font-size="9" font-weight="900" text-anchor="middle" fill="#6b3f00" font-family="Arial">'+q[3]+'</text>'}});
  return '<svg viewBox="0 0 140 170" width="170" height="206"><rect x="40" y="6" width="60" height="16" rx="5" fill="#b45309"/><path d="M34 26h72v8c14 8 18 20 18 36v84c0 10-8 16-18 16H34c-10 0-18-6-18-16V70c0-16 4-28 18-36z" fill="#bfe7ff55" stroke="#38bdf8" stroke-width="4"/><clipPath id="jc"><path d="M18 56h104v96c0 8-8 12-16 12H34c-8 0-16-4-16-12z"/></clipPath><g clip-path="url(#jc)">'+o+'</g><path d="M28 60v90" stroke="#fff" stroke-opacity=".7" stroke-width="4" stroke-linecap="round"/></svg>'}
-function openJar(){var j=ST.jar,sm=function(n){return (n/100).toFixed(2).replace('.',',')};$('jb').innerHTML='<h1>🫙 Meu cofrinho</h1><div style="display:flex;justify-content:center">'+jarHTML()+'</div><p style="font-size:30px;font-weight:900;margin:4px">R$ '+sm(ST.cash)+'</p><div class="st"><span>R$ 1 × '+j.a+'</span><span>R$ 0,50 × '+j.b+'</span><span>R$ 0,25 × '+j.c+'</span></div><p><small>Cada fase concluída rende R$ 5,00 no jackpot do RobIox, além das moedas. Tudo vira valor no jackpot do celular!</small></p><button class="go" id="jx" type="button">Fechar</button>';$('ovJ').style.display='flex';run=false}
+function openJar(){var j=ST.jar,sm=function(n){return (n/100).toFixed(2).replace('.',',')};$('jb').innerHTML='<h1>🫙 Meu cofrinho</h1><div style="display:flex;justify-content:center">'+jarHTML()+'</div><p style="font-size:30px;font-weight:900;margin:4px">R$ '+sm(ST.cash)+'</p><div class="st"><span>R$ 1 × '+j.a+'</span><span>R$ 0,50 × '+j.b+'</span><span>R$ 0,25 × '+j.c+'</span></div><p><small>Cada plataforma certa rende R$ '+((PAY[ANO]||1000)/100).toFixed(2).replace('.',',')+' no jackpot do RobIox, além das moedas. Tudo vira valor no jackpot do celular!</small></p><button class="go" id="jx" type="button">Fechar</button>';$('ovJ').style.display='flex';run=false}
 function restoreCr(){plats.forEach(function(p){if(p.type!=='crumble')return;var dy=(p.top-.5)-p.mesh.position.y;if(p.pl){p.pl.position.y+=dy;p.pl.position.x=p.x0;p.pl.visible=true}p.mesh.position.set(p.x0,p.top-.5,p.z0);p.mesh.rotation.z=0;p.shake=undefined;p.fall=false;p.alive=true})}
 function resetFase(){restoreCr();resp();say('🔄 Fase reiniciada! Tente de novo.',2000)}
 function resp(){if(PEND.length){dropPend();say('💨 As moedas soltaram! Acerte a plataforma para guardá-las.',2200)}pl.x=0;restoreCr();pl.y=.01;pl.z=safeZ[pl.st];pl.vx=pl.vy=pl.vz=0;pl.ride=null;if(dirty[pl.st]&&pl.st<N)buildGate(pl.st);hud()}
@@ -307,7 +307,7 @@ function key(w,i){return ANO+'-'+w+'-'+i}
 function stageDone(i){if(sDone[i])return;sDone[i]=true;var stars=3-Math.min(2,stErr[i]),co=stars*2+(i===N-1?10:0);gain(i===N-1?25:8,co);
   if(W<5){var k=key(W,i);if((ST.stars[k]||0)<stars)ST.stars[k]=stars}
   ST.stat.fases++;mp('fs',1);mp('es',stars);if(stErr[i]===0){ST.stat.perfeitas++;mp('pf',1)}
-  var sn=(W<5?W*10:50)+i+1,pk=ANO+'-'+sn;if(!ST.pst[pk]){ST.pst[pk]=1;ST.cash+=500}hud();post({stage:sn,erros:errs});bdg();sv()}
+  var sn=(W<5?W*10:50)+i+1,pk=ANO+'-'+sn;if(!ST.pst[pk]){ST.pst[pk]=1;ST.cash+=PAY[ANO]||1000}hud();post({stage:sn,erros:errs});bdg();sv()}
 function worldDone(){ST.stat.mundos++;mp('mo',0);var r=Math.random(),coins=ri(20,50);gain(60,coins);var free=B.SK.filter(function(k){return !ST.own[k.id]}).sort(function(a,b){return a.c-b.c})[0],extra='';
   if(r<.15&&free){ST.own[free.id]=1;extra='<p>🎁 Item raro: <b>'+free.n+'</b> desbloqueado!</p>'}
   run=false;jingle();conf(40);bdg();var st=0,i;for(i=0;i<N;i++)st+=3-Math.min(2,stErr[i]);
