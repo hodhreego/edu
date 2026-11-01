@@ -614,7 +614,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
  var SJ={};try{SJ=JSON.parse(localStorage.getItem('edu_sj')||'{}')||{};var pz=JSON.parse(localStorage.getItem('edu_prize2')||'{}'),pk;for(pk in pz)PRIZE[pk]=true}catch(e){}
  setInterval(function(){try{localStorage.setItem('edu_sj',JSON.stringify(SJ));var o={},k;for(k in PRIZE)if(/^(sci|rbx|rbc)-/.test(k)&&PRIZE[k])o[k]=1;localStorage.setItem('edu_prize2',JSON.stringify(o))}catch(e){}},800);
  function rbxAno(){var n=document.getElementById('nivel'),m=/(\d)ano/.exec(location.pathname);return n&&n.value?5+(+n.value):m?+m[1]:7}
- function rbxHtml(){return '<div class="xapp rb">'+xh('RobIox')+'<iframe class="rbxf" src="robiox.html?embed=1&ano='+rbxAno()+'" allow="autoplay" title="RobIox"></iframe><div class="rbj"><span>🎰 Jackpot: <b id="rJ">'+fmt(SJ.rbx||0)+'</b></span><input id="rK" type="text" placeholder="Cole a chave Pix" autocomplete="off"><button type="button" data-x="rbs:rbx">💸 Sacar</button></div><div id="rN" class="dmsg"></div></div>'}
+ function rbxHtml(){if(!XS.rbxOk){var tk=Date.now();XS.rbxS=tk;setTimeout(function(){if(XS.rbxS===tk){XS.rbxOk=1;draw()}},900);return '<div class="xapp rbsp"><div class="rbl">Rob<b>I</b>ox</div><div class="rbsn"></div><small>Iniciando RobIox…</small></div>'}return '<div class="xapp rb">'+xh('RobIox')+'<iframe class="rbxf" src="robiox.html?embed=1&ano='+rbxAno()+'" allow="autoplay" title="RobIox"></iframe><div class="rbj"><span>🎰 Jackpot: <b id="rJ">'+fmt(SJ.rbx||0)+'</b></span><input id="rK" type="text" placeholder="Cole a chave Pix" autocomplete="off"><button type="button" data-x="rbs:rbx">💸 Sacar</button></div><div id="rN" class="dmsg"></div></div>'}
  function rbxSaque(){var j=SJ.rbx||0,out=$('phone').querySelector('#rN');if(!out)return;if(j<=0){out.innerHTML='⚠️ Jackpot vazio. Acerte as fases do jogo!';return}
   var k=norm(($('phone').querySelector('#rK')||{}).value);if(!k){out.innerHTML='⚠️ Cole a sua chave Pix.';return}
   var bk=Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0];
@@ -634,7 +634,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(!r){out.innerHTML='⚠️ Escreva a sua resposta.';return}
   if(!q.a.some(function(x){return dzEq(nrm2(x),r)})){setPts(-3);out.innerHTML='❌ Resposta errada. Releia o “Você sabia?” e tente de novo!';return}
   PRIZE['sci-'+id+'-'+k]=true;SJ[id]=(SJ[id]||0)+q.pz;JTOT+=q.pz;setPts(5);toast('🎰 +'+fmt(q.pz)+' no jackpot — '+a.t);sciRefresh(id,'🎉 <b>Acertou!</b> +'+fmt(q.pz)+' no jackpot do app.')}
- function cgoGo(){var i=$('cdV'),e=$('cdE');if(!i)return;var c=String(i.value||'').trim(),n=c.replace(/\D/g,''),u=null;if(/^rob[il]ox$/i.test(c)||n==='7676')u='robiox.html?ok=1';else if(n==='7777')u='index.html?c=7777';else if(window.jogoPorCodigo){var j=window.jogoPorCodigo(n);if(j)u=j.href}
+ function cgoGo(){var i=$('cdV'),e=$('cdE');if(!i)return;var c=String(i.value||'').trim(),n=c.replace(/\D/g,''),u=null;if(/^rob[il]ox$/i.test(c)||n==='7676'){if(FOLD())FP[paneOf(i)]='x:ins:rbx';else ph.x='ins:rbx';XS={};draw();return}if(n==='7777'){if(e)e.innerHTML='✅ Você já está na atividade do celular!';return}if(window.jogoPorCodigo){var j=window.jogoPorCodigo(n);if(j)u=j.href}
   if(!u){if(e)e.innerHTML='❌ Código não encontrado. Confira os 4 números.';return}
   if(e)e.innerHTML='⏳ Abrindo…';location.href=u}
  document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target&&e.target.id==='cdV'){e.preventDefault();cgoGo()}});
