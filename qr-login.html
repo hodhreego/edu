@@ -18,7 +18,7 @@
 @media print{body{background:#fff}.pn,.ro{display:none!important}.pg{margin:0;width:auto;padding:6mm}@page{size:A4;margin:0}}
 .cd .pw{font:700 7pt Arial,sans-serif;color:#e00000;line-height:1.1}.cd .pw b{font-size:8pt;color:#e00000}
 .cd .up{font:700 6pt Arial,sans-serif;color:#111;line-height:1}
-.cd .q{width:19mm!important;height:19mm!important}.cd .q img,.cd .q canvas{width:19mm!important;height:19mm!important}
+.cd .q{width:21mm!important;height:21mm!important}.cd .q img,.cd .q canvas{width:21mm!important;height:21mm!important}
 </style></head><body>
 <div class="pn">
 <label>Turma<select id="tu"></select></label>
@@ -45,7 +45,7 @@ function cards(esc,tur,max,nomes,out){
   for(var i=0;i<30&&n<=max;i++,n++){
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
-   c.innerHTML='<div class="up">hodhreego.github.io/edu/r</div><div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
+   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="q"></div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
