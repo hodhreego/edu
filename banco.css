@@ -680,3 +680,12 @@ button[data-a="sendcomp"]{font-size:15px;padding:11px 18px;background:linear-gra
 /* comprovante dentro da bolha do chat: os <small> do recibo não podem virar "hora" absoluta da bolha */
 .bub .rec small,.bub .rec dd small{position:static!important;display:block;right:auto;bottom:auto;font-size:12px;color:#667}
 .bub .rec{max-width:100%}
+
+.cdz .nvh{display:block;color:#475569;margin:.2em 0 .4em}.cdz .par{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdz .pc{display:flex;flex-direction:column;gap:5px}
+.cdz .pb{display:block;width:100%;text-align:left;border:2px solid #cbd5e1;background:#f8fafc;color:#1f2937;border-radius:10px;padding:6px 8px;font:700 13px/1.25 Arial;cursor:pointer}
+.cdz .pb i{display:inline-block;min-width:1.4em;text-align:center;font-style:normal;background:#fde68a;border-radius:6px;margin-right:4px}.cdz .pb em{font-style:normal;color:#1d4ed8}
+.cdz .pb.on{border-color:#f59e0b;background:#fffbeb}.cdz .pb.dn{border-color:#60a5fa;background:#eff6ff}.cdz .ordl{display:flex;flex-direction:column;gap:5px}
+.cdz .dgt{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:8px;font-weight:700;line-height:2.1}.cdz .dgs{display:inline-block;min-width:3.2em;padding:0 8px;margin:0 3px;border-bottom:3px solid #f59e0b;background:#fffbeb;border-radius:6px;text-align:center;color:#1d4ed8;cursor:pointer}.cdz .dgs.f{background:#dbeafe}
+.cdz .dgb{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.cdz .dgc{border:2px solid #f59e0b;background:#fde68a;color:#1f2937;border-radius:99px;padding:5px 12px;font:800 14px Arial;cursor:grab}.cdz .dgc.on{background:#f59e0b;color:#fff}.cdz .dgc.u{opacity:.35;cursor:default}
+.cdz .vfr{display:flex;align-items:center;gap:6px;margin:5px 0}.cdz .vfr span{flex:1;font-weight:700}.cdz .vfb{width:38px;height:34px;border:2px solid #cbd5e1;border-radius:8px;background:#f8fafc;font:800 14px Arial;cursor:pointer}.cdz .vfb.on{background:#16a34a;border-color:#16a34a;color:#fff}.cdz .vfb.f.on{background:#dc2626;border-color:#dc2626}
+.cdz .cbt.cl{background:#64748b;margin-top:5px}

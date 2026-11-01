@@ -262,7 +262,7 @@ var ACT=[],ACTN=0,T0=Date.now();
   if(m.t==='txt')x=m.h;else if(m.t==='tab'){x=tabCard(m.op,m.n);cls+=' img'}
   else if(m.t==='pdf'){x='<div class="pdfc"><div class="pdfi">PDF</div><div class="pdft"><b>'+m.nome+'</b><small>'+m.info+'</small></div></div><div class="pdfb"><a href="'+m.arq+'" target="_blank" rel="noopener" data-nodl>👁 Abrir</a><a href="'+m.arq+'" download>⬇ Baixar</a></div>';cls+=' img'}
   else if(m.t==='desafio'){x='<div class="des"><b>🎁 Desafio valendo '+fmt(gval(m.id))+' no Pix!</b>'+notasHtml(gval(m.id))+'<br>'+m.pergunta+'<br><input class="dres" type="text" placeholder="Sua resposta" autocomplete="off"><input class="dkey" type="text" placeholder="Cole aqui a sua chave Pix" autocomplete="off"><button type="button" data-w="dsend" data-id="'+m.id+'">📨 Enviar no chat</button><div class="dmsg">'+(PRIZE[m.id]?'✅ Você já ganhou este prêmio!':'')+'</div></div>';cls+=' img'}
-  else if(m.t==='qz'||m.t==='tx'||m.t==='multi'){x=cdzHtml(m);cls+=' img'}
+  else if(m.t==='qz'||m.t==='tx'||m.t==='multi'||NVT[m.t]){x=cdzHtml(m);cls+=' img'}
   else x=liveMsg(m.t);return '<div class="'+cls+'"><span>'+x+'</span><small>'+hora(i)+'</small></div>'}
  function groupHtml(id){var g=allG().filter(function(z){return z.id===id})[0];if(!g)return chatList();
   var h='<div class="wa wg'+apc()+'"><div class="wst"><span>'+hora(0)+'</span><span>▂▄▆ 5G 🔋</span></div><div class="wh"><i data-w="list" class="wbk">‹</i><span class="av gp'+(g.oficial?' of':'')+'">'+g.icone+'</span><div class="wn"><b>'+gnm(g)+(g.oficial||g.ver?VB:'')+'</b><small>'+(g.oficial?'Conta oficial verificada':g.desc)+'</small></div><span class="wi">⋮</span></div><div class="wb">'+(DZ?jkBar():'')+'<div class="wd">HOJE</div>';
@@ -592,11 +592,45 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(m.t==='tx'){var r=dznz(raw);return [].concat(m.resp).some(function(x){return dznz(x)===r})}
   function cnt(toks){var seen={},c=0;toks.forEach(function(t){if(!t)return;m.lista.forEach(function(g,i){if(seen[i])return;if([].concat(g).some(function(x){return dznz(x)===t})){seen[i]=1;c++}})});return c}
   var a=cnt(String(raw).split(/[,;\n]+|\s+e\s+/i).map(dznz)),b=cnt(String(raw).split(/[\s,;]+/).map(dznz));return Math.max(a,b)>=m.need}
+
+ var NVT={par:1,drag:1,ord:1,vf:1};
+ function nvS(m){var S=CST[m.id]||(CST[m.id]={e:0,msg:''});if(!S.nv){S.nv=1;S.pm={};S.pk=-1;S.dg=[];S.dk=-1;S.od=[];S.vf=[];var n=m.t==='par'?m.pares.length:m.t==='ord'?m.itens.length:0;
+   if(n){var p=[],i,t,j,tr;for(i=0;i<n;i++)p.push(i);for(tr=0;tr<9;tr++){for(i=n-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=p[i];p[i]=p[j];p[j]=t}if(p.some(function(v,k){return v!==k}))break}S.pp=p}}return S}
+ function nvCount(m,S){var c=0,n=0,full=false,i;
+  if(m.t==='par'){n=m.pares.length;for(i=0;i<n;i++)if(S.pm[i]===i)c++;full=Object.keys(S.pm).length===n}
+  else if(m.t==='drag'){n=m.ans.length;full=true;for(i=0;i<n;i++){var g=S.dg[i];if(g==null||g<0){full=false;continue}if(dznz(m.banco[g])===dznz(m.ans[i]))c++}}
+  else if(m.t==='ord'){n=m.itens.length;full=S.od.length===n;for(i=0;i<S.od.length;i++)if(S.od[i]===i)c++}
+  else{n=m.afirm.length;full=true;for(i=0;i<n;i++){if(S.vf[i]==null){full=false;continue}if(S.vf[i]===m.afirm[i][1])c++}}
+  return [c,n,full]}
+ function nvBody(m,S){nvS(m);var h='',t=m.t,L='ABCDEFGH';
+  if(t==='par'){var pr=m.pares,rv={},q;for(q in S.pm)rv[S.pm[q]]=+q;
+   h+='<small class="nvh">Toque num item da esquerda e depois no par dele, na direita.</small><div class="par"><div class="pc">'+pr.map(function(p,i){var pd=S.pm[i]!=null;return '<button type="button" class="pb'+(S.pk===i?' on':'')+(pd?' dn':'')+'" data-w="pk" data-i="'+i+'"><i>'+L[i]+'</i> '+p[0]+(pd?' <em>↔ '+(S.pp.indexOf(S.pm[i])+1)+'</em>':'')+'</button>'}).join('')+'</div><div class="pc">'+S.pp.map(function(j,k){var pd=rv[j]!=null;return '<button type="button" class="pb'+(pd?' dn':'')+'" data-w="pr" data-j="'+j+'"><i>'+(k+1)+'</i> '+pr[j][1]+(pd?' <em>↔ '+L[rv[j]]+'</em>':'')+'</button>'}).join('')+'</div></div>'}
+  else if(t==='drag'){var parts=m.texto.split('___'),used={};S.dg.forEach(function(c){if(c!=null&&c>=0)used[c]=1});
+   h+='<small class="nvh">Arraste (ou toque) uma resposta e solte (ou toque) no espaço vazio.</small><div class="dgt">'+parts.map(function(p,k){var f=S.dg[k]!=null&&S.dg[k]>=0;return p+(k<parts.length-1?'<span class="dgs'+(f?' f':'')+'" data-w="dgs" data-k="'+k+'">'+(f?m.banco[S.dg[k]]:'&nbsp;')+'</span>':'')}).join('')+'</div><div class="dgb">'+m.banco.map(function(c,i){return used[i]?'<span class="dgc u">'+c+'</span>':'<button type="button" class="dgc'+(S.dk===i?' on':'')+'" draggable="true" data-w="dgc" data-i="'+i+'">'+c+'</button>'}).join('')+'</div>'}
+  else if(t==='ord'){h+='<small class="nvh">'+(m.rot||'Toque nos itens na ordem certa.')+'</small><div class="ordl">'+S.pp.map(function(j){var p=S.od.indexOf(j);return '<button type="button" class="pb'+(p>=0?' dn':'')+'" data-w="ordp" data-i="'+j+'"><i>'+(p>=0?p+1:'·')+'</i> '+m.itens[j]+'</button>'}).join('')+'</div>'}
+  else{h+='<div class="vfl">'+m.afirm.map(function(a,i){var v=S.vf[i];return '<div class="vfr"><span>'+a[0]+'</span><button type="button" class="vfb'+(v===true?' on':'')+'" data-w="vfa" data-i="'+i+'" data-v="1">V</button><button type="button" class="vfb f'+(v===false?' on':'')+'" data-w="vfa" data-i="'+i+'" data-v="0">F</button></div>'}).join('')+'</div>'}
+  return h+'<button type="button" class="cbt" data-w="nsend">📨 Conferir</button>'+(t==='vf'?'':'<button type="button" class="cbt cl" data-w="nclr">↺ Recomeçar</button>')}
+ function nvAct(b,w,box){var m=dzMsg(box.dataset.id);if(!m||PRIZE[m.id])return;var S=nvS(m),i=+b.dataset.i,k;
+  if(w==='pk'){if(S.pm[i]!=null)delete S.pm[i];S.pk=S.pk===i?-1:i;S.msg=''}
+  else if(w==='pr'){var j=+b.dataset.j;for(k in S.pm)if(S.pm[k]===j)delete S.pm[k];if(S.pk>=0){S.pm[S.pk]=j;S.pk=-1}S.msg=''}
+  else if(w==='dgc'){S.dk=S.dk===i?-1:i;S.msg=''}
+  else if(w==='dgs'){var kk=+b.dataset.k;if(S.dk>=0){S.dg[kk]=S.dk;S.dk=-1}else S.dg[kk]=-1;S.msg=''}
+  else if(w==='ordp'){var q=S.od.indexOf(i);if(q>=0)S.od=S.od.slice(0,q);else S.od.push(i);S.msg=''}
+  else if(w==='vfa'){S.vf[i]=b.dataset.v==='1';S.msg=''}
+  else if(w==='nclr'){S.pm={};S.pk=-1;S.dg=[];S.dk=-1;S.od=[];S.msg=''}
+  else if(w==='nsend'){var c=nvCount(m,S);
+   if(!c[2])S.msg='⚠️ Complete tudo antes de conferir.';
+   else if(c[0]===c[1]){PRIZE[m.id]=true;JACK+=m.v;JTOT+=m.v;DZN++;setPts(10);dzRefresh(box.dataset.g);toast('🎰 +'+fmt(m.v)+' no Jackpot!');return}
+   else{S.e++;DZW[m.id]=1;S.msg='❌ Você acertou '+c[0]+' de '+c[1]+'. Ajuste e confira de novo!'+(S.e>=2&&m.dica?' Olhe a dica 💡':'')}}
+  box.outerHTML=cdzHtml(m)}
+ document.addEventListener('dragstart',function(e){var c=e.target.closest&&e.target.closest('.dgc[data-w=dgc]');if(c){try{e.dataTransfer.setData('text/plain',c.dataset.i)}catch(x){}}});
+ document.addEventListener('dragover',function(e){if(e.target.closest&&e.target.closest('.dgs'))e.preventDefault()});
+ document.addEventListener('drop',function(e){var s=e.target.closest&&e.target.closest('.dgs');if(!s)return;e.preventDefault();var box=s.closest('.cdz'),m=box&&dzMsg(box.dataset.id);if(!m||PRIZE[m.id])return;var S=nvS(m),ci=+e.dataTransfer.getData('text/plain');if(isNaN(ci))return;S.dg[+s.dataset.k]=ci;S.dk=-1;S.msg='';box.outerHTML=cdzHtml(m)});
  function jkBar(){return '<div class="jkbar jkb"><span>🎰 Jackpot: <b>'+fmt(JACK)+'</b></span><button type="button" data-w="jk">💸 Sacar</button><button type="button" data-w="cen">🏠 Início</button></div>'}
- function cdzHtml(m){var S=CST[m.id]||(CST[m.id]={e:0,msg:''}),v=m.v,done=!!PRIZE[m.id],h='<div class="cdz" data-id="'+m.id+'" data-g="'+m.gid+'"><b>'+({qz:'📊 Enquete',tx:'✍️ Desafio',multi:'🧩 Desafio'}[m.t]||'🎁 Desafio')+' · valendo '+fmt(v)+' no Pix!</b>'+notasHtml(v)+'<p>'+m.pergunta+'</p>'+(m.pesq&&!done?'<small class="pq">🔎 Pode pesquisar na internet para responder.</small>':'');
+ function cdzHtml(m){var S=CST[m.id]||(CST[m.id]={e:0,msg:''}),v=m.v,done=!!PRIZE[m.id],h='<div class="cdz" data-id="'+m.id+'" data-g="'+m.gid+'"><b>'+({qz:'📊 Enquete',tx:'✍️ Desafio',multi:'🧩 Desafio',par:'🔗 Combine os pares',drag:'🧲 Arraste e solte',ord:'🔢 Coloque em ordem',vf:'✅ Verdadeiro ou falso'}[m.t]||'🎁 Desafio')+' · valendo '+fmt(v)+' no Pix!</b>'+notasHtml(v)+'<p>'+m.pergunta+'</p>'+(m.pesq&&!done?'<small class="pq">🔎 Pode pesquisar na internet para responder.</small>':'');
   if(done)h+='<div class="dmsg ok">✅ Resolvido! '+fmt(v)+' foram para o seu 🎰 Jackpot.'+(m.expl?'<br><em>'+m.expl+'</em>':'')+'</div>';
   else{if(m.t==='qz')h+='<div class="cops">'+m.opts.map(function(o,i){return '<button type="button" class="cop" data-w="qzopt" data-i="'+i+'">'+String.fromCharCode(65+i)+') '+o+'</button>'}).join('')+'</div>';
-   else h+='<input class="cin" type="text" placeholder="'+(m.t==='multi'?'Digite '+m.need+' respostas, separadas por vírgula':'Sua resposta')+'" autocomplete="off"><button type="button" class="cbt" data-w="tsend">📨 Enviar resposta</button>';
+   else if(NVT[m.t])h+=nvBody(m,S);else h+='<input class="cin" type="text" placeholder="'+(m.t==='multi'?'Digite '+m.need+' respostas, separadas por vírgula':'Sua resposta')+'" autocomplete="off"><button type="button" class="cbt" data-w="tsend">📨 Enviar resposta</button>';
    if(S.e>=2&&m.dica)h+='<small class="dic">💡 Dica: '+m.dica+'</small>';h+='<div class="dmsg">'+(S.msg||'')+'</div>'}
   return h+'</div>'}
  function dzRefresh(gid){var wb=document.querySelector('.wg .wb'),st=wb?wb.scrollTop:0;waShow(groupHtml(gid));wb=document.querySelector('.wg .wb');if(wb)wb.scrollTop=st}
@@ -606,6 +640,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   var v=JACK;SAL[bk]+=v;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot dos Desafios',b:'prêmio',v:v,ok:true,h:nowS(),id:eid()});DZSAC+=v;JACK=0;setPts(5);dash();DZM='🎉 Pix de <b>'+fmt(v)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>! Confira no extrato.';waShow(jackHtml());toast('💸 Pix recebido: '+fmt(v))}
  function centralHtml(){return '<div class="cen"><h3>🎰 Central de Desafios</h3><p>Você começou com a <b>conta vazia</b>! Resolva desafios no <b>WhatsApp</b>, <b>Telegram</b> e <b>Messenger</b> (toque nos ícones do celular) e ganhe Pix no seu 🎰 <b>Jackpot</b>.</p><div class="jkc"><span>Jackpot agora</span><b>'+fmt(JACK)+'</b>'+notasHtml(JACK)+'</div><div class="cbs"><button type="button" data-w="goapp" data-app="WhatsApp">💬 WhatsApp</button><button type="button" data-w="goapp" data-app="Telegram">✈️ Telegram</button><button type="button" data-w="goapp" data-app="Messenger">🟣 Messenger</button><button type="button" data-w="jk">💸 Sacar jackpot</button></div><p class="jks">Resolvidos: <b>'+DZN+'/'+dzTot()+'</b> · Total ganho: <b>'+fmt(JTOT)+'</b> · Já sacado: <b>'+fmt(DZSAC)+'</b></p><small>Pode pesquisar na internet. Cada conversa tem desafios diferentes!</small></div>'}
  function cdzAct(b){var w=b.dataset.w,box=b.closest('.cdz');
+  if(w==='pk'||w==='pr'||w==='dgc'||w==='dgs'||w==='ordp'||w==='vfa'||w==='nclr'||w==='nsend'){nvAct(b,w,box);return}
   if(w==='qzopt'||w==='tsend'){var m=dzMsg(box.dataset.id);if(!m||PRIZE[m.id])return;var S=CST[m.id]||(CST[m.id]={e:0,msg:''}),raw=w==='qzopt'?b.dataset.i:((box.querySelector('.cin')||{}).value||'').trim();
    if(w==='tsend'&&!raw){S.msg='⚠️ Escreva a sua resposta.';box.outerHTML=cdzHtml(m);return}
    if(dzCheck(m,raw)){PRIZE[m.id]=true;JACK+=m.v;JTOT+=m.v;DZN++;setPts(10);dzRefresh(box.dataset.g);toast('🎰 +'+fmt(m.v)+' no Jackpot!')}
