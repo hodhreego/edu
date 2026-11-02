@@ -50,7 +50,11 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#111827;color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;transition:transform .3s;z-index:50}
 .toast.on{transform:translateX(-50%)}
 @media (prefers-reduced-motion:no-preference){a.card{animation:up .5s both}@keyframes up{from{opacity:0;transform:translateY(14px)}}}
-@media print{body{background:#fff;color:#000}.tools,.pill button{display:none}a.card{box-shadow:none;break-inside:avoid}}
+.hero-art{display:block;width:100%;max-width:920px;height:clamp(130px,22vw,220px);object-fit:cover;object-position:center 42%;margin:18px auto 0;border-radius:22px;border:1px solid var(--bd);box-shadow:var(--shadow)}
+.sec-ic{width:46px;height:46px;border-radius:13px;object-fit:cover;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.25);border:1px solid var(--bd)}
+.prof .sec-ic{width:38px;height:38px;border-radius:11px;vertical-align:middle;margin-right:6px}
+@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art{height:120px;border-radius:16px}.sec-ic{width:40px;height:40px;border-radius:11px}}
+@media print{body{background:#fff;color:#000}.tools,.pill button{display:none}a.card{box-shadow:none;break-inside:avoid}.hero-art{display:none}}
 </style>
 </head>
 <body>
@@ -59,6 +63,7 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
   <span class="tag">Prof. Rodrigo · Colégio Schuster</span>
   <h1>Atalhos 2026</h1>
   <p class="sub">Toque no cartão e entre direto na atividade.</p>
+  <img class="hero-art" src="atalhos-img/hero.webp" alt="Estudantes usando tablets e cadernos em sala de aula" loading="lazy" width="1024" height="576">
   <div class="how">
     <div class="pill">🦊 <span>No tablet, abra o <b>Firefox Focus</b> e digite</span> <b>bit.ly/xus26</b> <button id="cp" type="button">Copiar</button></div>
   </div>
@@ -80,7 +85,7 @@ var LG_LEIA=`https://accounts.google.com/AccountChooser/signinchooser?continue=h
 var LG_INGLES=`https://accounts.google.com/AccountChooser/signinchooser?continue=https%3A%2F%2Faccounts.google.com%2Fo%2Fsaml2%2Fcontinue%3Fidpid%3DC03fukzmn%26SAMLRequest%3DrZLLbtswEEV%2FReBeL0q2a8JyYTsIGiBFjVjtohuDpkYOEYmjcsj08fWlFDdNN151wQUv55LnznBFsu8GsfHu0TzANw%2Fkoh99Z0iMBxXz1giUpEkY2QMJp8Rh8%2FFe8CQTkgis02hYdHdTsSPwopRykcXlsizjkreLeAkyi9WykUVeyPKUL1j0BSwFT8XCFcFI5OHOkJPGBSnjszjjcT6rcy4yLvJ3ybzI53M%252B%252B8qimwCnjXST%252B9G5gUSaSqXQG0fJGfHcQaKwTzEd4Xmqm%252BF9WLqpdlnR%252BqdffUC9RatgyluxVnYEI8Q%252BZNHP8KrsLTpU2G21abQ5X%252B%2FD6aWIxIe63sf7T4eaRZs%2FvdmhId%252BDPYB91go%252BP9z%2FZYdWN%252BCTE1cdnrWZ2C8aml4ri4Stm%252BQt3x3zzbG2ntytDQjf0T5tJcEUdUiJMH2dh7q8yd6McrieYbgEZuvVWC2mudixWb10162jopu4nUoFGKfdT7b%252BnxlX6Rum9cvu3z%252B7%2Fg0%253D%26RelayState%3DStateProperties%253DeyJUSUQiOiJmYzYxMWMyMi1hN2NmLTQ0NGItOTA5Ny0wMGNhNTQxNjZhOGYifQ%26SigAlg%3Dhttp%3A%2F%2Fwww.w3.org%2F2000%2F09%2Fxmldsig%2523rsa-sha1%26Signature%3DXTeSn7BvF9b9WLucE4gIpUsPZ%252BJ35SUWRXD8r1jyO43kgx9JbXQYcCNAf54WJqey5vnEcrlTqZv%252B4FqasA6DACl9%2FDuKVPgDzHo%252BqjmtN6kucnwFKRCa6hAYX7y7PhVlcw5oRNLrjfCGmgFDtiDOBwQm5Xn6c23Vb%252BxAgTyGtX6N8vggo4pnS2I3KQbZxPJ5BHFyS%252B%252B9jxNIk1P23HRXr5GO6iIACoEdur2YsLuwaSQwOuBVo621NNoaEcA3qdTIcUGe2zqn2%2FwUlQAx2PyT3zia8rPgQ4O2pf4InMLjte%252BP2%2FtMNUToekrMIGcgSJN0JyHaY4FYjbmVwqdp4SPT6sck7FBCPQQqV%2Fnm7S%252BKxRxQwdgkYbqRp7ofR4t8kUhhlxIRzZP2CvUE6X7m1QjoFthMshEeo7eJwcuf4WKempZKU2b5khHGjPRHkqlpg4a5qXcC2RMD1ujOAFHsL8vyErpt%2FXh42pVtV%252BUFcTqHPAjksrgffGj5pUZ8JR%252BFx1BTuYY41KMnNYHq5rQfwZPzm3hAOmK0RIhd3C7Z0QbXYFfri7LuP1UrEzkNAnUNOfcXeenfaVLm%2FTjglvA590Unb45wVcv4ja4ETOeN5giuSDIXgFgTI0kzGawBTcdQZeBXDTdj%252Bla6N54kB14P6Ume37InTMnnTvO7m%2Fmo0l%2F9fC8%253D%26omethod%3DGET&faa=1&ddm=1&flowName=GlifWebSignIn&flowEntry=AccountChooser`;
 
 var SEC=[
- {id:'jogos',t:'🎮 Jogos e treino',c:'#f472b6',d:'Para jogar e praticar',it:[
+ {id:'jogos',im:'jogos',t:'🎮 Jogos e treino',c:'#f472b6',d:'Para jogar e praticar',it:[
   {i:'🎮',t:'RobIox',d:'Jogo de matemática. Entre com o seu login do RCO.',u:'https://hodhreego.github.io/edu/robiox.html'},
   {i:'🎲',t:'Ludopédia',d:'Jogos e desafios da turma.',u:'https://hodhreego.github.io/edu/'},
   {i:'🔢',t:'Numbers',d:'Jogo de números em inglês.',u:'https://hodhreego.github.io/clientes/numbers-ingles-jogo.html'},
@@ -89,14 +94,14 @@ var SEC=[
   {n:'4',i:'📘',t:'Khan Academy',d:'Videoaulas e exercícios.',u:'https://pt.khanacademy.org/'},
   {n:'5',i:'🧮',t:'Matific',d:'Matemática do Paraná.',u:'https://www.matific.com/social/login/parana/',b:['Login com o Paraná']}
  ]},
- {id:'ingles',t:'🇬🇧 Inglês Paraná',c:'#38bdf8',d:'Entre pelo login e depois escolha o trimestre atual',it:[
+ {id:'ingles',im:'ingles',t:'🇬🇧 Inglês Paraná',c:'#38bdf8',d:'Entre pelo login e depois escolha o trimestre atual',it:[
   {n:'1',i:'🔑',t:'Login · Inglês Paraná Teens',d:'Entre por aqui primeiro. Depois de logado com o Google, clique no botão da turma e escolha o TRIMESTRE atual.',u:'https://pt.englishcentral.com/partner/parana'},
   {n:'2',i:'6️⃣',t:'6º ano · Inglês Paraná Teens',d:'Curso do 6º ano.',u:'https://pt.englishcentral.com/course/9499'},
   {n:'2',i:'8️⃣',t:'8º ano · Inglês Paraná Teens',d:'Curso do 8º ano.',u:'https://www.englishcentral.com/course/9501'},
   {n:'2',i:'📝',t:'Sem frequência · Inglês Paraná Teens',d:'Curso para atividades sem registro de frequência.',u:'https://pt.englishcentral.com/course/8563'},
   {n:'9',i:'🗣️',t:'Inglês Paraná',d:'Plataforma do ensino médio.',u:LG_INGLES,b:['Login com o Google']}
  ]},
- {id:'escola',t:'📚 Plataformas da escola',c:'#34d399',d:'Contas do Paraná e do Google',it:[
+ {id:'escola',im:'escola',t:'📚 Plataformas da escola',c:'#34d399',d:'Contas do Paraná e do Google',it:[
   {n:'6',i:'🏫',t:'Google Classroom',d:'Suas turmas e tarefas.',u:'https://classroom.google.com/',b:['Login com o Google']},
   {n:'7',i:'✍️',t:'Redação Paraná',d:'Escreva e envie suas redações.',u:'https://redacao.pr.gov.br',b:['Login com o Google']},
   {n:'8',i:'📖',t:'Leia Paraná',d:'Biblioteca digital.',u:LG_LEIA,b:['Login com o Google']},
@@ -106,7 +111,7 @@ var SEC=[
   {n:'12',i:'🎓',t:'EJA Paraná',d:'Ambiente virtual da EJA.',u:'https://www.ejaeadseed.pr.gov.br/login/index.php',b:['Login com o Google']},
   {n:'13',i:'🧰',t:'Escola Digital · Aluno',d:'Plataformas educacionais.',u:'https://professor.escoladigital.pr.gov.br/plataformas_educacionais'}
  ]},
- {id:'mat',t:'📎 Materiais em PDF',c:'#fbbf24',d:'Arquivos para abrir ou baixar',it:[
+ {id:'mat',im:'materiais',t:'📎 Materiais em PDF',c:'#fbbf24',d:'Arquivos para abrir ou baixar',it:[
   {i:'📕',t:'Matebook EJA · Módulo 1',d:'Livro de matemática da EJA.',u:'https://drive.google.com/file/d/1K3y38g2aCF4ixOa9MiVmDKf_-OiifHuT/view'},
   {i:'📄',t:'PDF 1',d:'Material de apoio.',u:'https://drive.google.com/file/d/1wkGyZ4zq54IWs55VMb45PhmZ4cRoxbNI/view'},
   {i:'📄',t:'PDF 2',d:'Material de apoio.',u:'https://drive.google.com/file/d/1i5mTwHfnfFcmyjsDFQVJPD96NHB73zL6/view'},
@@ -115,7 +120,7 @@ var SEC=[
   {i:'📄',t:'781412 · PDF',d:'Documento de 15/04/2025.',u:'https://drive.google.com/file/d/1o4FECPPbtcn9bwi7K_WEEnFcfmcBoENu/view'},
   {i:'🔤',t:'Verbetes',d:'Planilha de verbetes.',u:'https://docs.google.com/spreadsheets/d/10IOyd5He_PfvGHxH6N7hBDkZ3ovHdmhpZ5ZI8AdsSe4/edit'}
  ]},
- {id:'prof',t:'Área do professor',c:'#a78bfa',prof:1,d:'',it:[
+ {id:'prof',im:'prof',t:'Área do professor',c:'#a78bfa',prof:1,d:'',it:[
   {n:'20',i:'🗂️',t:'RCO',d:'Registro de classe online.',u:'http://rco.paas.pr.gov.br/',b:['Login com o CPF']},
   {n:'19',i:'⏱️',t:'Registro de ponto',d:'Ponto do professor.',u:'https://www.registropontoseed.pr.gov.br',b:['Login com o Google']},
   {i:'📟',t:'Registro de frequência',d:'Frequência SEED.',u:'https://registrofrequenciaseed.paas.pr.gov.br'},
@@ -135,7 +140,8 @@ function render(){
     var its=s.it.filter(function(it){return !q||(it.t+' '+(it.d||'')+' '+(it.n||'')+' '+(it.b||[]).join(' ')).toLowerCase().indexOf(q)>=0});
     if(!its.length)return;shown+=its.length;
     var cards='<div class="grid">'+its.map(function(it){return card(it,s.c)}).join('')+'</div>';
-    html+=s.prof?'<section id="s-'+s.id+'"><details class="prof"'+(q||cur==='prof'?' open':'')+'><summary>'+s.t+' <small style="color:var(--dim);font-weight:500">('+its.length+')</small></summary>'+cards+'</details></section>':'<section id="s-'+s.id+'"><h2>'+s.t+(s.d?' <small>'+s.d+'</small>':'')+'</h2>'+cards+'</section>';
+    var ic=s.im?'<img class="sec-ic" src="atalhos-img/'+s.im+'.webp" alt="" loading="lazy" width="46" height="46">':'';
+    html+=s.prof?'<section id="s-'+s.id+'"><details class="prof"'+(q||cur==='prof'?' open':'')+'><summary>'+ic+s.t+' <small style="color:var(--dim);font-weight:500">('+its.length+')</small></summary>'+cards+'</details></section>':'<section id="s-'+s.id+'"><h2>'+ic+s.t+(s.d?' <small>'+s.d+'</small>':'')+'</h2>'+cards+'</section>';
   });
   main.innerHTML=html;document.getElementById('empty').style.display=shown?'none':'block';
 }
