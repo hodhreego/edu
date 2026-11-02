@@ -911,6 +911,14 @@
 #sel-foco{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-weight:700;max-width:170px}
 .rank-item{cursor:pointer}
 .rank-item.foco-sel{outline:2px solid var(--gold-light)}
+
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.fxe{position:absolute;top:-8vh;opacity:.85;animation:fxFall linear forwards;filter:drop-shadow(0 2px 4px #0006)}
+@keyframes fxFall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(34px,55vh) rotate(180deg)}100%{transform:translate(-24px,112vh) rotate(360deg)}}
+#festas{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+#festas span{background:var(--card);border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:.82rem;color:var(--text-dim)}
+#festas span b{color:var(--text)}
+.fc-atual{background:var(--bg);border:1px dashed var(--accent);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:1.05rem}.fc-cod{background:var(--accent);color:#fff;border-radius:99px;padding:2px 10px;font-size:.8rem;font-weight:800;margin-left:6px}
     </style>
 </head>
 <body>
@@ -921,6 +929,8 @@
     <div id="cfg" aria-label="Personalizar painel"><h2>🎨 Personalizar <button onclick="cfgToggle()">✕</button></h2>
 <h3>Aparência</h3>
 <div class="sw" id="cfg-sw"></div>
+<label>Tema automático pela data <input type="checkbox" id="c-auto"></label>
+<label>Mostrar datas comemorativas <input type="checkbox" id="c-fest"></label>
 <label>Tamanho da letra <input type="range" id="c-font" min="80" max="150" step="5"></label>
 <label>Título <input type="text" id="c-ttl" maxlength="24"></label>
 <label>Subtítulo <input type="text" id="c-sub" maxlength="40"></label>
@@ -943,6 +953,7 @@
 <p style="display:flex;gap:8px;margin-top:16px"><button onclick="cfgTest()">🎉 Testar animação</button><button onclick="cfgReset()" style="background:var(--border)">Restaurar</button></p>
 </div>
 <div id="celebra"></div>
+    <div id="fx"></div>
 
 
     <div class="container">
@@ -958,6 +969,7 @@
                 </div>
             </div>
         </header>
+        <div id="festas"></div>
 
         <!-- Barra de Métricas Superiores -->
         <section class="stats-grid" aria-label="Estatísticas gerais">
@@ -1101,6 +1113,64 @@
         let confettiAnimationId = null;
 
 
+
+        // --- Datas comemorativas (tema e animação por época) ---
+        const addD = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+        const dm = (m, d) => y => new Date(y, m - 1, d);
+        const nthSun = (m, n) => y => { const f = new Date(y, m - 1, 1); return new Date(y, m - 1, 1 + ((7 - f.getDay()) % 7) + (n - 1) * 7); };
+        function pascoa(y) { const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1; return new Date(y, mo - 1, da); }
+        const TH = (n, bg, card, hov, ac, ab, bd) => ({n, bg, card, hov, ac, ab, bd});
+        const FESTAS = [
+            {n:'Ano Novo',em:'🎆',dt:dm(1,1),ant:10,dep:3,fx:['🎆','✨','🎉','🥂'],t:TH('Ano Novo','#0a0a1f','#1a1a3a','#262650','#fbbf24','#fde047','#3a3a70')},
+            {n:'Carnaval',em:'🎭',dt:y=>addD(pascoa(y),-47),ant:10,dep:3,fx:['🎭','🎊','🥁','🎉'],t:TH('Carnaval','#1a0626','#341050','#4a1a70','#f43f5e','#fb7185','#6b2a9a')},
+            {n:'Dia da Mulher',em:'💜',dt:dm(3,8),ant:4,dep:1,fx:['💜','🌸','✨'],t:TH('Dia da Mulher','#1a0a26','#331550','#46206c','#a855f7','#c084fc','#5b2a8a')},
+            {n:'Páscoa',em:'🐰',dt:pascoa,ant:8,dep:1,fx:['🐰','🥚','🌷','🍫'],t:TH('Páscoa','#14102a','#2a2050','#3a2e6c','#f59e0b','#fcd34d','#4c3f8a')},
+            {n:'Tiradentes',em:'🇧🇷',dt:dm(4,21),ant:3,dep:0,fx:['🇧🇷','⭐','💚','💛'],t:TH('Tiradentes','#04170f','#0b3a22','#124d2e','#22c55e','#facc15','#176a3e')},
+            {n:'Dia das Mães',em:'💐',dt:nthSun(5,2),ant:7,dep:0,fx:['💐','🌹','💖','🌸'],t:TH('Dia das Mães','#1f0a14','#3d1428','#52203a','#ec4899','#f9a8d4','#6a2a4a')},
+            {n:'Festa Junina',em:'🎈',dt:dm(6,24),ant:20,dep:6,fx:['🎈','🌽','🔥','🎶','🧶'],t:TH('Festa Junina','#1f1004','#3d2208','#54310f','#ea580c','#facc15','#7a4416')},
+            {n:'Férias de julho',em:'🏖️',dt:dm(7,6),ant:0,dep:25,fx:['🏖️','☀️','🌴','🍉','🍦'],t:TH('Férias de julho','#04202b','#0a3d52','#105370','#0ea5e9','#fde047','#1a6a8a')},
+            {n:'Dia dos Pais',em:'👔',dt:nthSun(8,2),ant:7,dep:0,fx:['👔','⚽','💙','🏆'],t:TH('Dia dos Pais','#06142b','#0f2a52','#163a6e','#3b82f6','#93c5fd','#1e4a8a')},
+            {n:'Independência',em:'🇧🇷',dt:dm(9,7),ant:6,dep:0,fx:['🇧🇷','💚','💛','⭐'],t:TH('Independência','#04170f','#0b3a22','#124d2e','#16a34a','#facc15','#176a3e')},
+            {n:'Dia das Crianças',em:'🧸',dt:dm(10,12),ant:6,dep:1,fx:['🧸','🎈','🍭','🪁','🎠'],t:TH('Dia das Crianças','#0a1230','#18286a','#223a8c','#f43f5e','#fde047','#2e48a0')},
+            {n:'Dia do Professor',em:'🍎',dt:dm(10,15),ant:6,dep:1,fx:['🍎','📚','✏️','💛'],t:TH('Dia do Professor','#12161f','#222b3d','#2e3a52','#ef4444','#fca5a5','#3e4c6a')},
+            {n:'Halloween',em:'🎃',dt:dm(10,31),ant:10,dep:1,fx:['🎃','👻','🦇','🕸️','🍬'],t:TH('Halloween','#0f0a1a','#241638','#321f4e','#f97316','#fb923c','#4a2e6e')},
+            {n:'Consciência Negra',em:'✊🏾',dt:dm(11,20),ant:5,dep:1,fx:['✊🏾','🌍','❤️','💛','💚'],t:TH('Consciência Negra','#140c04','#2e1c0a','#422a10','#eab308','#fde047','#5a3c14')},
+            {n:'Natal',em:'🎄',dt:dm(12,25),ant:25,dep:1,fx:['❄️','🎄','🎅','⭐','🎁'],t:TH('Natal','#06150f','#10301f','#184230','#dc2626','#fca5a5','#1f5a3a')},
+            {n:'Férias de verão',em:'🌴',dt:dm(12,26),ant:0,dep:40,fx:['🌴','🏖️','☀️','🍦','🌊'],t:TH('Férias de verão','#04202b','#0a3d52','#105370','#06b6d4','#fde047','#1a6a8a')}
+        ];
+        const hoje0 = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+        function ocorrencias() { const y = new Date().getFullYear(), o = []; [y - 1, y, y + 1].forEach(a => FESTAS.forEach(f => { const d = f.dt(a); o.push({f, d, ini: addD(d, -f.ant), fim: addD(d, f.dep)}); })); return o; }
+        function festaAtiva() {
+            const h = hoje0(); let best = null;
+            ocorrencias().forEach(o => { if (h >= o.ini && h <= o.fim) { const dist = Math.abs(o.d - h); if (!best || dist < best.dist) best = {f: o.f, dist}; } });
+            return best && best.f;
+        }
+        function renderFestas() {
+            const box = document.getElementById('festas'); if (!box) return;
+            if (!CFG.fest) { box.innerHTML = ''; return; }
+            const h = hoje0(), oc = ocorrencias(), dia = 86400000;
+            const pas = oc.filter(o => o.d < h).sort((a, b) => b.d - a.d)[0], prox = oc.filter(o => o.d >= h).sort((a, b) => a.d - b.d).slice(0, 2);
+            const fmt = o => { const n = Math.round((o.d - h) / dia); return n === 0 ? 'é hoje!' : n > 0 ? `em ${n} ${n === 1 ? 'dia' : 'dias'}` : `há ${-n} ${n === -1 ? 'dia' : 'dias'}`; };
+            box.innerHTML = (pas ? `<span>Última: ${pas.f.em} <b>${pas.f.n}</b> ${fmt(pas)}</span>` : '') + prox.map((o, i) => `<span>${i ? 'Depois' : 'Próxima'}: ${o.f.em} <b>${o.f.n}</b> ${fmt(o)}</span>`).join('');
+        }
+        let fxKey = '', fxTimer = null;
+        function fxSet(list) {
+            const key = JSON.stringify(list) + CFG.anim; if (key === fxKey) return; fxKey = key;
+            clearInterval(fxTimer); const box = document.getElementById('fx'); if (box) box.innerHTML = '';
+            if (!list || !CFG.anim || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            fxTimer = setInterval(() => {
+                if (box.children.length > 22) return;
+                const e = document.createElement('div'), dur = 7 + Math.random() * 7; e.className = 'fxe';
+                e.textContent = list[Math.floor(Math.random() * list.length)]; e.style.left = (Math.random() * 97) + 'vw'; e.style.fontSize = (18 + Math.random() * 20) + 'px'; e.style.animationDuration = dur + 's';
+                box.appendChild(e); setTimeout(() => e.remove(), dur * 1000);
+            }, 550);
+        }
+        function festaHoje() {
+            const h = hoje0(), o = ocorrencias().find(x => +x.d === +h); if (!o || !CFG.fest) return;
+            try { const k = 'painel_fest_' + h.toISOString().slice(0, 10); if (localStorage.getItem(k)) return; localStorage.setItem(k, '1'); } catch (e) {}
+            setTimeout(() => celebrate(o.f.em, `Hoje é ${o.f.n}!`, 'Bom jogo, turma!', o.f.fx), 1500);
+        }
+
         // --- Personalização ---
         const TEMAS = [
             {n:'Roxo',bg:'#0b1120',card:'#1e293b',hov:'#273549',ac:'#8b5cf6',ab:'#a78bfa',bd:'#334155'},
@@ -1109,13 +1179,13 @@
             {n:'Laranja',bg:'#1a0f06',card:'#33200f',hov:'#47301a',ac:'#f97316',ab:'#fb923c',bd:'#5a3a1c'},
             {n:'Rosa',bg:'#1a0614',card:'#331028',hov:'#481a39',ac:'#ec4899',ab:'#f472b6',bd:'#5a1c47'},
             {n:'Claro',bg:'#eef2f7',card:'#ffffff',hov:'#f1f5f9',ac:'#6d28d9',ab:'#7c3aed',bd:'#cbd5e1',light:1}
-        ];
-        const CFG0 = {tema:0,fonte:100,ttl:'RobIox',sub:'Painel ao vivo',top:15,ord:'xp',stats:true,anim:true,som:false,evRank:true,evLead:true,evLvl:true,evFase:true,evMeta:true,evOn:true,mxp:1000,mcb:5};
+        ].concat(FESTAS.map(f => Object.assign({}, f.t, {fx: f.fx, em: f.em})));
+        const CFG0 = {tema:0,fonte:100,ttl:'RobIox',sub:'Painel ao vivo',top:15,ord:'xp',stats:true,anim:true,som:false,evRank:true,evLead:true,evLvl:true,evFase:true,evMeta:true,evOn:true,mxp:1000,mcb:5,auto:true,fest:true};
         let CFG = Object.assign({}, CFG0);
         try { Object.assign(CFG, JSON.parse(localStorage.getItem('painel_cfg') || '{}')); } catch (e) {}
         function cfgSave() { try { localStorage.setItem('painel_cfg', JSON.stringify(CFG)); } catch (e) {} }
         function cfgApply() {
-            const t = TEMAS[CFG.tema] || TEMAS[0], r = document.documentElement.style;
+            const fa = CFG.auto ? festaAtiva() : null, t = fa ? fa.t : (TEMAS[CFG.tema] || TEMAS[0]), r = document.documentElement.style; fxSet(fa ? fa.fx : (t.fx || null)); renderFestas();
             r.setProperty('--bg', t.bg); r.setProperty('--card', t.card); r.setProperty('--card-hover', t.hov);
             r.setProperty('--accent', t.ac); r.setProperty('--accent-bright', t.ab); r.setProperty('--border', t.bd);
             r.setProperty('--text', t.light ? '#0f172a' : '#f8fafc'); r.setProperty('--text-dim', t.light ? '#475569' : '#94a3b8');
@@ -1128,7 +1198,7 @@
         function cfgInit() {
             const sw = document.getElementById('cfg-sw');
             sw.innerHTML = TEMAS.map((t, i) => `<span title="${t.n}" data-i="${i}" style="background:${t.ac}"></span>`).join('');
-            sw.onclick = e => { const i = e.target.dataset && e.target.dataset.i; if (i != null) { CFG.tema = +i; cfgSave(); cfgApply(); cfgFill(); } };
+            sw.onclick = e => { const i = e.target.dataset && e.target.dataset.i; if (i != null) { CFG.tema = +i; CFG.auto = false; cfgSave(); cfgApply(); cfgFill(); } };
             const bind = (id, key, kind) => {
                 const el = document.getElementById(id);
                 el.addEventListener('input', () => {
@@ -1139,7 +1209,7 @@
             bind('c-font','fonte','n'); bind('c-ttl','ttl'); bind('c-sub','sub'); bind('c-top','top','n'); bind('c-ord','ord');
             bind('c-stats','stats','b'); bind('c-anim','anim','b'); bind('c-som','som','b');
             bind('c-ev-rank','evRank','b'); bind('c-ev-lead','evLead','b'); bind('c-ev-lvl','evLvl','b'); bind('c-ev-fase','evFase','b'); bind('c-ev-meta','evMeta','b'); bind('c-ev-on','evOn','b');
-            bind('c-mxp','mxp','n'); bind('c-mcb','mcb','n');
+            bind('c-auto','auto','b'); bind('c-fest','fest','b'); bind('c-mxp','mxp','n'); bind('c-mcb','mcb','n');
             cfgFill(); cfgApply();
         }
         function cfgFill() {
@@ -1147,7 +1217,7 @@
             set('c-font',CFG.fonte); set('c-ttl',CFG.ttl); set('c-sub',CFG.sub); set('c-top',CFG.top); set('c-ord',CFG.ord);
             set('c-stats',CFG.stats,1); set('c-anim',CFG.anim,1); set('c-som',CFG.som,1);
             set('c-ev-rank',CFG.evRank,1); set('c-ev-lead',CFG.evLead,1); set('c-ev-lvl',CFG.evLvl,1); set('c-ev-fase',CFG.evFase,1); set('c-ev-meta',CFG.evMeta,1); set('c-ev-on',CFG.evOn,1);
-            set('c-mxp',CFG.mxp); set('c-mcb',CFG.mcb);
+            set('c-auto',CFG.auto,1); set('c-fest',CFG.fest,1); set('c-mxp',CFG.mxp); set('c-mcb',CFG.mcb);
             document.querySelectorAll('#cfg-sw span').forEach(s => s.classList.toggle('on', +s.dataset.i === CFG.tema));
         }
         function cfgToggle() { document.getElementById('cfg').classList.toggle('on'); }
@@ -1255,6 +1325,7 @@
             const card = (k, l, v) => `<div class="fc-card${focoPrev && focoPrev[k] !== vals[k] ? ' flash' : ''}"><small>${l}</small><b>${v}</b></div>`;
             const ult = (state.recentes || []).filter(r => r.login === a.login).slice(0, 8);
             box.innerHTML = `<div class="fc-top"><div><div class="fc-name">👁 ${esc(a.nick || a.login)} <span class="badge-status ${on ? 'badge-online' : 'badge-offline'}">${on ? '● Online' : '○ Offline'}</span></div><div class="fc-sub">${esc(a.serie || '')} • login ${esc(a.login)} • ${pos}º no ranking • Nível ${esc(a.nivel || 1)}</div></div><button class="fc-x" onclick="setFoco('')">✕ Parar de acompanhar</button></div>
+            <div class="fc-atual">${a.atual ? `🎮 ${on ? 'Fazendo agora' : 'Última atividade'}: <b>${esc(a.atual.nome)}</b> <span class="fc-cod">código ${esc(a.atual.cod)}</span>` : '🎮 Atividade atual: <b>menu / nenhuma</b>'}</div>
             <div class="fc-grid">${card('saldo','💰 Saldo (cofrinho)',vals.saldo)}${card('moedas','🪙 Moedas (agora)',vals.moedas)}${card('ganhas','🪙 Moedas ganhas',a.ganhas || 0)}${card('fim','✅ Fases concluídas',vals.fim)}${card('ini','🚩 Fases começadas',vals.ini)}${card('pct','📊 % concluído',vals.pct)}${card('xp','⭐ XP',xp.toLocaleString('pt-BR'))}${card('est','🌟 Estrelas',vals.est)}${card('acc','🎯 % de acertos',vals.acc + ' <small>' + ro + '/' + rt + '</small>')}${card('combo','🔥 Melhor sequência',vals.combo)}${card('mundos','🗺️ Mundos',vals.mundos)}${card('gasto','🛍️ Gasto na loja',vals.gasto + ' 🪙')}${card('vendido','🏷️ Vendido',vals.vendido + ' 🪙')}${card('itens','🎒 Itens',vals.itens)}</div>
             <div class="fc-cols"><div class="fc-box"><h4>Progresso por mundo</h4>${mundosHtml(a)}</div><div class="fc-box"><h4>Desempenho por tema</h4>${temasHtml(a)}</div></div>
             <div class="fc-cols"><div class="fc-box"><h4>Últimas respostas</h4>${ult.length ? ult.map(r => `<div class="fc-li"><span class="${r.ok ? 'ok' : 'no'}">${r.ok ? '✔' : '✘'}</span><span>${esc(r.tema || '')} • fase ${esc(r.fase)} <small style="color:var(--text-dim)">${esc(r.mundo || '')}</small></span></div>`).join('') : '<div class="fc-sub">Nenhuma resposta ainda.</div>'}</div>
@@ -1842,6 +1913,7 @@
         }
 
         cfgInit();
+        festaHoje();
         initClock();
         startSyncLoop();
     </script>
