@@ -224,7 +224,7 @@ window.BANK={run:function(cfg){
  iniSal();
  var MONO={nubank:'Nu',bb:'BB',itau:'itaú',bradesco:'B',caixa:'✕',caixa2:'CAIXA',inter:'inter',mp:'mp',santander:'S',picpay:'Pic',c6:'C6'};
  function bicon(k,sz){var b=BANKS[k];return '<span class="bi" style="--c:'+b.h+';--t:'+b.f+(sz?';--z:'+sz+'px':'')+'"><img src="bancos/'+k+'.png" alt="'+b.n+'" draggable="false" onerror="this.remove()"><i>'+(MONO[k]||b.n.charAt(0))+'</i></span>'}
- function bkbar(){var bb=$('bkbar');if(!bb)return;if(cfg.appswitch){bb.style.display='none';return}bb.innerHTML=Object.keys(BANKS).map(function(k){var st='';return '<button type="button" class="bkb'+(k===BK?' on':'')+'" data-bk="'+k+'" title="'+BANKS[k].n+' — ver extrato">'+bicon(k,30)+st+'</button>'}).join('')}
+ function bkbar(){var bb=$('bkbar');if(!bb)return;bb.style.display='none';bb.innerHTML='';return;bb.innerHTML=Object.keys(BANKS).map(function(k){var st='';return '<button type="button" class="bkb'+(k===BK?' on':'')+'" data-bk="'+k+'" title="'+BANKS[k].n+' — ver extrato">'+bicon(k,30)+st+'</button>'}).join('')}
  function setBank(k){if(!BANKS[k])return;BK=k;try{localStorage.setItem('edu_banco',k)}catch(x){}ph.chave='';theme();bkbar();draw()}
  function swOn(){return !!((cfg.appswitch||/[?&]zap=dentro/.test(location.search))&&T&&T.chat)}
  function dockAdd(){var o0=document.getElementById('dock');if(o0)o0.remove();return;var P=$('phone'),o=document.getElementById('dock');if(o)o.remove();
