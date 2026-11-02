@@ -435,6 +435,7 @@ function rbxAlunos_(login, ts, s) {
   var nd = j.nd || {}, notas = Object.keys(nd).sort(function (a, b) { return b - a; }).map(function (k) { return nd[k] + '× R$' + k; });
   var cof = 'moedas: ' + (j.moedas1 || 0) + '× R$1 · ' + (j.moedas50 || 0) + '× 50c · ' + (j.moedas25 || 0) + '× 25c' + (notas.length ? ' · notas: ' + notas.join(', ') : '');
   var vals = [login, RBX_SENHA, s.nick || '', rbxSerie_(s.ano), s.nivel || 1, s.xp || 0, s.coins || 0, (Number(s.cash) || 0) / 100, s.spent || 0, s.sold || 0, (s.own || []).length, Number(s.ini) || 0, fim, pct / 100, s.est || 0, st.correct || 0, st.perfeitas || 0, st.combo || 0, st.mundos || 0, '', '', '', '', new Date(Number(s.t) || Number(ts) || Date.now()), gastos, cof, JSON.stringify(s).slice(0, 45000)];
+  sh.getRange(row, 1, 1, 2).setNumberFormat('@');
   sh.getRange(row, 1, 1, vals.length).setValues([vals]);
   var rs = "'RobIox-Respostas'";
   sh.getRange(row, 20).setFormula('=IFERROR(COUNTIF(' + rs + '!B:B,A' + row + '),0)');
