@@ -123,6 +123,7 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxlive') return rbxLive_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxfmt' && e.parameter.k === RBX_KEY) { rbxBeleza_(); return ok_('formatado'); }
   return ok_('Planilha do professor ativa.');
 }
@@ -496,4 +497,23 @@ function rbxBeleza_() {
   var pr = ss.getSheetByName('RobIox');
   if (pr) { pr.setTabColor('#94a3b8'); cab(pr, 3, '#475569'); pr.setColumnWidth(1, 110); pr.setColumnWidth(2, 120); pr.setColumnWidth(3, 300); pr.getRange(1, 1).setNote('Aba técnica: guarda o progresso bruto de cada aluno (usada pelo jogo para continuar de onde parou). Veja os dados organizados em RobIox-Alunos.'); }
   [['RobIox-Alunos', 0], ['RobIox-Respostas', 1], ['RobIox', 2]].forEach(function (x) { var sh = ss.getSheetByName(x[0]); if (sh) { ss.setActiveSheet(sh); ss.moveActiveSheet(ss.getNumSheets() - 2 + x[1]); } });
+}
+
+
+// ---- Corrida ao vivo (Batatinha Frita): presença em memória (CacheService), sem gravar na planilha ----
+function rbxLive_(p) {
+  var sala = String(p.sala || 'batatinha').replace(/[^a-z0-9_]/gi, '').slice(0, 20) || 'batatinha';
+  var cache = CacheService.getScriptCache(), key = 'live_' + sala;
+  var lock = LockService.getScriptLock(), got = false;
+  try { got = lock.tryLock(3000); } catch (err) {}
+  var m = {};
+  try { m = JSON.parse(cache.get(key) || '{}'); } catch (err) { m = {}; }
+  var now = Date.now();
+  if (p.login && /^[A-Za-z0-9]{3,12}$/.test(p.login)) {
+    m[p.login] = { n: String(p.nick || '').slice(0, 20), p: Number(p.pos) || 0, v: Number(p.vidas) || 0, s: String(p.est || '').slice(0, 10), t: now };
+  }
+  for (var k in m) { if (now - m[k].t > 12000 || m[k].s === 'saiu') delete m[k]; }
+  try { cache.put(key, JSON.stringify(m), 120); } catch (err) {}
+  if (got) lock.releaseLock();
+  return ContentService.createTextOutput(JSON.stringify({ now: now, players: m })).setMimeType(ContentService.MimeType.JSON);
 }
