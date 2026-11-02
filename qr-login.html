@@ -19,9 +19,9 @@
 .cd .pw{font:700 7pt Arial,sans-serif;color:#e00000;line-height:1.1}.cd .pw b{font-size:8pt;color:#e00000}
 .cd .up{font:700 6pt Arial,sans-serif;color:#111;line-height:1}
 .cd .q{width:19mm!important;height:19mm!important}.cd .q img,.cd .q canvas{width:19mm!important;height:19mm!important}
-.cd{position:relative;padding-right:5mm!important}.cd .pw{position:absolute;right:1mm;top:0;bottom:0;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font:700 7pt Arial,sans-serif;color:#e00000;white-space:nowrap}.cd .pw b{font-size:9pt;color:#e00000;letter-spacing:.3px}.cd .q{width:22mm!important;height:22mm!important}.cd .q img,.cd .q canvas{width:22mm!important;height:22mm!important}
+.cd{position:relative;padding-right:5mm!important}.cd .pw{position:absolute;right:1mm;top:0;bottom:0;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font:700 7pt Arial,sans-serif;color:#e00000;white-space:nowrap}.cd .pw b{font-size:9pt;color:#e00000;letter-spacing:.3px}.cd .q{width:var(--qr)!important;height:var(--qr)!important}.cd .q img,.cd .q canvas{width:22mm!important;height:22mm!important}
 </style><style id="ajcss">
-:root{--qr:22mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:0mm}
+:root{--qr:24mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:0mm}
 .cd .q,.cd .q img,.cd .q canvas{width:var(--qr)!important;height:var(--qr)!important}
 .cd .l{font-size:var(--fl)!important}.cd .t{font-size:var(--fn)!important}
 .cd .pw b{font-size:var(--fp)!important}.cd .pw{font-size:calc(var(--fp)*.78)!important}
@@ -72,7 +72,7 @@ $('pr').onclick=function(){window.print()};
 </script><button id="ajb" type="button" title="Ajustes">⚙</button>
 <div id="ajp"><h3>⚙ Ajustes dos cartões</h3><div id="ajs"></div><button type="button" id="ajr" class="b2">Restaurar padrão</button><button type="button" id="ajpr">🖨️ Imprimir</button></div>
 <script>
-(function(){var D=[['--qr','Tamanho do QR',14,30,.5,'mm',22],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno',5,9,.25,'pt',6.5],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
+(function(){var D=[['--qr','Tamanho do QR',14,32,.5,'mm',24],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno',5,9,.25,'pt',6.5],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
 try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
 function ap(v,x){R.style.setProperty(v,x)}
 var box=document.getElementById('ajs');
