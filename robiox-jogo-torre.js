@@ -487,12 +487,12 @@
             rk.push({ n: 'Você', p: Math.floor(targetPBlocks), me: 1 });
             rk.sort(function (a, b) { return b.p - a.p; });
             var n6 = Math.min(rk.length, 6), px0 = W - 215;
-            ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(px0, 50, 200, 28 + n6 * 22);
+            ctx.fillStyle = 'rgba(0,0,0,0.55)'; var py0 = Math.floor(H * 0.27); ctx.fillRect(px0, py0, 200, 28 + n6 * 22);
             ctx.textAlign = 'left'; ctx.fillStyle = '#ffeb3b'; ctx.font = 'bold 14px sans-serif'; ctx.lineWidth = 0;
-            ctx.fillText('🔴 AO VIVO · ' + (ok.length + 1) + ' na torre', px0 + 8, 70);
+            ctx.fillText('🔴 AO VIVO · ' + (ok.length + 1) + ' na torre', px0 + 8, py0 + 20);
             for (var ri = 0; ri < n6; ri++) {
               ctx.fillStyle = rk[ri].me ? '#69f0ae' : '#fff'; ctx.font = '13px sans-serif';
-              ctx.fillText((ri + 1) + 'º ' + String(rk[ri].n).slice(0, 14) + ' · ' + rk[ri].p + ' blocos', px0 + 8, 92 + ri * 22);
+              ctx.fillText((ri + 1) + 'º ' + String(rk[ri].n).slice(0, 14) + ' · ' + rk[ri].p + ' blocos', px0 + 8, py0 + 42 + ri * 22);
             }
             ctx.textAlign = 'center'; ctx.lineWidth = 3;
           }
