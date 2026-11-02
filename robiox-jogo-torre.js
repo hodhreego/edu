@@ -60,6 +60,10 @@
         var targetPBlocks = 1;
         var targetRBlocks = 1;
 
+        // A lava sobe conforme as perguntas avançam (0 = início, 1 = fim)
+        var lavaProgress = 0;
+        var lavaTargetProgress = 0;
+
         // ---- AO VIVO: quem está com a Torre aberta entra na disputa; o rival passa a ser um colega real ----
         var LIVE = !!(window.EDU_ENDPOINT && window.RBX_LOGIN && window.RBX_LOGIN !== 'mestre');
         var others = {}, livePoll = null, liveRivalKey = null, myNick = '';
@@ -136,6 +140,7 @@
             return;
           }
           currentQIndex++;
+          lavaTargetProgress = Math.max(0, (currentQIndex - 1) / totalQ);
           var topics = api.topics ? api.topics() : ['geral'];
           var top = topics[Math.floor(Math.random() * topics.length)];
           var tLvl = api.tier ? api.tier() : 1;
@@ -198,6 +203,7 @@
 
           playerBlocks += (targetPBlocks - playerBlocks) * Math.min(1, dt * 6);
           rivalBlocks += (targetRBlocks - rivalBlocks) * Math.min(1, dt * 6);
+          lavaProgress += (lavaTargetProgress - lavaProgress) * Math.min(1, dt * 1.6);
 
           var rl = rivalLive(); if (rl) targetRBlocks = Math.max(1, rl.p || 1);
           if (shakeTime > 0) shakeTime -= dt;
@@ -271,6 +277,8 @@
           rivalBlocks = 1;
           targetPBlocks = 1;
           targetRBlocks = 1;
+          lavaProgress = 0;
+          lavaTargetProgress = 0;
           countTimer = 3.5;
           state = 'COUNTDOWN';
         }
@@ -431,7 +439,9 @@
           // Zona do meio (Torres e Lava)
           var midTop = H * 0.28;
           var midBottom = H * 0.68;
-          var lavaY = midBottom;
+          var towerBaseY = midBottom;
+          var maxLavaRise = (midBottom - midTop) * 0.55;
+          var lavaY = towerBaseY - lavaProgress * maxLavaRise;
 
           // Torres e Câmera
           var maxBlocks = Math.max(playerBlocks, rivalBlocks, 5);
@@ -444,7 +454,7 @@
           // Desenho das torres
           function drawTower(baseX, count, mainCol, darkCol) {
             for (var b = 0; b < Math.floor(count); b++) {
-              var by = lavaY - (b + 1) * blockH;
+              var by = towerBaseY - (b + 1) * blockH;
               ctx.fillStyle = mainCol;
               ctx.fillRect(baseX - blockW / 2, by, blockW, blockH - 2);
               ctx.fillStyle = darkCol;
@@ -455,7 +465,7 @@
             }
             var frac = count - Math.floor(count);
             if (frac > 0.05) {
-              var fby = lavaY - (Math.floor(count) + frac) * blockH;
+              var fby = towerBaseY - (Math.floor(count) + frac) * blockH;
               ctx.fillStyle = mainCol;
               ctx.fillRect(baseX - blockW / 2, fby, blockW, (blockH - 2) * frac);
             }
@@ -465,8 +475,8 @@
           drawTower(rBaseX, rivalBlocks, '#00bcd4', '#00838f');
 
           // Personagens sobre as torres
-          var pCharY = lavaY - playerBlocks * blockH;
-          var rCharY = lavaY - rivalBlocks * blockH;
+          var pCharY = towerBaseY - playerBlocks * blockH;
+          var rCharY = towerBaseY - rivalBlocks * blockH;
           var charSize = Math.max(blockH * 1.5, 24);
           drawChar(pBaseX, pCharY, charSize, av);
           drawChar(rBaseX, rCharY, charSize, rivalColors);
@@ -610,7 +620,7 @@
             drawWrappedText(currentQ ? currentQ.q : '', W * 0.5, bubbleY + qFontSize * 1.3, bubbleW - 40, qFontSize * 1.25, false);
 
             // Alternativas (BASE)
-            var botAreaY = Math.max(H * 0.72, lavaY + 15);
+            var botAreaY = Math.max(H * 0.72, towerBaseY + 15);
             var totalAltH = H - botAreaY - 15;
             var numAlts = alts.length;
             var isRow = W > 640;
