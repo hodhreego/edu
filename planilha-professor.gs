@@ -361,7 +361,7 @@ function rbxAba_() {
 }
 function rbxSave_(d) {
   var login = String(d.login || '').toLowerCase();
-  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre)$/.test(login)) return ok_('login inválido');
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste)$/.test(login)) return ok_('login inválido');
   var lock = LockService.getScriptLock();
   try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
   try {
