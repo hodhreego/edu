@@ -48,8 +48,8 @@
 <div id="out"></div>
 <script>
 var $=function(i){return document.getElementById(i)},R=window.RCO_ALUNOS||{},BASE=location.origin+location.pathname.replace(/[^/]*$/,'')+'robiox.html?l=';
-var tu=$('tu');tu.innerHTML='<option value="">— manual —</option>'+Object.keys(R).map(function(k){return '<option value="'+k+'">'+k+'</option>'}).join('');
-tu.onchange=function(){var k=tu.value;if(!k)return;var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){$('es').value=m[1];$('sr').value=m[2]}};
+var tu=$('tu');tu.innerHTML='<option value="">Todas as turmas</option>'+Object.keys(R).map(function(k){return '<option value="'+k+'">'+k+'</option>'}).join('');
+tu.onchange=function(){var k=tu.value;if(!k){$('al').click();return}var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){$('es').value=m[1];$('sr').value=m[2]}};
 $('rs').onclick=function(){$('ro').classList.toggle('on')};
 var MAN={};function LK(){return ($('lk').value||'').trim().replace(/^https?:\/\//,'')}$('lk').value='bit.ly/xus26';try{var _l=localStorage.getItem('qr_lk2');if(_l)$('lk').value=_l}catch(e){}$('lk').oninput=function(){try{localStorage.setItem('qr_lk2',$('lk').value)}catch(e){}};
 $('ok').onclick=function(){MAN={};$('ta').value.split(/\n/).forEach(function(l){var m=l.trim().match(/^(\d{1,2})\s*[-.;:\t ]\s*(.+)$/);if(m)MAN[+m[1]]=m[2].trim()});$('ro').classList.remove('on');gera()};
