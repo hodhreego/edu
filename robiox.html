@@ -432,7 +432,7 @@ function startWorld(w){W=w;stFall=[];ckZ=[];ANO=ST.ano;clearWorld();pl.st=0;rvq=
   pl.st=s;errs=0;combo=0;pl.x=0;pl.y=.01;pl.z=safeZ[s];pl.vx=pl.vy=pl.vz=0;CAM.position.set(0,12,pl.z+14);inGame=true;run=true;skin();hud();$('ovS').style.display='none';
   if(ST._sn){say('🔥 '+ST._sn+' dias seguidos! Baú de +'+ST._sc+' 🪙',3500);ST._sn=0}}
 function tabHTML(tab){var h='',i;
-  if(tab==='j'){h+='<div class="anos">'+[6,7,8,9,10,11,12,13,14,15].filter(function(a){return a<=10||(window.RBX_MAT&&RBX_MAT[a])}).map(function(a){return '<button data-a="'+a+'" class="'+(a===ST.ano?'on':'')+'">'+aLab(a)+'</button>'}).join('')+'</div>';
+  if(tab==='j'){h+='<div class="anos">'+[6,7,8,9,10,11,12,13,14,15].filter(function(a){return a<=10||(window.RBXB&&RBXB.W[a]&&window.RBX_MAT&&RBX_MAT[a])}).map(function(a){return '<button data-a="'+a+'" class="'+(a===ST.ano?'on':'')+'">'+aLab(a)+'</button>'}).join('')+'</div>';
     for(i=0;i<6;i++){var d=wdef(i),un=i===0||unlocked(i),st=0,k;if(i<5)for(k=0;k<N;k++)st+=ST.stars[ANO+'-'+i+'-'+k]||0;
       h+='<button class="wc'+(un?'':' lock')+'" data-w="'+i+'"><span class="e">'+d.em+'</span><span><b>'+d.n+'</b><small>'+(i<5?'⭐ '+st+'/30 · '+d.t.map(function(t){return B.TN[t]}).join(', '):'Fases sem fim, perguntas de todos os temas')+'</small></span><span class="go2">'+(un?'▶':'🔒')+'</span></button>'}
     h+='<p style="text-align:left;font-weight:900;margin:10px 0 2px">🧠 Seu domínio por tema</p>';
