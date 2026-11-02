@@ -59,6 +59,15 @@
 
       // Gamepad edge trigger
       var lastAxesX = 0;
+      var fontIndex = 0;
+      try {
+        var savedFont = localStorage.getItem('rbx_quadro_fonte');
+        if (savedFont !== null) fontIndex = parseInt(savedFont, 10) || 0;
+      } catch (e) {}
+      try {
+        var f = new FontFace('Playwrite BR', 'url(playwrite-br.ttf)');
+        f.load().then(function(loaded) { document.fonts.add(loaded); }).catch(function() {});
+      } catch (e) {}
       var lastBtnA = false;
       var lastBtnB = false;
 
@@ -69,6 +78,7 @@
       var altRects = [];
       var resBtnRetry = { x: 0, y: 0, w: 160, h: 50 };
       var resBtnClose = { x: 0, y: 0, w: 160, h: 50 };
+      var btnFontRect = { x: 0, y: 0, w: 56, h: 26 };
 
       var colors = api.avatarColors || { skin: '#F5C48E', shirt: '#0088FE', pants: '#1C3144', hair: '#4A2A0C' };
 
@@ -200,6 +210,14 @@
         var rect = cv.getBoundingClientRect();
         var x = e.clientX - rect.left;
         var y = e.clientY - rect.top;
+
+        // Botão de Fonte
+        if (x >= btnFontRect.x && x <= btnFontRect.x + btnFontRect.w &&
+            y >= btnFontRect.y && y <= btnFontRect.y + btnFontRect.h) {
+          fontIndex = (fontIndex + 1) % 3;
+          try { localStorage.setItem('rbx_quadro_fonte', fontIndex); } catch (err) {}
+          return;
+        }
 
         // Fechar
         if (x >= btnCloseRect.x && x <= btnCloseRect.x + btnCloseRect.w &&
@@ -534,6 +552,7 @@
         var bh = H * 0.38;
 
         // Moldura preta arredondada
+
         ctx.fillStyle = '#1E293B';
         roundRect(ctx, bx - 6, by - 6, bw + 12, bh + 12, 24, true, false);
 
@@ -575,23 +594,42 @@
         ctx.textAlign = 'center';
         ctx.fillText(NOME.toUpperCase(), W * 0.5, qY + 6);
 
+        var FONTS = ["'Playwrite BR', cursive", "'Arial Black', Arial, sans-serif", "'Segoe Print', 'Comic Sans MS', cursive"];
         // Texto da pergunta com ajuste automático de tamanho
         if (currentQ && currentQ.q) {
           ctx.fillStyle = '#0F172A';
           ctx.textAlign = 'center';
-          var fontSize = Math.min(32, Math.max(20, Math.floor(innerW / 26)));
-          ctx.font = 'bold ' + fontSize + 'px sans-serif';
+          var ff = FONTS[fontIndex % 3];
+          var lh = fontIndex === 0 ? 1.5 : 1.25;
+          var fontSize = Math.min(44, Math.max(24, Math.floor(innerW / 18)));
+          if (fontIndex === 0) fontSize = Math.floor(fontSize * 0.85);
+          ctx.font = (fontIndex === 1 ? '' : 'bold ') + fontSize + 'px ' + ff;
           var lines = wrapText(ctx, currentQ.q, innerW - 40);
-          while (lines.length * (fontSize * 1.25) > (qH - 35) && fontSize > 16) {
+          while (lines.length * (fontSize * lh) > (qH - 30) && fontSize > 18) {
             fontSize -= 2;
-            ctx.font = 'bold ' + fontSize + 'px sans-serif';
+            ctx.font = (fontIndex === 1 ? '' : 'bold ') + fontSize + 'px ' + ff;
             lines = wrapText(ctx, currentQ.q, innerW - 40);
           }
-          var startY = qY + (qH - lines.length * (fontSize * 1.25)) * 0.5 + fontSize;
+          var startY = qY + (qH - lines.length * (fontSize * lh)) * 0.5 + fontSize;
           for (var i = 0; i < lines.length; i++) {
-            ctx.fillText(lines[i], W * 0.5, startY + i * (fontSize * 1.25));
+            ctx.fillText(lines[i], W * 0.5, startY + i * (fontSize * lh));
           }
         }
+
+        // Bandeja do apagador (cantinho): botão Aa troca a fonte
+        btnFontRect.x = bx + bw - 76;
+        btnFontRect.y = by + bh + 2;
+        ctx.fillStyle = '#94A3B8';
+        roundRect(ctx, btnFontRect.x - 12, by + bh + 4, 100, 8, 4, true, false);
+        ctx.fillStyle = '#F8FAFC';
+        roundRect(ctx, btnFontRect.x, btnFontRect.y, btnFontRect.w, btnFontRect.h, 8, true, false);
+        ctx.strokeStyle = '#1D4ED8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = '#1E293B';
+        ctx.font = "bold 16px " + FONTS[fontIndex % 3];
+        ctx.textAlign = 'center';
+        ctx.fillText('Aa', btnFontRect.x + btnFontRect.w / 2, btnFontRect.y + 19);
       }
 
       function drawPlatforms() {
