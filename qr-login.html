@@ -35,6 +35,7 @@
 .cd{border:0!important;border-radius:0!important;border-right:1.5px dotted #555!important;border-bottom:1.5px dotted #555!important}.cd:nth-child(-n+6){border-top:1.5px dotted #555!important}.cd:nth-child(5n+2){border-left:1.5px dotted #555!important}
 .cd{padding-left:6.5mm!important}.cd .t{position:absolute!important;left:.8mm;top:0;bottom:0;width:auto!important;height:auto!important;min-height:0!important;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;line-height:1.1}
 .cd{padding-left:5mm!important;padding-right:5mm!important}.cd .t{left:.5mm!important}.cd .pw{right:.5mm!important}.cd .q{margin-left:auto;margin-right:auto}
+.cd .t.vz{top:2.5mm!important;bottom:2.5mm!important;width:4.4mm!important;left:.8mm!important;border:.3mm solid #666;background:linear-gradient(#aaa .25mm,transparent .25mm) 0 0/2.2mm 2.2mm,linear-gradient(90deg,#aaa .25mm,transparent .25mm) 0 0/2.2mm 2.2mm;color:transparent}
 </style></head><body>
 <div class="pn">
 <label>Turma<select id="tu"></select></label>
@@ -61,7 +62,7 @@ function cards(esc,tur,max,nomes,out){
   for(var i=0;i<30&&n<=max;i++,n++){
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
-   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
+   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'')+'</div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
