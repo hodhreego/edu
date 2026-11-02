@@ -725,7 +725,7 @@
         }
         ctx.stroke();
 
-        // Setores de Alternativas
+        // Setores de Alternativas (fundos e demarcações no gol)
         for (var zIdx = 0; zIdx < zones.length; zIdx++) {
           var z = zones[zIdx];
           var isSel = (zIdx === selectedIdx);
@@ -745,58 +745,6 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(z.x + 3, z.y + 3, z.w - 6, z.h - 6);
           }
-
-          // Plaquinha no topo do setor com o número
-          ctx.fillStyle = isSel ? '#ff9900' : '#1e3c72';
-          ctx.beginPath();
-          ctx.roundRect(z.x + z.w * 0.5 - 20, z.y + 8, 40, 24, 6);
-          ctx.fill();
-          ctx.fillStyle = '#fff';
-          ctx.font = 'bold 15px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText((zIdx + 1).toString(), z.x + z.w * 0.5, z.y + 20);
-
-          // Texto da alternativa grande e legível dentro do gol
-          ctx.font = 'bold 24px sans-serif';
-          var optLines = wrapText(z.text, z.w - 24);
-          var fSize = 24;
-          while (optLines.length > 4 && fSize > 16) {
-            fSize -= 2;
-            ctx.font = 'bold ' + fSize + 'px sans-serif';
-            optLines = wrapText(z.text, z.w - 24);
-          }
-
-          var lH = fSize * 1.25;
-          var totalTxtH = optLines.length * lH;
-          var textStartY = z.y + z.h * 0.5 - totalTxtH * 0.5 + 10;
-
-          for (var li = 0; li < optLines.length; li++) {
-            var lineY = textStartY + li * lH;
-            // Contorno escuro
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 5;
-            ctx.strokeText(optLines[li], z.x + z.w * 0.5, lineY);
-            // Preenchimento branco/amarelo
-            ctx.fillStyle = isSel ? '#fff7a0' : '#ffffff';
-            ctx.fillText(optLines[li], z.x + z.w * 0.5, lineY);
-          }
-
-          // Seta animada acima se selecionado
-          if (isSel && state === 'PLAY') {
-            var arrowY = z.y - 20 + Math.sin(Date.now() * 0.008) * 6;
-            ctx.fillStyle = '#ffe600';
-            ctx.beginPath();
-            ctx.moveTo(z.x + z.w * 0.5, arrowY + 12);
-            ctx.lineTo(z.x + z.w * 0.5 - 14, arrowY - 6);
-            ctx.lineTo(z.x + z.w * 0.5 + 14, arrowY - 6);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-          }
-
           ctx.restore();
         }
 
@@ -811,8 +759,88 @@
         ctx.lineTo(goalX + goalW, goalY + goalH);
         ctx.stroke();
 
-        // Goleiro
+        // Goleiro (desenhado antes das placas para nunca tapar o texto)
         drawGoalkeeper(gk.x, gk.y, gk.diving, gk.dir);
+
+        // Placas e Textos das Alternativas desenhados POR CIMA do goleiro e da rede
+        for (var zIdx2 = 0; zIdx2 < zones.length; zIdx2++) {
+          var z2 = zones[zIdx2];
+          var isSel2 = (zIdx2 === selectedIdx);
+
+          ctx.save();
+
+          // Plaquinha no topo do setor com o número
+          ctx.fillStyle = isSel2 ? '#ff9900' : '#1e3c72';
+          ctx.beginPath();
+          ctx.roundRect(z2.x + z2.w * 0.5 - 20, z2.y + 8, 40, 24, 6);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText((zIdx2 + 1).toString(), z2.x + z2.w * 0.5, z2.y + 20);
+
+          // Texto da alternativa e cálculo de quebras de linha
+          ctx.font = 'bold 24px sans-serif';
+          var optLines = wrapText(z2.text, z2.w - 28);
+          var fSize = 24;
+          while (optLines.length > 4 && fSize > 16) {
+            fSize -= 2;
+            ctx.font = 'bold ' + fSize + 'px sans-serif';
+            optLines = wrapText(z2.text, z2.w - 28);
+          }
+
+          var lH = fSize * 1.25;
+          var totalTxtH = optLines.length * lH;
+          var textStartY = z2.y + z2.h * 0.5 - totalTxtH * 0.5 + 10;
+
+          // Placa de fundo escura semitransparente por trás do texto
+          var platePad = 8;
+          var plateW = z2.w - 16;
+          var plateH = totalTxtH + platePad * 2;
+          var plateX = z2.x + 8;
+          var plateY = textStartY - lH * 0.5 - platePad;
+
+          ctx.fillStyle = isSel2 ? 'rgba(10, 22, 42, 0.88)' : 'rgba(0, 0, 0, 0.82)';
+          ctx.beginPath();
+          ctx.roundRect(plateX, plateY, plateW, plateH, 10);
+          ctx.fill();
+          ctx.strokeStyle = isSel2 ? '#ffe600' : 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = isSel2 ? 3 : 1.5;
+          ctx.stroke();
+
+          // Renderização do texto
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          for (var li = 0; li < optLines.length; li++) {
+            var lineY = textStartY + li * lH;
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 5;
+            ctx.strokeText(optLines[li], z2.x + z2.w * 0.5, lineY);
+            ctx.fillStyle = isSel2 ? '#fff7a0' : '#ffffff';
+            ctx.fillText(optLines[li], z2.x + z2.w * 0.5, lineY);
+          }
+
+          // Seta animada acima se selecionado
+          if (isSel2 && state === 'PLAY') {
+            var arrowY = z2.y - 20 + Math.sin(Date.now() * 0.008) * 6;
+            ctx.fillStyle = '#ffe600';
+            ctx.beginPath();
+            ctx.moveTo(z2.x + z2.w * 0.5, arrowY + 12);
+            ctx.lineTo(z2.x + z2.w * 0.5 - 14, arrowY - 6);
+            ctx.lineTo(z2.x + z2.w * 0.5 + 14, arrowY - 6);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+
+          ctx.restore();
+        }
 
         // Jogador Kicker na marca do pênalti
         drawKicker(W * 0.5 - 35, H * 0.85, (state === 'KICK'));

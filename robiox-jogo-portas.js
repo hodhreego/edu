@@ -59,13 +59,41 @@
       // Input tracking
       var prevGP = {};
 
+      function getBalloonMetrics() {
+        var bW = Math.min(w * 0.88, 700);
+        var bY = 50;
+        var maxReserved = h * 0.34;
+        
+        var lineCount = 1;
+        if (currentQ && currentQ.text) {
+          ctx.save();
+          ctx.font = 'bold 22px sans-serif';
+          var lines = wrapTextLines(ctx, currentQ.text, bW - 40);
+          ctx.restore();
+          lineCount = Math.max(lines.length, 1);
+        }
+        
+        var desiredBH = 36 + lineCount * 28;
+        var maxBH = Math.max(70, maxReserved - bY - 16);
+        var bH = Math.min(desiredBH, maxBH);
+        var reservedTop = Math.min(maxReserved, bY + bH + 18);
+
+        return {
+          w: bW,
+          h: bH,
+          x: (w - bW) / 2,
+          y: bY,
+          reservedTop: reservedTop
+        };
+      }
+
       function resize() {
         dpr = window.devicePixelRatio || 1;
         w = window.innerWidth;
         h = window.innerHeight;
         canvas.width = w * dpr;
         canvas.height = h * dpr;
-        if (state === 'QUESTION_WAIT') setupDoorPositions();
+        if (currentQ) setupDoorPositions();
       }
       window.addEventListener('resize', resize);
       resize();
@@ -112,20 +140,36 @@
       function setupDoorPositions() {
         doors = [];
         if (!currentQ) return;
+
+        var bm = getBalloonMetrics();
+        var reservedTop = bm.reservedTop;
+        var availH = h - reservedTop;
+
+        var plaqueH = Math.max(46, Math.min(65, availH * 0.16));
+        var doorH = Math.max(90, Math.min(190, availH * 0.38));
+        var doorW = Math.max(60, Math.min(130, w * 0.22, doorH * 0.68));
+        var plaqueW = Math.max(doorW + 20, Math.min(w * 0.28, 160));
+        var doorBaseY = reservedTop + 14 + plaqueH + 12 + doorH;
+
         var num = currentQ.choices.length;
         var spacing = w / (num + 1);
         for (var i = 0; i < num; i++) {
           doors.push({
             x: spacing * (i + 1),
-            y: h * 0.55,
-            w: Math.min(130, w * 0.22),
-            h: Math.min(200, h * 0.32),
+            y: doorBaseY,
+            w: doorW,
+            h: doorH,
+            plaqueW: plaqueW,
+            plaqueH: plaqueH,
             text: currentQ.choices[i]
           });
         }
-        charPos.x = w / 2;
-        charPos.targetX = w / 2;
-        charPos.walking = false;
+
+        charPos.y = Math.min(h - 25, doorBaseY + Math.max(50, (h - doorBaseY) * 0.55));
+        if (!charPos.walking) {
+          charPos.x = w / 2;
+          charPos.targetX = w / 2;
+        }
       }
 
       function startNextRound() {
@@ -176,7 +220,6 @@
           var lines = wrapTextLines(c, text, maxW);
           var totalH = lines.length * fontSize * 1.25;
           if (totalH <= maxH) {
-            // Render lines
             var startY = y - (totalH / 2) + (fontSize * 0.6);
             for (var l = 0; l < lines.length; l++) {
               c.lineWidth = 4;
@@ -191,7 +234,6 @@
           fontSize -= 2;
         }
 
-        // Fallback for minFont
         c.font = 'bold ' + minFont + 'px sans-serif';
         var fallbackLines = wrapTextLines(c, text, maxW);
         var fTotalH = fallbackLines.length * minFont * 1.25;
@@ -226,6 +268,10 @@
 
       // Drawing Elements
       function drawBackground() {
+        var bm = getBalloonMetrics();
+        var reservedTop = bm.reservedTop;
+        var availH = h - reservedTop;
+
         // Castle wall gradient
         var grad = ctx.createLinearGradient(0, 0, 0, h);
         grad.addColorStop(0, '#150d2a');
@@ -235,7 +281,7 @@
         ctx.fillRect(0, 0, w, h);
 
         // Perspective floor
-        var floorY = h * 0.65;
+        var floorY = doors.length > 0 ? (doors[0].y - 8) : (reservedTop + availH * 0.55);
         var floorGrad = ctx.createLinearGradient(0, floorY, 0, h);
         floorGrad.addColorStop(0, '#1a1829');
         floorGrad.addColorStop(1, '#090810');
@@ -268,10 +314,9 @@
 
         // Wall Torches
         var torchXs = [w * 0.08, w * 0.92];
+        var ty = reservedTop + availH * 0.28;
         for (var t = 0; t < torchXs.length; t++) {
           var tx = torchXs[t];
-          var ty = h * 0.45;
-          // Torch base
           ctx.fillStyle = '#5c3d2e';
           ctx.fillRect(tx - 6, ty, 12, 30);
           ctx.fillStyle = '#f39c12';
@@ -279,7 +324,6 @@
           ctx.arc(tx, ty, 8, 0, Math.PI * 2);
           ctx.fill();
 
-          // Animated Flame Glow
           var glow = ctx.createRadialGradient(tx, ty - 10, 2, tx, ty - 10, 45);
           glow.addColorStop(0, 'rgba(255, 200, 50, 0.6)');
           glow.addColorStop(1, 'rgba(255, 100, 0, 0)');
@@ -288,7 +332,6 @@
           ctx.arc(tx, ty - 10, 45, 0, Math.PI * 2);
           ctx.fill();
 
-          // Particles
           if (Math.random() < 0.4) {
             particles.push({
               x: tx + (Math.random() - 0.5) * 10,
@@ -347,7 +390,6 @@
           var doorW = d.w * Math.cos(openAngle * (Math.PI / 2.2));
           ctx.fillStyle = isSel ? '#8e44ad' : '#5d4037';
 
-          // Wooden Texture Lines
           roundRect(ctx, -d.w / 2, -d.h, doorW, d.h, { tl: d.w / 2, tr: d.w / 2, bl: 2, br: 2 }, true, false);
 
           // Door Knob
@@ -360,8 +402,8 @@
           ctx.restore();
 
           // Plaque Above Door (Choice Text Container)
-          var plaqueW = Math.max(d.w + 20, 160);
-          var plaqueH = 70;
+          var plaqueW = d.plaqueW || Math.max(d.w + 20, 160);
+          var plaqueH = d.plaqueH || 70;
           var plaqueY = -d.h - plaqueH - 12;
 
           ctx.fillStyle = isSel ? '#2980b9' : '#1f2430';
@@ -370,18 +412,19 @@
           roundRect(ctx, -plaqueW / 2, plaqueY, plaqueW, plaqueH, 10, true, true);
 
           // Number Label Badge (1, 2, 3)
+          var badgeR = Math.min(14, plaqueH * 0.22);
           ctx.fillStyle = isSel ? '#e67e22' : '#34495e';
           ctx.beginPath();
-          ctx.arc(-plaqueW / 2 + 16, plaqueY + 16, 14, 0, Math.PI * 2);
+          ctx.arc(-plaqueW / 2 + badgeR + 4, plaqueY + badgeR + 4, badgeR, 0, Math.PI * 2);
           ctx.fill();
           ctx.fillStyle = '#fff';
-          ctx.font = 'bold 14px sans-serif';
+          ctx.font = 'bold ' + Math.round(badgeR) + 'px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText((i + 1).toString(), -plaqueW / 2 + 16, plaqueY + 16);
+          ctx.fillText((i + 1).toString(), -plaqueW / 2 + badgeR + 4, plaqueY + badgeR + 4);
 
           // Render choice text inside plaque
-          drawTextAutoFit(ctx, d.text, 0, plaqueY + plaqueH / 2, plaqueW - 35, plaqueH - 10, 22, 28, '#ffffff');
+          drawTextAutoFit(ctx, d.text, 0, plaqueY + plaqueH / 2, plaqueW - (badgeR * 2 + 16), plaqueH - 10, 16, 26, '#ffffff');
 
           ctx.restore();
         }
@@ -431,10 +474,11 @@
         if (!currentQ) return;
         ctx.save();
 
-        var bW = Math.min(w * 0.88, 700);
-        var bH = 110;
-        var bX = (w - bW) / 2;
-        var bY = 60 + Math.sin(time * 2) * 4; // Gentle sway
+        var bm = getBalloonMetrics();
+        var bW = bm.w;
+        var bH = bm.h;
+        var bX = bm.x;
+        var bY = bm.y + Math.sin(time * 2) * 2;
 
         // Balloon Shadow
         ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
@@ -451,14 +495,14 @@
         ctx.beginPath();
         ctx.moveTo(w / 2 - 12, bY + bH);
         ctx.lineTo(w / 2 + 12, bY + bH);
-        ctx.lineTo(w / 2, bY + bH + 14);
+        ctx.lineTo(w / 2, bY + bH + 12);
         ctx.closePath();
         ctx.fill();
         ctx.strokeStyle = '#1e3799';
         ctx.lineWidth = 5;
         ctx.beginPath();
         ctx.moveTo(w / 2 - 12, bY + bH - 2);
-        ctx.lineTo(w / 2, bY + bH + 14);
+        ctx.lineTo(w / 2, bY + bH + 12);
         ctx.lineTo(w / 2 + 12, bY + bH - 2);
         ctx.stroke();
 
@@ -476,7 +520,7 @@
         ctx.fillText(window.RBX_JOGOS['portas'].nome, tagX + tagW / 2, tagY + tagH / 2);
 
         // Question Text Auto-fit inside balloon
-        drawTextAutoFit(ctx, currentQ.text, w / 2, bY + bH / 2 + 4, bW - 40, bH - 20, 22, 34, '#2c3e50');
+        drawTextAutoFit(ctx, currentQ.text, w / 2, bY + bH / 2 + 4, bW - 40, bH - 20, 18, 30, '#2c3e50');
 
         ctx.restore();
       }
@@ -552,16 +596,13 @@
         ctx.lineWidth = 4;
         roundRect(ctx, boxX, boxY, boxW, boxH, 16, true, true);
 
-        // Title Header
         ctx.fillStyle = '#e74c3c';
         ctx.font = 'bold 26px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('Ops! Porta Errada 🚪💥', w / 2, boxY + 45);
 
-        // Explanation text inside modal
         drawTextAutoFit(ctx, currentQ.exp, w / 2, boxY + 120, boxW - 40, 90, 18, 24, '#ecf0f1');
 
-        // Continue Button
         var btnW = 200, btnH = 45;
         var btnX = (w - btnW) / 2;
         var btnY = boxY + boxH - 60;
@@ -593,13 +634,11 @@
         ctx.fillText('Perguntas respondidas: ' + (qIndex) + ' / ' + maxQuestions, w / 2, h * 0.42);
         ctx.fillText('Moedas coletadas: 🪙 ' + coins, w / 2, h * 0.49);
 
-        // Option Buttons
         var btnW = 200, btnH = 50;
         var btn1X = w / 2 - btnW - 15;
         var btn2X = w / 2 + 15;
         var btnY = h * 0.65;
 
-        // Button 1: Replay
         ctx.fillStyle = (selectedIdx === 0) ? '#27ae60' : '#2ecc71';
         if (selectedIdx === 0) {
           ctx.strokeStyle = '#fff';
@@ -610,7 +649,6 @@
         ctx.font = 'bold 18px sans-serif';
         ctx.fillText('Jogar de novo', btn1X + btnW / 2, btnY + 30);
 
-        // Button 2: Exit
         ctx.fillStyle = (selectedIdx === 1) ? '#c0392b' : '#e74c3c';
         if (selectedIdx === 1) {
           ctx.strokeStyle = '#fff';
@@ -659,7 +697,6 @@
 
         if (shake > 0) shake -= dt * 10;
 
-        // Countdown State
         if (state === 'COUNTDOWN') {
           countdownTimer += dt;
           if (countdownTimer >= 0.8) {
@@ -672,7 +709,6 @@
           return;
         }
 
-        // Walking State
         if (state === 'WALKING') {
           var dx = charPos.targetX - charPos.x;
           if (Math.abs(dx) > 4) {
@@ -685,7 +721,6 @@
           }
         }
 
-        // Door Open Animation
         if (state === 'DOOR_OPEN') {
           doorOpenProgress += dt * 3;
           if (doorOpenProgress >= 1) {
@@ -714,7 +749,6 @@
           }
         }
 
-        // Result Animation Transition
         if (state === 'RESULT_ANIM') {
           explanationDelay += dt;
           if (explanationDelay >= 1.2) {
@@ -726,7 +760,6 @@
           }
         }
 
-        // Gamepad Edge-triggered input processing
         pollGamepad();
       }
 
@@ -781,7 +814,6 @@
         state = 'COUNTDOWN';
       }
 
-      // Event Listeners for Input
       function onKeyDown(e) {
         if (!active) return;
         if (state === 'QUESTION_WAIT') {
@@ -812,7 +844,8 @@
         if (state === 'QUESTION_WAIT') {
           for (var i = 0; i < doors.length; i++) {
             var d = doors[i];
-            if (mx >= d.x - d.w / 2 - 20 && mx <= d.x + d.w / 2 + 20 && my >= d.y - d.h - 80 && my <= d.y + 20) {
+            var pH = d.plaqueH || 70;
+            if (mx >= d.x - d.w / 2 - 20 && mx <= d.x + d.w / 2 + 20 && my >= d.y - d.h - pH - 15 && my <= d.y + 20) {
               triggerChoice(i);
               return;
             }
@@ -849,7 +882,6 @@
         if (api.onClose) api.onClose();
       }
 
-      // Render & Animation Frame Loop
       var lastTime = performance.now();
       function loop(now) {
         if (!active) return;
@@ -858,7 +890,6 @@
 
         update(dt);
 
-        // Render Canvas Frame
         ctx.save();
         ctx.scale(dpr, dpr);
 

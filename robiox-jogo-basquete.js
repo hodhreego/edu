@@ -86,8 +86,9 @@
         var num = options.length;
         var rects = [];
         var hoopW = Math.min(w * 0.28, 220);
-        var hoopH = 130;
-        var topY = h * 0.45;
+        var hoopH = 125;
+        var balloonBottom = 70 + Math.min(h * 0.18, 120) + 16;
+        var topY = Math.max(balloonBottom + 12, h * 0.43);
 
         for (var i = 0; i < num; i++) {
           var cx = (w / (num + 1)) * (i + 1);
@@ -146,7 +147,7 @@
         if (!target) return;
 
         ball.startX = w * 0.5;
-        ball.startY = h * 0.78;
+        ball.startY = h * 0.80;
         ball.targetX = target.rimX;
         ball.targetY = target.rimY;
         ball.ctrlX = (ball.startX + ball.targetX) / 2;
@@ -251,12 +252,14 @@
         }
       }
 
-      canvas.addEventListener('pointerdown', function (e) {
+      function onPointerDown(e) {
         handlePointer(e.clientX, e.clientY, true);
-      });
-      canvas.addEventListener('pointermove', function (e) {
+      }
+      function onPointerMove(e) {
         handlePointer(e.clientX, e.clientY, false);
-      });
+      }
+      canvas.addEventListener('pointerdown', onPointerDown);
+      canvas.addEventListener('pointermove', onPointerMove);
 
       function pollGamepad() {
         var gps = navigator.getGamepads ? navigator.getGamepads() : [];
@@ -358,12 +361,14 @@
       // --- DRAWING FUNCTIONS ---
 
       function drawSkyAndCourt() {
+        var courtY = h * 0.67;
+
         // Sky
-        var skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.65);
+        var skyGrad = ctx.createLinearGradient(0, 0, 0, courtY);
         skyGrad.addColorStop(0, '#38bdf8');
         skyGrad.addColorStop(1, '#bae6fd');
         ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, w, h * 0.65);
+        ctx.fillRect(0, 0, w, courtY);
 
         // Sun
         ctx.fillStyle = '#fef08a';
@@ -383,27 +388,28 @@
         });
 
         // Court Floor (Wood/Hardcourt)
-        var courtGrad = ctx.createLinearGradient(0, h * 0.65, 0, h);
+        var courtGrad = ctx.createLinearGradient(0, courtY, 0, h);
         courtGrad.addColorStop(0, '#ea580c');
         courtGrad.addColorStop(1, '#c2410c');
         ctx.fillStyle = courtGrad;
-        ctx.fillRect(0, h * 0.65, w, h * 0.35);
+        ctx.fillRect(0, courtY, w, h - courtY);
 
         // Court lines
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
         ctx.lineWidth = 4;
         ctx.beginPath();
-        ctx.moveTo(0, h * 0.65);
-        ctx.lineTo(w, h * 0.65);
+        ctx.moveTo(0, courtY);
+        ctx.lineTo(w, courtY);
         ctx.stroke();
 
         // Key Arc line
         ctx.beginPath();
-        ctx.ellipse(w * 0.5, h * 0.7, w * 0.35, h * 0.2, 0, 0, Math.PI);
+        ctx.ellipse(w * 0.5, courtY + (h - courtY) * 0.18, w * 0.35, (h - courtY) * 0.6, 0, 0, Math.PI);
         ctx.stroke();
       }
 
       function drawHoops() {
+        var courtY = h * 0.67;
         var hoops = getHoopRects();
         for (var i = 0; i < hoops.length; i++) {
           var hp = hoops[i];
@@ -412,7 +418,7 @@
 
           // Pole
           ctx.fillStyle = '#64748b';
-          ctx.fillRect(hp.cx - 6, hp.y + 40, 12, h * 0.65 - (hp.y + 40));
+          ctx.fillRect(hp.cx - 6, hp.y + 40, 12, Math.max(10, courtY - (hp.y + 40)));
 
           // Plate Text Box (Backboard Top)
           ctx.fillStyle = isSelected ? '#fef08a' : '#ffffff';
@@ -473,7 +479,7 @@
 
       function drawAvatar() {
         var px = w * 0.5;
-        var py = h * 0.78;
+        var py = h * 0.80;
 
         // Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.25)';
@@ -544,11 +550,11 @@
 
       function drawQuestionBalloon() {
         if (!curQ) return;
-        var floatY = Math.sin(time * 0.003) * 5;
+        var floatY = Math.sin(time * 0.003) * 4;
         var bw = Math.min(w * 0.9, 750);
-        var bh = Math.min(h * 0.22, 140);
+        var bh = Math.min(h * 0.18, 120);
         var bx = (w - bw) / 2;
-        var by = 60 + floatY;
+        var by = 70 + floatY;
 
         // Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.15)';
@@ -575,21 +581,21 @@
         ctx.stroke();
 
         // Top Orange Badge
-        var tagW = 140, tagH = 26;
+        var tagW = 140, tagH = 24;
         ctx.fillStyle = '#f97316';
         ctx.beginPath();
-        ctx.roundRect ? ctx.roundRect(bx + 20, by - 13, tagW, tagH, 8) : ctx.rect(bx + 20, by - 13, tagW, tagH);
+        ctx.roundRect ? ctx.roundRect(bx + 20, by - 12, tagW, tagH, 8) : ctx.rect(bx + 20, by - 12, tagW, tagH);
         ctx.fill();
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 13px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('Cesta Certa 🏀', bx + 20 + tagW / 2, by - 13 + tagH / 2);
+        ctx.fillText('Cesta Certa 🏀', bx + 20 + tagW / 2, by - 12 + tagH / 2);
 
         // Auto-fit Enunciado Text (30-34px target)
-        var fontSize = 32;
+        var fontSize = 30;
         var lines = getWrappedLines(curQ.q, bw - 40, fontSize);
-        while (lines.length * (fontSize + 6) > bh - 24 && fontSize > 16) {
+        while (lines.length * (fontSize + 6) > bh - 20 && fontSize > 15) {
           fontSize -= 2;
           lines = getWrappedLines(curQ.q, bw - 40, fontSize);
         }
@@ -609,7 +615,7 @@
       function drawHUD() {
         // Top Bar Background
         ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
-        ctx.fillRect(0, 0, w, 50);
+        ctx.fillRect(0, 0, w, 52);
 
         // Lives (❤️)
         var heartStr = '';
@@ -617,34 +623,34 @@
         ctx.font = '20px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
-        ctx.fillText(heartStr, 16, 25);
+        ctx.fillText(heartStr, 16, 26);
 
         // Question Progress
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 16px sans-serif';
-        ctx.fillText('Pergunta: ' + (qIndex + 1) + ' / ' + totalQuestions, 130, 25);
+        ctx.fillText('Pergunta: ' + (qIndex + 1) + ' / ' + totalQuestions, 130, 26);
 
         // Coins
         ctx.fillStyle = '#f59e0b';
-        ctx.fillText('🪙 ' + coins, 290, 25);
+        ctx.fillText('🪙 ' + coins, 290, 26);
 
         // Progress Bar Line
         var pWidth = Math.min(w * 0.2, 150);
         var pX = w * 0.5 - pWidth / 2;
         ctx.fillStyle = '#334155';
-        ctx.fillRect(pX, 20, pWidth, 10);
+        ctx.fillRect(pX, 21, pWidth, 10);
         ctx.fillStyle = '#10b981';
-        ctx.fillRect(pX, 20, pWidth * (qIndex / totalQuestions), 10);
+        ctx.fillRect(pX, 21, pWidth * (qIndex / totalQuestions), 10);
 
         // Close ✖ Button
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
-        ctx.arc(w - 25, 25, 16, 0, Math.PI * 2);
+        ctx.arc(w - 25, 26, 16, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 18px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('✖', w - 25, 25);
+        ctx.fillText('✖', w - 25, 26);
       }
 
       function drawCountdown() {

@@ -136,7 +136,6 @@
       window.addEventListener('keydown', onKeyDown);
 
       // Input Toque / Mouse
-      var touchStartX = 0;
       function onPointerDown(e) {
         var x = e.clientX, y = e.clientY;
         // Botão Fechar no canto superior direito
@@ -277,7 +276,7 @@
       function drawBalloon(text, tag) {
         var bw = Math.min(W * 0.88, 700);
         var bx = (W - bw) / 2;
-        var by = 55;
+        var by = 58;
         var bh = Math.min(H * 0.18, 120);
 
         ctx.save();
@@ -373,14 +372,13 @@
         ctx.arcTo(x + w, y, x + w, y + h, r);
         ctx.arcTo(x + w, y + h, x, y + h, r);
         ctx.arcTo(x, y + h, x, y, r);
-        ctx.arcTo(x, y, x + w, y, r);
+        ctx.arcTo(x, y + w, x, y, r);
         ctx.closePath();
       }
 
       // Projeção 3D da pista
       var horizonY = 0;
       function project3D(laneIdx, totalLanes, depth) {
-        // depth: 0 = câmera/jogador, 1 = portão atual, 2 = portão + 1, etc.
         var p = Math.max(0.01, depth);
         var scale = 1 / (1 + p * 1.8);
         var y = horizonY + (H - horizonY) * scale;
@@ -654,15 +652,12 @@
         laneX += (targetLane - laneX) * Math.min(1, dt * 14);
 
         // Desenhar filas de perguntas ao longe (3D fila infinita)
-        // 2º portão futuro (mais longe)
         if (upcomingQs[1]) {
           drawGates(upcomingQs[1], 2.2 - zProgress * 0.7);
         }
-        // 1º portão futuro
         if (upcomingQs[0]) {
           drawGates(upcomingQs[0], 1.5 - zProgress * 0.7);
         }
-        // Portão atual
         if (currentQ) {
           drawGates(currentQ, 0.8 - zProgress * 0.7);
         }
@@ -708,31 +703,83 @@
           if (coin.y > H + 50) coinsRain.splice(ci, 1);
         }
 
-        // HUD Superior
-        ctx.fillStyle = '#01579b';
-        ctx.font = 'bold 20px sans-serif';
-        ctx.textAlign = 'left';
+        // HUD Superior Organizado com Barra Semitransparente
+        var hudH = 48;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.fillRect(0, 0, W, hudH);
+        ctx.fillStyle = 'rgba(2, 119, 189, 0.2)';
+        ctx.fillRect(0, hudH - 1, W, 1);
+
+        // Botão Fechar [✖]
+        var closeX = W - 22;
+        var closeY = 24;
+        var closeR = 14;
+        ctx.fillStyle = '#e53935';
+        ctx.beginPath();
+        ctx.arc(closeX, closeY, closeR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('✖', closeX, closeY);
+        ctx.textBaseline = 'alphabetic';
+
+        // Coluna Esquerda: Vidas
         var heartStr = '';
         for (var h = 0; h < 3; h++) {
           heartStr += (h < lives) ? '❤️' : '🖤';
         }
-        ctx.fillText(heartStr, 25, 36);
+        var leftX = 10;
+        ctx.textAlign = 'left';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(heartStr, leftX, 19);
 
-        ctx.textAlign = 'center';
-        ctx.fillText('Pontos: ' + score + '  |  Recorde: ' + sessionHigh, W / 2, 36);
+        ctx.fillStyle = '#0277bd';
+        ctx.font = 'bold 11px sans-serif';
+        var lifeSub = (lives === 1 ? '1 vida' : lives + ' vidas');
+        ctx.fillText(lifeSub, leftX, 38);
+        var leftW = Math.max(ctx.measureText(heartStr).width, ctx.measureText(lifeSub).width);
 
+        // Coluna Direita: Recorde e Moedas
+        var rightX = closeX - closeR - 8;
+        var recText = 'Recorde: ' + sessionHigh;
+        var coinText = '🪙 ' + totalCoins;
+
+        var recSize = 12;
+        ctx.font = 'bold ' + recSize + 'px sans-serif';
+        while (recSize > 9 && ctx.measureText(recText).width > 80) {
+          recSize--;
+          ctx.font = 'bold ' + recSize + 'px sans-serif';
+        }
         ctx.textAlign = 'right';
-        ctx.fillText('🪙 ' + totalCoins, W - 90, 36);
+        ctx.fillStyle = '#01579b';
+        ctx.fillText(recText, rightX, 19);
 
-        // Botão Fechar [✖]
-        ctx.fillStyle = '#e53935';
-        ctx.beginPath();
-        ctx.arc(W - 35, 32, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 20px sans-serif';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillStyle = '#b78103';
+        ctx.fillText(coinText, rightX, 38);
+        var rightW = Math.max(ctx.measureText(recText).width, ctx.measureText(coinText).width);
+
+        // Coluna Central: Pontos (com proteção anticolisão)
+        var scoreText = 'Pontos: ' + score;
+        var scoreSize = 15;
+        var maxCenterW = Math.max(40, (rightX - rightW) - (leftX + leftW) - 16);
+        ctx.font = 'bold ' + scoreSize + 'px sans-serif';
+        while (scoreSize > 10 && ctx.measureText(scoreText).width > maxCenterW) {
+          scoreSize--;
+          ctx.font = 'bold ' + scoreSize + 'px sans-serif';
+        }
         ctx.textAlign = 'center';
-        ctx.fillText('✖', W - 35, 39);
+        ctx.fillStyle = '#01579b';
+        if (combo >= 2) {
+          ctx.fillText(scoreText, W / 2, 19);
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillStyle = '#e65100';
+          ctx.fillText('🔥 ' + combo + 'x COMBO', W / 2, 38);
+        } else {
+          ctx.fillText(scoreText, W / 2, 29);
+        }
 
         // Balão Grande com Pergunta Atual no topo
         if (currentQ && (state === 'RUNNING' || state === 'COUNTDOWN')) {
