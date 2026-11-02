@@ -40,6 +40,7 @@
 .cd{padding-left:var(--pl,4.4mm)!important;padding-right:var(--pr,4.4mm)!important}.cd .t{left:var(--nx,.3mm)!important}.cd .t.vz{left:calc(var(--nx,.3mm) + .3mm)!important}.cd .pw{right:var(--px,0mm)!important}.cd .q{transform:translate(var(--qx,0mm),var(--qy,0mm))}.cd .l{position:relative;top:var(--ly,0mm)}.cd .k{position:relative;top:var(--ky,0mm)}
 #ajp{max-height:82vh;overflow:auto}
 .cd .t{transform:rotate(180deg) translate(0,var(--ny,0mm))!important;line-height:var(--nlh,1.1)!important;top:var(--nt,0mm)!important;bottom:var(--nt,0mm)!important}
+body{background:#000}.pg{position:relative}.pg::after{content:'';position:absolute;inset:0;border:var(--mg,7mm) solid #000;pointer-events:none;z-index:9;box-sizing:border-box}.pg.vaza::after{animation:vzp .6s steps(1) infinite}@keyframes vzp{0%{border-color:#000}50%{border-color:#f00}}@media print{body{background:#fff}.pg::after{display:none!important}}
 </style></head><body>
 <div class="pn">
 <div class="ms" id="mE"><b>Escola</b><details><summary id="sE">—</summary><div class="mb"><div class="mk"><button type="button" class="b2" data-a="all">Selecionar tudo</button><button type="button" class="b2" data-a="none">Desmarcar tudo</button></div><div class="ml"></div></div></details></div>
@@ -104,5 +105,13 @@ document.getElementById('ajb').onclick=pop;
 document.getElementById('ajr').onclick=reset;
 document.getElementById('ajpr').onclick=function(){window.print()};
 })();
+</script>
+<script>
+(function(){var mm=96/25.4;function chk(){document.querySelectorAll('.pg').forEach(function(pg){var r=pg.getBoundingClientRect(),cs=getComputedStyle(pg),pl=parseFloat(cs.paddingLeft),pr=parseFloat(cs.paddingRight),pt=parseFloat(cs.paddingTop),pb=parseFloat(cs.paddingBottom),over=false,tol=1.5;
+ if(r.height>297*mm+tol||r.width>210*mm+tol)over=true;
+ var L=r.left+pl-tol,R=r.right-pr+tol,T=r.top+pt-tol,B=r.bottom-pb+tol;
+ for(var i=0;i<pg.children.length&&!over;i++){var c=pg.children[i].getBoundingClientRect();if(c.left<L||c.right>R||c.top<T||c.bottom>B)over=true}
+ pg.classList.toggle('vaza',over)})}
+setInterval(chk,500)})();
 </script>
 </body></html>
