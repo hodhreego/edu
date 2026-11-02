@@ -189,7 +189,28 @@
         if (api.onClose) api.onClose();
       }
 
+      var padPrev = {l:false, r:false, a:false, b:false};
+      function pollPad() {
+        try {
+          var gps = navigator.getGamepads ? navigator.getGamepads() : [], g = null, i;
+          for (i = 0; i < gps.length; i++) if (gps[i] && gps[i].connected) { g = gps[i]; break; }
+          if (!g) return;
+          var ax = g.axes[0] || 0, B = g.buttons;
+          var l = ax < -0.5 || (B[14] && B[14].pressed), r = ax > 0.5 || (B[15] && B[15].pressed);
+          var a = (B[0] && B[0].pressed) || (B[9] && B[9].pressed), b = B[1] && B[1].pressed;
+          if (l && !padPrev.l) moveLeft();
+          if (r && !padPrev.r) moveRight();
+          if (a && !padPrev.a) {
+            if (gameState === 'EXPLANATION') handleInput(10, 200);
+            else if (gameState === 'GAMEOVER') { qIndex=0; lives=3; coins=0; combo=0; score=0; nextQuestion(); gameState='RUNNING'; }
+          }
+          if (b && !padPrev.b && gameState === 'GAMEOVER') closeGame();
+          padPrev = {l: !!l, r: !!r, a: !!a, b: !!b};
+        } catch (e) {}
+      }
+
       function update() {
+        pollPad();
         animTime += 0.15;
         currentLane += (targetLane - currentLane) * 0.2;
         if (shake > 0) shake *= 0.9;
