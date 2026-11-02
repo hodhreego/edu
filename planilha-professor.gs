@@ -449,7 +449,7 @@ function rbxDash_(p) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] }, sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
   if (rs && rs.getLastRow() > 1) {
     var rn = rs.getLastRow(), v = rs.getRange(2, 1, rn - 1, 12).getValues();
-    v.forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0 }; cnt[l].n++; if (r[10] === 'SIM') cnt[l].ok++; });
+    v.forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0, t: {} }; cnt[l].n++; var tm = String(r[5] || '-'); cnt[l].t[tm] = cnt[l].t[tm] || { n: 0, ok: 0 }; cnt[l].t[tm].n++; if (r[10] === 'SIM') { cnt[l].ok++; cnt[l].t[tm].ok++; } });
     out.recentes = v.slice(-30).reverse().map(function (r) { return { t: new Date(r[0]).getTime(), login: r[1], mat: r[2], mundo: r[3], fase: r[4], tema: r[5], q: r[7], ok: r[10] === 'SIM' }; });
   }
   if (sh && sh.getLastRow() > 1) {
@@ -457,7 +457,7 @@ function rbxDash_(p) {
     d.forEach(function (r) {
       var s = {}; try { s = JSON.parse(r[26]); } catch (e) { }
       var c = cnt[r[0]] || { n: 0, ok: 0 };
-      out.alunos.push({ login: r[0], nick: r[2], serie: r[3], nivel: r[4], xp: r[5], moedas: r[6], cofrinho: r[7], gasto: r[8], vendido: r[9], itens: r[10], ini: r[11], fim: r[12], pct: r[13], est: r[14], acertosJogo: r[15], perfeitas: r[16], combo: r[17], mundos: r[18], resp: c.n, respOk: c.ok, ultima: new Date(r[23]).getTime(), own: s.own || [], gastos: (s.gastos || []).slice(0, 8) });
+      out.alunos.push({ login: r[0], nick: r[2], serie: r[3], nivel: r[4], xp: r[5], moedas: r[6], cofrinho: r[7], gasto: r[8], vendido: r[9], itens: r[10], ini: r[11], fim: r[12], pct: r[13], est: r[14], acertosJogo: r[15], perfeitas: r[16], combo: r[17], mundos: r[18], resp: c.n, respOk: c.ok, ultima: new Date(r[23]).getTime(), own: s.own || [], gastos: (s.gastos || []).slice(0, 8), ganhas: s.ganhas || 0, mw: s.mw || {}, temas: c.t || {} });
     });
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);

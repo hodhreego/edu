@@ -856,6 +856,61 @@
         :fullscreen .stat-val {
             font-size: 2.6rem;
         }
+
+/* ---- personalização e animações ---- */
+#cfg{position:fixed;top:0;right:0;height:100vh;width:min(360px,92vw);background:var(--card);border-left:1px solid var(--border);box-shadow:-10px 0 40px #0008;z-index:9000;transform:translateX(105%);transition:transform .3s;overflow:auto;padding:18px;color:var(--text)}
+#cfg.on{transform:none}
+#cfg h2{font-size:1.2rem;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+#cfg h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin:16px 0 6px}
+#cfg label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.9rem;margin:7px 0}
+#cfg input[type=text],#cfg input[type=number],#cfg select{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 8px;max-width:170px;font-size:.9rem}
+#cfg input[type=range]{width:150px}
+#cfg button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-weight:700;cursor:pointer}
+#cfg .sw{display:flex;gap:8px;flex-wrap:wrap}
+#cfg .sw span{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+#cfg .sw span.on{border-color:#fff}
+.noanim *{animation:none!important}
+.rank-item{position:relative}
+.rank-item.rk-up{animation:rkUp 2.4s ease-out}
+.rank-item.rk-down{animation:rkDown 2.4s ease-out}
+@keyframes rkUp{0%,30%{background:rgba(16,185,129,.45);box-shadow:0 0 0 2px var(--green),0 0 30px rgba(16,185,129,.6)}100%{box-shadow:none}}
+@keyframes rkDown{0%,30%{background:rgba(239,68,68,.35);box-shadow:0 0 0 2px var(--red)}100%{box-shadow:none}}
+.mv{font-size:.7rem;font-weight:900;margin-left:4px;padding:1px 5px;border-radius:99px;animation:mvPop .6s ease-out}
+.mv.u{background:var(--green);color:#052e1f}.mv.d{background:var(--red);color:#fff}
+@keyframes mvPop{0%{transform:scale(0)}60%{transform:scale(1.5)}100%{transform:scale(1)}}
+.rank-item:first-child .rank-pos::after{content:" 👑";animation:crown 1.6s ease-in-out infinite;display:inline-block}
+@keyframes crown{50%{transform:translateY(-4px) rotate(-10deg)}}
+#celebra{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.cel{background:linear-gradient(135deg,var(--accent),var(--gold));color:#fff;border-radius:28px;padding:26px 44px;text-align:center;box-shadow:0 20px 80px #000a;animation:celIn 4s ease both;max-width:90vw}
+.cel .e{font-size:5rem;line-height:1;animation:celBounce .9s ease-in-out infinite}
+.cel .t{font-size:2.2rem;font-weight:900;text-shadow:0 2px 10px #0006}
+.cel .s{font-size:1.2rem;opacity:.95;margin-top:4px}
+@keyframes celIn{0%{transform:scale(.2) rotate(-8deg);opacity:0}10%{transform:scale(1.12);opacity:1}16%{transform:scale(1)}85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.9) translateY(-40px)}}
+@keyframes celBounce{50%{transform:translateY(-14px) scale(1.15)}}
+.fly{position:fixed;bottom:-60px;font-size:2.2rem;z-index:9400;pointer-events:none;animation:flyUp 4s ease-in forwards}
+@keyframes flyUp{to{transform:translateY(-115vh) rotate(40deg);opacity:.2}}
+
+#foco{display:none;margin:0 0 18px;background:linear-gradient(135deg,var(--card),var(--card-hover));border:2px solid var(--accent);border-radius:20px;padding:18px;box-shadow:0 0 40px rgba(139,92,246,.25);animation:focoIn .5s ease}
+#foco.on{display:block}
+@keyframes focoIn{from{transform:translateY(-14px);opacity:0}}
+.fc-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.fc-name{font-size:1.9rem;font-weight:900}
+.fc-sub{color:var(--text-dim);font-size:.9rem}
+.fc-x{background:var(--border);color:var(--text);border:0;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:700}
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.fc-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:10px 12px}
+.fc-card small{display:block;color:var(--text-dim);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.fc-card b{font-size:1.5rem;display:block}
+.fc-card.flash{animation:fcFlash 1.4s ease-out}
+@keyframes fcFlash{0%{background:var(--green);transform:scale(1.08)}100%{background:var(--bg);transform:none}}
+.fc-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:760px){.fc-cols{grid-template-columns:1fr}}
+.fc-box h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:6px}
+.fc-li{display:flex;gap:8px;align-items:center;font-size:.85rem;padding:4px 0;border-bottom:1px dashed var(--border)}
+.fc-li .ok{color:var(--green);font-weight:900}.fc-li .no{color:var(--red);font-weight:900}
+#sel-foco{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 8px;font-weight:700;max-width:170px}
+.rank-item{cursor:pointer}
+.rank-item.foco-sel{outline:2px solid var(--gold-light)}
     </style>
 </head>
 <body>
@@ -863,12 +918,38 @@
     <div id="conn-warn">⚠️ Sem conexão com a planilha... Aguardando sinal ou exibindo dados locais.</div>
     <canvas id="canvas-confetti"></canvas>
     <div id="toasts" aria-live="polite"></div>
+    <div id="cfg" aria-label="Personalizar painel"><h2>🎨 Personalizar <button onclick="cfgToggle()">✕</button></h2>
+<h3>Aparência</h3>
+<div class="sw" id="cfg-sw"></div>
+<label>Tamanho da letra <input type="range" id="c-font" min="80" max="150" step="5"></label>
+<label>Título <input type="text" id="c-ttl" maxlength="24"></label>
+<label>Subtítulo <input type="text" id="c-sub" maxlength="40"></label>
+<h3>Ranking</h3>
+<label>Quantos aparecem <select id="c-top"><option>5</option><option>8</option><option>10</option><option>15</option><option>30</option></select></label>
+<label>Ordenar por <select id="c-ord"><option value="xp">XP</option><option value="est">Estrelas</option><option value="pct">% concluído</option><option value="acc">% de acertos</option><option value="cofrinho">Dinheiro</option></select></label>
+<label>Mostrar cartões do topo <input type="checkbox" id="c-stats"></label>
+<h3>Animações e avisos</h3>
+<label>Animações ligadas <input type="checkbox" id="c-anim"></label>
+<label>Sons <input type="checkbox" id="c-som"></label>
+<label>Aviso: mudou de posição <input type="checkbox" id="c-ev-rank"></label>
+<label>Aviso: novo líder <input type="checkbox" id="c-ev-lead"></label>
+<label>Aviso: subiu de nível <input type="checkbox" id="c-ev-lvl"></label>
+<label>Aviso: concluiu fase <input type="checkbox" id="c-ev-fase"></label>
+<label>Aviso: bateu meta <input type="checkbox" id="c-ev-meta"></label>
+<label>Aviso: entrou online <input type="checkbox" id="c-ev-on"></label>
+<h3>Metas</h3>
+<label>Meta de XP (a cada) <input type="number" id="c-mxp" min="50" step="50"></label>
+<label>Meta de acertos seguidos <input type="number" id="c-mcb" min="3"></label>
+<p style="display:flex;gap:8px;margin-top:16px"><button onclick="cfgTest()">🎉 Testar animação</button><button onclick="cfgReset()" style="background:var(--border)">Restaurar</button></p>
+</div>
+<div id="celebra"></div>
+
 
     <div class="container">
         <header>
             <div class="logo-area">
-                <h1>🎮 <span class="roblox-tag">RobIox</span></h1>
-                <div class="subtitle">Painel ao vivo</div>
+                <h1>🎮 <span class="roblox-tag" id="ttl">RobIox</span></h1>
+                <div class="subtitle" id="sub">Painel ao vivo</div>
             </div>
             <div class="header-right">
                 <div id="clock" class="clock-box" title="Horário atual">00:00:00</div>
@@ -928,9 +1009,13 @@
             <div class="nav-extra">
                 <button onclick="togglePresentation()" id="btn-present" title="Alternar rotação automática de telas">▶ Apresentar (Telão)</button>
                 <button onclick="toggleDemo()" id="btn-demo" title="Alternar modo demonstração fictícia">Modo Demo</button>
+                <select id="sel-foco" title="Escolher um aluno para acompanhar" onchange="setFoco(this.value)"><option value="">👁 Acompanhar aluno…</option></select>
+                <button onclick="cfgToggle()" id="btn-cfg" title="Personalizar o painel">🎨 Personalizar</button>
                 <button onclick="toggleFS()" id="btn-fs" title="Alternar tela cheia (Tecla F)">⛶ Tela Cheia [F]</button>
             </div>
         </nav>
+
+        <div id="foco"></div>
 
         <!-- 1. Ranking -->
         <section id="sec-ranking" class="section active">
@@ -1015,6 +1100,169 @@
         let presentationInterval = null;
         let confettiAnimationId = null;
 
+
+        // --- Personalização ---
+        const TEMAS = [
+            {n:'Roxo',bg:'#0b1120',card:'#1e293b',hov:'#273549',ac:'#8b5cf6',ab:'#a78bfa',bd:'#334155'},
+            {n:'Azul',bg:'#06142b',card:'#0f2a52',hov:'#163a6e',ac:'#3b82f6',ab:'#60a5fa',bd:'#1e4a8a'},
+            {n:'Verde',bg:'#06150f',card:'#0f2e22',hov:'#17402f',ac:'#10b981',ab:'#34d399',bd:'#1c5a40'},
+            {n:'Laranja',bg:'#1a0f06',card:'#33200f',hov:'#47301a',ac:'#f97316',ab:'#fb923c',bd:'#5a3a1c'},
+            {n:'Rosa',bg:'#1a0614',card:'#331028',hov:'#481a39',ac:'#ec4899',ab:'#f472b6',bd:'#5a1c47'},
+            {n:'Claro',bg:'#eef2f7',card:'#ffffff',hov:'#f1f5f9',ac:'#6d28d9',ab:'#7c3aed',bd:'#cbd5e1',light:1}
+        ];
+        const CFG0 = {tema:0,fonte:100,ttl:'RobIox',sub:'Painel ao vivo',top:15,ord:'xp',stats:true,anim:true,som:false,evRank:true,evLead:true,evLvl:true,evFase:true,evMeta:true,evOn:true,mxp:1000,mcb:5};
+        let CFG = Object.assign({}, CFG0);
+        try { Object.assign(CFG, JSON.parse(localStorage.getItem('painel_cfg') || '{}')); } catch (e) {}
+        function cfgSave() { try { localStorage.setItem('painel_cfg', JSON.stringify(CFG)); } catch (e) {} }
+        function cfgApply() {
+            const t = TEMAS[CFG.tema] || TEMAS[0], r = document.documentElement.style;
+            r.setProperty('--bg', t.bg); r.setProperty('--card', t.card); r.setProperty('--card-hover', t.hov);
+            r.setProperty('--accent', t.ac); r.setProperty('--accent-bright', t.ab); r.setProperty('--border', t.bd);
+            r.setProperty('--text', t.light ? '#0f172a' : '#f8fafc'); r.setProperty('--text-dim', t.light ? '#475569' : '#94a3b8');
+            r.fontSize = CFG.fonte + '%';
+            document.getElementById('ttl').textContent = CFG.ttl || 'RobIox';
+            document.getElementById('sub').textContent = CFG.sub || '';
+            document.body.classList.toggle('noanim', !CFG.anim);
+            const sg = document.querySelector('.stats-grid'); if (sg) sg.style.display = CFG.stats ? '' : 'none';
+        }
+        function cfgInit() {
+            const sw = document.getElementById('cfg-sw');
+            sw.innerHTML = TEMAS.map((t, i) => `<span title="${t.n}" data-i="${i}" style="background:${t.ac}"></span>`).join('');
+            sw.onclick = e => { const i = e.target.dataset && e.target.dataset.i; if (i != null) { CFG.tema = +i; cfgSave(); cfgApply(); cfgFill(); } };
+            const bind = (id, key, kind) => {
+                const el = document.getElementById(id);
+                el.addEventListener('input', () => {
+                    CFG[key] = kind === 'b' ? el.checked : kind === 'n' ? +el.value : el.value;
+                    cfgSave(); cfgApply(); if (['top','ord'].includes(key)) updateUI();
+                });
+            };
+            bind('c-font','fonte','n'); bind('c-ttl','ttl'); bind('c-sub','sub'); bind('c-top','top','n'); bind('c-ord','ord');
+            bind('c-stats','stats','b'); bind('c-anim','anim','b'); bind('c-som','som','b');
+            bind('c-ev-rank','evRank','b'); bind('c-ev-lead','evLead','b'); bind('c-ev-lvl','evLvl','b'); bind('c-ev-fase','evFase','b'); bind('c-ev-meta','evMeta','b'); bind('c-ev-on','evOn','b');
+            bind('c-mxp','mxp','n'); bind('c-mcb','mcb','n');
+            cfgFill(); cfgApply();
+        }
+        function cfgFill() {
+            const set = (id, v, b) => { const el = document.getElementById(id); if (b) el.checked = !!v; else el.value = v; };
+            set('c-font',CFG.fonte); set('c-ttl',CFG.ttl); set('c-sub',CFG.sub); set('c-top',CFG.top); set('c-ord',CFG.ord);
+            set('c-stats',CFG.stats,1); set('c-anim',CFG.anim,1); set('c-som',CFG.som,1);
+            set('c-ev-rank',CFG.evRank,1); set('c-ev-lead',CFG.evLead,1); set('c-ev-lvl',CFG.evLvl,1); set('c-ev-fase',CFG.evFase,1); set('c-ev-meta',CFG.evMeta,1); set('c-ev-on',CFG.evOn,1);
+            set('c-mxp',CFG.mxp); set('c-mcb',CFG.mcb);
+            document.querySelectorAll('#cfg-sw span').forEach(s => s.classList.toggle('on', +s.dataset.i === CFG.tema));
+        }
+        function cfgToggle() { document.getElementById('cfg').classList.toggle('on'); }
+        function cfgReset() { CFG = Object.assign({}, CFG0); cfgSave(); cfgFill(); cfgApply(); updateUI(); }
+        function cfgTest() { celebrate('🏆', 'Teste de animação!', 'Assim aparecem as conquistas dos alunos', ['🎉','⭐','🪙','🔥']); }
+
+        // --- Animações de eventos ---
+        function beepP(freqs) {
+            if (!CFG.som) return;
+            try {
+                const A = beepP.a || (beepP.a = new (window.AudioContext || window.webkitAudioContext)()); if (A.state === 'suspended') A.resume();
+                freqs.forEach((f, i) => { const o = A.createOscillator(), g = A.createGain(); o.type = 'triangle'; o.frequency.value = f; g.gain.value = .06; o.connect(g); g.connect(A.destination); const t = A.currentTime + i * .11; g.gain.setValueAtTime(.06, t); o.start(t); g.gain.exponentialRampToValueAtTime(.0001, t + .2); o.stop(t + .22); });
+            } catch (e) {}
+        }
+        const celQ = []; let celBusy = false;
+        function celebrate(emoji, titulo, sub, chuva) { celQ.push({emoji, titulo, sub, chuva}); if (!celBusy) celNext(); }
+        function celNext() {
+            const it = celQ.shift(); if (!it) { celBusy = false; return; }
+            celBusy = true;
+            const box = document.getElementById('celebra');
+            box.innerHTML = `<div class="cel"><div class="e">${it.emoji}</div><div class="t">${it.titulo}</div><div class="s">${it.sub || ''}</div></div>`;
+            beepP([523, 659, 784, 1047]);
+            if (CFG.anim) {
+                triggerConfetti();
+                const ch = it.chuva || [it.emoji];
+                for (let i = 0; i < 14; i++) {
+                    const f = document.createElement('div'); f.className = 'fly';
+                    f.textContent = ch[i % ch.length];
+                    f.style.left = (Math.random() * 95) + 'vw'; f.style.animationDelay = (Math.random() * 1.2) + 's';
+                    document.body.appendChild(f); setTimeout(() => f.remove(), 5500);
+                }
+            }
+            setTimeout(() => { box.innerHTML = ''; setTimeout(celNext, 250); }, 4000);
+        }
+        function ordKey(a) {
+            const k = CFG.ord;
+            if (k === 'acc') return (Number(a.resp) || 0) > 0 ? (Number(a.respOk) || 0) / Number(a.resp) : 0;
+            if (k === 'pct') return Number(a.pct) || 0;
+            if (k === 'cofrinho') return Number(a.cofrinho) || 0;
+            if (k === 'est') return Number(a.est) || 0;
+            return Number(a.xp) || 0;
+        }
+        const nm = a => (a.login === CFG.foco ? '👁 ' : '') + esc(a.nick || a.login || 'Aluno');
+        const rankMove = new Map();
+        function detectEvents(novos) {
+            if (!state.alunos.length) return;
+            const key = a => a.login || a.nick;
+            const oldS = [...state.alunos].sort((a, b) => ordKey(b) - ordKey(a)), newS = [...novos].sort((a, b) => ordKey(b) - ordKey(a));
+            const oldPos = new Map(oldS.map((a, i) => [key(a), i]));
+            newS.forEach((a, i) => {
+                const op = oldPos.get(key(a)); if (op == null || op === i) return;
+                const d = op - i;
+                rankMove.set(key(a), {d, until: Date.now() + 9000});
+                if (CFG.evRank && d > 0 && i < 10) showToast(`📈 <strong>${nm(a)}</strong> subiu para o ${i + 1}º lugar!`);
+            });
+            if (CFG.evLead && newS[0] && oldS[0] && key(newS[0]) !== key(oldS[0]))
+                celebrate('👑', `${nm(newS[0])} assumiu a liderança!`, `ultrapassou ${nm(oldS[0])}`, ['👑','🥇','⭐']);
+            novos.forEach(a => {
+                const o = state.prevData.get(key(a)); if (!o) return;
+                if (CFG.evLvl && Number(a.nivel) > Number(o.nivel)) celebrate('⬆️', `${nm(a)} subiu de nível!`, `Agora é nível ${a.nivel}`, ['⬆️','✨','🎉']);
+                if (CFG.evFase && Number(a.fim) > Number(o.fim)) showToast(`🎯 <strong>${nm(a)}</strong> concluiu mais uma fase!`);
+                if (CFG.evMeta) {
+                    const m = Math.max(50, CFG.mxp), x0 = Number(o.xp) || 0, x1 = Number(a.xp) || 0;
+                    if (Math.floor(x1 / m) > Math.floor(x0 / m)) celebrate('🎯', `${nm(a)} bateu ${(Math.floor(x1 / m) * m).toLocaleString('pt-BR')} XP!`, 'Meta de XP alcançada', ['🎯','⭐','🔥']);
+                    const p0 = Math.round((Number(o.pct) || 0) * 100), p1 = Math.round((Number(a.pct) || 0) * 100);
+                    [25, 50, 75, 100].forEach(mk => { if (p0 < mk && p1 >= mk) celebrate(mk === 100 ? '🏆' : '🚀', `${nm(a)} chegou a ${mk}%!`, mk === 100 ? 'Concluiu tudo!' : 'do jogo concluído', ['🚀','⭐','🎉']); });
+                    if ((Number(a.combo) || 0) >= CFG.mcb && (Number(o.combo) || 0) < CFG.mcb) celebrate('🔥', `${nm(a)} em chamas!`, `${a.combo} acertos seguidos`, ['🔥','💥','⭐']);
+                }
+                if (CFG.evOn) {
+                    const w = x => (state.agora - (Number(x.ultima) || 0)) < 300000;
+                    if (w(a) && !w(o)) showToast(`🟢 <strong>${nm(a)}</strong> entrou no jogo`);
+                }
+            });
+        }
+
+
+        // --- Acompanhar um aluno ---
+        let focoPrev = null;
+        function setFoco(login) { CFG.foco = login || ''; focoPrev = null; cfgSave(); renderFoco(); renderRankingMark(); }
+        function renderRankingMark() { document.querySelectorAll('.rank-item').forEach(el => el.classList.toggle('foco-sel', !!CFG.foco && el.dataset.login === CFG.foco)); }
+        function fillFocoSelect() {
+            const sel = document.getElementById('sel-foco'); if (!sel) return;
+            const list = [...state.alunos].sort((a, b) => String(a.nick || a.login).localeCompare(String(b.nick || b.login)));
+            const sig = list.map(a => a.login).join('|') + '#' + (CFG.foco || '');
+            if (sel.dataset.sig === sig) return; sel.dataset.sig = sig;
+            sel.innerHTML = '<option value="">👁 Acompanhar aluno…</option>' + list.map(a => `<option value="${esc(a.login)}"${a.login === CFG.foco ? ' selected' : ''}>${esc(a.nick || a.login)} (${esc(a.login)})</option>`).join('');
+        }
+        function mundosHtml(a) {
+            const m = a.mw || {}, ks = Object.keys(m); if (!ks.length) return '<div class="fc-sub">Ainda sem fases jogadas.</div>';
+            return ks.map(k => { const w = m[k], p = Math.min(100, Math.round(w.f / 10 * 100)); return `<div class="fc-li" style="display:block"><div style="display:flex;justify-content:space-between"><span>${esc(w.n || k)}</span><span>${w.f}/10 ✅ · ${w.i} começadas · ⭐${w.e}</span></div><div class="bar-container"><div class="bar-fill" style="width:${p}%"></div></div></div>`; }).join('');
+        }
+        function temasHtml(a) {
+            const t = a.temas || {}, ks = Object.keys(t); if (!ks.length) return '<div class="fc-sub">Ainda sem respostas.</div>';
+            return ks.sort((x, y) => t[y].n - t[x].n).map(k => { const p = t[k].n ? Math.round(t[k].ok / t[k].n * 100) : 0; return `<div class="fc-li" style="display:block"><div style="display:flex;justify-content:space-between"><span>${esc(k)}</span><span style="color:${p >= 75 ? 'var(--green)' : p >= 50 ? 'var(--gold-light)' : 'var(--red)'}">${p}% (${t[k].ok}/${t[k].n})</span></div><div class="bar-container"><div class="bar-fill" style="width:${p}%"></div></div></div>`; }).join('');
+        }
+        function renderFoco() {
+            const box = document.getElementById('foco'); fillFocoSelect();
+            const a = CFG.foco && state.alunos.find(x => x.login === CFG.foco);
+            if (!a) { box.className = ''; box.innerHTML = ''; focoPrev = null; return; }
+            const on = (state.agora - (Number(a.ultima) || 0)) < 300000;
+            const xp = Number(a.xp) || 0, rt = Number(a.resp) || 0, ro = Number(a.respOk) || 0;
+            const acc = rt ? Math.round(ro / rt * 100) : 0, pct = Math.round((Number(a.pct) || 0) * 100);
+            const pos = [...state.alunos].sort((p, q) => ordKey(q) - ordKey(p)).findIndex(x => x.login === a.login) + 1;
+            const vals = {saldo: formatMoney(a.cofrinho), moedas: a.moedas || 0, ganhas: a.ganhas || 0, fim: a.fim || 0, ini: a.ini || 0, pct: pct + '%', est: a.est || 0, acc: acc + '%', combo: a.combo || 0, mundos: a.mundos || 0, gasto: a.gasto || 0, vendido: a.vendido || 0, itens: a.itens || 0, xp: xp, resp: rt};
+            const card = (k, l, v) => `<div class="fc-card${focoPrev && focoPrev[k] !== vals[k] ? ' flash' : ''}"><small>${l}</small><b>${v}</b></div>`;
+            const ult = (state.recentes || []).filter(r => r.login === a.login).slice(0, 8);
+            box.innerHTML = `<div class="fc-top"><div><div class="fc-name">👁 ${esc(a.nick || a.login)} <span class="badge-status ${on ? 'badge-online' : 'badge-offline'}">${on ? '● Online' : '○ Offline'}</span></div><div class="fc-sub">${esc(a.serie || '')} • login ${esc(a.login)} • ${pos}º no ranking • Nível ${esc(a.nivel || 1)}</div></div><button class="fc-x" onclick="setFoco('')">✕ Parar de acompanhar</button></div>
+            <div class="fc-grid">${card('saldo','💰 Saldo (cofrinho)',vals.saldo)}${card('moedas','🪙 Moedas (agora)',vals.moedas)}${card('ganhas','🪙 Moedas ganhas',a.ganhas || 0)}${card('fim','✅ Fases concluídas',vals.fim)}${card('ini','🚩 Fases começadas',vals.ini)}${card('pct','📊 % concluído',vals.pct)}${card('xp','⭐ XP',xp.toLocaleString('pt-BR'))}${card('est','🌟 Estrelas',vals.est)}${card('acc','🎯 % de acertos',vals.acc + ' <small>' + ro + '/' + rt + '</small>')}${card('combo','🔥 Melhor sequência',vals.combo)}${card('mundos','🗺️ Mundos',vals.mundos)}${card('gasto','🛍️ Gasto na loja',vals.gasto + ' 🪙')}${card('vendido','🏷️ Vendido',vals.vendido + ' 🪙')}${card('itens','🎒 Itens',vals.itens)}</div>
+            <div class="fc-cols"><div class="fc-box"><h4>Progresso por mundo</h4>${mundosHtml(a)}</div><div class="fc-box"><h4>Desempenho por tema</h4>${temasHtml(a)}</div></div>
+            <div class="fc-cols"><div class="fc-box"><h4>Últimas respostas</h4>${ult.length ? ult.map(r => `<div class="fc-li"><span class="${r.ok ? 'ok' : 'no'}">${r.ok ? '✔' : '✘'}</span><span>${esc(r.tema || '')} • fase ${esc(r.fase)} <small style="color:var(--text-dim)">${esc(r.mundo || '')}</small></span></div>`).join('') : '<div class="fc-sub">Nenhuma resposta ainda.</div>'}</div>
+            <div class="fc-box"><h4>Últimas compras</h4>${(a.gastos && a.gastos.length) ? a.gastos.map(g => `<div class="fc-li"><span>🛍️</span><span>${esc(g.item || '')} <small style="color:var(--text-dim)">${esc(g.preco)} moedas</small></span></div>`).join('') : '<div class="fc-sub">Nada comprado ainda.</div>'}</div></div>`;
+            box.className = 'on'; focoPrev = vals;
+        }
+        document.addEventListener('click', e => { const r = e.target.closest && e.target.closest('.rank-item[data-login]'); if (r) { setFoco(CFG.foco === r.dataset.login ? '' : r.dataset.login); if (CFG.foco) window.scrollTo({top: 0, behavior: 'smooth'}); } });
+
         // --- Segurança e Formatação ---
         function esc(str) {
             if (str === null || str === undefined) return '';
@@ -1065,24 +1313,8 @@
         function processNewData(data) {
             const novosAlunos = Array.isArray(data.alunos) ? data.alunos : [];
             
-            // Detecta eventos para notificações e confetes
-            novosAlunos.forEach(aluno => {
-                const loginKey = aluno.login || aluno.nick || '';
-                if (!loginKey) return;
-
-                const old = state.prevData.get(loginKey);
-                if (old) {
-                    if (Number(aluno.nivel) > Number(old.nivel)) {
-                        showToast(`🎉 <strong>${esc(aluno.nick || 'Aluno')}</strong> subiu para o Nível ${aluno.nivel}!`);
-                        triggerConfetti();
-                    }
-                    if (Number(aluno.fim) > Number(old.fim)) {
-                        showToast(`🎯 <strong>${esc(aluno.nick || 'Aluno')}</strong> concluiu mais uma fase!`);
-                        triggerConfetti();
-                    }
-                }
-                state.prevData.set(loginKey, { ...aluno });
-            });
+            detectEvents(novosAlunos);
+            novosAlunos.forEach(aluno => { const k = aluno.login || aluno.nick; if (k) state.prevData.set(k, { ...aluno }); });
 
             state.alunos = novosAlunos;
             state.recentes = Array.isArray(data.recentes) ? data.recentes : [];
@@ -1098,6 +1330,8 @@
             renderFeed();
             renderEconomy();
             renderFilters();
+            renderFoco();
+            renderRankingMark();
         }
 
         function updateStats() {
@@ -1125,7 +1359,8 @@
                 return;
             }
 
-            const sorted = [...state.alunos].sort((a, b) => (Number(b.xp) || 0) - (Number(a.xp) || 0)).slice(0, 15);
+            const prevTop = new Map(); container.querySelectorAll('.rank-item[data-login]').forEach(el => prevTop.set(el.dataset.login, el.getBoundingClientRect().top));
+            const sorted = [...state.alunos].sort((a, b) => ordKey(b) - ordKey(a)).slice(0, CFG.top);
 
             container.innerHTML = sorted.map((a, i) => {
                 const isOnline = (state.agora - (Number(a.ultima) || 0)) < 300000;
@@ -1138,8 +1373,8 @@
                 const pctAcertos = respTotal > 0 ? Math.round((respOk / respTotal) * 100) : 0;
 
                 return `
-                    <div class="rank-item">
-                        <div class="rank-pos">${i + 1}º</div>
+                    <div class="rank-item ${(rankMove.get(a.login || a.nick) || {}).until > Date.now() ? ((rankMove.get(a.login || a.nick).d > 0) ? 'rk-up' : 'rk-down') : ''}" data-login="${esc(a.login || a.nick)}">
+                        <div class="rank-pos">${i + 1}º${(() => { const m = rankMove.get(a.login || a.nick); return m && m.until > Date.now() ? `<span class="mv ${m.d > 0 ? 'u' : 'd'}">${m.d > 0 ? '▲' : '▼'}${Math.abs(m.d)}</span>` : ''; })()}</div>
                         <div class="rank-student">
                             <div class="rank-nick-row">
                                 <span class="rank-nick" title="${esc(a.nick || a.login)}">${esc(a.nick || a.login)}</span>
@@ -1189,6 +1424,12 @@
                     </div>
                 `;
             }).join('');
+            if (CFG.anim) container.querySelectorAll('.rank-item[data-login]').forEach(el => {
+                const p = prevTop.get(el.dataset.login); if (p == null) return;
+                const dy = p - el.getBoundingClientRect().top; if (Math.abs(dy) < 2) return;
+                el.style.transition = 'none'; el.style.transform = `translateY(${dy}px)`; el.style.zIndex = 2;
+                requestAnimationFrame(() => requestAnimationFrame(() => { el.style.transition = 'transform .8s cubic-bezier(.2,.9,.3,1)'; el.style.transform = ''; }));
+            });
         }
 
         function renderProgress() {
@@ -1600,6 +1841,7 @@
             document.getElementById('btn-demo').textContent = 'Demo Ativa';
         }
 
+        cfgInit();
         initClock();
         startSyncLoop();
     </script>
