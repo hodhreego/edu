@@ -363,29 +363,39 @@
       function drawSkyAndCourt() {
         var courtY = h * 0.67;
 
-        // Sky
-        var skyGrad = ctx.createLinearGradient(0, 0, 0, courtY);
-        skyGrad.addColorStop(0, '#38bdf8');
-        skyGrad.addColorStop(1, '#bae6fd');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, w, courtY);
+        // Ginásio (cenário 3D) ou céu de reserva
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, w, courtY + 6, 'basquete', 0.5);
+        if (!bgOk) {
+          var skyGrad = ctx.createLinearGradient(0, 0, 0, courtY);
+          skyGrad.addColorStop(0, '#38bdf8');
+          skyGrad.addColorStop(1, '#bae6fd');
+          ctx.fillStyle = skyGrad;
+          ctx.fillRect(0, 0, w, courtY);
 
-        // Sun
-        ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(w * 0.85, h * 0.12, 45, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Clouds
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-        clouds.forEach(function (c) {
-          var cx = c.x * w, cy = c.y * h, s = c.s;
+          // Sun
+          ctx.fillStyle = '#fef08a';
           ctx.beginPath();
-          ctx.arc(cx, cy, 25 * s, 0, Math.PI * 2);
-          ctx.arc(cx + 20 * s, cy - 10 * s, 20 * s, 0, Math.PI * 2);
-          ctx.arc(cx + 40 * s, cy, 22 * s, 0, Math.PI * 2);
+          ctx.arc(w * 0.85, h * 0.12, 45, 0, Math.PI * 2);
           ctx.fill();
-        });
+
+          // Clouds
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+          clouds.forEach(function (c) {
+            var cx = c.x * w, cy = c.y * h, s = c.s;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 25 * s, 0, Math.PI * 2);
+            ctx.arc(cx + 20 * s, cy - 10 * s, 20 * s, 0, Math.PI * 2);
+            ctx.arc(cx + 40 * s, cy, 22 * s, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        // Transição suave para a quadra
+        var transB = ctx.createLinearGradient(0, courtY - 36, 0, courtY + 8);
+        transB.addColorStop(0, 'rgba(194,65,12,0)');
+        transB.addColorStop(1, 'rgba(194,65,12,0.92)');
+        ctx.fillStyle = transB;
+        ctx.fillRect(0, courtY - 36, w, 44);
 
         // Court Floor (Wood/Hardcourt)
         var courtGrad = ctx.createLinearGradient(0, courtY, 0, h);

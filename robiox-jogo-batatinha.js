@@ -306,10 +306,17 @@
         TOPY = H * 0.38; BOTY = H;
         var half = Math.min(W * 0.46, 330), cx = W / 2;
         ctx.clearRect(0, 0, W, H);
-        // céu e chão
-        var sky = ctx.createLinearGradient(0, 0, 0, TOPY + 40); sky.addColorStop(0, '#5ec2f2'); sky.addColorStop(1, '#bfe9ff');
-        ctx.fillStyle = sky; ctx.fillRect(0, 0, W, TOPY + 40);
+        // céu e chão (cenário 3D ou degradê de reserva)
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, TOPY + 10, 'batatinha', 0.5);
+        if (!bgOk) {
+          var sky = ctx.createLinearGradient(0, 0, 0, TOPY + 40); sky.addColorStop(0, '#5ec2f2'); sky.addColorStop(1, '#bfe9ff');
+          ctx.fillStyle = sky; ctx.fillRect(0, 0, W, TOPY + 40);
+        }
         ctx.fillStyle = '#7cb342'; ctx.fillRect(0, TOPY, W, H - TOPY);
+        var transBat = ctx.createLinearGradient(0, TOPY - 26, 0, TOPY + 8);
+        transBat.addColorStop(0, 'rgba(124,179,66,0)');
+        transBat.addColorStop(1, 'rgba(124,179,66,0.95)');
+        ctx.fillStyle = transBat; ctx.fillRect(0, TOPY - 26, W, 34);
         // pista
         ctx.fillStyle = '#9b8a6a'; ctx.beginPath(); ctx.moveTo(cx - trackX(TOPY, half), TOPY); ctx.lineTo(cx + trackX(TOPY, half), TOPY); ctx.lineTo(cx + trackX(BOTY, half), BOTY); ctx.lineTo(cx - trackX(BOTY, half), BOTY); ctx.closePath(); ctx.fill();
         // listras que rolam (sensação de avanço)

@@ -919,6 +919,28 @@
 #festas span{background:var(--card);border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:.82rem;color:var(--text-dim)}
 #festas span b{color:var(--text)}
 .fc-atual{background:var(--bg);border:1px dashed var(--accent);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:1.05rem}.fc-cod{background:var(--accent);color:#fff;border-radius:99px;padding:2px 10px;font-size:.8rem;font-weight:800;margin-left:6px}
+.games-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.games-summary .gs{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.games-summary .gs small{display:block;color:var(--text-dim);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.games-summary .gs b{font-size:1.6rem;display:block;line-height:1.2}
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.game-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;transition:transform .15s,border-color .15s}
+.game-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.game-card.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green),0 8px 24px rgba(16,185,129,.12)}
+.game-card .g-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.game-card .g-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg);flex:none}
+.game-card .g-name{font-weight:800;font-size:1rem;line-height:1.2}
+.game-card .g-sub{font-size:.76rem;color:var(--text-dim)}
+.game-card .g-live{position:absolute;top:12px;right:12px;font-size:.64rem;font-weight:900;letter-spacing:.06em;padding:3px 8px;border-radius:99px;background:var(--green);color:#052e1f;display:none}
+.game-card.on .g-live{display:block}
+.game-card .g-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.game-card .g-stats div{background:var(--bg);border-radius:8px;padding:6px 8px;text-align:center}
+.game-card .g-stats b{display:block;font-size:1.05rem}
+.game-card .g-stats small{font-size:.62rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em}
+.game-card .g-bar{height:6px;border-radius:99px;background:var(--bg);margin-top:10px;overflow:hidden}
+.game-card .g-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:99px}
+.game-card .g-last{font-size:.72rem;color:var(--text-dim);margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed-tag.game{background:rgba(139,92,246,.18);color:var(--accent-bright)}
     </style>
 </head>
 <body>
@@ -1006,7 +1028,8 @@
                 <button onclick="showSection('ranking')" id="btn-ranking" class="active">🏆 1. Ranking</button>
                 <button onclick="showSection('progress')" id="btn-progress">🗺️ 2. Progresso</button>
                 <button onclick="showSection('live')" id="btn-live">⚡ 3. Ao Vivo</button>
-                <button onclick="showSection('economy')" id="btn-economy">🪙 4. Loja e Cofrinho</button>
+                <button onclick="showSection('jogos')" id="btn-jogos">🎮 4. Jogos ao Vivo</button>
+                <button onclick="showSection('economy')" id="btn-economy">🪙 5. Loja e Cofrinho</button>
             </div>
 
             <div class="search-box">
@@ -1070,6 +1093,16 @@
         </section>
 
         <!-- 4. Loja e Economia -->
+        <!-- 4. Jogos ao Vivo -->
+        <section id="sec-jogos" class="section">
+            <div class="section-header">
+                <h2>🎮 Jogos ao Vivo</h2>
+                <span class="section-subtitle">Todos os jogos e minijogos: quem está jogando agora, respostas e taxa de acerto em tempo real</span>
+            </div>
+            <div class="games-summary" id="games-summary"></div>
+            <div class="games-grid" id="games-container"></div>
+        </section>
+
         <section id="sec-economy" class="section">
             <div class="section-header">
                 <h2>🪙 Loja e Economia RobIox</h2>
@@ -1108,7 +1141,7 @@
             hasLoadedOnce: false
         };
 
-        const sections = ['ranking', 'progress', 'live', 'economy'];
+        const sections = ['ranking', 'progress', 'live', 'jogos', 'economy'];
         let presentationInterval = null;
         let confettiAnimationId = null;
 
@@ -1399,6 +1432,7 @@
             renderRanking();
             renderProgress();
             renderFeed();
+            renderJogos();
             renderEconomy();
             renderFilters();
             renderFoco();
@@ -1597,11 +1631,115 @@
                                 ${r.mat ? `<span class="feed-tag">📚 ${esc(r.mat)}</span>` : ''}
                                 ${r.tema ? `<span class="feed-tag">🏷️ ${esc(r.tema)}</span>` : ''}
                             </div>
+                            ${r.mundo ? `<div style="font-size:.8rem;color:var(--accent-bright);font-weight:800;margin:2px 0">🎮 ${esc(r.mundo)}${r.fase ? ' · fase ' + esc(r.fase) : ''}</div>` : ''}
                             <div class="feed-question">"${esc(questao)}"</div>
                         </div>
                         <div class="feed-time">⏱️ ${time}</div>
                     </div>
                 `;
+            }).join('');
+        }
+
+        const JOGOS_CONHECIDOS = [
+            { n: 'Corrida das 3 pistas', i: '🏃' },
+            { n: 'Pênalti', i: '⚽' },
+            { n: 'Estoure o Balão', i: '🎈' },
+            { n: 'Portas Misteriosas', i: '🚪' },
+            { n: 'Cesta Certa', i: '🏀' },
+            { n: 'Quadro Gigante', i: '🧠' },
+            { n: 'Matemática Infinita', i: '♾️' },
+            { n: 'Corrida de Torre', i: '🏗️' },
+            { n: 'Batatinha Frita 1, 2, 3', i: '🥔' },
+            { n: 'Modo Infinito', i: '🔁' }
+        ];
+        function limpaJogo(s) {
+            return String(s || '').replace(/^[^A-Za-zÀ-ÿ0-9]+/, '').replace(/[\u{1F000}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu, '').trim();
+        }
+        function mesmoJogo(a, b) {
+            const n = s => limpaJogo(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            return n(a) === n(b);
+        }
+        function renderJogos() {
+            const cont = document.getElementById('games-container');
+            const sum = document.getElementById('games-summary');
+            if (!cont || !sum) return;
+            const agora = state.agora || Date.now();
+            const mapa = new Map();
+            const garante = (nome, ico) => {
+                const k = limpaJogo(nome);
+                if (!k) return null;
+                const achou = [...mapa.values()].find(g => mesmoJogo(g.nome, k));
+                if (achou) return achou;
+                const g = { nome: k, ico: ico || '🎮', jogando: 0, alunos: new Set(), resp: 0, ok: 0, ultima: 0, fase: 0, pergunta: '' };
+                mapa.set(k, g);
+                return g;
+            };
+            JOGOS_CONHECIDOS.forEach(j => garante(j.n, j.i));
+
+            state.alunos.forEach(a => {
+                if (!a.atual || !a.atual.nome) return;
+                if ((agora - (Number(a.ultima) || 0)) > 300000) return;
+                const g = garante(a.atual.nome, '🎮');
+                if (!g) return;
+                g.jogando++;
+                g.alunos.add(a.login || a.nick);
+                g.ultima = Math.max(g.ultima, Number(a.ultima) || 0);
+            });
+
+            (state.recentes || []).forEach(r => {
+                if (!r.mundo) return;
+                const g = garante(r.mundo, '🎮');
+                if (!g) return;
+                g.resp++;
+                if (r.ok) g.ok++;
+                if (r.login) g.alunos.add(r.login);
+                g.ultima = Math.max(g.ultima, Number(r.t) || 0);
+                if (r.fase && Number(r.fase) > g.fase) g.fase = Number(r.fase);
+                if (r.q) g.pergunta = String(r.q);
+            });
+
+            const lista = [...mapa.values()].sort((a, b) => (b.jogando - a.jogando) || (b.resp - a.resp) || (b.ultima - a.ultima));
+            const ativos = lista.filter(g => g.jogando > 0);
+            const totalResp = lista.reduce((s, g) => s + g.resp, 0);
+            const totalOk = lista.reduce((s, g) => s + g.ok, 0);
+            const jogandoAgora = lista.reduce((s, g) => s + g.jogando, 0);
+            const acc = totalResp ? Math.round(totalOk / totalResp * 100) : 0;
+
+            sum.innerHTML = `
+                <div class="gs"><small>Jogos com alunos agora</small><b style="color:var(--green)">${ativos.length}</b></div>
+                <div class="gs"><small>Alunos jogando</small><b>${jogandoAgora}</b></div>
+                <div class="gs"><small>Respostas no feed</small><b>${totalResp}</b></div>
+                <div class="gs"><small>Acertos no feed</small><b style="color:${acc >= 75 ? 'var(--green)' : acc >= 50 ? 'var(--gold-light)' : 'var(--red)'}">${acc}%</b></div>`;
+
+            const quando = t => {
+                if (!t) return 'sem atividade ainda';
+                const d = Math.max(0, agora - t);
+                if (d < 45000) return 'agora mesmo';
+                if (d < 3600000) return `há ${Math.max(1, Math.round(d / 60000))} min`;
+                return new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            };
+
+            cont.innerHTML = lista.map(g => {
+                const pct = g.resp ? Math.round(g.ok / g.resp * 100) : 0;
+                const on = g.jogando > 0 || (agora - g.ultima) < 120000;
+                return `
+                    <div class="game-card ${on ? 'on' : ''}">
+                        <span class="g-live">● AO VIVO</span>
+                        <div class="g-top">
+                            <div class="g-ico">${g.ico}</div>
+                            <div>
+                                <div class="g-name">${esc(g.nome)}</div>
+                                <div class="g-sub">${g.alunos.size} aluno(s) · ${g.fase ? 'fase ' + g.fase : 'sem fase'}</div>
+                            </div>
+                        </div>
+                        <div class="g-stats">
+                            <div><b>${g.jogando}</b><small>jogando</small></div>
+                            <div><b>${g.resp}</b><small>respostas</small></div>
+                            <div><b>${g.resp ? pct + '%' : '—'}</b><small>acertos</small></div>
+                        </div>
+                        <div class="g-bar"><i style="width:${g.resp ? pct : 0}%"></i></div>
+                        <div class="g-last" title="${esc(g.pergunta || '')}">${g.pergunta ? '“' + esc(g.pergunta) + '”' : quando(g.ultima)}</div>
+                    </div>`;
             }).join('');
         }
 
@@ -1808,6 +1946,7 @@
                 "Em que ano ocorreu a Independência?", "Qual é a raiz quadrada de 81?", "Resolva 15 + 27"
             ];
 
+            const demoJogos = ['Pênalti', 'Estoure o Balão', 'Portas Misteriosas', 'Cesta Certa', 'Quadro Gigante', 'Matemática Infinita', 'Corrida de Torre', 'Batatinha Frita 1, 2, 3', 'Corrida das 3 pistas'];
             if (state.alunos.length === 0) {
                 state.alunos = demoNomes.map((n, i) => {
                     const nivel = Math.floor(Math.random() * 8) + 1;
@@ -1829,7 +1968,8 @@
                         resp: resp,
                         respOk: respOk,
                         ultima: Date.now() - (Math.random() * 200000),
-                        combo: Math.floor(Math.random() * 12) + 1
+                        combo: Math.floor(Math.random() * 12) + 1,
+                        atual: { cod: 'RBX-demo' + i, nome: demoJogos[i % demoJogos.length] }
                     };
                 });
             } else {
@@ -1862,6 +2002,8 @@
                 nick: alunoSorteado.nick,
                 mat: subjects[Math.floor(Math.random() * subjects.length)],
                 tema: topics[Math.floor(Math.random() * topics.length)],
+                mundo: demoJogos[Math.floor(Math.random() * demoJogos.length)],
+                fase: Math.floor(Math.random() * 5) + 1,
                 q: questions[Math.floor(Math.random() * questions.length)],
                 ok: Math.random() > 0.25
             });
@@ -1888,7 +2030,7 @@
 
         window.addEventListener('keydown', (e) => {
             // Teclas 1 a 4 mudam as seções
-            if (['1', '2', '3', '4'].includes(e.key)) {
+            if (['1', '2', '3', '4', '5'].includes(e.key)) {
                 const index = parseInt(e.key, 10) - 1;
                 showSection(sections[index]);
             }

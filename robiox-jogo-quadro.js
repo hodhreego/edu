@@ -483,40 +483,43 @@
       }
 
       function drawRoom() {
-        // Céu
-        var skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
-        skyGrad.addColorStop(0, '#4FC3F7');
-        skyGrad.addColorStop(1, '#B3E5FC');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, W, H * 0.6);
+        // Parede da sala (cenário 3D) ou céu de reserva
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, H * 0.58, 'quadro', 0.5);
+        if (!bgOk) {
+          var skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+          skyGrad.addColorStop(0, '#4FC3F7');
+          skyGrad.addColorStop(1, '#B3E5FC');
+          ctx.fillStyle = skyGrad;
+          ctx.fillRect(0, 0, W, H * 0.6);
 
-        // Sol e Nuvens
-        ctx.fillStyle = '#FFF9C4';
-        ctx.beginPath();
-        ctx.arc(W * 0.15, H * 0.12, 35, 0, Math.PI * 2);
-        ctx.fill();
+          // Sol e Nuvens
+          ctx.fillStyle = '#FFF9C4';
+          ctx.beginPath();
+          ctx.arc(W * 0.15, H * 0.12, 35, 0, Math.PI * 2);
+          ctx.fill();
 
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.beginPath();
-        ctx.arc(W * 0.8, H * 0.15, 30, 0, Math.PI * 2);
-        ctx.arc(W * 0.85, H * 0.13, 40, 0, Math.PI * 2);
-        ctx.arc(W * 0.9, H * 0.15, 30, 0, Math.PI * 2);
-        ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.7)';
+          ctx.beginPath();
+          ctx.arc(W * 0.8, H * 0.15, 30, 0, Math.PI * 2);
+          ctx.arc(W * 0.85, H * 0.13, 40, 0, Math.PI * 2);
+          ctx.arc(W * 0.9, H * 0.15, 30, 0, Math.PI * 2);
+          ctx.fill();
 
-        // Olho decorativo no topo (estilo Roblox)
-        var eyeY = H * 0.08;
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.ellipse(W * 0.5, eyeY, 40, 22, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#1E3A8A';
-        ctx.lineWidth = 4;
-        ctx.stroke();
+          // Olho decorativo no topo (estilo Roblox)
+          var eyeY = H * 0.08;
+          ctx.fillStyle = '#FFFFFF';
+          ctx.beginPath();
+          ctx.ellipse(W * 0.5, eyeY, 40, 22, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#1E3A8A';
+          ctx.lineWidth = 4;
+          ctx.stroke();
 
-        ctx.fillStyle = '#0284C7';
-        ctx.beginPath();
-        ctx.arc(W * 0.5 + Math.sin(Date.now() * 0.003) * 6, eyeY, 12, 0, Math.PI * 2);
-        ctx.fill();
+          ctx.fillStyle = '#0284C7';
+          ctx.beginPath();
+          ctx.arc(W * 0.5 + Math.sin(Date.now() * 0.003) * 6, eyeY, 12, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         // Piso com perspectiva de azulejos claros
         var floorY = H * 0.55;

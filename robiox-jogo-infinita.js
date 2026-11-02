@@ -548,37 +548,40 @@
         ctx.scale(dpr, dpr);
         ctx.translate(sx, sy);
 
-        // Céu com gradiente alegre
-        var skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-        skyGrad.addColorStop(0, '#29b6f6');
-        skyGrad.addColorStop(0.5, '#81d4fa');
-        skyGrad.addColorStop(1, '#b3e5fc');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, W, H);
-
         horizonY = H * 0.44;
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, H, 'infinita', 0.5);
 
-        // Sol brilhante
-        ctx.fillStyle = '#fff59d';
-        ctx.beginPath();
-        ctx.arc(W * 0.85, horizonY * 0.4, 55, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(255, 235, 59, 0.3)';
-        ctx.beginPath();
-        ctx.arc(W * 0.85, horizonY * 0.4, 75, 0, Math.PI * 2);
-        ctx.fill();
+        if (!bgOk) {
+          // Céu com gradiente alegre
+          var skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+          skyGrad.addColorStop(0, '#29b6f6');
+          skyGrad.addColorStop(0.5, '#81d4fa');
+          skyGrad.addColorStop(1, '#b3e5fc');
+          ctx.fillStyle = skyGrad;
+          ctx.fillRect(0, 0, W, H);
 
-        drawClouds(now * 0.001);
+          // Sol brilhante
+          ctx.fillStyle = '#fff59d';
+          ctx.beginPath();
+          ctx.arc(W * 0.85, horizonY * 0.4, 55, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255, 235, 59, 0.3)';
+          ctx.beginPath();
+          ctx.arc(W * 0.85, horizonY * 0.4, 75, 0, Math.PI * 2);
+          ctx.fill();
 
-        // Ilhas e montanhas no fundo
-        ctx.fillStyle = '#80deea';
-        ctx.beginPath();
-        ctx.moveTo(0, horizonY);
-        ctx.lineTo(W * 0.2, horizonY - 40);
-        ctx.lineTo(W * 0.45, horizonY);
-        ctx.lineTo(W * 0.7, horizonY - 55);
-        ctx.lineTo(W, horizonY);
-        ctx.fill();
+          drawClouds(now * 0.001);
+
+          // Ilhas e montanhas no fundo
+          ctx.fillStyle = '#80deea';
+          ctx.beginPath();
+          ctx.moveTo(0, horizonY);
+          ctx.lineTo(W * 0.2, horizonY - 40);
+          ctx.lineTo(W * 0.45, horizonY);
+          ctx.lineTo(W * 0.7, horizonY - 55);
+          ctx.lineTo(W, horizonY);
+          ctx.fill();
+        }
 
         // Perspectiva da Pista Suspensa
         var pFarLeft = project3D(0, currentQ.numLanes, 3.5);

@@ -267,27 +267,36 @@
         ctx.save();
         if (shake > 1) ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
 
-        // Sky
-        var g = ctx.createLinearGradient(0, 0, 0, hor);
-        g.addColorStop(0, '#009FFF'); g.addColorStop(1, '#40E0D0');
-        ctx.fillStyle = g; ctx.fillRect(0, 0, W, hor);
+        // Cenário da pista (ou céu de reserva)
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, hor + 6, 'corrida', 0.5);
+        if (!bgOk) {
+          // Sky
+          var g = ctx.createLinearGradient(0, 0, 0, hor);
+          g.addColorStop(0, '#009FFF'); g.addColorStop(1, '#40E0D0');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, hor);
 
-        // Sun
-        ctx.fillStyle = 'rgba(255,255,200,0.3)'; ctx.beginPath(); ctx.arc(W*0.8, 80, 100, 0, 7); ctx.fill();
-        ctx.fillStyle = '#FFFFAA'; ctx.beginPath(); ctx.arc(W*0.8, 80, 40, 0, 7); ctx.fill();
+          // Sun
+          ctx.fillStyle = 'rgba(255,255,200,0.3)'; ctx.beginPath(); ctx.arc(W*0.8, 80, 100, 0, 7); ctx.fill();
+          ctx.fillStyle = '#FFFFAA'; ctx.beginPath(); ctx.arc(W*0.8, 80, 40, 0, 7); ctx.fill();
 
-        // Clouds
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        clouds.forEach(function(c){
-          ctx.beginPath(); ctx.arc(c.x, c.y, 30*c.s, 0, 7); ctx.arc(c.x+35*c.s, c.y-10*c.s, 25*c.s, 0, 7); ctx.arc(c.x+60*c.s, c.y, 30*c.s, 0, 7); ctx.fill();
-        });
+          // Clouds
+          ctx.fillStyle = 'rgba(255,255,255,0.8)';
+          clouds.forEach(function(c){
+            ctx.beginPath(); ctx.arc(c.x, c.y, 30*c.s, 0, 7); ctx.arc(c.x+35*c.s, c.y-10*c.s, 25*c.s, 0, 7); ctx.arc(c.x+60*c.s, c.y, 30*c.s, 0, 7); ctx.fill();
+          });
 
-        // Mountains
-        ctx.fillStyle = '#4DB6AC';
-        for(var i=0; i<4; i++) {
-          var mx = (i*W/3 + animTime*2) % (W+400) - 200;
-          ctx.beginPath(); ctx.moveTo(mx, hor); ctx.lineTo(mx+150, hor-80); ctx.lineTo(mx+300, hor); ctx.fill();
+          // Mountains
+          ctx.fillStyle = '#4DB6AC';
+          for(var i=0; i<4; i++) {
+            var mx = (i*W/3 + animTime*2) % (W+400) - 200;
+            ctx.beginPath(); ctx.moveTo(mx, hor); ctx.lineTo(mx+150, hor-80); ctx.lineTo(mx+300, hor); ctx.fill();
+          }
         }
+
+        var transCor = ctx.createLinearGradient(0, hor - 30, 0, hor + 8);
+        transCor.addColorStop(0, 'rgba(46,125,50,0)');
+        transCor.addColorStop(1, 'rgba(46,125,50,0.92)');
+        ctx.fillStyle = transCor; ctx.fillRect(0, hor - 30, W, 38);
 
         // Ground
         ctx.fillStyle = '#2E7D32'; ctx.fillRect(0, hor, W, H-hor);

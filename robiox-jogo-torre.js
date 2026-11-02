@@ -400,29 +400,32 @@
             ctx.translate((Math.random() - 0.5) * mag, (Math.random() - 0.5) * mag);
           }
 
-          // Céu
-          var skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.8);
-          skyGrad.addColorStop(0, '#29b6f6');
-          skyGrad.addColorStop(1, '#e1f5fe');
-          ctx.fillStyle = skyGrad;
-          ctx.fillRect(0, 0, W, H);
+          // Cenário de obra ao pôr do sol (ou céu de reserva)
+          var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, H, 'torre', 0.5);
+          if (!bgOk) {
+            var skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.8);
+            skyGrad.addColorStop(0, '#29b6f6');
+            skyGrad.addColorStop(1, '#e1f5fe');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, W, H);
 
-          // Sol
-          ctx.fillStyle = '#fff176';
-          ctx.beginPath();
-          ctx.arc(W * 0.85, H * 0.15, Math.min(W, H) * 0.08, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Nuvens
-          ctx.fillStyle = 'rgba(255,255,255,0.85)';
-          for (var ci = 0; ci < clouds.length; ci++) {
-            var cl = clouds[ci];
-            var cw = Math.min(W, H) * 0.18 * cl.s;
+            // Sol
+            ctx.fillStyle = '#fff176';
             ctx.beginPath();
-            ctx.arc(cl.x * W, cl.y * H, cw * 0.4, 0, Math.PI * 2);
-            ctx.arc(cl.x * W + cw * 0.3, cl.y * H - cw * 0.1, cw * 0.45, 0, Math.PI * 2);
-            ctx.arc(cl.x * W + cw * 0.6, cl.y * H, cw * 0.35, 0, Math.PI * 2);
+            ctx.arc(W * 0.85, H * 0.15, Math.min(W, H) * 0.08, 0, Math.PI * 2);
             ctx.fill();
+
+            // Nuvens
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            for (var ci = 0; ci < clouds.length; ci++) {
+              var cl = clouds[ci];
+              var cw = Math.min(W, H) * 0.18 * cl.s;
+              ctx.beginPath();
+              ctx.arc(cl.x * W, cl.y * H, cw * 0.4, 0, Math.PI * 2);
+              ctx.arc(cl.x * W + cw * 0.3, cl.y * H - cw * 0.1, cw * 0.45, 0, Math.PI * 2);
+              ctx.arc(cl.x * W + cw * 0.6, cl.y * H, cw * 0.35, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
 
           // Zona do meio (Torres e Lava)

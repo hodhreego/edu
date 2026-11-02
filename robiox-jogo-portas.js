@@ -272,19 +272,25 @@
         var reservedTop = bm.reservedTop;
         var availH = h - reservedTop;
 
-        // Castle wall gradient
-        var grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, '#150d2a');
-        grad.addColorStop(0.5, '#261746');
-        grad.addColorStop(1, '#0d071b');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
+        // Castle wall (cenário 3D) ou degradê de reserva
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, w, h, 'portas', 0.5, 0.9);
+        if (!bgOk) {
+          var grad = ctx.createLinearGradient(0, 0, 0, h);
+          grad.addColorStop(0, '#150d2a');
+          grad.addColorStop(0.5, '#261746');
+          grad.addColorStop(1, '#0d071b');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
+        } else {
+          ctx.fillStyle = 'rgba(10, 6, 22, 0.28)';
+          ctx.fillRect(0, 0, w, h);
+        }
 
         // Perspective floor
         var floorY = doors.length > 0 ? (doors[0].y - 8) : (reservedTop + availH * 0.55);
         var floorGrad = ctx.createLinearGradient(0, floorY, 0, h);
-        floorGrad.addColorStop(0, '#1a1829');
-        floorGrad.addColorStop(1, '#090810');
+        floorGrad.addColorStop(0, 'rgba(26,24,41,0.45)');
+        floorGrad.addColorStop(1, 'rgba(9,8,16,0.72)');
         ctx.fillStyle = floorGrad;
         ctx.beginPath();
         ctx.moveTo(0, floorY);

@@ -452,31 +452,35 @@
       }
 
       function drawSky() {
-        var grad = ctx.createLinearGradient(0, 0, 0, H);
-        grad.addColorStop(0, '#4fc3f7');
-        grad.addColorStop(0.6, '#b3e5fc');
-        grad.addColorStop(1, '#e1f5fe');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, W, H);
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, H, 'baloes', 0.5);
 
-        ctx.beginPath();
-        ctx.arc(W - 80, 80, 42, 0, Math.PI * 2);
-        ctx.fillStyle = '#fff176';
-        ctx.shadowColor = '#fbc02d';
-        ctx.shadowBlur = 20;
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        if (!bgOk) {
+          var grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, '#4fc3f7');
+          grad.addColorStop(0.6, '#b3e5fc');
+          grad.addColorStop(1, '#e1f5fe');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-        for (var i = 0; i < clouds.length; i++) {
-          var c = clouds[i];
-          c.x += c.spd;
-          if (c.x > W + 100) c.x = -100;
           ctx.beginPath();
-          ctx.arc(c.x, c.y, 25 * c.s, 0, Math.PI * 2);
-          ctx.arc(c.x + 20 * c.s, c.y - 10 * c.s, 22 * c.s, 0, Math.PI * 2);
-          ctx.arc(c.x + 40 * c.s, c.y, 20 * c.s, 0, Math.PI * 2);
+          ctx.arc(W - 80, 80, 42, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff176';
+          ctx.shadowColor = '#fbc02d';
+          ctx.shadowBlur = 20;
           ctx.fill();
+          ctx.shadowBlur = 0;
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+          for (var i = 0; i < clouds.length; i++) {
+            var c = clouds[i];
+            c.x += c.spd;
+            if (c.x > W + 100) c.x = -100;
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 25 * c.s, 0, Math.PI * 2);
+            ctx.arc(c.x + 20 * c.s, c.y - 10 * c.s, 22 * c.s, 0, Math.PI * 2);
+            ctx.arc(c.x + 40 * c.s, c.y, 20 * c.s, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
 
         for (var k = 0; k < kites.length; k++) {

@@ -639,40 +639,51 @@
           ctx.translate(ox, oy);
         }
 
-        // Céu Degradê
-        var skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.5);
-        skyGrad.addColorStop(0, '#2980b9');
-        skyGrad.addColorStop(1, '#6dd5fa');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, W, H);
+        var fieldY = H * 0.38;
+        var bgOk = window.RBX_CENA && RBX_CENA.fundo(ctx, 0, 0, W, fieldY + 10, 'penalti', 0.35);
 
-        // Sol brilhante
-        ctx.fillStyle = '#fff7b2';
-        ctx.beginPath();
-        ctx.arc(W * 0.85, H * 0.12, 45, 0, Math.PI * 2);
-        ctx.fill();
+        if (!bgOk) {
+          // Céu Degradê
+          var skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.5);
+          skyGrad.addColorStop(0, '#2980b9');
+          skyGrad.addColorStop(1, '#6dd5fa');
+          ctx.fillStyle = skyGrad;
+          ctx.fillRect(0, 0, W, H);
 
-        // Arquibancada com torcida
-        var standY = H * 0.22;
-        var standH = H * 0.18;
-        ctx.fillStyle = '#2c3e50';
-        ctx.fillRect(0, standY, W, standH);
+          // Sol brilhante
+          ctx.fillStyle = '#fff7b2';
+          ctx.beginPath();
+          ctx.arc(W * 0.85, H * 0.12, 45, 0, Math.PI * 2);
+          ctx.fill();
 
-        // Cabeças da torcida balançando
-        var crowdCols = ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71', '#ffffff', '#e67e22'];
-        for (var cx = 15; cx < W; cx += 22) {
-          for (var row = 0; row < 3; row++) {
-            var cy = standY + 18 + row * 22;
-            var jmp = (state === 'RESULT_OK' || (cx % 3 === 0)) ? Math.sin(crowdJump + cx) * 5 : 0;
-            ctx.fillStyle = crowdCols[(cx + row * 3) % crowdCols.length];
-            ctx.beginPath();
-            ctx.arc(cx, cy + jmp, 7, 0, Math.PI * 2);
-            ctx.fill();
+          // Arquibancada com torcida
+          var standY = H * 0.22;
+          var standH = H * 0.18;
+          ctx.fillStyle = '#2c3e50';
+          ctx.fillRect(0, standY, W, standH);
+
+          // Cabeças da torcida balançando
+          var crowdCols = ['#e74c3c', '#f1c40f', '#3498db', '#2ecc71', '#ffffff', '#e67e22'];
+          for (var cx = 15; cx < W; cx += 22) {
+            for (var row = 0; row < 3; row++) {
+              var cy = standY + 18 + row * 22;
+              var jmp = (state === 'RESULT_OK' || (cx % 3 === 0)) ? Math.sin(crowdJump + cx) * 5 : 0;
+              ctx.fillStyle = crowdCols[(cx + row * 3) % crowdCols.length];
+              ctx.beginPath();
+              ctx.arc(cx, cy + jmp, 7, 0, Math.PI * 2);
+              ctx.fill();
+            }
           }
         }
 
+        // Transição suave entre o cenário e o gramado
+        var trans = ctx.createLinearGradient(0, fieldY - 40, 0, fieldY + 12);
+        trans.addColorStop(0, 'rgba(39,174,96,0)');
+        trans.addColorStop(1, 'rgba(39,174,96,0.95)');
+        ctx.fillStyle = trans;
+        ctx.fillRect(0, fieldY - 40, W, 52);
+
         // Gramado Degradê
-        var fieldY = H * 0.38;
         var grassGrad = ctx.createLinearGradient(0, fieldY, 0, H);
         grassGrad.addColorStop(0, '#27ae60');
         grassGrad.addColorStop(0.3, '#2ecc71');
