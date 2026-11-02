@@ -25,7 +25,8 @@
       var colors = api.avatarColors || { skin: '#ffcc88', shirt: '#29b6f6', pants: '#1e88e5', hair: '#5d4037' };
 
       var state = 'COUNTDOWN'; // COUNTDOWN, WAIT, SINGING, TURNING, QUESTION, FEEDBACK, GAMEOVER, VICTORY
-      var lives = 3, progress = 0, combo = 0, coins = 0, hits = 0;
+      var lives = 3, progress = 0, combo = 0, coins = 0, hits = 0, qNum = 0, usadas = {};
+      var TOTAL = 10;
       var timer = 3, dollRot = 0;
       var SYL = ['Ba', 'ta', 'ti', 'nha ', 'fri', 'ta ', '1, ', '2, ', '3!'];
       var FRASE = 'Batatinha frita 1, 2, 3!';
@@ -104,7 +105,9 @@
         try {
           var topics = api.topics ? api.topics() : ['Geral'];
           var top = topics[Math.floor(Math.random() * topics.length)];
-          var qObj = api.B.make(api.ANO || 6, top, api.tier ? api.tier() : 1);
+          var qObj, tent = 0;
+          do { top = topics[Math.floor(Math.random() * topics.length)]; qObj = api.B.make(api.ANO || 6, top, api.tier ? api.tier() : 1); tent++; } while (usadas[String(qObj.q)] && tent < 30);
+          usadas[String(qObj.q)] = 1;
           var easy = api.easy ? api.easy() : false;
           var opts = [String(qObj.a)], wr = (qObj.d || []).slice(0).sort(function () { return Math.random() - 0.5; });
           for (var i = 0; i < (easy ? 1 : 2); i++) opts.push(wr[i] !== undefined ? String(wr[i]) : String(i + 1));
@@ -159,7 +162,7 @@
         if (LIVE) { state = 'WAIT'; nextStart = Math.ceil(sNow() / CYCLE) * CYCLE; }
         else beginSing();
       }
-      function resetGame() { lives = 3; progress = 0; combo = 0; coins = 0; hits = 0; state = 'COUNTDOWN'; timer = 3; dollRot = 0; calar(); }
+      function resetGame() { lives = 3; progress = 0; combo = 0; coins = 0; hits = 0; qNum = 0; usadas = {}; state = 'COUNTDOWN'; timer = 3; dollRot = 0; calar(); }
       function closeGame() {
         if (destroyed) return;
         destroyed = true; calar();
@@ -179,8 +182,7 @@
           try { api.gain(5 + combo, 1); } catch (e) {}
           feedbackOk = true; feedbackText = 'Muito bem! Pode voltar a correr.'; feedbackTimer = 1.1; confetti(); beep(880, 0.15, 'triangle'); beep(1175, 0.2, 'triangle');
         } else {
-          combo = 0; lives--; progress = Math.max(0, progress - 12);
-          feedbackOk = false; feedbackText = currentQ.e || ('A resposta certa era ' + currentQ.a); feedbackTimer = 2.8; beep(180, 0.35, 'sawtooth');
+          combo = 0; feedbackOk = false; feedbackText = currentQ.e || ('A resposta certa era ' + currentQ.a); feedbackTimer = 2.8; beep(180, 0.35, 'sawtooth');
         }
         state = 'FEEDBACK';
       }
@@ -245,8 +247,8 @@
           sylIdx = Math.min(SYL.length - 1, Math.floor((singElapsed / singDuration) * SYL.length));
           var run = holding || keys.Space || keys.ArrowUp || keys.KeyD || keys.KeyW || padRun;
           if (run) {
-            progress += dt * 10; runAnim += dt * 14; stripe += dt * 260;
-            if (progress >= 100) { progress = 100; state = 'VICTORY'; calar(); confetti(); try { api.gain(50, 10); api.say('Chegou! 🏁', 1500); } catch (e) {} }
+            progress = Math.min((qNum + 1) * 10, progress + dt * 3.2); runAnim += dt * 14; stripe += dt * 260;
+            
           }
           if (state === 'SINGING' && singElapsed >= singDuration) { state = 'TURNING'; timer = 0.6; siren(); }
         } else if (state === 'TURNING') {
@@ -255,13 +257,13 @@
         } else if (state === 'QUESTION') {
           timer -= dt;
           if (timer <= 0) {
-            lives--; combo = 0; progress = Math.max(0, progress - 12);
+            combo = 0;
             try { api.log(currentQ.raw, false, 1); } catch (e) {}
             feedbackOk = false; feedbackText = 'Tempo esgotado! ' + (currentQ.e || ('Resposta: ' + currentQ.a)); feedbackTimer = 2.8; state = 'FEEDBACK'; beep(180, 0.35, 'sawtooth');
           }
         } else if (state === 'FEEDBACK') {
           feedbackTimer -= dt;
-          if (feedbackTimer <= 0) { if (lives <= 0) { state = 'GAMEOVER'; } else toNextRound(); }
+          if (feedbackTimer <= 0) { qNum++; if (qNum >= TOTAL) { progress = 100; state = 'VICTORY'; calar(); confetti(); try { api.gain(hits * 5, hits); api.say('Nota ' + hits + '/10', 2500); } catch (e) {} } else toNextRound(); }
         }
         if (state === 'SINGING' || state === 'WAIT' || state === 'COUNTDOWN') dollRot = Math.max(0, dollRot - dt * 4);
         for (var i = particles.length - 1; i >= 0; i--) { var p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.4; p.life -= dt; if (p.life <= 0) particles.splice(i, 1); }
@@ -344,8 +346,8 @@
         ctx.textAlign = 'left';
         rr(16, 14, Math.min(W - 90, 300), 30, 15, 'rgba(0,0,0,.45)');
         var bw = Math.min(W - 90, 300) - 4; rr(18, 16, Math.max(26, bw * progress / 100), 26, 13, '#4caf50');
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Arial'; ctx.fillText('PROGRESSO ' + Math.floor(progress) + '%', 30, 35);
-        ctx.font = '26px Arial'; for (var h = 0; h < 3; h++) ctx.fillText(h < lives ? '❤️' : '🖤', 16 + h * 34, 76);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Arial'; ctx.fillText('PERGUNTA ' + Math.min(TOTAL, qNum + 1) + '/' + TOTAL, 30, 35);
+        ctx.font = 'bold 20px Arial'; ctx.fillText('✅ Acertos: ' + hits, 16, 70);
         ctx.font = 'bold 15px Arial'; ctx.fillStyle = '#fff'; ctx.fillText('🪙 ' + coins, 16, 100);
 
         // ranking ao vivo
@@ -424,8 +426,8 @@
         if (state === 'GAMEOVER' || state === 'VICTORY') {
           ctx.fillStyle = 'rgba(0,0,0,.85)'; ctx.fillRect(0, 0, W, H);
           ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = 'bold ' + Math.min(52, W / 8) + 'px Arial';
-          ctx.fillText(state === 'VICTORY' ? 'VITÓRIA! 🎉' : 'FIM DE JOGO 💀', cx, H * 0.28);
-          ctx.font = Math.min(26, W / 16) + 'px Arial'; ctx.fillText('Progresso: ' + Math.floor(progress) + '%   ·   Acertos: ' + hits + '   ·   🪙 ' + coins, cx, H * 0.38);
+          ctx.fillText('FIM! 🎉', cx, H * 0.26);
+          ctx.font = Math.min(26, W / 16) + 'px Arial'; ctx.fillText('Acertos: ' + hits + ' de ' + TOTAL, cx, H * 0.35); ctx.font = 'bold ' + Math.min(48, W / 8) + 'px Arial'; ctx.fillStyle = '#ffeb3b'; ctx.fillText('NOTA ' + hits + ' / 10', cx, H * 0.43);
           btnRects.again = { x: cx - 130, y: H * 0.5, w: 260, h: 62 }; btnRects.exit = { x: cx - 130, y: H * 0.62, w: 260, h: 62 };
           rr(btnRects.again.x, btnRects.again.y, 260, 62, 16, '#43a047'); rr(btnRects.exit.x, btnRects.exit.y, 260, 62, 16, '#e53935');
           ctx.fillStyle = '#fff'; ctx.font = 'bold 26px Arial'; ctx.fillText('Jogar de novo', cx, H * 0.5 + 40); ctx.fillText('Sair', cx, H * 0.62 + 40);
