@@ -365,7 +365,7 @@ function onRight(p){streak++;if(streak%3===0)setTimeout(function(){try{bigNote()
   sks(q.topic,skg(q.topic)+(first?.35:.05));if(!first&&stErr[i]>=2)ST.stat.volta++;
   var xp=Math.round((10+(first?5:0))*(1+.1*Math.min(combo,10)));gain(xp,0);beep(880,.2,'square');setTimeout(function(){beep(1175,.2,'square')},120);conf(14);
   say('✅ '+pick(GOOD)+' +'+xp+' XP'+(combo>=3?' · COMBO x'+combo:''),1500);paint(p,0x16a34a);hud();bdg()}
-function onWrong(p){streak=0;logResp(p,0);var i=p.st,q=stageQ[i];errs++;stErr[i]++;combo=0;sks(q.topic,skg(q.topic)-.5);rvq.push({t:q.topic,due:i+2});dirty[i]=true;if(stErr[i]>=2)easy[i]=true;
+function onWrong(p){streak=0;logResp(p,0);var i=p.st,q=stageQ[i];errs++;stErr[i]++;combo=0;if(errs<=3)setTimeout(function(){try{say('🦘 Pulo mais alto! (+'+(errs>3?42:errs*14)+'%)',2200)}catch(e){}},1400);sks(q.topic,skg(q.topic)-.5);rvq.push({t:q.topic,due:i+2});dirty[i]=true;if(stErr[i]>=2)easy[i]=true;
   beep(160,.4,'sawtooth');paint(p,0xdc2626);
   say('❌ '+pick(TRY)+'\n💡 '+(q.e||('A resposta era '+q.a))+(stErr[i]>=2?'\nVou facilitar: menos opções!':''),4200);hud()}
 var BS={
