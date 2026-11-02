@@ -34,6 +34,7 @@ function doPost(e) {
   try { d = JSON.parse(e.postData.contents); } catch (err) { return ok_('json inválido'); }
   if (d.acao === 'pontos') return rkPontos_(d);
   if (d.acao === 'rbxsave') return rbxSave_(d);
+  if (d.acao === 'rbxresp') return rbxResp_(d);
   var lock = LockService.getScriptLock();
   try { lock.waitLock(100000); } catch (err) { return ok_('ocupado'); }
   try { return gravaResultado_(d); } finally { lock.releaseLock(); }
@@ -381,4 +382,28 @@ function rbxLoad_(p) {
     for (var i = 0; i < v.length; i++) if (v[i][0] === login) { try { out = { ok: 1, ts: Number(v[i][1]), st: JSON.parse(v[i][2]) }; } catch (e) {} break; }
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+// Registro de cada resposta dos alunos no RobIox (aba "RobIox-Respostas")
+function rbxResp_(d) {
+  var login = String(d.login || '').toLowerCase();
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste)$/.test(login)) return ok_('login inválido');
+  var its = d.itens || [];
+  if (!its.length || its.length > 200) return ok_('vazio');
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
+  try {
+    var ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName('RobIox-Respostas');
+    if (!sh) {
+      sh = ss.insertSheet('RobIox-Respostas');
+      sh.appendRow(['Data/hora', 'Login', 'Matéria', 'Mundo', 'Fase', 'Tema', 'Nível', 'Pergunta', 'Resposta correta', 'Aluno marcou', 'Acertou?', 'Tentativa nº']);
+      sh.setFrozenRows(1);
+    }
+    var rows = its.map(function (x) {
+      return [new Date(Number(x.t) || Date.now()), login, String(x.mat || ''), String(x.mundo || ''), Number(x.fase) || '', String(x.tema || ''), Number(x.nivel) || '', String(x.q || '').slice(0, 300), String(x.certa || '').slice(0, 100), String(x.marcou || '').slice(0, 100), x.ok ? 'SIM' : 'NÃO', Number(x.tent) || ''];
+    });
+    sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+    return ok_('ok');
+  } finally { lock.releaseLock(); }
 }
