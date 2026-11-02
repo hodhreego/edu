@@ -313,6 +313,10 @@ function jarHTML(){var j=ST.jar,i,o='',cs=[[j.a,'#e0a800','#d9dde3','1'],[j.b,'#
 function openJar(){var j=ST.jar,sm=function(n){return (n/100).toFixed(2).replace('.',',')};$('jb').innerHTML='<h1>🫙 Meu cofrinho</h1><div style="display:flex;justify-content:center">'+jarHTML()+'</div><p style="font-size:30px;font-weight:900;margin:4px">R$ '+sm(ST.cash)+'</p><div class="st"><span>R$ 1 × '+j.a+'</span><span>R$ 0,50 × '+j.b+'</span><span>R$ 0,25 × '+j.c+'</span>'+(j.n?'<span>Cédulas × '+j.n+'</span>':'')+'</div><p><small>Cada plataforma certa rende R$ '+((PAY[ANO]||1000)/100).toFixed(2).replace('.',',')+' no jackpot do RobIox, além das moedas. Tudo vira valor no jackpot do celular!</small></p><button class="go" id="jx" type="button">Fechar</button>';$('ovJ').style.display='flex';run=false}
 function restoreCr(){plats.forEach(function(p){if(p.type!=='crumble')return;var dy=(p.top-.5)-p.mesh.position.y;if(p.pl){p.pl.position.y+=dy;p.pl.position.x=p.x0;p.pl.visible=true}p.mesh.position.set(p.x0,p.top-.5,p.z0);p.mesh.rotation.z=0;p.shake=undefined;p.fall=false;p.alive=true})}
 function resetFase(){restoreCr();resp();say('🔄 Fase reiniciada! Tente de novo.',2000)}
+var stFall=[];
+function ease(st){stFall[st]=(stFall[st]||0)+1;var n=stFall[st];if(n%2||n>6)return false;var z0=safeZ[st],g=gate[st],z1=(g?g.z:z0-60)-4,ps=plats;
+  ps.forEach(function(p){if(p.st!=null&&p.type!=='move'&&p.type!=='zmove'&&p.type!=='crumble'&&p.type!=='static')return;if(p.type==='safe'||p.type==='read'||p.type==='ans'||p.type==='pstrip')return;if(p.z>z0||p.z<z1)return;
+    p.w*=1.18;p.d*=1.1;p.mesh.scale.x*=1.18;p.mesh.scale.z*=1.1;if(p.type==='move'||p.type==='zmove'){p.sp*=.8;p.amp*=.85}if(p.type==='crumble'&&n>=4){p.type='static'}});return true}
 function resp(){if(PEND.length){dropPend();say('💨 As moedas soltaram! Acerte a plataforma para guardá-las.',2200)}pl.x=0;restoreCr();pl.y=.01;pl.z=safeZ[pl.st];pl.vx=pl.vy=pl.vz=0;pl.ride=null;if(dirty[pl.st]&&pl.st<N)buildGate(pl.st);hud()}
 function say(t,ms){var m=$('msg');m.textContent=t;m.classList.add('on');clearTimeout(say.t);say.t=setTimeout(function(){m.classList.remove('on')},ms||1600)}
 function beep(f,d,ty,v,cat){if(!ST.snd||(ST.sn&&ST.sn[cat||'f']===0))return;try{var A=beep.a||(beep.a=new(window.AudioContext||window.webkitAudioContext)()),o=A.createOscillator(),g=A.createGain();o.frequency.value=f;o.type=ty||'square';g.gain.value=v||.05;o.connect(g);g.connect(A.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+(d||.15));o.stop(A.currentTime+(d||.15))}catch(e){}}
@@ -395,7 +399,7 @@ function step(dt){
   var gs=gate[pl.st];if(gs&&gs.strip&&!gs.strip.done&&pl.ride===gs.strip&&pl.z<gs.strip.line){gs.strip.done=true;var wd=12/gs.n,ix=Math.max(0,Math.min(gs.n-1,Math.floor((pl.x+6)/wd))),o=gs[ix],po={st:pl.st,door:o.door};
     if(o.ok){answered[pl.st]=true;onRight(po)}else{onWrong(po);pl.vx=pl.vz=0;pl.ride=null;resp()}}
   COINS.forEach(function(c){c.m.rotation.y+=dt*(c.note?1.6:3.2);c.m.position.y=c.y+Math.sin(tNow*3+c.x)*.12;if(!c.got&&Math.abs(pl.x-c.x)<1.4&&Math.abs(pl.z-c.z)<1.4&&pl.y+1.2>c.y-.9&&pl.y<c.y+.9){c.got=true;S.remove(c.m);PEND.push(c);hud();mp('mo',1);beep(1320,.08,'triangle',.06,'m');hud();sv()}});
-  if(pl.y<-9){say('💥 Caiu! Sem problema, volte ao início da fase e tente de novo.',1400);beep(120,.3);combo=0;resp()}
+  if(pl.y<-9){var fz=ease(pl.st);say('💥 Caiu! '+(fz?'Vou deixar essa parte mais fácil 💪':'Sem problema, volte ao início da fase e tente de novo.'),1700);beep(120,.3);combo=0;resp()}
   var sp2=Math.hypot(pl.vx,pl.vz);if(sp2>.6)pl.face=Math.atan2(pl.vx,pl.vz);
   SG.forEach(function(g){g.visible=g.position.z<pl.z-3});
   P.position.set(pl.x,pl.y,pl.z);P.rotation.y+=(((pl.face-P.rotation.y+Math.PI*3)%(Math.PI*2))-Math.PI)*Math.min(1,dt*14);
@@ -405,7 +409,7 @@ function step(dt){
 }
 var last=0;function loop(t){requestAnimationFrame(loop);var dt=Math.min(.033,(t-last)/1000||0);last=t;if(run)step(dt);else{tNow+=dt;lt.offset.y+=dt*.01;if(!inGame){CAM.position.set(0,10,14);CAM.lookAt(0,0,-14)}}R.render(S,CAM)}
 function unlocked(w){if(w===0)return true;var k,c=0,pw=w>=5?0:w-1;for(k=0;k<N;k++)if(ST.stars[key(pw,k)])c++;return c>=7}
-function startWorld(w){W=w;ANO=ST.ano;clearWorld();pl.st=0;rvq=[];build(w);
+function startWorld(w){W=w;stFall=[];ANO=ST.ano;clearWorld();pl.st=0;rvq=[];build(w);
   var s=0,i;if(w<5){while(s<N&&ST.stars[key(w,s)])s++;if(s>=N)s=0}
   for(i=0;i<s;i++){answered[i]=true;sDone[i]=true}
   pl.st=s;errs=0;combo=0;pl.x=0;pl.y=.01;pl.z=safeZ[s];pl.vx=pl.vy=pl.vz=0;CAM.position.set(0,12,pl.z+14);inGame=true;run=true;skin();hud();$('ovS').style.display='none';
