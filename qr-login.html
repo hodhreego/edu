@@ -21,7 +21,7 @@
 .cd .q{width:19mm!important;height:19mm!important}.cd .q img,.cd .q canvas{width:19mm!important;height:19mm!important}
 .cd{position:relative;padding-right:5mm!important}.cd .pw{position:absolute;right:1mm;top:0;bottom:0;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font:700 7pt Arial,sans-serif;color:#e00000;white-space:nowrap}.cd .pw b{font-size:9pt;color:#e00000;letter-spacing:.3px}.cd .q{width:var(--qr)!important;height:var(--qr)!important}.cd .q img,.cd .q canvas{width:22mm!important;height:22mm!important}
 </style><style id="ajcss">
-:root{--qr:29mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:0mm}
+:root{--qr:30mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:0mm}
 .cd .q,.cd .q img,.cd .q canvas{width:var(--qr)!important;height:var(--qr)!important}
 .cd .l{font-size:var(--fl)!important}.cd .t{font-size:var(--fn)!important}
 .cd .pw b{font-size:var(--fp)!important}.cd .pw{font-size:calc(var(--fp)*.78)!important}
@@ -37,6 +37,7 @@
 .cd{padding-left:5mm!important;padding-right:5mm!important}.cd .t{left:.5mm!important}.cd .pw{right:.5mm!important}.cd .q{margin-left:auto;margin-right:auto}
 .cd .t.vz{top:2.5mm!important;bottom:2.5mm!important;width:3.4mm!important;left:1mm!important;border:.3mm solid #666;background:linear-gradient(#777 .25mm,transparent .25mm) 0 0/100% 3.4mm;color:transparent}
 .ms{position:relative;font-size:13px;display:flex;flex-direction:column;gap:2px}.ms details{position:relative}.ms summary{list-style:none;cursor:pointer;background:#fff;color:#111;border-radius:8px;padding:6px 10px;min-width:130px;font-weight:700}.ms .mb{position:absolute;z-index:20;top:100%;left:0;margin-top:4px;background:#fff;color:#111;border-radius:10px;box-shadow:0 8px 24px #0006;padding:8px;min-width:200px;max-height:60vh;overflow:auto}.ms .mk{display:flex;gap:6px;margin-bottom:6px}.ms .mk button{font-size:12px;padding:4px 8px}.ms .ml label{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:14px;padding:3px 2px;color:#111}.ms .ml input{width:auto;padding:0;margin:0}
+.cd{padding-left:4.4mm!important;padding-right:4.4mm!important}.cd .t{left:.3mm!important}.cd .t.vz{left:.6mm!important}.cd .pw{right:0!important}
 </style></head><body>
 <div class="pn">
 <div class="ms" id="mE"><b>Escola</b><details><summary id="sE">—</summary><div class="mb"><div class="mk"><button type="button" class="b2" data-a="all">Selecionar tudo</button><button type="button" class="b2" data-a="none">Desmarcar tudo</button></div><div class="ml"></div></div></details></div>
@@ -82,7 +83,7 @@ $('pr').onclick=function(){window.print()};
 </script><button id="ajb" type="button" title="Ajustes">⚙</button>
 <div id="ajp"><h3>⚙ Ajustes dos cartões</h3><div id="ajs"></div><button type="button" id="ajr" class="b2">Restaurar padrão</button><button type="button" id="ajpr">🖨️ Imprimir</button></div>
 <script>
-(function(){var D=[['--qr','Tamanho do QR',14,32,.5,'mm',29],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno (lateral)',5,9,.25,'pt',6],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
+(function(){var D=[['--qr','Tamanho do QR',14,32,.5,'mm',30],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno (lateral)',5,9,.25,'pt',6],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
 try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
 function ap(v,x){R.style.setProperty(v,x)}
 var box=document.getElementById('ajs');
