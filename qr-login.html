@@ -35,12 +35,12 @@
 .cd{border:0!important;border-radius:0!important;border-right:1.5px dotted #555!important;border-bottom:1.5px dotted #555!important}.cd:nth-child(-n+6){border-top:1.5px dotted #555!important}.cd:nth-child(5n+2){border-left:1.5px dotted #555!important}
 .cd{padding-left:6.5mm!important}.cd .t{position:absolute!important;left:.8mm;top:0;bottom:0;width:auto!important;height:auto!important;min-height:0!important;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;line-height:1.1}
 .cd{padding-left:5mm!important;padding-right:5mm!important}.cd .t{left:.5mm!important}.cd .pw{right:.5mm!important}.cd .q{margin-left:auto;margin-right:auto}
-.cd .t.vz{top:2.5mm!important;bottom:2.5mm!important;width:4.4mm!important;left:.8mm!important;border:.3mm solid #666;background:linear-gradient(#aaa .25mm,transparent .25mm) 0 0/2.2mm 2.2mm,linear-gradient(90deg,#aaa .25mm,transparent .25mm) 0 0/2.2mm 2.2mm;color:transparent}
+.cd .t.vz{top:2.5mm!important;bottom:2.5mm!important;width:3.4mm!important;left:1mm!important;border:.3mm solid #666;background:linear-gradient(#777 .25mm,transparent .25mm) 0 0/100% 3.4mm;color:transparent}
+.ms{position:relative;font-size:13px;display:flex;flex-direction:column;gap:2px}.ms details{position:relative}.ms summary{list-style:none;cursor:pointer;background:#fff;color:#111;border-radius:8px;padding:6px 10px;min-width:130px;font-weight:700}.ms .mb{position:absolute;z-index:20;top:100%;left:0;margin-top:4px;background:#fff;color:#111;border-radius:10px;box-shadow:0 8px 24px #0006;padding:8px;min-width:200px;max-height:60vh;overflow:auto}.ms .mk{display:flex;gap:6px;margin-bottom:6px}.ms .mk button{font-size:12px;padding:4px 8px}.ms .ml label{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:14px;padding:3px 2px;color:#111}.ms .ml input{width:auto;padding:0;margin:0}
 </style></head><body>
 <div class="pn">
-<label>Turma<select id="tu"></select></label>
-<label>Escola (3 letras)<input id="es" size="4" maxlength="3" placeholder="cla"></label>
-<label>Turma (série+letra)<input id="sr" size="4" maxlength="2" placeholder="6b"></label>
+<div class="ms" id="mE"><b>Escola</b><details><summary id="sE">—</summary><div class="mb"><div class="mk"><button type="button" class="b2" data-a="all">Selecionar tudo</button><button type="button" class="b2" data-a="none">Desmarcar tudo</button></div><div class="ml"></div></div></details></div>
+<div class="ms" id="mT"><b>Turma</b><details><summary id="sT">—</summary><div class="mb"><div class="mk"><button type="button" class="b2" data-a="all">Selecionar tudo</button><button type="button" class="b2" data-a="none">Desmarcar tudo</button></div><div class="ml"></div></div></details></div>
 <label>Link curto do RobIox<input id="lk" size="22" placeholder="ex.: bit.ly/robiox"></label>
 <label>Até o nº<input id="mx" type="number" value="60" min="1" max="99" style="width:70px"></label>
 <button id="go">Gerar QR</button><button class="b2" id="rs">Colar lista de alunos</button><button class="b2" id="al">Gerar TODAS as turmas</button><button id="pr">🖨️ Imprimir</button>
@@ -49,8 +49,6 @@
 <div id="out"></div>
 <script>
 var $=function(i){return document.getElementById(i)},R=window.RCO_ALUNOS||{},BASE=location.origin+location.pathname.replace(/[^/]*$/,'')+'robiox.html?l=';
-var tu=$('tu');tu.innerHTML='<option value="">Todas as turmas</option>'+Object.keys(R).map(function(k){return '<option value="'+k+'">'+k+'</option>'}).join('');
-tu.onchange=function(){var k=tu.value;if(!k){$('al').click();return}var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){$('es').value=m[1];$('sr').value=m[2]}};
 $('rs').onclick=function(){$('ro').classList.toggle('on')};
 var MAN={};function LK(){return ($('lk').value||'').trim().replace(/^https?:\/\//,'')}$('lk').value='bit.ly/xus26';try{var _l=localStorage.getItem('qr_lk2');if(_l)$('lk').value=_l}catch(e){}$('lk').oninput=function(){try{localStorage.setItem('qr_lk2',$('lk').value)}catch(e){}};
 $('ok').onclick=function(){MAN={};$('ta').value.split(/\n/).forEach(function(l){var m=l.trim().match(/^(\d{1,2})\s*[-.;:\t ]\s*(.+)$/);if(m)MAN[+m[1]]=m[2].trim()});$('ro').classList.remove('on');gera()};
@@ -66,10 +64,18 @@ function cards(esc,tur,max,nomes,out){
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
-function gera(){var es=$('es').value.trim().toLowerCase(),sr=$('sr').value.trim().toLowerCase(),mx=Math.min(99,+$('mx').value||60);
- if(!es&&!sr&&!$('tu').value&&Object.keys(R).length){$('al').click();return}
- if(!/^[a-z]{3}$/.test(es)||!/^\d[a-z]$/.test(sr)){alert('Informe a escola (3 letras, ex.: cla) e a turma (ex.: 6b).');return}
- var nomes=Object.keys(MAN).length?MAN:(R[es+sr]||{});$('out').innerHTML='';cards(es,sr,Math.max(mx,Math.max.apply(null,[0].concat(Object.keys(nomes).map(Number)))),nomes,$('out'))}
+var ESC=[],TUR=[];Object.keys(R).forEach(function(k){var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){if(ESC.indexOf(m[1])<0)ESC.push(m[1]);if(TUR.indexOf(m[2])<0)TUR.push(m[2])}});if(!ESC.length)ESC=['cla','xus'];if(!TUR.length)TUR=['6a','6b','6c','7a','7b','7c','8a','8b','8c','9a','9b','9c'];ESC.sort();TUR.sort();
+var EN={cla:'Clarito',xus:'Schuster'};
+function msInit(id,list,lab){var box=$(id),ml=box.querySelector('.ml');ml.innerHTML=list.map(function(v){return '<label><input type="checkbox" value="'+v+'" checked> '+(lab&&lab[v]?lab[v]+' ('+v+')':v.toUpperCase())+'</label>'}).join('');
+ var upd=function(){var c=ml.querySelectorAll('input:checked').length;box.querySelector('summary').textContent=c===list.length?'Todas ('+c+')':c?c+' de '+list.length:'Nenhuma'};
+ ml.onchange=upd;box.querySelectorAll('.mk button').forEach(function(bt){bt.onclick=function(){ml.querySelectorAll('input').forEach(function(i){i.checked=bt.dataset.a==='all'});upd()}});upd()}
+msInit('mE',ESC,EN);msInit('mT',TUR);
+function msGet(id){return Array.prototype.map.call($(id).querySelectorAll('.ml input:checked'),function(i){return i.value})}
+function gera(){var es=msGet('mE'),ts=msGet('mT'),mx=Math.min(99,+$('mx').value||60);
+ if(!es.length||!ts.length){alert('Marque ao menos uma escola e uma turma.');return}
+ var jobs=[];es.forEach(function(e){ts.forEach(function(t){if(!Object.keys(R).length||R[e+t])jobs.push([e,t])})});
+ if(!jobs.length){alert('Não há alunos carregados para essa combinação de escola e turma.');return}
+ $('out').innerHTML='';jobs.forEach(function(j){var nomes=(jobs.length===1&&Object.keys(MAN).length)?MAN:(R[j[0]+j[1]]||{});cards(j[0],j[1],Math.max(mx,Math.max.apply(null,[0].concat(Object.keys(nomes).map(Number)))),nomes,$('out'))})}
 $('go').onclick=gera;
 $('al').onclick=function(){var ks=Object.keys(R);if(!ks.length){alert('Ainda não há lista de alunos carregada.');return}$('out').innerHTML='';var mx=Math.min(99,+$('mx').value||60);ks.forEach(function(k){var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m)cards(m[1],m[2],Math.max(mx,Math.max.apply(null,Object.keys(R[k]).map(Number))),R[k],$('out'))})};
 $('pr').onclick=function(){window.print()};
