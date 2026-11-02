@@ -67,6 +67,7 @@ function cards(esc,tur,max,nomes,out){
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
 function gera(){var es=$('es').value.trim().toLowerCase(),sr=$('sr').value.trim().toLowerCase(),mx=Math.min(99,+$('mx').value||60);
+ if(!es&&!sr&&!$('tu').value&&Object.keys(R).length){$('al').click();return}
  if(!/^[a-z]{3}$/.test(es)||!/^\d[a-z]$/.test(sr)){alert('Informe a escola (3 letras, ex.: cla) e a turma (ex.: 6b).');return}
  var nomes=Object.keys(MAN).length?MAN:(R[es+sr]||{});$('out').innerHTML='';cards(es,sr,Math.max(mx,Math.max.apply(null,[0].concat(Object.keys(nomes).map(Number)))),nomes,$('out'))}
 $('go').onclick=gera;
