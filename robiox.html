@@ -324,7 +324,7 @@ function avatar(){var L=look(),h=function(c){return '#'+('000000'+c.toString(16)
   if(L.hat==='band')o+=r(29,14,42,7,'#dc2626');
   return o+'</svg>'}
 var pl={x:0,y:0,z:0,vx:0,vy:0,vz:0,gr:false,coy:0,ride:null,face:0,st:0},errs=0,tNow=0,run=false,combo=0,inGame=false,sesT=0,wasT=0;
-var inp={x:0,z:0,jump:false},keys={};function gpad(){var o={x:0,z:0,jump:false};try{var gs=navigator.getGamepads?navigator.getGamepads():[],g=null,i;for(i=0;i<gs.length;i++)if(gs[i]&&gs[i].connected){g=gs[i];break}if(!g)return o;var ax=g.axes[0]||0,ay=g.axes[1]||0,B=g.buttons;if(Math.abs(ax)>.2)o.x=ax;if(Math.abs(ay)>.2)o.z=-ay;if(B[14]&&B[14].pressed)o.x=-1;if(B[15]&&B[15].pressed)o.x=1;if(B[12]&&B[12].pressed)o.z=1;if(B[13]&&B[13].pressed)o.z=-1;o.jump=!!((B[0]&&B[0].pressed)||(B[2]&&B[2].pressed))}catch(e){}return o}
+window.RBX_RUN=function(){return run};var inp={x:0,z:0,jump:false},keys={};function gpad(){var o={x:0,z:0,jump:false};try{var gs=navigator.getGamepads?navigator.getGamepads():[],g=null,i;for(i=0;i<gs.length;i++)if(gs[i]&&gs[i].connected){g=gs[i];break}if(!g)return o;var ax=g.axes[0]||0,ay=g.axes[1]||0,B=g.buttons;if(Math.abs(ax)>.2)o.x=ax;if(Math.abs(ay)>.2)o.z=-ay;if(B[14]&&B[14].pressed)o.x=-1;if(B[15]&&B[15].pressed)o.x=1;if(B[12]&&B[12].pressed)o.z=1;if(B[13]&&B[13].pressed)o.z=-1;o.jump=!!((B[0]&&B[0].pressed)||(B[2]&&B[2].pressed))}catch(e){}return o}
 var PEND=[],PAY={6:1000,7:2000,8:5000,9:10000,10:2000,11:5000,12:5000,13:5000,14:2000,15:5000};
 function pendVal(){return PEND.reduce(function(a,c){return a+c.v*25},0)}
 function bankPend(){PEND.forEach(function(c){var v=Math.min(c.v,8);ST.coins+=v;ST.stat.ganhas+=v;cashIn(c)});PEND=[]}
@@ -550,5 +550,6 @@ requestAnimationFrame(loop);
 window.__rbx={qTex:qTex,st:function(){return {pl:pl,errs:errs,answered:answered,stageQ:stageQ,gate:gate,gtype:gtype,N:N,ST:ST,sDone:sDone,pg:pg,plats:plats}},tp:function(x,z,y){pl.x=x;pl.z=z;pl.y=y||.5;pl.vy=0;pl.ride=null},start:startWorld,menu:menu,inp:function(){return {x:inp.x,z:inp.z,j:inp.jump}},ctl:function(){return [joy.style.display,jb.style.display]}};
 })();
 </script>
+<script src="robiox-pad.js?v=2"></script>
 </body>
 </html>
