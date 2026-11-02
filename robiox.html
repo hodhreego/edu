@@ -32,7 +32,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
 .tabs button,.anos button{padding:9px 2px;border:3px solid #111;border-radius:12px;background:#f1f5f9;font:900 14px Nunito,Arial;cursor:pointer}
 .tabs button.on,.anos button.on{background:#22c55e;color:#fff}
-.anos{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0}
+.anos{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:6px 0}.anos button{font-size:12px!important;padding:8px 2px!important}
 .wc{display:flex;align-items:center;gap:10px;border:3px solid #111;border-radius:14px;padding:8px 10px;margin:6px 0;background:#f8fafc;text-align:left;cursor:pointer;font:inherit;width:100%}
 .wc.lock{opacity:.5;cursor:not-allowed}.wc .e{font-size:30px}.wc b{display:block;font-size:15px}.wc small{color:#555;font-weight:700}.wc .go2{margin-left:auto;background:#e11d48;color:#fff;border-radius:10px;padding:6px 10px;font-weight:900}
 .go{width:100%;padding:13px;border:0;border-radius:14px;background:#e11d48;color:#fff;font:900 19px Nunito,Arial;cursor:pointer;box-shadow:0 5px 0 #881337;margin-top:6px}
@@ -108,7 +108,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
 <div class="ov" id="ovS"><div class="box" id="mb"></div></div>
 <div class="ov" id="ovJ" style="display:none"><div class="box" id="jb"></div></div><div class="ov" id="ovW" style="display:none"><div class="box" id="wb"></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="robiox-banco.js"></script>
+<script src="robiox-banco.js"></script><script src="robiox-ingles.js"></script>
 <script>
 (function(){
 'use strict';
@@ -117,7 +117,7 @@ function $(i){return document.getElementById(i)}
 /* ---------- progresso salvo ---------- */
 var KEY='robiox_v2'+(window.RBX_LOGIN?'_'+window.RBX_LOGIN:''),ST={};var __cl=0;function cloudSave(){if(!window.RBX_LOGIN||!window.EDU_ENDPOINT)return;clearTimeout(__cl);__cl=setTimeout(function(){try{fetch(window.EDU_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({acao:'rbxsave',login:window.RBX_LOGIN,ts:ST._ts||Date.now(),st:ST}),keepalive:true})}catch(e){}},6000)}
 function ymd(d){d=d||new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
-function ld(){try{ST=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){ST={}}var d={xp:0,coins:0,sk:{},stars:{},own:{red:1},eq:'red',bd:{},st:{n:0,best:0,last:'',ms:{}},dy:{},stat:{correct:0,fases:0,mundos:0,combo:0,perfeitas:0,volta:0,missoes:0,ganhas:0},ano:7,ch:null,cash:0,jar:{a:0,b:0,c:0},cc:{},pst:{},dif:2,snd:0,sn:{f:1,m:1,v:1},unl:0};for(var k in d)if(ST[k]==null)ST[k]=d[k];if(QS.get('ano'))ST.ano=+QS.get('ano');if([6,7,8,9].indexOf(ST.ano)<0)ST.ano=7}
+function ld(){try{ST=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){ST={}}var d={xp:0,coins:0,sk:{},stars:{},own:{red:1},eq:'red',bd:{},st:{n:0,best:0,last:'',ms:{}},dy:{},stat:{correct:0,fases:0,mundos:0,combo:0,perfeitas:0,volta:0,missoes:0,ganhas:0},ano:7,ch:null,cash:0,jar:{a:0,b:0,c:0},cc:{},pst:{},dif:2,snd:0,sn:{f:1,m:1,v:1},unl:0};for(var k in d)if(ST[k]==null)ST[k]=d[k];if(QS.get('ano'))ST.ano=+QS.get('ano');if([6,7,8,9,10].indexOf(ST.ano)<0)ST.ano=7}
 function sv(){ST._ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}cloudSave()}
 ld();
 var ANO=ST.ano,W=0,rvq=[];
@@ -169,7 +169,7 @@ function coin(x,z,y,kind,hi){var k=CK[kind==null?(Math.random()<.2?0:Math.random
   m.rotation.x=Math.PI/2;g.add(m);f=new THREE.Mesh(new THREE.CircleGeometry(k.r*rr,24),fm);f.position.z=.07;g.add(f);f=f.clone();f.position.z=-.07;f.rotation.y=Math.PI;g.add(f);
   y=(y||0)+(hi?3.3:1.5);g.position.set(x,y,z);S.add(g);COINS.push({m:g,x:x,z:z,y:y,got:false,v:k.v,id:COINS.length})}
 function coinHi(x,z,y){coin(x,z,y,null,1)}
-var NT2={},NP={6:[2,2,5,5,10],7:[5,5,10,10,20],8:[10,20,20,50,50],9:[20,50,50,100,100]};
+var NT2={},NP={10:[5,5,10,10,20],6:[2,2,5,5,10],7:[5,5,10,10,20],8:[10,20,20,50,50],9:[20,50,50,100,100]};
 function noteHi(x,z,y){var fc=pick(NP[ANO]||NP[7]),t=NT2[fc]||(NT2[fc]=TL.load('img/din/n'+fc+'.jpg')),g=new THREE.Group(),m=new THREE.Mesh(new THREE.PlaneGeometry(2.3,1.05),new THREE.MeshBasicMaterial({map:t,side:THREE.DoubleSide}));g.add(m);y=(y||0)+3.3;g.position.set(x,y,z);S.add(g);COINS.push({m:g,x:x,z:z,y:y,got:false,v:fc*4,id:COINS.length,note:fc})}
 function cloud(x,y,z){var g=new THREE.Group(),i,m=new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:.92});for(i=0;i<4;i++){var s=new THREE.Mesh(new THREE.SphereGeometry(ri(20,34)/10,10,8),m);s.position.set(i*2.2-3,ri(0,10)/10,ri(-8,8)/10);g.add(s)}g.position.set(x,y,z);S.add(g);DEC.push(g)}
 function pillar(x,y,z,col){var h=ri(6,18),m=mk(new THREE.BoxGeometry(ri(3,7),h,ri(3,7)),col,x,y-h/2,z);m.castShadow=false;DEC.push(m)}
@@ -302,7 +302,7 @@ function avatar(){var L=look(),h=function(c){return '#'+('000000'+c.toString(16)
   return o+'</svg>'}
 var pl={x:0,y:0,z:0,vx:0,vy:0,vz:0,gr:false,coy:0,ride:null,face:0,st:0},errs=0,tNow=0,run=false,combo=0,inGame=false,sesT=0,wasT=0;
 var inp={x:0,z:0,jump:false},keys={};
-var PEND=[],PAY={6:1000,7:2000,8:5000,9:10000};
+var PEND=[],PAY={6:1000,7:2000,8:5000,9:10000,10:2000};
 function pendVal(){return PEND.reduce(function(a,c){return a+c.v*25},0)}
 function bankPend(){PEND.forEach(function(c){var v=Math.min(c.v,8);ST.coins+=v;ST.stat.ganhas+=v;cashIn(c)});PEND=[]}
 function dropPend(){PEND.forEach(function(c){c.got=false;S.add(c.m)});PEND=[]}
@@ -415,7 +415,7 @@ function startWorld(w){W=w;stFall=[];ANO=ST.ano;clearWorld();pl.st=0;rvq=[];buil
   pl.st=s;errs=0;combo=0;pl.x=0;pl.y=.01;pl.z=safeZ[s];pl.vx=pl.vy=pl.vz=0;CAM.position.set(0,12,pl.z+14);inGame=true;run=true;skin();hud();$('ovS').style.display='none';
   if(ST._sn){say('🔥 '+ST._sn+' dias seguidos! Baú de +'+ST._sc+' 🪙',3500);ST._sn=0}}
 function tabHTML(tab){var h='',i;
-  if(tab==='j'){h+='<div class="anos">'+[6,7,8,9].map(function(a){return '<button data-a="'+a+'" class="'+(a===ST.ano?'on':'')+'">'+a+'º ano</button>'}).join('')+'</div>';
+  if(tab==='j'){h+='<div class="anos">'+[6,7,8,9,10].map(function(a){return '<button data-a="'+a+'" class="'+(a===ST.ano?'on':'')+'">'+(a===10?'🇬🇧 English':a+'º ano')+'</button>'}).join('')+'</div>';
     for(i=0;i<6;i++){var d=wdef(i),un=i===0||unlocked(i),st=0,k;if(i<5)for(k=0;k<N;k++)st+=ST.stars[ANO+'-'+i+'-'+k]||0;
       h+='<button class="wc'+(un?'':' lock')+'" data-w="'+i+'"><span class="e">'+d.em+'</span><span><b>'+d.n+'</b><small>'+(i<5?'⭐ '+st+'/30 · '+d.t.map(function(t){return B.TN[t]}).join(', '):'Fases sem fim, perguntas de todos os temas')+'</small></span><span class="go2">'+(un?'▶':'🔒')+'</span></button>'}
     h+='<p style="text-align:left;font-weight:900;margin:10px 0 2px">🧠 Seu domínio por tema</p>';
@@ -435,7 +435,7 @@ function tabHTML(tab){var h='',i;
     +'<p><b>Personagens famosos</b> (versão quadradinha)</p><div class="grid"><div class="it'+(c.pre?'':' on')+'"><div class="e">🎨</div>Meu personagem<br><button data-p="">Usar</button></div>'+PRE.map(function(p){return '<div class="it'+(c.pre===p.id?' on':'')+'"><b>'+p.n+'</b><br><small>'+p.s+'</small><br><button data-p="'+p.id+'">'+(c.pre===p.id?'✔ Em uso':'Usar')+'</button></div>'}).join('')+'</div>'
     +'<button class="go" id="bPlay" type="button">✔ Pronto! Escolher o mundo</button>'}
   if(tab==='u'){var lg=window.RBX_LOGIN||'',m=lg.match(/^(\d+)([a-z]{3})(\d[a-z])$/),esc={cla:'Jardim Clarito',xus:'Marcos C. Schuster'},sm2=function(n){return (n/100).toFixed(2).replace('.',',')},L2=lvl(ST.xp),j2=ST.jar,sx=ST.stat,tr=bdgList(),got=tr.filter(function(b){return ST.bd[b.id]});
-    h+='<div class="pf"><div class="pfh"><div class="pfa">'+avatar()+'</div><div class="pfi"><b class="pfl">'+(lg==='mestre'?'Professor (conta mestre)':lg?lg:'Visitante')+'</b>'+(m?'<span>Aluno nº '+m[1]+' · Turma '+m[3].toUpperCase()+'</span><span>'+(esc[m[2]]||m[2].toUpperCase())+'</span>':'<span>Entrou pela Ludopédia</span>')+'<span>'+ANO+'º ano · Nv '+L2.l+' · '+title(L2.l)+'</span></div></div>'
+    h+='<div class="pf"><div class="pfh"><div class="pfa">'+avatar()+'</div><div class="pfi"><b class="pfl">'+(lg==='mestre'?'Professor (conta mestre)':lg?lg:'Visitante')+'</b>'+(m?'<span>Aluno nº '+m[1]+' · Turma '+m[3].toUpperCase()+'</span><span>'+(esc[m[2]]||m[2].toUpperCase())+'</span>':'<span>Entrou pela Ludopédia</span>')+'<span>'+(ANO===10?'🇬🇧 English':ANO+'º ano')+' · Nv '+L2.l+' · '+title(L2.l)+'</span></div></div>'
     +'<div class="xpb" style="margin:6px 0"><i style="width:'+Math.round(L2.cur/L2.need*100)+'%"></i></div><small>'+L2.cur+' / '+L2.need+' XP para o próximo nível</small>'
     +'<div class="pfj"><div class="pfjar">'+jarHTML()+'</div><div class="pfm"><b>💰 Meu dinheiro</b><span class="pfv">R$ '+sm2(ST.cash)+'</span><small>R$ 1 × '+j2.a+' · R$ 0,50 × '+j2.b+' · R$ 0,25 × '+j2.c+(j2.n?' · cédulas × '+j2.n:'')+'</small><span>🪙 '+ST.coins+' moedas do jogo</span></div></div>'
     +'<div class="pfg"><div><b>'+sx.correct+'</b><small>acertos</small></div><div><b>'+sx.fases+'</b><small>fases</small></div><div><b>'+sx.mundos+'</b><small>mundos</small></div><div><b>'+sx.perfeitas+'</b><small>perfeitas</small></div><div><b>'+sx.combo+'</b><small>melhor combo</small></div><div><b>'+sx.missoes+'</b><small>missões</small></div><div><b>🔥 '+ST.st.n+'</b><small>dias seguidos</small></div><div><b>'+ST.st.best+'</b><small>recorde de dias</small></div></div>'
