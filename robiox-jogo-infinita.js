@@ -36,7 +36,7 @@
       var countdownTimer = 3.5;
       var shakeTimer = 0;
       var zProgress = 0; // 0 a 1 em direção ao portal atual
-      var speed = 0.55; // velocidade base
+      var speed = 0.2; // velocidade base (lenta)
       var lane = 1; // 0, 1, 2
       var targetLane = 1;
       var laneX = 0; // interpolação suave
@@ -228,7 +228,7 @@
         lives = 3;
         score = 0;
         combo = 0;
-        speed = 0.55;
+        speed = 0.2;
         state = 'COUNTDOWN';
         countdownTimer = 3.5;
         initTrack();
@@ -251,7 +251,7 @@
           if (combo % 5 === 0) {
             spawnCoinsRain();
           }
-          speed = Math.min(1.2, speed + 0.02);
+          speed = Math.min(0.4, speed + 0.006);
           advanceTrack();
         } else {
           lives--;
@@ -277,7 +277,7 @@
         var bw = Math.min(W * 0.88, 700);
         var bx = (W - bw) / 2;
         var by = 58;
-        var bh = Math.min(H * 0.18, 120);
+        var bh = Math.min(H * 0.26, 190);
 
         ctx.save();
         // Sombra balão
@@ -321,7 +321,7 @@
         // Texto da Pergunta auto-ajustável
         ctx.fillStyle = '#1a237e';
         ctx.textAlign = 'center';
-        fitAndWrapText(text, bx + bw / 2, by + bh / 2 + 6, bw - 40, bh - 30, 26, 16);
+        fitAndWrapText(text, bx + bw / 2, by + bh / 2 + 6, bw - 40, bh - 30, 40, 24);
         ctx.restore();
       }
 
