@@ -158,7 +158,7 @@
         state = 'SHOOTING';
       }
 
-      function spawnConfetti(x, y) {
+      function spawnConfetti(x, y) {if(window.RBX_FX&&!RBX_FX.on())return;
         for (var i = 0; i < 40; i++) {
           particles.push({
             x: x, y: y,
@@ -173,7 +173,7 @@
         }
       }
 
-      function spawnPopText(x, y, txt, color) {
+      function spawnPopText(x, y, txt, color) {if(window.RBX_FX&&!RBX_FX.on())return;
         particles.push({
           x: x, y: y, vx: 0, vy: -1.5,
           text: txt, color: color || '#f59e0b',

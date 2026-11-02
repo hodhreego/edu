@@ -223,7 +223,7 @@
         }
       }
 
-      function spawnConfetti(x, y) {
+      function spawnConfetti(x, y) {if(window.RBX_FX&&!RBX_FX.on())return;
         for (var i = 0; i < 40; i++) {
           var ang = Math.random() * Math.PI * 2;
           var spd = 3 + Math.random() * 7;
@@ -240,7 +240,7 @@
         }
       }
 
-      function spawnSmoke(x, y) {
+      function spawnSmoke(x, y) {if(window.RBX_FX&&!RBX_FX.on())return;
         for (var i = 0; i < 25; i++) {
           var ang = Math.random() * Math.PI * 2;
           var spd = 1 + Math.random() * 4;

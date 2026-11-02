@@ -147,7 +147,7 @@
         ctx.font = weight + ' ' + small + 'px Arial, sans-serif';
         return { s: small, lines: wrapLines(text, maxW) };
       }
-      function confetti() {
+      function confetti() {if(window.RBX_FX&&!RBX_FX.on())return;
         for (var i = 0; i < 40; i++) particles.push({ x: W / 2, y: H * 0.4, vx: (Math.random() - 0.5) * 12, vy: -Math.random() * 10 - 2, life: 1.2, r: 6 + Math.random() * 6, c: ['#ff5252', '#ffeb3b', '#4caf50', '#2196f3', '#e040fb'][i % 5] });
       }
 

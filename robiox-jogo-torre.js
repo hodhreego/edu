@@ -113,7 +113,7 @@
 
         var prevPadButtons = [];
 
-        function addConfetti(x, y, count) {
+        function addConfetti(x, y, count) {if(window.RBX_FX&&!RBX_FX.on())return;
           var colors = ['#f44336', '#e91e63', '#9c27b0', '#ffeb3b', '#4caf50', '#00e676', '#00e5ff'];
           for (var i = 0; i < count; i++) {
             var ang = Math.random() * Math.PI * 2;

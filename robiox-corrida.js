@@ -131,7 +131,7 @@
         return ty;
       }
 
-      function spawnEffect(x, y, type) {
+      function spawnEffect(x, y, type) {if(window.RBX_FX&&!RBX_FX.on())return;
         var count = type === 'coin' ? 15 : 30;
         for (var i = 0; i < count; i++) {
           particles.push({

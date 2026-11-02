@@ -198,7 +198,7 @@
         lastPadB = btnB;
       }
 
-      function spawnConfetti(x, y) {
+      function spawnConfetti(x, y) {if(window.RBX_FX&&!RBX_FX.on())return;
         for (var i = 0; i < 35; i++) {
           particles.push({
             x: x, y: y,

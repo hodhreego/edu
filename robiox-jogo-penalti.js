@@ -143,7 +143,7 @@
         }
       }
 
-      function spawnConfetti() {
+      function spawnConfetti() {if(window.RBX_FX&&!RBX_FX.on())return;
         confetti = [];
         for (var i = 0; i < 70; i++) {
           confetti.push({

@@ -18,6 +18,7 @@
   }
 
   function fundo(ctx, x, y, w, h, nome, focoY, alpha) {
+    if (window.RBX_GFX && window.RBX_GFX.cenas === 0) return false;
     var im = img(nome);
     if (!im.complete || !im.naturalWidth) return false;
     var sw = im.naturalWidth, sh = im.naturalHeight;
@@ -34,4 +35,8 @@
   }
 
   window.RBX_CENA = { pronto: pronto, fundo: fundo, IMGS: IMGS };
+  window.RBX_FX = {
+    on: function () { return !window.RBX_GFX || window.RBX_GFX.fx !== 0; },
+    sombras: function () { return !window.RBX_GFX || window.RBX_GFX.sombras !== 0; }
+  };
 })();
