@@ -329,18 +329,18 @@
               ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fillRect(-gw/2, -gh, gw, gh);
               if (laneOptions[l]) {
                 ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(-gw/2, -gh-30*pos.scale, gw, 30*pos.scale);
-                drawText(laneOptions[l], 0, -gh-8*pos.scale, Math.max(16, 32*pos.scale), '#FFD700', true, true);
+                drawText(laneOptions[l], 0, -gh-8*pos.scale, Math.max(24, 52*pos.scale), '#FFD700', true, true);
               }
             } else if (themeId === 2) { // Alçapão
               var open = (gameState==='RESULT_DELAY' && progress>0.98 && l!==correctLane);
               ctx.fillStyle = open ? '#000' : '#5D4037';
               ctx.fillRect(-gw/2, -20*pos.scale, gw, 40*pos.scale);
               ctx.strokeStyle = '#3E2723'; ctx.lineWidth = 2; ctx.strokeRect(-gw/2, -20*pos.scale, gw, 40*pos.scale);
-              if (!open && laneOptions[l]) drawText(laneOptions[l], 0, 10*pos.scale, Math.max(16, 30*pos.scale), '#FFF', true, true);
+              if (!open && laneOptions[l]) drawText(laneOptions[l], 0, 10*pos.scale, Math.max(24, 50*pos.scale), '#FFF', true, true);
             } else { // Pista
               ctx.fillStyle = laneColors[l]; ctx.fillRect(-gw/2, -gh, gw, gh);
               ctx.strokeStyle = '#FFF'; ctx.lineWidth = 4*pos.scale; ctx.strokeRect(-gw/2, -gh, gw, gh);
-              if (laneOptions[l]) drawText(laneOptions[l], 0, -gh/2+10*pos.scale, Math.max(16, 32*pos.scale), '#FFF', true, true);
+              if (laneOptions[l]) drawText(laneOptions[l], 0, -gh/2+10*pos.scale, Math.max(24, 52*pos.scale), '#FFF', true, true);
             }
             ctx.restore();
           }
@@ -385,14 +385,43 @@
         });
         ctx.globalAlpha = 1;
 
-        // UI - Question Card
+        // UI - Question balloon (floating)
         if (qData && (gameState==='RUNNING' || gameState==='RESULT_DELAY')) {
-          var cw = Math.min(W*0.9, 600), ch = 100;
-          ctx.fillStyle = 'rgba(13, 71, 161, 0.9)'; ctx.strokeStyle = '#4FC3F7'; ctx.lineWidth = 3;
-          var cx = W/2 - cw/2, cy = 60;
-          ctx.beginPath(); ctx.roundRect ? ctx.roundRect(cx, cy, cw, ch, 15) : ctx.rect(cx, cy, cw, ch); ctx.fill(); ctx.stroke();
-          ctx.fillStyle = '#FFD54F'; ctx.font = 'bold 14px sans-serif'; ctx.fillText(themeNames[themeId], cx+20, cy+25);
-          ctx.fillStyle = '#FFF'; ctx.font = 'bold 20px sans-serif'; wrapText(qData.q, cx+20, cy+55, cw-40, 24);
+          var bw = Math.min(W*0.94, 680), pad = 18, fz = 34, lines, lh;
+          for (;;) {
+            ctx.font = 'bold ' + fz + 'px Arial, sans-serif';
+            var ws = String(qData.q).split(' '), ln = '', arr = [];
+            for (var wi = 0; wi < ws.length; wi++) {
+              var tt = ln ? ln + ' ' + ws[wi] : ws[wi];
+              if (ctx.measureText(tt).width > bw - pad*2 && ln) { arr.push(ln); ln = ws[wi]; } else ln = tt;
+            }
+            arr.push(ln); lines = arr; lh = fz * 1.2;
+            if ((arr.length * lh + 44 <= H * 0.34) || fz <= 17) break;
+            fz -= 2;
+          }
+          var bh = lines.length * lh + 44, bx = W/2 - bw/2, by = 62 + Math.sin(animTime * 0.5) * 4;
+          ctx.save();
+          ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 6;
+          ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#1E3A8A'; ctx.lineWidth = 5;
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 26); else ctx.rect(bx, by, bw, bh);
+          ctx.fill();
+          ctx.shadowColor = 'transparent';
+          ctx.stroke();
+          // tail
+          ctx.beginPath(); ctx.moveTo(W/2 - 22, by + bh - 1); ctx.lineTo(W/2, by + bh + 26); ctx.lineTo(W/2 + 22, by + bh - 1);
+          ctx.closePath(); ctx.fillStyle = '#FFFFFF'; ctx.fill();
+          ctx.beginPath(); ctx.moveTo(W/2 - 22, by + bh); ctx.lineTo(W/2, by + bh + 26); ctx.lineTo(W/2 + 22, by + bh); ctx.stroke();
+          ctx.restore();
+          // mode tag
+          ctx.fillStyle = '#F59E0B'; ctx.font = 'bold 13px Arial, sans-serif'; ctx.textAlign = 'left';
+          var tg = themeNames[themeId], tw = ctx.measureText(tg).width + 20;
+          ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx + 16, by - 12, tw, 24, 12); else ctx.rect(bx + 16, by - 12, tw, 24); ctx.fill();
+          ctx.fillStyle = '#1E1B4B'; ctx.fillText(tg, bx + 26, by + 5);
+          // text
+          ctx.fillStyle = '#0F172A'; ctx.font = 'bold ' + fz + 'px Arial, sans-serif'; ctx.textAlign = 'center';
+          for (var li = 0; li < lines.length; li++) ctx.fillText(lines[li], W/2, by + 32 + fz * 0.8 + li * lh - 6);
+          ctx.textAlign = 'left';
         }
 
         // HUD
