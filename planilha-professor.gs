@@ -123,6 +123,7 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxfmt' && e.parameter.k === RBX_KEY) { rbxBeleza_(); return ok_('formatado'); }
   return ok_('Planilha do professor ativa.');
 }
 function ok_(t) { return ContentService.createTextOutput(t); }
@@ -401,6 +402,7 @@ function rbxResp_(d) {
       sh = ss.insertSheet('RobIox-Respostas');
       sh.appendRow(['Data/hora', 'Login', 'Matéria', 'Mundo', 'Fase', 'Tema', 'Nível', 'Pergunta', 'Resposta correta', 'Aluno marcou', 'Acertou?', 'Tentativa nº']);
       sh.setFrozenRows(1);
+      try { rbxBeleza_(); } catch (err) { }
     }
     var rows = its.map(function (x) {
       return [new Date(Number(x.t) || Date.now()), login, String(x.mat || ''), String(x.mundo || ''), Number(x.fase) || '', String(x.tema || ''), Number(x.nivel) || '', String(x.q || '').slice(0, 300), String(x.certa || '').slice(0, 100), String(x.marcou || '').slice(0, 100), x.ok ? 'SIM' : 'NÃO', Number(x.tent) || ''];
@@ -458,4 +460,39 @@ function rbxDash_(p) {
     });
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Deixa as abas do RobIox bonitas e organizadas (não apaga nada)
+function rbxBeleza_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  function cab(sh, n, cor) { var h = sh.getRange(1, 1, 1, n); h.setBackground(cor).setFontColor('#ffffff').setFontWeight('bold').setWrap(true).setVerticalAlignment('middle').setHorizontalAlignment('center'); sh.setRowHeight(1, 44); sh.setFrozenRows(1); }
+  function faixas(sh, n) { try { sh.getBandings().forEach(function (b) { b.remove(); }); sh.getRange(1, 1, Math.max(sh.getMaxRows(), 2), n).applyRowBanding(SpreadsheetApp.BandingTheme.LIGHT_GREY, true, false); } catch (e) { } }
+  function filtro(sh, n) { try { var f = sh.getFilter(); if (f) f.remove(); sh.getRange(1, 1, Math.max(sh.getLastRow(), 2), n).createFilter(); } catch (e) { } }
+  var al = ss.getSheetByName('RobIox-Alunos');
+  if (al) {
+    al.setTabColor('#1e3a8a'); cab(al, 26, '#1e3a8a'); al.setFrozenColumns(1);
+    al.getRange(2, 2, Math.max(al.getMaxRows() - 1, 1), 25).setHorizontalAlignment('center').setVerticalAlignment('middle');
+    al.getRange(2, 25, Math.max(al.getMaxRows() - 1, 1), 2).setHorizontalAlignment('left').setWrap(true);
+    al.getRange(2, 1, Math.max(al.getMaxRows() - 1, 1), 1).setFontWeight('bold');
+    faixas(al, 26); filtro(al, 26);
+    al.getRange(1, 20, 1, 1).setNote('Total de respostas registradas na aba RobIox-Respostas');
+    al.getRange(1, 14, 1, 1).setNote('Fases concluídas ÷ total de fases da série');
+    al.getRange(1, 21, 1, 1).setNote('Acertos ÷ respostas registradas');
+  }
+  var rs = ss.getSheetByName('RobIox-Respostas');
+  if (rs) {
+    rs.setTabColor('#16a34a'); cab(rs, 12, '#15803d');
+    var w = [135, 90, 115, 130, 55, 130, 60, 420, 140, 140, 80, 80];
+    w.forEach(function (x, i) { rs.setColumnWidth(i + 1, x); });
+    var n = Math.max(rs.getMaxRows() - 1, 1);
+    rs.getRange(2, 1, n, 1).setNumberFormat('dd/MM/yyyy HH:mm');
+    rs.getRange(2, 8, n, 1).setWrap(true); rs.getRange(2, 5, n, 1).setHorizontalAlignment('center'); rs.getRange(2, 7, n, 1).setHorizontalAlignment('center'); rs.getRange(2, 11, n, 2).setHorizontalAlignment('center').setFontWeight('bold');
+    rs.setConditionalFormatRules([
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('SIM').setBackground('#c8f7d4').setFontColor('#166534').setRanges([rs.getRange(2, 11, n, 1)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('NÃO').setBackground('#fecaca').setFontColor('#991b1b').setRanges([rs.getRange(2, 11, n, 1)]).build()]);
+    faixas(rs, 12); filtro(rs, 12);
+  }
+  var pr = ss.getSheetByName('RobIox');
+  if (pr) { pr.setTabColor('#94a3b8'); cab(pr, 3, '#475569'); pr.setColumnWidth(1, 110); pr.setColumnWidth(2, 120); pr.setColumnWidth(3, 300); pr.getRange(1, 1).setNote('Aba técnica: guarda o progresso bruto de cada aluno (usada pelo jogo para continuar de onde parou). Veja os dados organizados em RobIox-Alunos.'); }
+  [['RobIox-Alunos', 0], ['RobIox-Respostas', 1], ['RobIox', 2]].forEach(function (x) { var sh = ss.getSheetByName(x[0]); if (sh) { ss.setActiveSheet(sh); ss.moveActiveSheet(ss.getNumSheets() - 2 + x[1]); } });
 }
