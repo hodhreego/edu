@@ -88,12 +88,20 @@ $('pr').onclick=function(){window.print()};
 (function(){var D=[['--ny','Nome: mover ↑ ↓',-15,15,.5,'mm',0],['--nt','Nome: margem no topo e na base',0,12,.5,'mm',0],['--nlh','Nome: espaço entre linhas',.9,1.8,.05,'',1.1],['--qw','Nome vazio: largura do quadriculado',2,6,.2,'mm',3.4],['--pl','Recuo esquerdo do cartão',2,9,.1,'mm',4.4],['--pr','Recuo direito do cartão',2,9,.1,'mm',4.4],['--qx','QR: mover ← →',-6,6,.1,'mm',0],['--qy','QR: mover ↑ ↓',-6,6,.1,'mm',0],['--ly','Login: mover ↑ ↓',-4,4,.1,'mm',0],['--ky','Link: mover ↑ ↓',-4,4,.1,'mm',0],['--nx','Nome: distância da borda esq.',-1,5,.1,'mm',.3],['--px','Senha: distância da borda dir.',-1,5,.1,'mm',0],['--lw','Espessura das linhas pontilhadas',.5,3,.25,'px',1.5],['--qr','Tamanho do QR',14,32,.5,'mm',30],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno (lateral)',5,9,.25,'pt',6],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
 try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
 function ap(v,x){R.style.setProperty(v,x)}
-var box=document.getElementById('ajs');
-D.forEach(function(d){var val=S[d[0]]!=null?S[d[0]]:d[6],l=document.createElement('label');l.innerHTML=d[1]+'<span>'+val+d[5]+'</span><input type="range" min="'+d[2]+'" max="'+d[3]+'" step="'+d[4]+'" value="'+val+'">';
+function build(box){var doc=box.ownerDocument;box.innerHTML='';
+D.forEach(function(d){var val=S[d[0]]!=null?S[d[0]]:d[6],l=doc.createElement('label');l.innerHTML=d[1]+'<span>'+val+d[5]+'</span><input type="range" min="'+d[2]+'" max="'+d[3]+'" step="'+d[4]+'" value="'+val+'">';
  var inp=l.querySelector('input'),sp=l.querySelector('span');ap(d[0],val+d[5]);
- inp.oninput=function(){sp.textContent=inp.value+d[5];ap(d[0],inp.value+d[5]);S[d[0]]=+inp.value;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};box.appendChild(l)});
-document.getElementById('ajb').onclick=function(){document.getElementById('ajp').classList.toggle('on')};
-document.getElementById('ajr').onclick=function(){S={};try{localStorage.removeItem(K)}catch(e){}D.forEach(function(d,i){ap(d[0],d[6]+d[5]);var l=box.children[i];l.querySelector('input').value=d[6];l.querySelector('span').textContent=d[6]+d[5]})};
+ inp.oninput=function(){sp.textContent=inp.value+d[5];ap(d[0],inp.value+d[5]);S[d[0]]=+inp.value;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};box.appendChild(l)})}
+function reset(){S={};try{localStorage.removeItem(K)}catch(e){}D.forEach(function(d){ap(d[0],d[6]+d[5])});if(PW&&!PW.closed)build(PW.document.getElementById('ajs'))}
+var PW=null;
+function pop(){if(PW&&!PW.closed){PW.focus();return}
+ PW=window.open('','qr_ajustes','width=380,height=760,resizable=yes,scrollbars=yes');
+ if(!PW){document.getElementById('ajp').classList.toggle('on');return}
+ var d=PW.document;d.open();d.write('<!doctype html><html><head><meta charset="utf-8"><title>Ajustes finos dos cartões</title><style>body{font:13px Arial,sans-serif;margin:0;padding:12px 14px;background:#fff}h3{margin:0 0 6px;font-size:15px}label{display:block;margin:9px 0 0}label span{float:right;font-weight:700;color:#16a34a}input[type=range]{width:100%}button{width:100%;margin-top:10px;padding:9px;border:0;border-radius:9px;background:#16a34a;color:#fff;font-weight:800;cursor:pointer}button.b2{background:#e5e7eb;color:#111}</style></head><body><h3>⚙ Ajustes finos dos cartões</h3><div id="ajs"></div><button class="b2" id="ajr2">Restaurar padrão</button><button id="ajp2">🖨️ Imprimir (janela dos cartões)</button></body></html>');d.close();
+ build(d.getElementById('ajs'));d.getElementById('ajr2').onclick=reset;d.getElementById('ajp2').onclick=function(){window.focus();window.print()}}
+var box=document.getElementById('ajs');build(box);
+document.getElementById('ajb').onclick=pop;
+document.getElementById('ajr').onclick=reset;
 document.getElementById('ajpr').onclick=function(){window.print()};
 })();
 </script>
