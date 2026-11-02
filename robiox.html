@@ -229,7 +229,7 @@ function build(w){
   for(k=0;k<3;k++)rainbowArch(-(total*(k+.6)/3.2)-30,36+k*4);
   for(s=0;s<N;s++){answered[s]=false;stErr[s]=0;stCo[s]=0;sDone[s]=false}
 }
-function topicFor(i){var ts=wdef(W).t,wts=ts.map(function(t){return Math.max(.6,5.8-skg(t))}),r,k,tot=wts.reduce(function(a,b){return a+b},0);
+function topicFor(i){if(W===0&&i<2&&(ANO===6||ANO===7)&&B.G[ANO].add)return 'add';var ts=wdef(W).t,wts=ts.map(function(t){return Math.max(.6,5.8-skg(t))}),r,k,tot=wts.reduce(function(a,b){return a+b},0);
   for(k=0;k<rvq.length;k++)if(rvq[k].due<=i){var t=rvq[k].t;rvq.splice(k,1);return t}
   r=Math.random()*tot;for(k=0;k<ts.length;k++){r-=wts[k];if(r<=0)return ts[k]}return ts[0]}
 function buildGate(i){
