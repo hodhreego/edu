@@ -21,7 +21,7 @@
 .cd .q{width:19mm!important;height:19mm!important}.cd .q img,.cd .q canvas{width:19mm!important;height:19mm!important}
 .cd{position:relative;padding-right:5mm!important}.cd .pw{position:absolute;right:1mm;top:0;bottom:0;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font:700 7pt Arial,sans-serif;color:#e00000;white-space:nowrap}.cd .pw b{font-size:9pt;color:#e00000;letter-spacing:.3px}.cd .q{width:22mm!important;height:22mm!important}.cd .q img,.cd .q canvas{width:22mm!important;height:22mm!important}
 </style><style id="ajcss">
-:root{--qr:22mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:2mm}
+:root{--qr:22mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:0mm}
 .cd .q,.cd .q img,.cd .q canvas{width:var(--qr)!important;height:var(--qr)!important}
 .cd .l{font-size:var(--fl)!important}.cd .t{font-size:var(--fn)!important}
 .cd .pw b{font-size:var(--fp)!important}.cd .pw{font-size:calc(var(--fp)*.78)!important}
@@ -32,6 +32,7 @@
 #ajp.on{display:block}#ajp h3{margin:0 0 6px;font-size:14px}#ajp label{display:block;margin:7px 0 0}#ajp label span{float:right;font-weight:700;color:#16a34a}#ajp input[type=range]{width:100%}
 #ajp button{width:100%;margin-top:8px;padding:8px;border:0;border-radius:9px;background:#16a34a;color:#fff;font-weight:800;cursor:pointer}#ajp button.b2{background:#e5e7eb;color:#111}
 @media print{#ajb,#ajp{display:none!important}}
+.cd{border:0!important;border-radius:0!important;border-right:1.5px dotted #555!important;border-bottom:1.5px dotted #555!important}.cd:nth-child(-n+6){border-top:1.5px dotted #555!important}.cd:nth-child(5n+2){border-left:1.5px dotted #555!important}
 </style></head><body>
 <div class="pn">
 <label>Turma<select id="tu"></select></label>
@@ -58,7 +59,7 @@ function cards(esc,tur,max,nomes,out){
   for(var i=0;i<30&&n<=max;i++,n++){
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
-   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div><div class="n">nº '+n+' · login: <b>'+lg+'</b></div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
+   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'alu')+'</div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
    pg.appendChild(c);
    new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
@@ -71,7 +72,7 @@ $('pr').onclick=function(){window.print()};
 </script><button id="ajb" type="button" title="Ajustes">⚙</button>
 <div id="ajp"><h3>⚙ Ajustes dos cartões</h3><div id="ajs"></div><button type="button" id="ajr" class="b2">Restaurar padrão</button><button type="button" id="ajpr">🖨️ Imprimir</button></div>
 <script>
-(function(){var D=[['--qr','Tamanho do QR',14,30,.5,'mm',22],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno',5,9,.25,'pt',6.5],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',2]],R=document.documentElement,K='qr_aj',S={};
+(function(){var D=[['--qr','Tamanho do QR',14,30,.5,'mm',22],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno',5,9,.25,'pt',6.5],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--mg','Margem da folha',2,15,.5,'mm',7],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
 try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
 function ap(v,x){R.style.setProperty(v,x)}
 var box=document.getElementById('ajs');
