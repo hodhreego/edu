@@ -776,3 +776,10 @@ body.pfull #edu-nav,body.pfull .edu-nav,body.pfull #en-m{display:none!important}
 @media screen and (max-width:900px){#txt>.wa{height:auto!important;min-height:60vh}}
 
 .xapp.rbsp{background:#f1f5f9;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;height:100%;min-height:300px}.rbsp .rbl{font:900 34px Arial,sans-serif;color:#111}.rbsp .rbl b{color:#1e3a8a}.rbsp small{opacity:.7}.rbsn{width:34px;height:34px;border:4px solid #1e3a8a33;border-top-color:#1e3a8a;border-radius:50%;animation:rbspin .8s linear infinite}@keyframes rbspin{to{transform:rotate(360deg)}}
+/* Open Finance e senhas dentro do aparelho (a gaveta de extratos foi removida) */
+#dash{display:none!important}body,body:has(#dash.open){padding-bottom:0!important}
+.ofin .ofb{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;border:2px solid var(--c);border-radius:12px;padding:8px;margin:6px 0;background:#fff}
+.ofin .ofb>b{background:var(--c);color:var(--t);border-radius:8px;padding:2px 8px;font-size:13px}.ofin .ofb>span{font:800 15px Arial;margin-left:auto}.ofin .ofb>span.neg{color:#c00}
+.ofin .ofb small{font-size:11px;color:#556}.ofin .ofb button{font-size:11px;padding:4px 8px;border:2px solid #333;border-radius:8px;background:#eef;cursor:pointer}
+.ofin .ofs{margin:8px 0;font-size:13px}.ofin .btn{font-size:12px;margin:3px 0}
+.pwn{background:#fff8c5;border:2px dashed #b58900;border-radius:10px;margin:6px 8px;padding:6px 8px;font-size:12px;display:flex;flex-wrap:wrap;gap:2px 10px}.pwn>b{flex:0 0 100%}

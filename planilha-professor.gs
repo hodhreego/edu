@@ -122,6 +122,7 @@ function reconstruir_() {
 function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
   return ok_('Planilha do professor ativa.');
 }
 function ok_(t) { return ContentService.createTextOutput(t); }
@@ -371,6 +372,7 @@ function rbxSave_(d) {
     if (js.length > 45000) return ok_('grande demais');
     var linha = [login, Number(d.ts) || Date.now(), js];
     if (row) sh.getRange(row, 1, 1, 3).setValues([linha]); else sh.appendRow(linha);
+    if (d.sum && login !== 'mestre') { try { rbxAlunos_(login, d.ts, d.sum); } catch (err) { } }
     return ok_('ok');
   } finally { lock.releaseLock(); }
 }
@@ -406,4 +408,54 @@ function rbxResp_(d) {
     sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
     return ok_('ok');
   } finally { lock.releaseLock(); }
+}
+
+// ---- RobIox: planilha "RobIox-Alunos" (uma linha por aluno) e dados do painel ao vivo ----
+var RBX_KEY = 'ludo2026';
+var RBX_SENHA = '2026.2026';
+var RBX_COLS = ['Login', 'Senha', 'Nick', 'Série / matéria', 'Nível', 'XP', 'Moedas', 'Cofrinho (R$)', 'Gasto na loja (moedas)', 'Vendido (moedas)', 'Itens', 'Fases começadas', 'Fases concluídas', '% concluído', 'Estrelas', 'Acertos (jogo)', 'Fases perfeitas', 'Melhor sequência', 'Mundos concluídos', 'Respostas registradas', '% acertos', 'Nota (% concluído)', 'Nota (% acertos)', 'Última atividade', 'Gastos detalhados', 'Cofrinho detalhado', 'json'];
+function rbxSerie_(a) { a = Number(a); return a >= 6 && a <= 9 ? a + 'º ano (Matemática)' : a === 10 ? 'Inglês' : ({ 11: '1ª série · Educação financeira', 11.5: '' })[a] || ({ 12: 'História', 13: 'Geografia', 14: 'Espanhol', 15: 'Educação Financeira' })[a] || String(a); }
+function rbxAlunos_(login, ts, s) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('RobIox-Alunos');
+  if (!sh) {
+    sh = ss.insertSheet('RobIox-Alunos');
+    sh.getRange(1, 1, 1, RBX_COLS.length).setValues([RBX_COLS]).setBackground('#1e3a8a').setFontColor('#ffffff').setFontWeight('bold').setWrap(true).setVerticalAlignment('middle');
+    sh.setFrozenRows(1); sh.setFrozenColumns(1); sh.setRowHeight(1, 44);
+    sh.setColumnWidths(1, RBX_COLS.length - 1, 105); sh.setColumnWidth(25, 380); sh.setColumnWidth(26, 260); sh.hideColumns(27);
+    var r1 = SpreadsheetApp.newConditionalFormatRule().setGradientMaxpointWithValue('#57bb8a', SpreadsheetApp.InterpolationType.NUMBER, '10').setGradientMinpointWithValue('#f4c7c3', SpreadsheetApp.InterpolationType.NUMBER, '0').setRanges([sh.getRange('V2:W2000')]).build();
+    sh.setConditionalFormatRules([r1]);
+  }
+  var n = sh.getLastRow(), row = 0;
+  if (n > 1) { var ids = sh.getRange(2, 1, n - 1, 1).getValues(); for (var i = 0; i < ids.length; i++) if (ids[i][0] === login) { row = i + 2; break; } }
+  if (!row) row = n + 1;
+  var st = s.stat || {}, j = s.jar || {}, tot = Number(s.tot) || 50, fim = Number(s.fim) || 0, pct = Math.round(fim / tot * 100);
+  var gastos = (s.gastos || []).map(function (g) { return Utilities.formatDate(new Date(g.t), 'America/Sao_Paulo', 'dd/MM HH:mm') + ' ' + g.item + ' (' + g.preco + ' moedas)'; }).join(' | ');
+  var nd = j.nd || {}, notas = Object.keys(nd).sort(function (a, b) { return b - a; }).map(function (k) { return nd[k] + '× R$' + k; });
+  var cof = 'moedas: ' + (j.moedas1 || 0) + '× R$1 · ' + (j.moedas50 || 0) + '× 50c · ' + (j.moedas25 || 0) + '× 25c' + (notas.length ? ' · notas: ' + notas.join(', ') : '');
+  var vals = [login, RBX_SENHA, s.nick || '', rbxSerie_(s.ano), s.nivel || 1, s.xp || 0, s.coins || 0, (Number(s.cash) || 0) / 100, s.spent || 0, s.sold || 0, (s.own || []).length, Number(s.ini) || 0, fim, pct / 100, s.est || 0, st.correct || 0, st.perfeitas || 0, st.combo || 0, st.mundos || 0, '', '', '', '', new Date(Number(s.t) || Number(ts) || Date.now()), gastos, cof, JSON.stringify(s).slice(0, 45000)];
+  sh.getRange(row, 1, 1, vals.length).setValues([vals]);
+  var rs = "'RobIox-Respostas'";
+  sh.getRange(row, 20).setFormula('=IFERROR(COUNTIF(' + rs + '!B:B,A' + row + '),0)');
+  sh.getRange(row, 21).setFormula('=IFERROR(COUNTIFS(' + rs + '!B:B,A' + row + ',' + rs + '!K:K,"SIM")/T' + row + ',0)');
+  sh.getRange(row, 22).setFormula('=ROUND(N' + row + '*10,1)');
+  sh.getRange(row, 23).setFormula('=ROUND(U' + row + '*10,1)');
+  sh.getRange(row, 14).setNumberFormat('0%'); sh.getRange(row, 21).setNumberFormat('0%'); sh.getRange(row, 8).setNumberFormat('"R$" #,##0.00'); sh.getRange(row, 24).setNumberFormat('dd/MM/yyyy HH:mm');
+}
+function rbxDash_(p) {
+  if (String(p.k || '') !== RBX_KEY) return ContentService.createTextOutput(JSON.stringify({ ok: 0 })).setMimeType(ContentService.MimeType.JSON);
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] }, sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
+  if (rs && rs.getLastRow() > 1) {
+    var rn = rs.getLastRow(), v = rs.getRange(2, 1, rn - 1, 12).getValues();
+    v.forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0 }; cnt[l].n++; if (r[10] === 'SIM') cnt[l].ok++; });
+    out.recentes = v.slice(-30).reverse().map(function (r) { return { t: new Date(r[0]).getTime(), login: r[1], mat: r[2], mundo: r[3], fase: r[4], tema: r[5], q: r[7], ok: r[10] === 'SIM' }; });
+  }
+  if (sh && sh.getLastRow() > 1) {
+    var d = sh.getRange(2, 1, sh.getLastRow() - 1, 27).getValues();
+    d.forEach(function (r) {
+      var s = {}; try { s = JSON.parse(r[26]); } catch (e) { }
+      var c = cnt[r[0]] || { n: 0, ok: 0 };
+      out.alunos.push({ login: r[0], nick: r[2], serie: r[3], nivel: r[4], xp: r[5], moedas: r[6], cofrinho: r[7], gasto: r[8], vendido: r[9], itens: r[10], ini: r[11], fim: r[12], pct: r[13], est: r[14], acertosJogo: r[15], perfeitas: r[16], combo: r[17], mundos: r[18], resp: c.n, respOk: c.ok, ultima: new Date(r[23]).getTime(), own: s.own || [], gastos: (s.gastos || []).slice(0, 8) });
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
