@@ -60,6 +60,31 @@
         var targetPBlocks = 1;
         var targetRBlocks = 1;
 
+        // ---- AO VIVO: quem está com a Torre aberta entra na disputa; o rival passa a ser um colega real ----
+        var LIVE = !!(window.EDU_ENDPOINT && window.RBX_LOGIN && window.RBX_LOGIN !== 'mestre');
+        var others = {}, livePoll = null, liveRivalKey = null, myNick = '';
+        try { myNick = (window.RBX_NICK_ATUAL && window.RBX_NICK_ATUAL()) || ''; } catch (e) {}
+        function liveSend(est) {
+          if (!LIVE) return;
+          var u = window.EDU_ENDPOINT + (window.EDU_ENDPOINT.indexOf('?') < 0 ? '?' : '&') + 'acao=rbxlive&sala=torre&login=' + encodeURIComponent(window.RBX_LOGIN) +
+            '&nick=' + encodeURIComponent(myNick) + '&pos=' + Math.floor(targetPBlocks) + '&vidas=' + lives + '&est=' + (est || state);
+          try {
+            fetch(u).then(function (r) { return r.json(); }).then(function (d) {
+              if (!d || !d.players) return;
+              others = {};
+              for (var k in d.players) if (k !== window.RBX_LOGIN && d.players[k].s !== 'saiu') others[k] = d.players[k];
+              // rival = colega com altura mais próxima da minha (mantém o mesmo enquanto estiver online)
+              if (!others[liveRivalKey]) {
+                var best = null, bd = 1e9;
+                for (var q in others) { var dd = Math.abs((others[q].p || 0) - targetPBlocks); if (dd < bd) { bd = dd; best = q; } }
+                liveRivalKey = best;
+              }
+            }).catch(function () {});
+          } catch (e) {}
+        }
+        if (LIVE) { liveSend('entrou'); livePoll = setInterval(function () { if (running) liveSend(); }, 2000); }
+        function rivalLive() { return LIVE && liveRivalKey && others[liveRivalKey] ? others[liveRivalKey] : null; }
+
         var currentQ = null;
         var alts = [];
         var selectedAlt = 0;
@@ -174,6 +199,7 @@
           playerBlocks += (targetPBlocks - playerBlocks) * Math.min(1, dt * 6);
           rivalBlocks += (targetRBlocks - rivalBlocks) * Math.min(1, dt * 6);
 
+          var rl = rivalLive(); if (rl) targetRBlocks = Math.max(1, rl.p || 1);
           if (shakeTime > 0) shakeTime -= dt;
 
           for (var p = particles.length - 1; p >= 0; p--) {
@@ -190,7 +216,7 @@
             if (countTimer <= 0) nextQuestion();
           } else if (state === 'PLAYING') {
             qTime -= dt;
-            if (!rivalAnswered && (12 - qTime) >= rivalTargetTime) {
+            if (!rivalLive() && !rivalAnswered && (12 - qTime) >= rivalTargetTime) {
               rivalAnswered = true;
               var accRate = 0.5 + (api.tier ? api.tier() * 0.05 : 0.1);
               if (Math.random() < accRate) {
@@ -251,6 +277,7 @@
 
         function close() {
           running = false;
+          if (livePoll) { clearInterval(livePoll); try { liveSend('saiu'); } catch (e) {} }
           window.removeEventListener('resize', resize);
           window.removeEventListener('keydown', onKeyDown);
           window.removeEventListener('pointerdown', onPointerDown);
@@ -450,8 +477,25 @@
           ctx.strokeText('VOCÊ (' + Math.floor(playerBlocks) + ')', pBaseX, pCharY - charSize * 1.55);
           ctx.fillText('VOCÊ (' + Math.floor(playerBlocks) + ')', pBaseX, pCharY - charSize * 1.55);
 
-          ctx.strokeText('RIVAL (' + Math.floor(rivalBlocks) + ')', rBaseX, rCharY - charSize * 1.55);
-          ctx.fillText('RIVAL (' + Math.floor(rivalBlocks) + ')', rBaseX, rCharY - charSize * 1.55);
+          var rlab = rivalLive() ? String(rivalLive().n || liveRivalKey).slice(0, 12).toUpperCase() : 'RIVAL';
+          ctx.strokeText(rlab + ' (' + Math.floor(rivalBlocks) + ')', rBaseX, rCharY - charSize * 1.55);
+          ctx.fillText(rlab + ' (' + Math.floor(rivalBlocks) + ')', rBaseX, rCharY - charSize * 1.55);
+
+          // Ranking ao vivo (canto direito)
+          if (LIVE) {
+            var ok = Object.keys(others), rk = ok.map(function (k) { return { n: others[k].n || k, p: others[k].p || 0 }; });
+            rk.push({ n: 'Você', p: Math.floor(targetPBlocks), me: 1 });
+            rk.sort(function (a, b) { return b.p - a.p; });
+            var n6 = Math.min(rk.length, 6), px0 = W - 215;
+            ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(px0, 50, 200, 28 + n6 * 22);
+            ctx.textAlign = 'left'; ctx.fillStyle = '#ffeb3b'; ctx.font = 'bold 14px sans-serif'; ctx.lineWidth = 0;
+            ctx.fillText('🔴 AO VIVO · ' + (ok.length + 1) + ' na torre', px0 + 8, 70);
+            for (var ri = 0; ri < n6; ri++) {
+              ctx.fillStyle = rk[ri].me ? '#69f0ae' : '#fff'; ctx.font = '13px sans-serif';
+              ctx.fillText((ri + 1) + 'º ' + String(rk[ri].n).slice(0, 14) + ' · ' + rk[ri].p + ' blocos', px0 + 8, 92 + ri * 22);
+            }
+            ctx.textAlign = 'center'; ctx.lineWidth = 3;
+          }
 
           // Mar de Lava
           var lavaGrad = ctx.createLinearGradient(0, lavaY, 0, H);
