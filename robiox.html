@@ -425,7 +425,7 @@ function step(dt){
   var tx=mx*sp,tz=-mz*sp,k=Math.min(1,dt*(pl.gr?14:6));pl.vx+=(tx-pl.vx)*k;pl.vz+=(tz-pl.vz)*k;
   if(pl.ride&&pl.ride.alive){pl.x+=pl.ride.dx;pl.z+=pl.ride.dz}
   if(pl.gr)pl.coy=.12;else pl.coy-=dt;
-  if((inp.jump||keys[' ']||G.jump)&&pl.coy>0){pl.vy=combo>=3?12.4:10.8;pl.gr=false;pl.coy=0;pl.ride=null;beep(520,.06)}
+  if((inp.jump||keys[' ']||G.jump)&&pl.coy>0){pl.vy=(combo>=3?12.4:10.8)*(1+.14*Math.min(errs,3));pl.gr=false;pl.coy=0;pl.ride=null;beep(520,.06)}
   pl.vy-=30*dt;var py=pl.y;pl.x+=pl.vx*dt;pl.z+=pl.vz*dt;pl.y+=pl.vy*dt;pl.gr=false;pl.ride=null;
   if(pl.vy<=0){for(i=0;i<plats.length;i++){p=plats[i];if(!p.alive||(p.fall&&tNow-p.shake>.5))continue;
     if(py>=p.top-.08&&pl.y<=p.top&&Math.abs(pl.x-p.x)<=p.w/2+.6&&Math.abs(pl.z-p.z)<=p.d/2+.6){pl.y=p.top;pl.vy=0;pl.gr=true;pl.ride=p;landOn(p);break}}}
