@@ -71,7 +71,22 @@
         try { var vs = window.speechSynthesis.getVoices(); for (var i = 0; i < vs.length; i++) if (/pt[-_]BR/i.test(vs[i].lang)) return vs[i]; for (i = 0; i < vs.length; i++) if (/^pt/i.test(vs[i].lang)) return vs[i]; } catch (e) {}
         return null;
       }
+      var vozAud = null;
+      try { vozAud = new Audio('batatinha-voz.wav'); vozAud.preload = 'auto'; } catch (e) {}
       function falar(dur) {
+        try {
+          if (vozAud) {
+            var d = vozAud.duration && isFinite(vozAud.duration) ? vozAud.duration : 4;
+            vozAud.pause(); vozAud.currentTime = 0;
+            vozAud.playbackRate = Math.max(0.6, Math.min(1.5, d / dur));
+            var pr = vozAud.play();
+            if (pr && pr.catch) pr.catch(function () { falarTTS(dur); });
+            return;
+          }
+        } catch (e) {}
+        falarTTS(dur);
+      }
+      function falarTTS(dur) {
         try {
           if (!window.speechSynthesis) return;
           window.speechSynthesis.cancel();
@@ -82,7 +97,7 @@
           window.speechSynthesis.speak(u);
         } catch (e) {}
       }
-      function calar() { try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {} }
+      function calar() { try { if (vozAud) vozAud.pause(); } catch (e) {} try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {} }
 
       // ---------- perguntas ----------
       function getQuestion() {
@@ -286,7 +301,7 @@
       }
 
       function render() {
-        TOPY = H * 0.24; BOTY = H;
+        TOPY = H * 0.38; BOTY = H;
         var half = Math.min(W * 0.46, 330), cx = W / 2;
         ctx.clearRect(0, 0, W, H);
         // céu e chão
@@ -308,7 +323,7 @@
 
         // boneca
         var ds = Math.max(1.2, Math.min(2.3, W / 260, H / 380));
-        drawDoll(cx, TOPY - 74 * ds * 0.35, ds);
+        drawDoll(cx, TOPY - 62 * ds, ds);
 
         // outros jogadores (ao vivo)
         var okeys = Object.keys(others);
@@ -337,7 +352,7 @@
         if (LIVE) {
           var rk = okeys.filter(function (q) { return others[q].s !== 'saiu'; }).map(function (q) { return { n: others[q].n || q, p: others[q].p || 0 }; });
           rk.push({ n: 'Você', p: progress, me: 1 }); rk.sort(function (a, b) { return b.p - a.p; });
-          var n6 = Math.min(rk.length, 6), rx = 12, ry = 112, rw = Math.min(200, W * 0.5);
+          var n6 = Math.min(rk.length, 4), rx = 12, ry = H - 40 - (30 + Math.min(rk.length, 4) * 24) - 50, rw = Math.min(190, W * 0.5);
           rr(rx, ry, rw, 30 + n6 * 24, 10, 'rgba(0,0,0,.55)');
           ctx.fillStyle = '#ffeb3b'; ctx.font = 'bold 14px Arial'; ctx.fillText('🔴 AO VIVO · ' + rk.length + ' na corrida', rx + 8, ry + 21);
           ctx.font = '14px Arial';
@@ -363,8 +378,10 @@
         if (state === 'COUNTDOWN') {
           ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, W, H);
           ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = 'bold 110px Arial'; ctx.fillText(Math.max(1, Math.ceil(timer)), cx, H * 0.5);
-          ctx.font = 'bold 26px Arial'; ctx.fillText('Segure a tela para correr enquanto ela canta', cx, H * 0.6);
-          ctx.font = '20px Arial'; ctx.fillText('Quando ela virar, responda em 10 segundos!', cx, H * 0.66);
+          ctx.font = 'bold ' + Math.min(24, W / 15) + 'px Arial'; ctx.fillText('Segure a tela para correr', cx, H * 0.6);
+          ctx.fillText('enquanto ela canta', cx, H * 0.6 + 30);
+          ctx.font = Math.min(19, W / 19) + 'px Arial'; ctx.fillText('Quando ela virar, responda', cx, H * 0.6 + 66);
+          ctx.fillText('em 10 segundos!', cx, H * 0.6 + 90);
         }
         if (state === 'WAIT') {
           rr(cx - Math.min(W * 0.45, 230), H * 0.42, Math.min(W * 0.9, 460), 70, 16, 'rgba(0,0,0,.65)');
@@ -408,7 +425,7 @@
           ctx.fillStyle = 'rgba(0,0,0,.85)'; ctx.fillRect(0, 0, W, H);
           ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = 'bold ' + Math.min(52, W / 8) + 'px Arial';
           ctx.fillText(state === 'VICTORY' ? 'VITÓRIA! 🎉' : 'FIM DE JOGO 💀', cx, H * 0.28);
-          ctx.font = '26px Arial'; ctx.fillText('Progresso: ' + Math.floor(progress) + '%   ·   Acertos: ' + hits + '   ·   🪙 ' + coins, cx, H * 0.38);
+          ctx.font = Math.min(26, W / 16) + 'px Arial'; ctx.fillText('Progresso: ' + Math.floor(progress) + '%   ·   Acertos: ' + hits + '   ·   🪙 ' + coins, cx, H * 0.38);
           btnRects.again = { x: cx - 130, y: H * 0.5, w: 260, h: 62 }; btnRects.exit = { x: cx - 130, y: H * 0.62, w: 260, h: 62 };
           rr(btnRects.again.x, btnRects.again.y, 260, 62, 16, '#43a047'); rr(btnRects.exit.x, btnRects.exit.y, 260, 62, 16, '#e53935');
           ctx.fillStyle = '#fff'; ctx.font = 'bold 26px Arial'; ctx.fillText('Jogar de novo', cx, H * 0.5 + 40); ctx.fillText('Sair', cx, H * 0.62 + 40);
