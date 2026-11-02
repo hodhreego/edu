@@ -58,10 +58,10 @@ var MAN={};function LK(){return ($('lk').value||'').trim().replace(/^https?:\/\/
 $('ok').onclick=function(){MAN={};$('ta').value.split(/\n/).forEach(function(l){var m=l.trim().match(/^(\d{1,2})\s*[-.;:\t ]\s*(.+)$/);if(m)MAN[+m[1]]=m[2].trim()});$('ro').classList.remove('on');gera()};
 function nomeAbrev(n){return String(n||'').trim().split(/\s+/).map(function(w,i,a){return (i&&['da','de','do','das','dos','e'].indexOf(w.toLowerCase())>=0)?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}).join(' ')}
 function cards(esc,tur,max,nomes,out){
- var tot=Math.ceil(max/30),n=1;
+ var tot=Math.ceil(max/30),ord=[],k0,n;for(k0=1;k0<=max;k0++)if(nomes&&nomes[k0])ord.push(k0);for(k0=1;k0<=max;k0++)if(!(nomes&&nomes[k0]))ord.push(k0);var oi=0;
  for(var p=0;p<tot;p++){var pg=document.createElement('div');pg.className='pg';
   pg.innerHTML='<div class="ti"><span>RobIox · turma '+tur.toUpperCase()+' · '+esc.toUpperCase()+'</span><span>pág. '+(p+1)+'/'+tot+'</span></div>';
-  for(var i=0;i<30&&n<=max;i++,n++){
+  for(var i=0;i<30&&oi<ord.length;i++,oi++){n=ord[oi];
    var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
    var nm=nomes&&nomes[n];
    c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'')+'</div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
