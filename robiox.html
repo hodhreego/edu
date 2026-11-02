@@ -190,7 +190,7 @@ function rainbowArch(z,R0){var g=new THREE.Group(),i;for(i=0;i<7;i++){var t=new 
 function portal(x,z,col,wd){var g=new THREE.Group(),mt=new THREE.MeshLambertMaterial({color:col}),a=new THREE.Mesh(new THREE.BoxGeometry(.5,4.4,.5),mt),b=a.clone(),c=new THREE.Mesh(new THREE.BoxGeometry(wd,.6,.6),mt),dr=new THREE.Mesh(new THREE.PlaneGeometry(wd-.6,4.2),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.38,side:THREE.DoubleSide}));
   a.position.set(-wd/2+.25,2.2,0);b.position.set(wd/2-.25,2.2,0);c.position.set(0,4.4,0);dr.position.set(0,2.2,0);[a,b,c].forEach(function(m){m.castShadow=true});g.add(a,b,c,dr);g.position.set(x,0,z);S.add(g);return {g:g,door:dr}}
 /* ---------- segmentos de obstáculo (bem diferentes entre si) ---------- */
-function segs(s,ws){var all=['hop','moving','zmove','beam','rainbow','steps','crumble','stones','balls','wall','tiny','stairs'],ok=s<1?['hop','rainbow','stairs']:s<2?['hop','moving','rainbow','stairs','stones']:s<3?['hop','moving','zmove','rainbow','crumble','stairs','balls','stones']:all,out=[],n=2+(s>=4?1:0)+(s>=8?1:0),prev='',k;
+function segs(s,ws){var all=['zig','zig','hop','moving','zmove','beam','rainbow','steps','crumble','stones','balls','wall','tiny','stairs'],ok=s<1?['hop','zig','rainbow','stairs']:s<2?['hop','zig','moving','rainbow','stairs','stones']:s<3?['hop','zig','moving','zmove','rainbow','crumble','stairs','balls','stones']:all,out=[],n=2+(s>=4?1:0)+(s>=8?1:0),prev='',k;
   for(k=0;k<n;k++){var c=pick(ok.filter(function(x){return x!==prev}));out.push(c);prev=c}
   if(!out.some(function(x){return x==='moving'||x==='zmove'}))out[ri(0,out.length-1)]=s>=1&&Math.random()<.5?'zmove':'moving';return out}
 function gapMul(){var m=(([.5,.62,.78,1][ST.dif==null?2:ST.dif]||.78)*.85);if(errs>=3)m*=.85;if(errs>=6)m*=.85;return m}
@@ -204,6 +204,7 @@ function build(w){
     cur-=10;if(s===N)break;
     segs(s).forEach(function(t,q){
       var x,d,k2;
+      if(t==='zig'){var nz=5+(s>=5?1:0),sd=Math.random()<.5?1:-1;for(k2=0;k2<nz;k2++){cur-=2.4*GM;x=sd*(k2%2?3.4:-3.4);addP({x:x,z:cur-1.7,w:4.2,d:3.4,col:col(s*3+k2+q),edge:true});if(k2===2&&Math.random()<.7)noteHi(x,cur-1.7);else coin(x,cur-1.7);cur-=3.4}}
       if(t==='hop'){var nn=3+(s>=5?1:0);for(k2=0;k2<nn;k2++){cur-=3*GM;x=ri(-3,3);addP({x:x,z:cur-1.6,w:3.2,d:3.2,col:col(s*3+k2+q),edge:true});coin(x,cur-1.6);if(k2===1&&Math.random()<.7)noteHi(x,cur-1.6);else coinHi(x,cur-1.6);cur-=3.2}}
       else if(t==='moving'){for(k2=0;k2<2;k2++){cur-=3*GM;addP({x:0,z:cur-1.8,w:4.4,d:3.6,col:col(s+k2+q+2),type:'move',amp:ri(22,36)/10,sp:.9+s*.07,ph:Math.random()*6,edge:true});cur-=3.6}}
       else if(t==='zmove'){for(k2=0;k2<2;k2++){cur-=3.6*GM;addP({x:ri(-2,2),z:cur-1.8,w:3.8,d:3.4,col:col(s+k2+q+5),type:'zmove',amp:ri(20,28)/10,sp:.8+s*.06,ph:Math.random()*6,edge:true});cur-=3.4}}
