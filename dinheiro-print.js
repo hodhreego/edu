@@ -33,6 +33,7 @@
     '@media print{body.dprint-on>*:not(#dprintSheet){display:none!important}body.dprint-on #dprintSheet{display:block!important;position:static;overflow:visible;background:#fff;padding:0}#dprintBar{display:none!important}.dpsheet{max-width:none;margin:0;padding:0}@page{size:A4;margin:10mm}}';
   document.head.appendChild(css);
 
+  function init() {
   var btn = document.createElement('button');
   btn.id = 'dprintBtn';
   btn.type = 'button';
@@ -103,4 +104,6 @@
   document.getElementById('dpfill').onchange = function () { CFG.fill = this.checked; save(); if (document.body.classList.contains('dprint-on')) build(); };
   document.getElementById('dpprint').onclick = function () { build(); window.print(); };
   document.getElementById('dpclose').onclick = close;
+  }
+  if (document.body) init(); else document.addEventListener('DOMContentLoaded', init);
 })();
