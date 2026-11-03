@@ -26,8 +26,10 @@
     '.dpsheet{background:#fff;color:#111;max-width:794px;margin:0 auto;padding:14mm 12mm;font-family:"Segoe UI",Arial,sans-serif}' +
     '.dpsheet h1{font-size:22px;margin:0 0 2px;color:#1f3a8a}.dpsheet .dpsub{font-size:12px;color:#475569;margin-bottom:8px}' +
     '.dpgrid{display:flex;flex-wrap:wrap;gap:var(--dgap,2mm);align-content:flex-start}' +
-    '.dpm{display:inline-flex;height:var(--dh,22mm);align-items:center;justify-content:center}' +
+    '.dpm{display:inline-flex;height:var(--dh,22mm);align-items:center;justify-content:center;position:relative;overflow:hidden}' +
     '.dpm img,.dpm svg{height:var(--dh,22mm);width:auto;display:block;filter:none}' +
+    '.dpm::after{content:"SEM VALOR";position:absolute;right:2.5%;top:50%;width:16%;height:12%;transform:translateY(-50%) rotate(-18deg);display:flex;align-items:center;justify-content:center;font:800 5px Arial;color:#7a0b0b;background:rgba(255,255,255,.38);border:1px solid rgba(122,11,11,.35);opacity:.5;white-space:nowrap;pointer-events:none;box-sizing:border-box}' +
+    '.dpm.coin::after{width:30%;height:8%;font-size:4px;right:0}' +
     '@media print{body.dprint-on>*:not(#dprintSheet){display:none!important}body.dprint-on #dprintSheet{display:block!important;position:static;overflow:visible;background:#fff;padding:0}#dprintBar{display:none!important}.dpsheet{max-width:none;margin:0;padding:0}@page{size:A4;margin:10mm}}';
   document.head.appendChild(css);
 
@@ -77,7 +79,7 @@
     var bill = v >= 200;
     var h = bill ? CFG.h : Math.max(8, CFG.h * 0.58);
     var html = bill ? window.DR.bill(v) : window.DR.coin(v);
-    return '<span class="dpm" style="--dh:' + h + 'mm;--h:' + h + 'mm">' + html + '</span>';
+    return '<span class="dpm ' + (bill ? 'bill' : 'coin') + '" style="--dh:' + h + 'mm;--h:' + h + 'mm">' + html + '</span>';
   }
   function build() {
     var items = moneyItems();
