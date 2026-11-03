@@ -438,12 +438,26 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .rank-login, .name-alias {
+            font-size: .72rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            background: var(--card-hover);
+            border-radius: 99px;
+            padding: 1px 7px;
+            white-space: nowrap;
+        }
+        .prog-name-wrap {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        }
 
         .rank-sub {
             font-size: 0.8rem;
             color: var(--text-dim);
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .metric-cell {
@@ -475,6 +489,70 @@
             background: linear-gradient(90deg, var(--accent), #c084fc);
             border-radius: 6px;
             transition: width 0.6s ease;
+        }
+
+        @keyframes barBlink {
+            0%, 100% { filter: brightness(1); box-shadow: 0 0 0 rgba(16,185,129,0); }
+            50% { filter: brightness(1.55); box-shadow: 0 0 12px rgba(16,185,129,.85); }
+        }
+        .bar-fill.live-bar, .game-card.on .g-bar i {
+            animation: barBlink 1.05s ease-in-out infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,.55); }
+            50% { box-shadow: 0 0 0 7px rgba(16,185,129,0); }
+        }
+        .rank-item.is-live, .prog-card.is-live {
+            outline: 2px solid var(--green);
+            outline-offset: -2px;
+            animation: livePulse 1.6s ease-out infinite;
+        }
+        .live-act {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: var(--green-bg); color: var(--green);
+            border: 1px solid rgba(16,185,129,.45);
+            border-radius: 99px; padding: 2px 9px;
+            font-size: .72rem; font-weight: 900; white-space: nowrap;
+            max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+        }
+        .prog-live {
+            background: var(--green-bg); border: 1px solid rgba(16,185,129,.4);
+            border-radius: 10px; padding: 6px 10px; font-size: .82rem;
+            color: var(--green); display: flex; gap: 6px; align-items: center;
+        }
+        .hist-trend {
+            display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+            font-size: .74rem; color: var(--text-dim);
+        }
+        .hist-trend .pill-ok, .hist-trend .pill-err {
+            border-radius: 99px; padding: 1px 8px; font-weight: 900;
+        }
+        .hist-trend .pill-ok { background: var(--green-bg); color: var(--green); }
+        .hist-trend .pill-err { background: var(--red-bg); color: var(--red); }
+        .prog-hist {
+            margin-top: 9px; border-top: 1px dashed var(--border);
+            padding-top: 8px; display: flex; flex-direction: column; gap: 4px;
+        }
+        .hist-title {
+            font-size: .66rem; text-transform: uppercase; letter-spacing: .06em;
+            color: var(--text-dim); font-weight: 900; margin-top: 4px;
+        }
+        .hist-item {
+            display: flex; gap: 6px; align-items: flex-start;
+            font-size: .76rem; line-height: 1.25;
+        }
+        .hist-item .hi { flex: none; font-weight: 900; }
+        .hist-item.ok .hi { color: var(--green); }
+        .hist-item.err .hi { color: var(--red); }
+        .hist-item.next { color: var(--text-dim); }
+        .hist-q {
+            overflow: hidden; display: -webkit-box;
+            -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .hist-empty { font-size: .74rem; color: var(--text-dim); }
+        @media (prefers-reduced-motion: reduce) {
+            .bar-fill.live-bar, .game-card.on .g-bar i,
+            .rank-item.is-live, .prog-card.is-live { animation: none; }
         }
 
         .bar-label-inner {
@@ -1122,6 +1200,13 @@
     </div>
 
     <script src="config.js"></script>
+    <script src="robiox-banco.js"></script>
+    <script>
+        // Nomes reais só no painel local (alunos-rco.js tem dados pessoais e não vai para o GitHub)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+            document.write('<script src="alunos-rco.js"><\/script>');
+        }
+    </script>
     <script>
         // --- Configuração & Estado ---
         const urlParams = new URLSearchParams(window.location.search);
@@ -1383,6 +1468,139 @@
             return 'R$ ' + num.toFixed(2).replace('.', ',');
         }
 
+        function lvlXp(xp) {
+            let l = 1, need = 100; xp = Number(xp) || 0;
+            while (xp >= need) { xp -= need; l++; need = 100 + 30 * l; }
+            return l;
+        }
+        function serieAno(a) {
+            a = Number(a) || 0;
+            if (a >= 6 && a <= 9) return a + 'º ano (Matemática)';
+            if (a === 10) return 'Inglês';
+            if (a === 11) return '1ª série · Educação financeira';
+            return ({ 12: 'História', 13: 'Geografia', 14: 'Espanhol', 15: 'Educação Financeira' })[a] || String(a);
+        }
+
+        // A conta mestre não entra na aba RobIox-Alunos; buscamos o progresso bruto e montamos a linha.
+        async function adicionarMestre(data) {
+            if (!data || !Array.isArray(data.alunos) || data.alunos.some(a => a.login === 'mestre')) return;
+            const endpoint = window.EDU_ENDPOINT || '';
+            if (!endpoint) return;
+            try {
+                const r = await fetch(endpoint + (endpoint.indexOf('?') < 0 ? '?' : '&') + 'acao=rbxload&login=mestre');
+                const j = await r.json();
+                if (!j || !j.ok || !j.st) return;
+                const st = j.st;
+                const rec = (data.recentes || []).filter(x => x.login === 'mestre');
+                const temas = {};
+                rec.forEach(x => {
+                    const t = String(x.tema || '-');
+                    temas[t] = temas[t] || { n: 0, ok: 0 };
+                    temas[t].n++; if (x.ok) temas[t].ok++;
+                });
+                const an = Number(st.ano) || 7, pf = an + '-';
+                let ini = 0, fim = 0, est = 0;
+                const mw = {};
+                Object.keys(st.ini || {}).forEach(k => {
+                    if (k.indexOf(pf) !== 0) return;
+                    ini++;
+                    const w = k.split('-')[1];
+                    mw[w] = mw[w] || { n: 'Mundo ' + w, i: 0, f: 0, e: 0 };
+                    mw[w].i++;
+                });
+                Object.keys(st.stars || {}).forEach(k => {
+                    if (k.indexOf(pf) !== 0 || !(st.stars[k] > 0)) return;
+                    fim++; est += Number(st.stars[k]) || 0;
+                    const w = k.split('-')[1];
+                    mw[w] = mw[w] || { n: 'Mundo ' + w, i: 0, f: 0, e: 0 };
+                    mw[w].f++; mw[w].e += Number(st.stars[k]) || 0;
+                });
+                data.alunos.push({
+                    login: 'mestre',
+                    nick: st.nick || 'Professor (mestre)',
+                    serie: serieAno(an),
+                    nivel: lvlXp(st.xp),
+                    xp: Number(st.xp) || 0,
+                    moedas: Number(st.coins) || 0,
+                    cofrinho: (Number(st.cash) || 0) / 100,
+                    gasto: Number(st.spent) || 0,
+                    vendido: Number(st.sold) || 0,
+                    itens: Object.keys(st.own || {}).length,
+                    ini: ini,
+                    fim: fim,
+                    pct: Math.min(1, fim / 50),
+                    est: est,
+                    acertosJogo: Number((st.stat || {}).correct) || 0,
+                    perfeitas: Number((st.stat || {}).perfeitas) || 0,
+                    combo: Number((st.stat || {}).combo) || 0,
+                    mundos: Number((st.stat || {}).mundos) || 0,
+                    resp: rec.length,
+                    respOk: rec.filter(x => x.ok).length,
+                    ultima: Number(j.ts) || Date.now(),
+                    atual: st.atual || null,
+                    mw: mw,
+                    temas: temas,
+                    _mestre: 1
+                });
+            } catch (e) { }
+        }
+
+        // Nome real via alunos-rco.js (só no painel local); senão usa o nick do jogo.
+        function rcoNome(login) {
+            try {
+                const m = String(login || '').match(/^(\d{1,3})([a-z]{3})(\d)([a-z])$/);
+                if (!m || !window.RCO_ALUNOS) return '';
+                const turma = window.RCO_ALUNOS[m[2] + m[3] + m[4]];
+                return (turma && turma[m[1]]) || '';
+            } catch (e) { return ''; }
+        }
+        function alunoPrincipal(a) {
+            if (!a) return 'Aluno';
+            return rcoNome(a.login) || a.nick || a.login || 'Aluno';
+        }
+        function alunoSecundario(a) {
+            if (!a) return '';
+            const real = rcoNome(a.login);
+            if (real) return a.nick ? '@' + a.nick : (a.login ? 'login ' + a.login : '');
+            if (a.nick && a.login) return 'login ' + a.login;
+            return '';
+        }
+        function alunoPorLogin(login) {
+            return (state.alunos || []).find(x => x.login === login) || null;
+        }
+        function nomeLogin(login) {
+            const a = alunoPorLogin(login);
+            return a ? alunoPrincipal(a) : (rcoNome(login) || login || 'Aluno');
+        }
+
+        // Últimas respostas e próximas prováveis do aluno (mesmo tema, pelo banco do RobIox)
+        function historicoAluno(login, n) {
+            return (state.recentes || []).filter(r => r.login === login).slice(0, n || 5);
+        }
+        const _proxCache = new Map();
+        function proximasAluno(a) {
+            try {
+                if (!window.RBXB || !a) return [];
+                const hist = historicoAluno(a.login, 1);
+                const ult = hist[0];
+                const m = String(a.serie || '').match(/(\d{1,2})/);
+                const ano = m ? Math.max(6, Math.min(15, +m[1])) : 6;
+                let temaKey = '';
+                if (ult && ult.tema && window.RBXB.TN) {
+                    temaKey = Object.keys(window.RBXB.TN).find(k => window.RBXB.TN[k] === ult.tema) || '';
+                }
+                if (!temaKey || !window.RBXB.G[ano] || !window.RBXB.G[ano][temaKey]) {
+                    temaKey = Object.keys(window.RBXB.G[ano] || {})[0];
+                }
+                if (!temaKey) return [];
+                const chave = a.login + '|' + temaKey + '|' + (ult ? ult.t : '');
+                if (!_proxCache.has(chave)) {
+                    _proxCache.set(chave, [window.RBXB.make(ano, temaKey, 2), window.RBXB.make(ano, temaKey, 2)]);
+                }
+                return _proxCache.get(chave);
+            } catch (e) { return []; }
+        }
+
         // --- Busca de Dados (API ou Demonstração) ---
         async function fetchData() {
             if (state.isDemo) {
@@ -1400,6 +1618,7 @@
                 if (data && data.ok === 1) {
                     document.getElementById('conn-warn').style.display = 'none';
                     state.hasLoadedOnce = true;
+                    await adicionarMestre(data);
                     processNewData(data);
                 } else {
                     throw new Error('Retorno inválido do servidor');
@@ -1469,20 +1688,23 @@
 
             container.innerHTML = sorted.map((a, i) => {
                 const isOnline = (state.agora - (Number(a.ultima) || 0)) < 300000;
+                const live = isOnline && a.atual && a.atual.nome;
                 const xp = Number(a.xp) || 0;
                 const xpInLevel = xp % 1000;
                 const xpPct = Math.min(100, Math.max(0, Math.round(xpInLevel / 10)));
                 const pctConcluido = Math.min(100, Math.max(0, Math.round((Number(a.pct) || 0) * 100)));
                 const respTotal = Number(a.resp) || 0;
                 const respOk = Number(a.respOk) || 0;
+                const semAcc = a._mestre && !respTotal;
                 const pctAcertos = respTotal > 0 ? Math.round((respOk / respTotal) * 100) : 0;
 
                 return `
-                    <div class="rank-item ${(rankMove.get(a.login || a.nick) || {}).until > Date.now() ? ((rankMove.get(a.login || a.nick).d > 0) ? 'rk-up' : 'rk-down') : ''}" data-login="${esc(a.login || a.nick)}">
+                    <div class="rank-item ${(rankMove.get(a.login || a.nick) || {}).until > Date.now() ? ((rankMove.get(a.login || a.nick).d > 0) ? 'rk-up' : 'rk-down') : ''} ${live ? 'is-live' : ''}" data-login="${esc(a.login || a.nick)}">
                         <div class="rank-pos">${i + 1}º${(() => { const m = rankMove.get(a.login || a.nick); return m && m.until > Date.now() ? `<span class="mv ${m.d > 0 ? 'u' : 'd'}">${m.d > 0 ? '▲' : '▼'}${Math.abs(m.d)}</span>` : ''; })()}</div>
                         <div class="rank-student">
                             <div class="rank-nick-row">
-                                <span class="rank-nick" title="${esc(a.nick || a.login)}">${esc(a.nick || a.login)}</span>
+                                <span class="rank-nick" title="${esc(a.nick || a.login)}">${esc(alunoPrincipal(a))}</span>
+                                ${alunoSecundario(a) ? `<span class="rank-login">${esc(alunoSecundario(a))}</span>` : ''}
                                 <span class="badge-status ${isOnline ? 'badge-online' : 'badge-offline'}">
                                     ${isOnline ? '● Online' : '○ Offline'}
                                 </span>
@@ -1491,6 +1713,7 @@
                                 <span>Série: ${esc(a.serie || 'Geral')}</span>
                                 <span>•</span>
                                 <span>Nível ${esc(a.nivel || 1)}</span>
+                                ${live ? `<span class="live-act">🎮 ${esc(a.atual.nome)}</span>` : ''}
                             </div>
                         </div>
                         <div class="metric-cell">
@@ -1507,14 +1730,14 @@
                         </div>
                         <div class="rank-hide-mobile">
                             <div class="bar-container" title="${pctConcluido}% concluído">
-                                <div class="bar-fill" style="width: ${pctConcluido}%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                                <div class="bar-fill ${live ? 'live-bar' : ''}" style="width: ${pctConcluido}%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
                                 <span class="bar-label-inner">${pctConcluido}%</span>
                             </div>
                             <small style="font-size:0.65rem; color:var(--text-dim); display:block; text-align:center; margin-top:2px;">concluído</small>
                         </div>
                         <div class="metric-cell rank-hide-tablet">
-                            <span style="color: ${pctAcertos >= 75 ? 'var(--green)' : pctAcertos >= 50 ? 'var(--gold-light)' : 'inherit'}">🎯 ${pctAcertos}%</span>
-                            <small>${respOk}/${respTotal} acertos</small>
+                            <span style="color: ${semAcc ? 'var(--text-dim)' : pctAcertos >= 75 ? 'var(--green)' : pctAcertos >= 50 ? 'var(--gold-light)' : 'inherit'}">🎯 ${semAcc ? '—' : pctAcertos + '%'}</span>
+                            <small>${semAcc ? 'sem respostas registradas' : respOk + '/' + respTotal + ' acertos'}</small>
                         </div>
                         <div>
                             <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800; margin-bottom:2px;">
@@ -1522,7 +1745,7 @@
                                 <span style="color:var(--accent-bright);">Nível ${a.nivel || 1}</span>
                             </div>
                             <div class="bar-container" title="${xpPct}% até o próximo nível">
-                                <div class="bar-fill" style="width: ${xpPct}%;"></div>
+                                <div class="bar-fill ${live ? 'live-bar' : ''}" style="width: ${xpPct}%;"></div>
                                 <span class="bar-label-inner">${xpPct}%</span>
                             </div>
                         </div>
@@ -1559,20 +1782,31 @@
 
             container.innerHTML = filtered.map(a => {
                 const isOnline = (state.agora - (Number(a.ultima) || 0)) < 300000;
+                const live = isOnline && a.atual && a.atual.nome;
                 const pct = Math.min(100, Math.max(0, Math.round((Number(a.pct) || 0) * 100)));
                 const respTotal = Number(a.resp) || 0;
                 const respOk = Number(a.respOk) || 0;
                 const acc = respTotal > 0 ? Math.round((respOk / respTotal) * 100) : 0;
+                const semAcc = a._mestre && !respTotal;
+                const hist = historicoAluno(a.login, 5);
+                const nx = proximasAluno(a);
+                const acertos5 = hist.filter(x => x.ok).length;
+                const erros5 = hist.length - acertos5;
 
                 return `
-                    <div class="prog-card ${isOnline ? 'is-online' : ''}">
+                    <div class="prog-card ${isOnline ? 'is-online' : ''} ${live ? 'is-live' : ''}">
                         <div class="prog-top">
-                            <span class="prog-nick" title="${esc(a.nick || a.login)}">${esc(a.nick || a.login)}</span>
+                            <div class="prog-name-wrap">
+                                <span class="prog-nick" title="${esc(a.nick || a.login)}">${esc(alunoPrincipal(a))}</span>
+                                ${alunoSecundario(a) ? `<span class="name-alias">${esc(alunoSecundario(a))}</span>` : ''}
+                            </div>
                             <span class="badge-status ${isOnline ? 'badge-online' : 'badge-offline'}">
                                 ${isOnline ? '● Online' : '○ Offline'}
                             </span>
                         </div>
                         
+                        ${live ? `<div class="prog-live">🎮 Fazendo agora: <b>${esc(a.atual.nome)}</b></div>` : ''}
+
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:0.85rem; color:var(--text-dim);">Série: <strong>${esc(a.serie || '—')}</strong></span>
                             <span class="prog-badge-level">Nível ${a.nivel || 1}</span>
@@ -1584,7 +1818,7 @@
                                 <span style="color:var(--accent-bright); font-weight:900;">${pct}%</span>
                             </div>
                             <div class="bar-container">
-                                <div class="bar-fill" style="width: ${pct}%;"></div>
+                                <div class="bar-fill ${live ? 'live-bar' : ''}" style="width: ${pct}%;"></div>
                                 <span class="bar-label-inner">${pct}%</span>
                             </div>
                         </div>
@@ -1596,8 +1830,29 @@
                             </div>
                             <div class="prog-mini-stat">
                                 % Acertos
-                                <strong style="color: ${acc >= 75 ? 'var(--green)' : 'inherit'}">🎯 ${acc}%</strong>
+                                <strong style="color: ${semAcc ? 'var(--text-dim)' : acc >= 75 ? 'var(--green)' : 'inherit'}">🎯 ${semAcc ? '—' : acc + '%'}</strong>
                             </div>
+                        </div>
+
+                        <div class="prog-hist">
+                            <div class="hist-trend">
+                                <span>Últimas ${hist.length}:</span>
+                                <span class="pill-ok">✔ ${acertos5}</span>
+                                <span class="pill-err">✘ ${erros5}</span>
+                                <span>${hist.length ? (acertos5 >= erros5 ? 'acertando' : 'precisa revisar') : 'sem respostas'}</span>
+                            </div>
+                            <div class="hist-title">Últimas 5 respostas</div>
+                            ${hist.length ? hist.map(r => `
+                                <div class="hist-item ${r.ok ? 'ok' : 'err'}">
+                                    <span class="hi">${r.ok ? '✔' : '✘'}</span>
+                                    <span class="hist-q" title="${esc(r.q || '')}">${esc(r.q || 'Pergunta')} <small style="color:var(--text-dim)">${r.tema ? '· ' + esc(r.tema) : ''}${r.mundo ? ' · ' + esc(r.mundo) : ''}</small></span>
+                                </div>`).join('') : '<div class="hist-empty">Nenhuma resposta registrada ainda.</div>'}
+                            <div class="hist-title">Próximas 2 prováveis (mesmo tema)</div>
+                            ${nx.length ? nx.map(q => `
+                                <div class="hist-item next">
+                                    <span class="hi">•</span>
+                                    <span class="hist-q">${esc(q.q)}</span>
+                                </div>`).join('') : '<div class="hist-empty">Sem prévia disponível.</div>'}
                         </div>
                     </div>
                 `;
