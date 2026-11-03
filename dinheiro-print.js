@@ -13,7 +13,7 @@
   var css = document.createElement('style');
   css.textContent =
     '.card h2 .btop{font-size:1.3vh!important;padding:.5vh .8vw!important;margin-left:8px;flex:none}' +
-    '#dprintBtn{position:fixed;right:14px;bottom:14px;z-index:2147483000;border:0;border-radius:999px;padding:10px 16px;font:800 14px "Segoe UI",Arial;background:#1f3a8a;color:#fff;cursor:pointer;box-shadow:0 6px 18px #0004}' +
+    '#dprintBtn{position:fixed!important;right:14px!important;bottom:14px!important;left:auto!important;top:auto!important;z-index:2147483000;width:auto!important;max-width:240px!important;display:inline-flex!important;align-items:center;justify-content:center;border:0;border-radius:999px;padding:10px 16px;font:800 14px "Segoe UI",Arial;background:#1f3a8a;color:#fff;cursor:pointer;box-shadow:0 6px 18px #0004}' +
     '#dprintBtn:hover{filter:brightness(1.12)}' +
     '#dprintSheet{display:none;position:fixed;inset:0;z-index:2147483100;background:#eef3fb;overflow:auto;padding:64px 12px 40px}' +
     'body.dprint-on #dprintSheet{display:block}' +
@@ -34,12 +34,26 @@
   document.head.appendChild(css);
 
   function init() {
-  var btn = document.createElement('button');
+  var btn = document.createElement('div');
   btn.id = 'dprintBtn';
-  btn.type = 'button';
+  btn.setAttribute('role', 'button');
+  btn.setAttribute('tabindex', '0');
   btn.textContent = '🖨️ Imprimir dinheiro';
   btn.onclick = open;
   document.body.appendChild(btn);
+  function fixBtn() {
+    try {
+      btn.style.setProperty('display', 'inline-flex', 'important');
+      btn.style.setProperty('width', 'auto', 'important');
+      btn.style.setProperty('max-width', '240px', 'important');
+      btn.style.setProperty('left', 'auto', 'important');
+      btn.style.setProperty('right', '14px', 'important');
+      btn.style.setProperty('top', 'auto', 'important');
+      btn.style.setProperty('bottom', '14px', 'important');
+      btn.style.setProperty('position', 'fixed', 'important');
+    } catch (e) { }
+  }
+  fixBtn(); setTimeout(fixBtn, 900);
 
   var bar = document.createElement('div');
   bar.id = 'dprintBar';
