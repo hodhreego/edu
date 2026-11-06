@@ -122,19 +122,20 @@ html{scrollbar-gutter:stable}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#93c5fd,#c4b5fd,#f9a8d4);background-clip:padding-box}
 @supports not selector(::-webkit-scrollbar){html{scrollbar-width:auto;scrollbar-color:#a78bfa rgba(255,255,255,.12)}}
 @media (prefers-color-scheme:light){::-webkit-scrollbar-track{background:rgba(20,30,70,.10)}}
-/* mini painel de logins no meio da pagina */
-body .lgw-win{top:50%;left:50%;transform:translate(-50%,-50%)}
-/* curiosidade da Wikipedia */
-.curio{margin:36px auto 0;max-width:760px;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
-.curio .ch{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-.curio .ch b{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-.curio button{background:#6366f1;color:#fff;border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer}
-.curio .cb{display:flex;gap:14px;align-items:flex-start}
-.curio img{width:120px;max-width:34%;border-radius:12px;flex:none;object-fit:cover}
-.curio h3{font-size:1.15rem;margin:0 0 6px}
-.curio p{color:var(--dim);font-size:.92rem;line-height:1.45}
-.curio a.mais{display:inline-block;margin-top:8px;color:var(--lk1);font-weight:800;text-decoration:none}
-@media(max-width:560px){.curio .cb{flex-direction:column}.curio img{max-width:100%;width:100%;height:150px}}
+/* artigo da Wikipedia (cores da Wikipedia) */
+.curio{margin:26px auto 0;max-width:920px;background:#fff;color:#202122;border:1px solid #a2a9b1;border-radius:6px;padding:0;box-shadow:var(--shadow);overflow:hidden;font-family:"Segoe UI",Arial,sans-serif}
+.curio .ch{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#f8f9fa;border-bottom:1px solid #a2a9b1;padding:10px 20px}
+.curio .ch b{font-size:1.05rem;color:#202122;letter-spacing:0;text-transform:none;font-family:"Linux Libertine",Georgia,Times,serif}
+.curio .ch b span{font-size:1.5rem;margin-right:6px;vertical-align:-3px}
+.curio button{background:#f8f9fa;color:#36c;border:1px solid #a2a9b1;border-radius:2px;padding:7px 14px;font-weight:700;font-size:.95rem;cursor:pointer}
+.curio button:hover{background:#fff;border-color:#36c}
+.curio .cb{display:block;padding:20px 26px 26px;overflow:hidden}
+.curio img{float:right;width:min(300px,38%);max-width:none;height:auto;margin:4px 0 14px 22px;border:1px solid #c8ccd1;background:#f8f9fa;padding:5px;border-radius:0}
+.curio h3{font-family:"Linux Libertine",Georgia,Times,serif;font-weight:400;font-size:clamp(2rem,5vw,2.9rem);line-height:1.2;margin:0 0 14px;padding-bottom:6px;border-bottom:1px solid #a2a9b1;color:#000}
+.curio p{color:#202122;font-size:clamp(1.12rem,2.4vw,1.3rem);line-height:1.7}
+.curio a.mais{display:inline-block;margin-top:16px;color:#0645ad;font-weight:400;font-size:1.1rem;text-decoration:underline}
+.curio a.mais:visited{color:#0b0080}
+@media(max-width:560px){.curio img{float:none;display:block;width:100%;margin:0 0 14px}.curio .cb{padding:16px}}
 @media print{.curio{display:none}}
 </style>
 </head>
@@ -144,20 +145,6 @@ body .lgw-win{top:50%;left:50%;transform:translate(-50%,-50%)}
   <a class="tag" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" title="Abrir o painel do professor">Atalhos 2026 · Prof. Rodrigo · Colégio Schuster</a>
   <h1 class="lk-hero" id="lkTxt">bit.ly/xus28</h1>
   <p class="sub">Toque no cartão e entre direto na atividade.</p>
-  <a class="hero-live" id="heroLive" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" aria-label="Resumo do painel ao vivo — abrir o painel completo">
-    <span class="hl-top">
-      <span class="hl-live"><i></i> Painel ao vivo</span>
-      <span class="hl-btn">Abrir painel →</span>
-    </span>
-    <span class="hl-mid">
-      <span class="hl-num"><b id="hlAlunos">—</b><small>alunos</small></span>
-      <span class="hl-num"><b id="hlResp">—</b><small>respostas · 15 min</small></span>
-      <span class="hl-num"><b id="hlPct">—</b><small>acertos</small></span>
-      <span class="hl-num hl-dinheiro"><b id="hlDinheiro">R$ 0,00</b><small>no cofrinho</small></span>
-    </span>
-    <span class="hl-podio" id="hlPodio"></span>
-    <span class="hl-foot" id="hlAgora">Toque para abrir o painel completo</span>
-  </a>
   <div class="how" id="how">
     <div class="pill">🦊 <span>No tablet, abra o <b>Firefox Focus</b> e digite o endereço acima</span> <button id="cp" type="button">Copiar link</button> <button id="lkCfg" type="button" title="Ajustar tamanho, posição e cor do link" aria-controls="lkPanel" aria-expanded="false">⚙</button></div>
   </div>
@@ -203,8 +190,22 @@ body .lgw-win{top:50%;left:50%;transform:translate(-50%,-50%)}
 
 <main id="main"></main>
 <p class="empty" id="empty">Nenhum atalho encontrado 🤔</p>
+  <a class="hero-live" id="heroLive" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" aria-label="Resumo do painel ao vivo — abrir o painel completo">
+    <span class="hl-top">
+      <span class="hl-live"><i></i> Painel ao vivo</span>
+      <span class="hl-btn">Abrir painel →</span>
+    </span>
+    <span class="hl-mid">
+      <span class="hl-num"><b id="hlAlunos">—</b><small>alunos</small></span>
+      <span class="hl-num"><b id="hlResp">—</b><small>respostas · 15 min</small></span>
+      <span class="hl-num"><b id="hlPct">—</b><small>acertos</small></span>
+      <span class="hl-num hl-dinheiro"><b id="hlDinheiro">R$ 0,00</b><small>no cofrinho</small></span>
+    </span>
+    <span class="hl-podio" id="hlPodio"></span>
+    <span class="hl-foot" id="hlAgora">Toque para abrir o painel completo</span>
+  </a>
 <section class="curio" id="curio" hidden aria-label="Curiosidade da Wikipédia">
-  <div class="ch"><b>📖 Curiosidade da Wikipédia</b><button id="curioMais" type="button">Outra curiosidade</button></div>
+  <div class="ch"><b><span>🌐</span>Wikipédia — curiosidade do dia</b><button id="curioMais" type="button">Outra curiosidade</button></div>
   <div class="cb"><img id="curioImg" alt="" hidden><div><h3 id="curioT"></h3><p id="curioP"></p><a class="mais" id="curioA" target="_blank" rel="noopener">Ler na Wikipédia →</a></div></div>
 </section>
 <footer>Atalhos 2026 · versão visual nova — a planilha original continua intacta.</footer>
