@@ -370,7 +370,8 @@ function onRight(p){streak++;if(streak%3===0)setTimeout(function(){try{bigNote(s
   sks(q.topic,skg(q.topic)+(first?.35:.05));if(!first&&stErr[i]>=2)ST.stat.volta++;
   var xp=Math.round((10+(first?5:0))*(1+.1*Math.min(combo,10)));gain(xp,0);beep(880,.2,'square');setTimeout(function(){beep(1175,.2,'square')},120);conf(14);
   say('✅ '+pick(GOOD)+' +'+xp+' XP'+(combo>=3?' · COMBO x'+combo:''),1500);paint(p,0x16a34a);hud();bdg()}
-function onWrong(p){streak=0;logResp(p,0);var i=p.st,q=stageQ[i];errs++;stErr[i]++;combo=0;if(errs<=3)setTimeout(function(){try{say('🦘 Pulo mais alto! (+'+(errs>3?42:errs*14)+'%)',2200)}catch(e){}},1400);sks(q.topic,skg(q.topic)-.5);rvq.push({t:q.topic,due:i+2});dirty[i]=true;if(stErr[i]>=2)easy[i]=true;
+function growPlats(st,f){var z0=safeZ[st],g=gate[st],z1=(g?g.z:z0-60)-4;plats.forEach(function(p){if(p.z>z0||p.z<z1)return;if(p.type==='safe'||p.type==='read'||p.type==='ans'||p.type==='pstrip')return;if(p.w>=28)return;p.w*=f;p.d*=f;p.mesh.scale.x*=f;p.mesh.scale.z*=f})}
+function onWrong(p){streak=0;logResp(p,0);var i=p.st,q=stageQ[i];errs++;stErr[i]++;combo=0;try{growPlats(i,1.1)}catch(e){}if(errs<=3)setTimeout(function(){try{say('🦘 Pulo mais alto! (+'+(errs>3?42:errs*14)+'%)',2200)}catch(e){}},1400);sks(q.topic,skg(q.topic)-.5);rvq.push({t:q.topic,due:i+2});dirty[i]=true;if(stErr[i]>=2)easy[i]=true;
   beep(160,.4,'sawtooth');paint(p,0xdc2626);
   say('❌ '+pick(TRY)+'\n💡 '+(q.e||('A resposta era '+q.a))+(stErr[i]>=2?'\nVou facilitar: menos opções!':''),4200);hud()}
 var BS={
@@ -436,7 +437,7 @@ function step(dt){
     if(py>=p.top-.08&&pl.y<=p.top&&Math.abs(pl.x-p.x)<=p.w/2+.6&&Math.abs(pl.z-p.z)<=p.d/2+.6){pl.y=p.top;pl.vy=0;pl.gr=true;pl.ride=p;landOn(p);break}}}
   var gs=gate[pl.st];if(gs&&gs.strip&&!gs.strip.done&&pl.ride===gs.strip&&pl.z<gs.strip.line){gs.strip.done=true;var wd=12/gs.n,ix=Math.max(0,Math.min(gs.n-1,Math.floor((pl.x+6)/wd))),o=gs[ix],po={st:pl.st,door:o.door};
     if(o.ok){answered[pl.st]=true;onRight(po)}else{onWrong(po);pl.vx=pl.vz=0;pl.ride=null;resp()}}
-  SPIN.forEach(function(o){o.a+=dt*1.4;o.m.rotation.y=o.a;if(o.k>0)o.k-=dt;var dx=pl.x-o.x,dz=pl.z-o.z,ux=Math.cos(o.a),uz=-Math.sin(o.a),t=Math.max(-4,Math.min(4,dx*ux+dz*uz)),ex=dx-t*ux,ez=dz-t*uz;if(o.k<=0&&pl.y<2.4&&pl.y>-.5&&ex*ex+ez*ez<.8){o.k=1.2;pl.z+=3.5;pl.vx=pl.vz=0;pl.vy=6;say('💥 A barra te empurrou! Pule por cima 😉',1600)}});
+  SPIN.forEach(function(o){o.a+=dt*1.4;o.m.rotation.y=o.a;if(o.k>0)o.k-=dt;var dx=pl.x-o.x,dz=pl.z-o.z,ux=Math.cos(o.a),uz=-Math.sin(o.a),t=Math.max(-4,Math.min(4,dx*ux+dz*uz)),ex=dx-t*ux,ez=dz-t*uz;if(o.k<=0&&pl.y<2.4&&pl.y>-.5&&ex*ex+ez*ez<.8){o.k=1.2;combo=0;say('💥 Encostou na barra vermelha! Voltando ao ponto de controle…',1800);beep(150,.3,'sawtooth');resp()}});
   COINS.forEach(function(c){c.m.rotation.y+=dt*(c.note?1.6:3.2);if(c.rise&&!c.got){c.y+=c.rise*dt;if(c.y>14){c.got=true;S.remove(c.m);say('A nota de R$ '+(c.note||200)+' subiu demais... na próxima!',2200)}}c.m.position.y=c.y+Math.sin(tNow*3+c.x)*.12;if(!c.got&&Math.abs(pl.x-c.x)<(c.rad||1.4)&&Math.abs(pl.z-c.z)<(c.rad||1.4)&&pl.y+1.2>c.y-.9-(c.hh||0)&&pl.y<c.y+.9+(c.hh||0)){c.got=true;S.remove(c.m);PEND.push(c);hud();mp('mo',1);beep(1320,.08,'triangle',.06,'m');hud();sv()}});
   if(pl.y<-9){var fz=ease(pl.st);say('💥 Caiu! '+(fz?'Vou deixar essa parte mais fácil 💪':'Sem problema, volte ao início da fase e tente de novo.'),1700);beep(120,.3);combo=0;resp()}
   var sp2=Math.hypot(pl.vx,pl.vz);if(sp2>.6)pl.face=Math.atan2(pl.vx,pl.vz);
