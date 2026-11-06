@@ -95,7 +95,7 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 #lgnBtn:active{transform:scale(.97)}
 .lgn-box{position:fixed;right:16px;bottom:16px;z-index:60;width:min(380px,calc(100vw - 32px));background:var(--bg2);border:1px solid var(--bd);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.45);padding:14px 16px;color:var(--tx)}
 .lgn-box[hidden]{display:none}
-.lgn-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.lgn-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;user-select:none}
 .lgn-head strong{font-size:.95rem}
 #lgnClose{background:transparent;border:0;color:var(--dim);font-size:1rem;cursor:pointer;padding:2px 6px}
 .lgn-box label{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:8px 0 5px}
@@ -340,15 +340,45 @@ render();
   function show(un){lock.hidden=un;list.hidden=!un;err.textContent='';
     if(un){fill()}else{try{pass.value=''}catch(e){}}
   }
+  function abrevNome(nome){
+    var p=String(nome||'').trim().split(/\s+/).filter(Boolean);
+    if(!p.length)return '';
+    var p0=p[0].charAt(0).toUpperCase()+p[0].slice(1).toLowerCase();
+    return [p0].concat(p.slice(1).map(function(x){return x.charAt(0).toUpperCase()+'.'})).join(' ');
+  }
   function fill(){
     if(!dados||!dados.alunos){sel.innerHTML='<option>Carregando...</option>';return}
     var arr=dados.alunos.map(function(a){
-      return {n:parseInt(a.login,10)||999,nome:(a.nick||'').trim()||a.login,login:a.login,serie:a.serie||''};
+      return {n:parseInt(a.login,10)||999,nome:(a.nick||'').trim(),login:a.login,serie:a.serie||''};
     }).sort(function(a,b){return a.n-b.n||String(a.login).localeCompare(String(b.login))});
     sel.innerHTML=arr.length?arr.map(function(o){
-      return '<option value="'+esc(o.login)+'">'+o.n+' · '+esc(o.nome)+' — '+esc(o.login)+'</option>';
+      var rotulo=o.n+' · '+esc(o.login)+(o.nome?(' — '+esc(abrevNome(o.nome))):'');
+      return '<option value="'+esc(o.login)+'" title="'+esc(o.nome||o.login)+'">'+rotulo+'</option>';
     }).join(''):'<option>Sem alunos registrados</option>';
   }
+  function arrastavel(el,handle){
+    var startX=0,startY=0,ox=0,oy=0,drag=false;
+    handle.style.cursor='move';handle.style.touchAction='none';
+    handle.addEventListener('pointerdown',function(e){
+      if(e.target.closest('button'))return;
+      var r=el.getBoundingClientRect();
+      el.style.left=r.left+'px';el.style.top=r.top+'px';el.style.right='auto';el.style.bottom='auto';
+      drag=true;startX=e.clientX;startY=e.clientY;ox=r.left;oy=r.top;
+      try{handle.setPointerCapture(e.pointerId)}catch(x){}
+      e.preventDefault();
+    });
+    handle.addEventListener('pointermove',function(e){
+      if(!drag)return;
+      var w=el.offsetWidth,h=el.offsetHeight;
+      var x=Math.min(Math.max(4,ox+e.clientX-startX),window.innerWidth-w-4);
+      var y=Math.min(Math.max(4,oy+e.clientY-startY),window.innerHeight-h-4);
+      el.style.left=x+'px';el.style.top=y+'px';
+    });
+    function fim(){drag=false}
+    handle.addEventListener('pointerup',fim);
+    handle.addEventListener('pointercancel',fim);
+  }
+  arrastavel(box,document.querySelector('.lgn-head'));
   function load(){
     fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){dados=j;fill()}).catch(function(){fill()});
   }
