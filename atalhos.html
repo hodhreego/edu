@@ -114,6 +114,28 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 .lgn-filtros>div{flex:1;min-width:0}
 @media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art{height:126px;border-radius:16px}a.hero-live{height:auto;min-height:190px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.hl-podio{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
 @media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art,a.hero-live{display:none}}
+/* barra de rolagem bem visivel */
+html{scrollbar-gutter:stable}
+::-webkit-scrollbar{width:20px;height:20px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.10);border-left:1px solid var(--bd)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#60a5fa,#a78bfa,#f472b6);border-radius:12px;border:4px solid transparent;background-clip:padding-box;min-height:70px}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#93c5fd,#c4b5fd,#f9a8d4);background-clip:padding-box}
+@supports not selector(::-webkit-scrollbar){html{scrollbar-width:auto;scrollbar-color:#a78bfa rgba(255,255,255,.12)}}
+@media (prefers-color-scheme:light){::-webkit-scrollbar-track{background:rgba(20,30,70,.10)}}
+/* mini painel de logins no meio da pagina */
+body .lgw-win{top:50%;left:50%;transform:translate(-50%,-50%)}
+/* curiosidade da Wikipedia */
+.curio{margin:36px auto 0;max-width:760px;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.curio .ch{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.curio .ch b{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.curio button{background:#6366f1;color:#fff;border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer}
+.curio .cb{display:flex;gap:14px;align-items:flex-start}
+.curio img{width:120px;max-width:34%;border-radius:12px;flex:none;object-fit:cover}
+.curio h3{font-size:1.15rem;margin:0 0 6px}
+.curio p{color:var(--dim);font-size:.92rem;line-height:1.45}
+.curio a.mais{display:inline-block;margin-top:8px;color:var(--lk1);font-weight:800;text-decoration:none}
+@media(max-width:560px){.curio .cb{flex-direction:column}.curio img{max-width:100%;width:100%;height:150px}}
+@media print{.curio{display:none}}
 </style>
 </head>
 <body>
@@ -181,6 +203,10 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 
 <main id="main"></main>
 <p class="empty" id="empty">Nenhum atalho encontrado 🤔</p>
+<section class="curio" id="curio" hidden aria-label="Curiosidade da Wikipédia">
+  <div class="ch"><b>📖 Curiosidade da Wikipédia</b><button id="curioMais" type="button">Outra curiosidade</button></div>
+  <div class="cb"><img id="curioImg" alt="" hidden><div><h3 id="curioT"></h3><p id="curioP"></p><a class="mais" id="curioA" target="_blank" rel="noopener">Ler na Wikipédia →</a></div></div>
+</section>
 <footer>Atalhos 2026 · versão visual nova — a planilha original continua intacta.</footer>
 </div>
 <div class="toast" id="toast">Copiado!</div>
@@ -353,5 +379,22 @@ render();
 })();
 </script>
 <script src="logins-widget.js?v=1"></script>
+<script>
+(function(){
+  var T=['Pi','Número_de_ouro','Teorema_de_Pitágoras','Sequência_de_Fibonacci','Ábaco','Euclides','Ada_Lovelace','Alan_Turing','Fractal','Zero','Numeração_romana','Eratóstenes','Arquimedes','Galileu_Galilei','Marie_Curie','Buraco_negro','Sistema_Solar','Pirâmide_de_Gizé','Isaac_Newton','Leonhard_Euler','Pierre_de_Fermat','Hipátia_de_Alexandria','Cálculo_mental','Tabela_periódica','Cérebro_humano','Alfabeto_grego','Cubo_mágico','Xadrez'];
+  var box=document.getElementById('curio'),ult='';
+  function carrega(){
+    var t;do{t=T[Math.floor(Math.random()*T.length)]}while(t===ult&&T.length>1);ult=t;
+    fetch('https://pt.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(t)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+      document.getElementById('curioT').textContent=j.title;
+      document.getElementById('curioP').textContent=j.extract||'';
+      var a=document.getElementById('curioA');a.href=(j.content_urls&&j.content_urls.desktop&&j.content_urls.desktop.page)||('https://pt.wikipedia.org/wiki/'+encodeURIComponent(t));
+      var im=document.getElementById('curioImg');if(j.thumbnail&&j.thumbnail.source){im.src=j.thumbnail.source;im.hidden=false}else{im.hidden=true}
+      box.hidden=false;
+    }).catch(function(){});
+  }
+  document.getElementById('curioMais').onclick=carrega;carrega();
+})();
+</script>
 </body>
 </html>
