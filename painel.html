@@ -129,6 +129,11 @@
         .lgn-card .row button { background: #6366f1; color: #fff; border: 0; border-radius: 10px; padding: 9px 14px; font-weight: 800; cursor: pointer; }
         .lgn-msg { font-size: .8rem; font-weight: 700; color: #f87171; }
         .lgn-msg.ok { color: #34d399; }
+        .lgn-banir { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+        .lgn-banbtns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .lgn-banbtns button { background: rgba(239,68,68,.16); border: 1px solid rgba(239,68,68,.5); color: #fecaca; border-radius: 9px; padding: 6px 9px; font: 800 .78rem Arial, sans-serif; cursor: pointer; }
+        .lgn-banbtns button:hover { background: rgba(239,68,68,.28); }
+        .lgn-banbtns button.liberar { background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.5); color: #bbf7d0; }
 
         .clock-box {
             font-size: 1.5rem;
@@ -2539,6 +2544,34 @@
             try { navigator.clipboard.writeText(v); } catch (e) { }
             document.getElementById('lgnMsg3').textContent = 'Copiado: ' + v;
         }
+        function rotuloMin(m) {
+            if (m < 60) return m + ' min';
+            if (m < 1440) return (m / 60) + ' h';
+            if (m < 10080) return Math.round(m / 1440) + ' dia(s)';
+            return '7 dias';
+        }
+        function banirAluno(min) {
+            const sel = document.getElementById('lgnSel2'), msg = document.getElementById('lgnMsgBan');
+            const login = sel && sel.value;
+            if (!login || !/^\d{1,3}[a-z]{3}\d[a-z]$/i.test(login)) {
+                msg.className = 'lgn-msg'; msg.textContent = 'Escolha um aluno da lista.'; return;
+            }
+            const ep = window.EDU_ENDPOINT;
+            if (!ep) { msg.className = 'lgn-msg'; msg.textContent = 'Servidor não configurado.'; return; }
+            msg.className = 'lgn-msg ok';
+            msg.textContent = min ? ('Bloqueando ' + login + ' por ' + rotuloMin(min) + '…') : ('Liberando ' + login + '…');
+            fetch(ep, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ acao: 'rbxban', k: 'ludo2026', login: String(login).toLowerCase(), min: min })
+            }).then(function () {
+                msg.className = 'lgn-msg ok';
+                msg.textContent = min ? (login + ' bloqueado por ' + rotuloMin(min)) : (login + ' liberado');
+            }).catch(function () {
+                msg.className = 'lgn-msg';
+                msg.textContent = 'Não consegui enviar. Confira a internet.';
+            });
+        }
         document.addEventListener('DOMContentLoaded', () => {
             const p = document.getElementById('lgnPass2');
             if (p) p.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tentarLogins(); } });
@@ -2547,6 +2580,9 @@
             document.addEventListener('keydown', e => { if (e.key === 'Escape' && ov && !ov.hidden) toggleLogins(false); });
             const h3 = document.querySelector('.lgn-card h3');
             if (h3) lgnArrastavel(h3);
+            document.querySelectorAll('.lgn-banbtns button').forEach(b => {
+                b.addEventListener('click', () => banirAluno(+b.getAttribute('data-min')));
+            });
         });
 
         cfgInit();
@@ -2572,6 +2608,20 @@
                 <label for="lgnSel2">Aluno (ordem de chamada)</label>
                 <select id="lgnSel2" onchange="lgnAtualizaTitulo()"></select>
                 <div class="row"><button type="button" onclick="copiarLogin()">Copiar login</button><span class="lgn-msg ok" id="lgnMsg3"></span></div>
+                <div class="lgn-banir">
+                    <label>Bloquear acesso</label>
+                    <div class="lgn-banbtns">
+                        <button type="button" data-min="5">5 min</button>
+                        <button type="button" data-min="10">10 min</button>
+                        <button type="button" data-min="15">15 min</button>
+                        <button type="button" data-min="60">1 h</button>
+                        <button type="button" data-min="120">2 h</button>
+                        <button type="button" data-min="1440">1 dia</button>
+                        <button type="button" data-min="10080">1 semana</button>
+                        <button type="button" data-min="0" class="liberar">Liberar</button>
+                    </div>
+                    <span class="lgn-msg ok" id="lgnMsgBan"></span>
+                </div>
             </div>
         </div>
     </div>

@@ -80,6 +80,10 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
   try{var u=(window.EDU_ENDPOINT||'')+'?acao=rbxload&login='+encodeURIComponent(login);
    if(!window.EDU_ENDPOINT)return fim();
    fetch(u).then(function(r){return r.json()}).then(function(j){
+    if(j&&j.bloqueado){done=true;try{sessionStorage.removeItem('rbx_login');sessionStorage.removeItem('rbx_ok')}catch(e){}
+     $('lgG').disabled=false;$('lgG').textContent='▶ Entrar';
+     err('Acesso bloqueado até '+new Date(j.ate).toLocaleString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'. Fale com o professor.');
+     return}
     if(j&&j.ok&&j.st){var k='robiox_v2_'+login,loc=null;try{loc=JSON.parse(localStorage.getItem(k))}catch(e){}
      if(!loc||(j.ts||0)>(loc._ts||0)){try{j.st._ts=j.ts||0;localStorage.setItem(k,JSON.stringify(j.st))}catch(e){}}}
     fim()}).catch(fim)}catch(e){fim()}}

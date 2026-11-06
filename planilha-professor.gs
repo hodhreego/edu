@@ -35,6 +35,7 @@ function doPost(e) {
   if (d.acao === 'pontos') return rkPontos_(d);
   if (d.acao === 'rbxsave') return rbxSave_(d);
   if (d.acao === 'rbxresp') return rbxResp_(d);
+  if (d.acao === 'rbxban') return rbxBan_(d);
   var lock = LockService.getScriptLock();
   try { lock.waitLock(100000); } catch (err) { return ok_('ocupado'); }
   try { return gravaResultado_(d); } finally { lock.releaseLock(); }
@@ -365,6 +366,8 @@ function rbxAba_() {
 function rbxSave_(d) {
   var login = String(d.login || '').toLowerCase();
   if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste)$/.test(login)) return ok_('login inválido');
+  var ate = rbxBloqueio_(login);
+  if (ate > Date.now()) return ok_('bloqueado ate ' + new Date(ate).toLocaleString('pt-BR'));
   var lock = LockService.getScriptLock();
   try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
   try {
@@ -380,6 +383,8 @@ function rbxSave_(d) {
 }
 function rbxLoad_(p) {
   var login = String(p.login || '').toLowerCase(), sh = rbxAba_(), n = sh.getLastRow();
+  var ate = rbxBloqueio_(login);
+  if (ate > Date.now()) return ContentService.createTextOutput(JSON.stringify({ ok: 0, bloqueado: 1, ate: ate })).setMimeType(ContentService.MimeType.JSON);
   var out = { ok: 0 };
   if (n > 1) {
     var v = sh.getRange(2, 1, n - 1, 3).getValues();
@@ -416,6 +421,38 @@ function rbxResp_(d) {
 // ---- RobIox: planilha "RobIox-Alunos" (uma linha por aluno) e dados do painel ao vivo ----
 var RBX_KEY = 'ludo2026';
 var RBX_SENHA = '2026.2026';
+// ---- Bloqueio de acesso (banimento temporário) ----
+function rbxBloqAba_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('RobIox-Bloqueios');
+  if (!sh) { sh = ss.insertSheet('RobIox-Bloqueios'); sh.appendRow(['login', 'ate', 'minutos', 'quando']); sh.setFrozenRows(1); }
+  return sh;
+}
+function rbxBloqueio_(login) {
+  try {
+    var sh = rbxBloqAba_(), n = sh.getLastRow();
+    if (n < 2) return 0;
+    var v = sh.getRange(2, 1, n - 1, 2).getValues();
+    for (var i = 0; i < v.length; i++) if (String(v[i][0]) === login) return Number(v[i][1]) || 0;
+  } catch (e) { }
+  return 0;
+}
+function rbxBan_(d) {
+  if (String(d.k || '') !== RBX_KEY) return ok_('sem permissao');
+  var login = String(d.login || '').toLowerCase();
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste)$/.test(login)) return ok_('login invalido');
+  var min = Math.max(0, Math.min(10080, Math.round(Number(d.min) || 0)));
+  var ate = min ? Date.now() + min * 60000 : 0;
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
+  try {
+    var sh = rbxBloqAba_(), n = sh.getLastRow(), ids = n > 1 ? sh.getRange(2, 1, n - 1, 1).getValues() : [], row = 0;
+    for (var i = 0; i < ids.length; i++) if (String(ids[i][0]) === login) { row = i + 2; break; }
+    var linha = [login, ate, min, new Date()];
+    if (row) sh.getRange(row, 1, 1, 4).setValues([linha]); else sh.appendRow(linha);
+    return ok_('ok');
+  } finally { lock.releaseLock(); }
+}
+
 var RBX_COLS = ['Login', 'Senha', 'Nick', 'Série / matéria', 'Nível', 'XP', 'Moedas', 'Cofrinho (R$)', 'Gasto na loja (moedas)', 'Vendido (moedas)', 'Itens', 'Fases começadas', 'Fases concluídas', '% concluído', 'Estrelas', 'Acertos (jogo)', 'Fases perfeitas', 'Melhor sequência', 'Mundos concluídos', 'Respostas registradas', '% acertos', 'Nota (% concluído)', 'Nota (% acertos)', 'Última atividade', 'Gastos detalhados', 'Cofrinho detalhado', 'json'];
 function rbxSerie_(a) { a = Number(a); return a >= 6 && a <= 9 ? a + 'º ano (Matemática)' : a === 10 ? 'Inglês' : ({ 11: '1ª série · Educação financeira', 11.5: '' })[a] || ({ 12: 'História', 13: 'Geografia', 14: 'Espanhol', 15: 'Educação Financeira' })[a] || String(a); }
 function rbxAlunos_(login, ts, s) {
