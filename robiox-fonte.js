@@ -81,8 +81,10 @@
       + '<span class="k">↑</span> / <span class="k">W</span> ou <span class="k">Espaço</span> para pular.</li>'
       + '<li><b>Controle (gamepad):</b> direcional ou analógico para andar; <span class="k">A</span> para pular.</li>'
       + '<li><b>Toque:</b> arraste a bolinha amarela para andar e toque no botão de pular.</li>'
+      + '<li><b>Super pulo:</b> mantenha o botão de pular <u>pressionado</u>; o 7º pulo seguido vai bem alto. Soltar zera a contagem.</li>'
       + '<li>Leia a pergunta no chão e escolha a resposta certa para ganhar moedas.</li>'
       + '</ul>'
+      + '<div id="rbxAjudaJogo" class="dica" style="display:none;margin-bottom:.5em"></div>'
       + '<div class="dica">Se a letra estiver pequena, use o botão <b>Aa</b> para aumentar.</div>';
 
     document.body.appendChild(box);
@@ -115,6 +117,7 @@
       if (abrir) box.classList.add('on');
     });
     document.getElementById('rbxAjudaBtn').addEventListener('click', function () {
+      var aj = document.getElementById('rbxAjudaJogo'); if (aj) { aj.innerHTML = window.RBX_AJUDA_JOGO || ''; aj.style.display = window.RBX_AJUDA_JOGO ? 'block' : 'none'; }
       var abrir = !ajuda.classList.contains('on');
       fechar();
       if (abrir) ajuda.classList.add('on');
