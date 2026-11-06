@@ -899,7 +899,8 @@
             align-items: center;
             gap: 12px;
             animation: toastIn 0.35s ease-out;
-            pointer-events: auto;
+            pointer-events: none;
+            opacity: 0.62;
         }
 
         @keyframes toastIn {
@@ -999,11 +1000,11 @@
 .rank-item:first-child .rank-pos::after{content:" 👑";animation:crown 1.6s ease-in-out infinite;display:inline-block}
 @keyframes crown{50%{transform:translateY(-4px) rotate(-10deg)}}
 #celebra{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.cel{background:linear-gradient(135deg,var(--accent),var(--gold));color:#fff;border-radius:28px;padding:26px 44px;text-align:center;box-shadow:0 20px 80px #000a;animation:celIn 4s ease both;max-width:90vw}
+.cel{background:linear-gradient(135deg,var(--accent),var(--gold));color:#fff;border-radius:28px;padding:26px 44px;text-align:center;box-shadow:0 20px 80px #000a;animation:celIn 4s ease both;max-width:90vw;pointer-events:none;opacity:.62}
 .cel .e{font-size:5rem;line-height:1;animation:celBounce .9s ease-in-out infinite}
 .cel .t{font-size:2.2rem;font-weight:900;text-shadow:0 2px 10px #0006}
 .cel .s{font-size:1.2rem;opacity:.95;margin-top:4px}
-@keyframes celIn{0%{transform:scale(.2) rotate(-8deg);opacity:0}10%{transform:scale(1.12);opacity:1}16%{transform:scale(1)}85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.9) translateY(-40px)}}
+@keyframes celIn{0%{transform:scale(.2) rotate(-8deg);opacity:0}10%{transform:scale(1.12);opacity:.62}16%{transform:scale(1)}85%{opacity:.62;transform:scale(1)}100%{opacity:0;transform:scale(.9) translateY(-40px)}}
 @keyframes celBounce{50%{transform:translateY(-14px) scale(1.15)}}
 .fly{position:fixed;bottom:-60px;font-size:2.2rem;z-index:9400;pointer-events:none;animation:flyUp 4s ease-in forwards}
 @keyframes flyUp{to{transform:translateY(-115vh) rotate(40deg);opacity:.2}}
