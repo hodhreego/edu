@@ -1121,7 +1121,7 @@
                     <input id="lkSize2" type="range" min="16" max="96" step="2" value="23" aria-label="Tamanho do link">
                     <button type="button" id="lkReset2">Restaurar</button>
                 </div>
-                <div id="clock" class="clock-box" title="Horário atual">00:00:00</div>
+                <div id="clock" class="clock-box" title="Horário atual">00:00</div>
                 <div class="live-indicator">
                     <div class="pulse"></div> SINAL AO VIVO
                 </div>
@@ -2386,11 +2386,9 @@
         // --- Inicialização e Atalhos ---
         function initClock() {
             const clockEl = document.getElementById('clock');
-            setInterval(() => {
-                const now = new Date();
-                clockEl.textContent = now.toLocaleTimeString('pt-BR');
-            }, 1000);
-            clockEl.textContent = new Date().toLocaleTimeString('pt-BR');
+            const fmt = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+            clockEl.textContent = fmt();
+            setInterval(() => { clockEl.textContent = fmt(); }, 1000);
         }
 
         window.addEventListener('keydown', (e) => {
