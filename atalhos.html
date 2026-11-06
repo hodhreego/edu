@@ -172,6 +172,12 @@ html{scrollbar-gutter:stable}
 .hl-set .sw input[type=color]{width:32px;height:28px;padding:0;border:1px solid var(--hl-bd);border-radius:8px;background:transparent;cursor:pointer}
 .hl-set .rs{background:var(--hl-chip);border:1px solid var(--hl-bd);color:var(--hl-tx);border-radius:10px;padding:7px 12px;font-weight:800;cursor:pointer;align-self:flex-start}
 .hl-compacto .hl-box{padding:7px 10px}.hl-compacto .hl-li{padding:1px 0;font-size:.8rem}.hl-compacto{gap:8px!important}
+/* ilustracoes dos cartoes (ComfyUI) */
+a.card{overflow:hidden}
+a.card .art{display:block;width:calc(100% + 32px);max-width:none;height:138px;object-fit:cover;margin:-16px -16px 6px -16px;border-bottom:1px solid var(--bd);transition:transform .35s}
+a.card:hover .art{transform:scale(1.05)}
+a.card .num{z-index:2;background:rgba(10,15,40,.72);color:#fff}
+a.card .ic{width:38px;height:38px;font-size:1.3rem;border-radius:11px}
 </style>
 </head>
 <body>
@@ -303,7 +309,8 @@ var SEC=[
 ];
 var main=document.getElementById('main'),chips=document.getElementById('chips'),qi=document.getElementById('q'),cur='todos';
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function card(it,c){return '<a class="card" style="--c:'+c+'" href="'+esc(it.u)+'" target="_blank" rel="noopener"><div class="top"><div class="ic">'+it.i+'</div><div class="nm">'+esc(it.t)+'</div></div>'+(it.n?'<span class="num">'+esc(it.n)+'</span>':'')+'<div class="ds">'+esc(it.d||'')+'</div><div class="bd">'+(it.b||[]).map(function(b){return '<span class="b">'+esc(b)+'</span>'}).join('')+'<span class="go">Abrir ➜</span></div></a>'}
+function slugT(t){return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
+function card(it,c){return '<a class="card" style="--c:'+c+'" href="'+esc(it.u)+'" target="_blank" rel="noopener"><img class="art" src="atalhos-img/cards/'+slugT(it.t)+'.webp?v=2" alt="" loading="lazy" onerror="this.remove()"><div class="top"><div class="ic">'+it.i+'</div><div class="nm">'+esc(it.t)+'</div></div>'+(it.n?'<span class="num">'+esc(it.n)+'</span>':'')+'<div class="ds">'+esc(it.d||'')+'</div><div class="bd">'+(it.b||[]).map(function(b){return '<span class="b">'+esc(b)+'</span>'}).join('')+'<span class="go">Abrir ➜</span></div></a>'}
 function render(){
   var q=qi.value.trim().toLowerCase(),html='',shown=0;
   SEC.forEach(function(s){
