@@ -1119,6 +1119,8 @@
                 <div class="lk2-panel" id="lkPanel2" hidden>
                     <div class="lk2-row"><label for="lkSize2">Tamanho do link</label><span id="lkVal2">23 px</span></div>
                     <input id="lkSize2" type="range" min="16" max="96" step="2" value="23" aria-label="Tamanho do link">
+                    <div class="lk2-row" style="margin-top:10px"><label for="clkSize2">Tamanho do relógio</label><span id="clkVal2">24 px</span></div>
+                    <input id="clkSize2" type="range" min="14" max="64" step="2" value="24" aria-label="Tamanho do relógio">
                     <button type="button" id="lkReset2">Restaurar</button>
                 </div>
                 <div id="clock" class="clock-box" title="Horário atual">00:00</div>
@@ -2602,21 +2604,30 @@
 
         /* ---- Tamanho do link do cabeçalho ---- */
         (function () {
-            const K = 'painel_lk_size', DEF = 23;
+            const K = 'painel_lk_size', DEF = 23, KC = 'painel_clock_size', DEFC = 24;
             const a = document.getElementById('lkPainel'), r = document.getElementById('lkSize2'),
                 v = document.getElementById('lkVal2'), bt = document.getElementById('lkCfg2'),
                 pn = document.getElementById('lkPanel2');
+            const clock = document.getElementById('clock'), rc = document.getElementById('clkSize2'), vc = document.getElementById('clkVal2');
             if (!a || !r) return;
             let s = parseInt(localStorage.getItem(K), 10);
             if (!(s >= 16 && s <= 96)) s = DEF;
+            let sc = parseInt(localStorage.getItem(KC), 10);
+            if (!(sc >= 14 && sc <= 64)) sc = DEFC;
             function ap() {
                 a.style.fontSize = s + 'px';
                 r.value = s; v.textContent = s + ' px';
                 try { localStorage.setItem(K, s); } catch (e) { }
             }
-            ap();
+            function apc() {
+                clock.style.fontSize = sc + 'px';
+                rc.value = sc; vc.textContent = sc + ' px';
+                try { localStorage.setItem(KC, sc); } catch (e) { }
+            }
+            ap(); apc();
             r.addEventListener('input', function () { s = +r.value; ap(); });
-            document.getElementById('lkReset2').addEventListener('click', function () { s = DEF; ap(); });
+            rc.addEventListener('input', function () { sc = +rc.value; apc(); });
+            document.getElementById('lkReset2').addEventListener('click', function () { s = DEF; sc = DEFC; ap(); apc(); });
             bt.addEventListener('click', function () {
                 const abrir = pn.hidden;
                 pn.hidden = !abrir;
