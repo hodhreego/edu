@@ -373,7 +373,7 @@ function onRight(p){streak++;if(streak%3===0)setTimeout(function(){try{bigNote(s
 function growPlats(st,f){var z0=safeZ[st],g=gate[st],z1=(g?g.z:z0-60)-4;plats.forEach(function(p){if(p.z>z0||p.z<z1)return;if(p.type==='safe'||p.type==='read'||p.type==='ans'||p.type==='pstrip')return;if(p.w>=28)return;p.w*=f;p.d*=f;p.mesh.scale.x*=f;p.mesh.scale.z*=f})}
 function onWrong(p){streak=0;logResp(p,0);var i=p.st,q=stageQ[i];errs++;stErr[i]++;combo=0;try{growPlats(i,1.1)}catch(e){}if(errs<=3)setTimeout(function(){try{say('🦘 Pulo mais alto! (+'+(errs>3?42:errs*14)+'%)',2200)}catch(e){}},1400);sks(q.topic,skg(q.topic)-.5);rvq.push({t:q.topic,due:i+2});dirty[i]=true;if(stErr[i]>=2)easy[i]=true;
   beep(160,.4,'sawtooth');paint(p,0xdc2626);
-  say('❌ '+pick(TRY)+'\n💡 '+(q.e||('A resposta era '+q.a))+(stErr[i]>=2?'\nVou facilitar: menos opções!':''),4200);hud()}
+  say('❌ '+pick(TRY)+'\n💡 '+(q.e||('A resposta era '+q.a))+'\n↩️ Voltando ao ponto de controle.'+(stErr[i]>=2?'\nVou facilitar: menos opções!':''),4200);hud()}
 var BS={
 p1:['circle','#22c55e','#14532d','<path d="M50 70V45M50 52c-14 0-18-10-18-18 12 0 18 6 18 18zM50 48c12 0 16-8 16-16-12 0-16 6-16 16z" fill="#fff"/>'],
 s3:['star','#facc15','#a16207','<path d="M50 30l6 13 14 2-10 10 3 14-13-7-13 7 3-14-10-10 14-2z" fill="#fff"/>'],
@@ -416,7 +416,7 @@ function worldDone(){ST.stat.mundos++;mp('mo',0);var r=Math.random(),coins=ri(20
   $('wb').innerHTML='<h1>🏆 '+wdef(W).em+' '+wdef(W).n+' concluído!</h1><p style="font-size:44px;margin:4px">🎁</p><p><b>Baú aberto:</b> +'+coins+' 🪙 e +60 XP</p>'+extra+'<div class="st"><span>⭐ '+st+'/30</span><span>❌ '+errs+' erros</span></div><button class="go" id="bMenu" type="button">🗺️ Voltar ao mapa</button>';$('ovW').style.display='flex';sv()}
 function landOn(p){
   if(p.type==='crumble'&&p.shake===undefined)p.shake=tNow+.25;
-  if(p.type==='ans'&&!p.done){p.done=true;if(p.ok){answered[p.st]=true;onRight(p)}else{p.shake=tNow;onWrong(p)}}
+  if(p.type==='ans'&&!p.done){p.done=true;if(p.ok){answered[p.st]=true;onRight(p)}else{p.shake=tNow;onWrong(p);combo=0;setTimeout(function(){try{resp()}catch(e){}},300)}}
   if(p.type==='safe'){
     if(p.st>0&&!answered[p.st-1]&&!window.RBX_MASTER){pl.st=p.st-1;say('Acerte a pergunta antes de avançar!',1500);resp();return}
     if(p.st>0)stageDone(p.st-1);pl.st=p.st;if(p.st===N&&!sDone[N]){sDone[N]=true;worldDone()}hud()}}
