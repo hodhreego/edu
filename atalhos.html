@@ -54,8 +54,8 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 .toast.on{transform:translateX(-50%)}
 @media (prefers-reduced-motion:no-preference){a.card{animation:up .5s both}@keyframes up{from{opacity:0;transform:translateY(14px)}}}
 .hero-art{display:block;width:100%;max-width:920px;height:clamp(130px,22vw,220px);object-fit:cover;object-position:center 42%;margin:18px auto 0;border-radius:22px;border:1px solid var(--bd);box-shadow:var(--shadow)}
-a.hero-live{display:flex;flex-direction:column;justify-content:space-between;width:100%;max-width:920px;height:clamp(180px,26vw,260px);margin:18px auto 0;padding:12px 18px 13px;border-radius:22px;border:1px solid var(--hl-bd);box-shadow:var(--shadow);background:var(--hl-bg);color:var(--hl-tx);text-decoration:none;overflow:hidden;transition:transform .18s,box-shadow .18s}
-a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.32);outline:none}
+.hero-live{display:flex;flex-direction:column;justify-content:space-between;width:100%;max-width:920px;height:clamp(180px,26vw,260px);margin:18px auto 0;padding:12px 18px 13px;border-radius:22px;border:1px solid var(--hl-bd);box-shadow:var(--shadow);background:var(--hl-bg);color:var(--hl-tx);text-decoration:none;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.hero-live:hover{box-shadow:0 16px 36px rgba(0,0,0,.32);outline:none}
 .hl-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .hl-live{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--hl-acc);background:var(--hl-chip);border:1px solid var(--hl-bd);border-radius:999px;padding:5px 12px}
 .hl-live i{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:hlpulse 1.8s infinite}
@@ -112,8 +112,8 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 .lgn-sel{font-size:1rem;font-weight:900;letter-spacing:.02em;line-height:1.25;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 10px;margin:0 0 8px;min-height:38px;word-break:break-word}
 .lgn-filtros{display:flex;gap:8px}
 .lgn-filtros>div{flex:1;min-width:0}
-@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art{height:126px;border-radius:16px}a.hero-live{height:auto;min-height:190px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.hl-podio{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
-@media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art,a.hero-live{display:none}}
+@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art{height:126px;border-radius:16px}.hero-live{height:auto;min-height:190px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.hl-podio{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
+@media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art,.hero-live{display:none}}
 /* barra de rolagem bem visivel */
 html{scrollbar-gutter:stable}
 ::-webkit-scrollbar{width:20px;height:20px}
@@ -137,6 +137,41 @@ html{scrollbar-gutter:stable}
 .curio a.mais:visited{color:#0b0080}
 @media(max-width:560px){.curio img{float:none;display:block;width:100%;margin:0 0 14px}.curio .cb{padding:16px}}
 @media print{.curio{display:none}}
+/* painel ao vivo detalhado */
+.hero-live{height:auto!important;min-height:0;gap:14px;max-width:920px}
+.hl-num b{font-size:clamp(1.5rem,4.4vw,2.5rem)}
+.hl-num small{font-size:.7rem}
+.hl-det{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.hl-box{background:var(--hl-chip);border:1px solid var(--hl-bd);border-radius:14px;padding:11px 13px;min-width:0}
+.hl-box h4{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--hl-acc);margin:0 0 8px;font-weight:900}
+.hl-li{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--hl-tx);padding:3px 0;min-width:0}
+.hl-li .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hl-li .v{flex:none;font-weight:800;font-variant-numeric:tabular-nums}
+.hl-li small{color:var(--hl-dim);font-weight:600}
+.hl-bar{flex:none;width:58px;height:7px;border-radius:9px;background:rgba(127,127,127,.28);overflow:hidden}
+.hl-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#34d399,#60a5fa)}
+.hl-bar i.lo{background:linear-gradient(90deg,#f87171,#fbbf24)}
+.hl-vazio{font-size:.84rem;color:var(--hl-dim)}
+.hero-live{--acc:var(--hl-acc);zoom:var(--hl-zoom,1)}
+.hl-live{color:var(--acc)!important}
+.hl-box h4{color:var(--acc)!important}
+.hl-acoes{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.hl-btn{text-decoration:none}
+.hl-cfg{background:var(--hl-chip);border:1px solid var(--hl-bd);color:var(--hl-tx);border-radius:999px;padding:7px 13px;font-weight:800;font-size:.78rem;cursor:pointer}
+.hl-cfg[aria-expanded="true"]{background:var(--acc);color:#0b1226}
+.hl-set{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;background:rgba(0,0,0,.18);border:1px solid var(--hl-bd);border-radius:14px;padding:12px 14px}
+.hl-set[hidden]{display:none}
+.hl-set .g{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hl-set .g>b{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.hl-set label{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--hl-tx);cursor:pointer;flex-wrap:wrap}
+.hl-set input[type=range]{flex:1;min-width:0;accent-color:var(--acc)}
+.hl-set select{background:var(--hl-chip);color:var(--hl-tx);border:1px solid var(--hl-bd);border-radius:9px;padding:6px 8px;font-size:.86rem;max-width:100%}
+.hl-set .sw{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.hl-set .sw button{width:24px;height:24px;border-radius:50%;border:2px solid var(--hl-bd);padding:0;cursor:pointer;background:var(--c);color:var(--hl-tx);font-size:.7rem}
+.hl-set .sw button.on{outline:2px solid var(--hl-tx);outline-offset:2px}
+.hl-set .sw input[type=color]{width:32px;height:28px;padding:0;border:1px solid var(--hl-bd);border-radius:8px;background:transparent;cursor:pointer}
+.hl-set .rs{background:var(--hl-chip);border:1px solid var(--hl-bd);color:var(--hl-tx);border-radius:10px;padding:7px 12px;font-weight:800;cursor:pointer;align-self:flex-start}
+.hl-compacto .hl-box{padding:7px 10px}.hl-compacto .hl-li{padding:1px 0;font-size:.8rem}.hl-compacto{gap:8px!important}
 </style>
 </head>
 <body>
@@ -190,20 +225,23 @@ html{scrollbar-gutter:stable}
 
 <main id="main"></main>
 <p class="empty" id="empty">Nenhum atalho encontrado 🤔</p>
-  <a class="hero-live" id="heroLive" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" aria-label="Resumo do painel ao vivo — abrir o painel completo">
+  <div class="hero-live" id="heroLive" aria-label="Resumo do painel ao vivo">
     <span class="hl-top">
       <span class="hl-live"><i></i> Painel ao vivo</span>
-      <span class="hl-btn">Abrir painel →</span>
+      <span class="hl-acoes"><button type="button" class="hl-cfg" id="hlCfg" aria-expanded="false" title="Ajustes e personalização do painel">⚙ Ajustes</button><a class="hl-btn" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener">Abrir painel →</a></span>
     </span>
+    <div class="hl-set" id="hlSet" hidden></div>
     <span class="hl-mid">
       <span class="hl-num"><b id="hlAlunos">—</b><small>alunos</small></span>
+      <span class="hl-num"><b id="hlAtivos">—</b><small id="hlAtivosLbl">ativos agora</small></span>
       <span class="hl-num"><b id="hlResp">—</b><small>respostas · 15 min</small></span>
       <span class="hl-num"><b id="hlPct">—</b><small>acertos</small></span>
       <span class="hl-num hl-dinheiro"><b id="hlDinheiro">R$ 0,00</b><small>no cofrinho</small></span>
     </span>
     <span class="hl-podio" id="hlPodio"></span>
-    <span class="hl-foot" id="hlAgora">Toque para abrir o painel completo</span>
-  </a>
+    <span class="hl-det" id="hlDet"></span>
+    <span class="hl-foot" id="hlAgora">Carregando…</span>
+  </div>
 <section class="curio" id="curio" hidden aria-label="Curiosidade da Wikipédia">
   <div class="ch"><b><span>🌐</span>Wikipédia — curiosidade do dia</b><button id="curioMais" type="button">Outra curiosidade</button></div>
   <div class="cb"><img id="curioImg" alt="" hidden><div><h3 id="curioT"></h3><p id="curioP"></p><a class="mais" id="curioA" target="_blank" rel="noopener">Ler na Wikipédia →</a></div></div>
@@ -324,6 +362,54 @@ render();
   var CKEY='atalhos_live_v1';
   var aEl=document.getElementById('hlAlunos'),rEl=document.getElementById('hlResp'),pEl=document.getElementById('hlPct'),fEl=document.getElementById('hlAgora');
   var mEl=document.getElementById('hlDinheiro'),podEl=document.getElementById('hlPodio');
+  var CFG_K='atalhos_painel_cfg_v1';
+  var PAD={serie:1,tema:1,jogo:1,ult:1,podio:1,cofre:1,aviso:1,zoom:1,acc:'',comp:0,janela:20,refresh:60,linhas:4,ordem:'alunos',minresp:40};
+  var C=(function(){var c={};try{c=JSON.parse(localStorage.getItem(CFG_K)||'{}')||{}}catch(e){}var o={};for(var k in PAD)o[k]=(k in c)?c[k]:PAD[k];return o})();
+  function salvaCfg(){try{localStorage.setItem(CFG_K,JSON.stringify(C))}catch(e){}}
+  var ULT=null,timer=0;
+  function aplicaCfg(){
+    var h=document.getElementById('heroLive');if(!h)return;
+    h.style.setProperty('--hl-zoom',C.zoom);
+    if(C.acc)h.style.setProperty('--acc',C.acc);else h.style.removeProperty('--acc');
+    h.classList.toggle('hl-compacto',!!C.comp);
+    var d=document.getElementById('hlDinheiro');if(d&&d.parentNode)d.parentNode.style.display=C.cofre?'':'none';
+    if(podEl)podEl.style.display=C.podio?'':'none';
+    if(fEl)fEl.style.display=C.aviso?'':'none';
+    var an=document.getElementById('hlAtivosLbl');if(an)an.textContent='ativos ('+C.janela+' min)';
+    if(ULT)paintLive(ULT);
+    clearInterval(timer);if(+C.refresh>0)timer=setInterval(loadLive,C.refresh*1000);
+  }
+  function montaCfg(){
+    var el=document.getElementById('hlSet');if(!el)return;
+    var cores=['#7dd3fc','#34d399','#fbbf24','#f472b6','#a78bfa','#fb923c'];
+    function ck(k,t){return '<label><input type="checkbox" data-k="'+k+'"'+(C[k]?' checked':'')+'> '+t+'</label>'}
+    function sel(k,ops){return '<select data-k="'+k+'">'+ops.map(function(o){return '<option value="'+o[0]+'"'+(String(C[k])===String(o[0])?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>'}
+    el.innerHTML='<div class="g"><b>Blocos visíveis</b>'+ck('serie','Por turma / matéria')+ck('tema','Temas (erros e mais treinados)')+ck('jogo','Jogando agora')+ck('ult','Últimas respostas')+ck('podio','Pódio dos últimos 3 min')+ck('cofre','Cofrinho (R$)')+ck('aviso','Linha “Agora:”')+'</div>'
+     +'<div class="g"><b>Aparência</b><label>Tamanho <input type="range" data-k="zoom" min="0.8" max="1.5" step="0.05" value="'+C.zoom+'"></label>'
+     +'<div class="sw">'+cores.map(function(c){return '<button type="button" data-cor="'+c+'" style="--c:'+c+'" class="'+(C.acc===c?'on':'')+'" title="'+c+'"></button>'}).join('')+'<input type="color" id="hlCor" value="'+(C.acc||'#7dd3fc')+'" title="Escolher outra cor"><button type="button" data-cor="" style="--c:transparent" title="Cor padrão">∅</button></div>'
+     +ck('comp','Modo compacto')+'</div>'
+     +'<div class="g"><b>Dados</b><label>Ativo = jogou nos últimos '+sel('janela',[[5,'5 min'],[10,'10 min'],[20,'20 min'],[60,'1 hora']])+'</label>'
+     +'<label>Linhas por bloco '+sel('linhas',[[3,'3'],[4,'4'],[5,'5'],[6,'6'],[8,'8']])+'</label>'
+     +'<label>Ordenar turmas por '+sel('ordem',[['alunos','nº de alunos'],['acertos','% de acertos'],['respostas','respostas']])+'</label>'
+     +'<label>Tema só com ≥ '+sel('minresp',[[10,'10 resp.'],[20,'20 resp.'],[40,'40 resp.'],[100,'100 resp.']])+'</label>'
+     +'<label>Atualizar a cada '+sel('refresh',[[15,'15 s'],[30,'30 s'],[60,'1 min'],[120,'2 min'],[0,'só ao abrir']])+'</label></div>'
+     +'<div class="g"><b>Geral</b><button type="button" class="rs" id="hlReset">↺ Restaurar padrão</button><button type="button" class="rs" id="hlAtual">⟳ Atualizar agora</button></div>';
+    el.onchange=el.oninput=function(e){
+      var t=e.target,k=t.getAttribute('data-k');
+      if(t.id==='hlCor'){C.acc=t.value;salvaCfg();aplicaCfg();return}
+      if(!k)return;
+      C[k]=t.type==='checkbox'?(t.checked?1:0):(t.type==='range'?+t.value:(isNaN(+t.value)?t.value:+t.value));
+      salvaCfg();aplicaCfg();
+    };
+    el.onclick=function(e){
+      var t=e.target.closest('button');if(!t)return;
+      if(t.hasAttribute('data-cor')){C.acc=t.getAttribute('data-cor');salvaCfg();aplicaCfg();montaCfg();return}
+      if(t.id==='hlReset'){for(var k in PAD)C[k]=PAD[k];salvaCfg();aplicaCfg();montaCfg()}
+      if(t.id==='hlAtual'){try{sessionStorage.removeItem(CKEY)}catch(x){}loadLive()}
+    };
+  }
+  (function(){var b=document.getElementById('hlCfg'),p=document.getElementById('hlSet');if(!b||!p)return;
+    b.onclick=function(){var on=p.hidden;p.hidden=!on;b.setAttribute('aria-expanded',on?'true':'false');if(on)montaCfg()}})();
   var moneyMostrado=0,moneyAlvo=0,moneyRAF=0;
   function fmtMoney(v){return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
   function animarDinheiro(v){
@@ -355,9 +441,34 @@ render();
       return '<span class="pd">'+med[i]+' '+esc(nome)+' <small>'+cont[k]+'</small></span>';
     }).join('');
   }
+  function pc(a,b){return b?Math.round(a/b*100):0}
+  function ha(ms){var m=Math.max(0,Math.round(ms/60000));return m<1?'agora':m<60?'há '+m+' min':'há '+Math.round(m/60)+' h'}
+  function detalhe(al,rec,now){
+    var el=document.getElementById('hlDet');if(!el)return;
+    var ser={},tem={},jog={};
+    al.forEach(function(a){
+      var k=a.serie||'—';var o=ser[k]||(ser[k]={n:0,at:0,r:0,ok:0});o.n++;o.r+=+a.resp||0;o.ok+=+a.respOk||0;if(now-(+a.ultima||0)<C.janela*60000)o.at++;
+      var T=a.temas||{};Object.keys(T).forEach(function(t){if(t==='-'||t==='add')return;var x=tem[t]||(tem[t]={n:0,ok:0});x.n+=+T[t].n||0;x.ok+=+T[t].ok||0});
+      if(a.atual&&a.atual.nome&&now-(+a.ultima||0)<C.janela*60000){var j=a.atual.nome.replace(/\s*·\s*Fase.*$/,'');jog[j]=(jog[j]||0)+1}
+    });
+    var ch=C.ordem==='acertos'?function(k){return pc(ser[k].ok,ser[k].r)}:C.ordem==='respostas'?function(k){return ser[k].r}:function(k){return ser[k].n};
+    var series=Object.keys(ser).sort(function(a,b){return ch(b)-ch(a)}).slice(0,C.linhas+2);
+    var h='<div class="hl-box"><h4>📊 Por turma / matéria</h4>'+series.map(function(k){var o=ser[k],p=pc(o.ok,o.r);
+      return '<div class="hl-li"><span class="n">'+esc(k.replace(' (Matemática)',''))+' <small>'+o.n+' alunos'+(o.at?' · '+o.at+' ativos':'')+'</small></span><span class="hl-bar"><i'+(p<55?' class="lo"':'')+' style="width:'+p+'%"></i></span><span class="v">'+p+'%</span></div>'}).join('')+'</div>';
+    var tl=Object.keys(tem).filter(function(t){return tem[t].n>=C.minresp}).map(function(t){return {t:t,n:tem[t].n,p:pc(tem[t].ok,tem[t].n)}});
+    var dif=tl.slice().sort(function(a,b){return a.p-b.p}).slice(0,C.linhas),mais=tl.slice().sort(function(a,b){return b.n-a.n}).slice(0,Math.max(3,C.linhas-1));
+    h+='<div class="hl-box"><h4>⚠️ Temas com mais erros</h4>'+(dif.map(function(x){return '<div class="hl-li"><span class="n">'+esc(x.t)+' <small>'+x.n+' resp.</small></span><span class="hl-bar"><i class="lo" style="width:'+x.p+'%"></i></span><span class="v">'+x.p+'%</span></div>'}).join('')||'<span class="hl-vazio">Poucos dados ainda</span>')
+      +'<h4 style="margin-top:10px">🔥 Mais treinados</h4>'+mais.map(function(x){return '<div class="hl-li"><span class="n">'+esc(x.t)+'</span><span class="v">'+x.n+'</span></div>'}).join('')+'</div>';
+    var jk=Object.keys(jog).sort(function(a,b){return jog[b]-jog[a]}).slice(0,C.linhas);
+    var ult=(rec||[]).slice().sort(function(a,b){return (+b.t||0)-(+a.t||0)}).slice(0,C.linhas+1);
+    h+='<div class="hl-box"><h4>🎮 Jogando agora</h4>'+(jk.map(function(k){return '<div class="hl-li"><span class="n">'+esc(k)+'</span><span class="v">'+jog[k]+'</span></div>'}).join('')||'<span class="hl-vazio">Nenhum aluno ativo agora</span>')
+      +'<h4 style="margin-top:10px">🕒 Últimas respostas</h4>'+(ult.map(function(r){return '<div class="hl-li"><span>'+(r.ok?'✅':'❌')+'</span><span class="n">'+esc(r.tema||r.mundo||'')+' <small>'+esc(r.mat||'')+'</small></span><small>'+ha(now-(+r.t||0))+'</small></div>'}).join('')||'<span class="hl-vazio">Sem respostas recentes</span>')+'</div>';
+    el.innerHTML=h;
+    el.style.display=(C.serie||C.tema||C.jogo||C.ult)?'':'none';
+  }
   function paintLive(d){
-    var now=+d.agora||Date.now(),al=d.alunos||[],rec=d.recentes||[];
-    var ativos=al.filter(function(a){return now-(+a.ultima||0)<1200000}).length;
+    ULT=d;var now=+d.agora||Date.now(),al=d.alunos||[],rec=d.recentes||[];
+    var ativos=al.filter(function(a){return now-(+a.ultima||0)<C.janela*60000}).length;
     var ults=rec.filter(function(r){return now-(+r.t||0)<900000}).length;
     var rt=0,ro=0,cofre=0;al.forEach(function(a){rt+=+a.resp||0;ro+=+a.respOk||0;cofre+=+a.cofrinho||0});
     aEl.textContent=al.length;
@@ -368,6 +479,8 @@ render();
     var jogos={},melhor='';
     al.forEach(function(a){var n=a.atual&&a.atual.nome;if(!n)return;jogos[n]=(jogos[n]||0)+1});
     Object.keys(jogos).forEach(function(k){if(!melhor||jogos[k]>jogos[melhor])melhor=k});
+    var at=document.getElementById('hlAtivos');if(at)at.textContent=ativos;
+    detalhe(al,rec,now);
     fEl.textContent=melhor?('Agora: '+melhor):(ativos?('Agora: '+ativos+' aluno(s) em atividade'):'Toque para abrir o painel completo');
   }
   function cache(d){try{sessionStorage.setItem(CKEY,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
@@ -376,7 +489,7 @@ render();
     var c=lido();if(c){paintLive(c);return}
     fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){if(j&&j.alunos){paintLive(j);cache(j)}}).catch(function(){});
   }
-  loadLive();setInterval(loadLive,60000);
+  aplicaCfg();loadLive();
 })();
 </script>
 <script src="logins-widget.js?v=1"></script>
