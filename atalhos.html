@@ -54,7 +54,7 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 .toast.on{transform:translateX(-50%)}
 @media (prefers-reduced-motion:no-preference){a.card{animation:up .5s both}@keyframes up{from{opacity:0;transform:translateY(14px)}}}
 .hero-art{display:block;width:100%;max-width:920px;height:clamp(130px,22vw,220px);object-fit:cover;object-position:center 42%;margin:18px auto 0;border-radius:22px;border:1px solid var(--bd);box-shadow:var(--shadow)}
-a.hero-live{display:flex;flex-direction:column;justify-content:space-between;width:100%;max-width:920px;height:clamp(130px,22vw,220px);margin:18px auto 0;padding:12px 18px 13px;border-radius:22px;border:1px solid var(--hl-bd);box-shadow:var(--shadow);background:var(--hl-bg);color:var(--hl-tx);text-decoration:none;overflow:hidden;transition:transform .18s,box-shadow .18s}
+a.hero-live{display:flex;flex-direction:column;justify-content:space-between;width:100%;max-width:920px;height:clamp(180px,26vw,260px);margin:18px auto 0;padding:12px 18px 13px;border-radius:22px;border:1px solid var(--hl-bd);box-shadow:var(--shadow);background:var(--hl-bg);color:var(--hl-tx);text-decoration:none;overflow:hidden;transition:transform .18s,box-shadow .18s}
 a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.32);outline:none}
 .hl-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .hl-live{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--hl-acc);background:var(--hl-chip);border:1px solid var(--hl-bd);border-radius:999px;padding:5px 12px}
@@ -66,6 +66,10 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 .hl-num b{font-size:clamp(1.35rem,4.2vw,2.3rem);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .hl-num small{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--hl-dim);margin-top:7px}
 .hl-foot{font-size:.76rem;font-weight:600;color:var(--hl-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl-dinheiro b{color:#fbbf24;text-shadow:0 0 18px rgba(251,191,36,.35)}
+.hl-podio{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.74rem;font-weight:700;color:var(--hl-dim);min-height:22px}
+.hl-podio .pd{display:inline-flex;align-items:center;gap:5px;background:var(--hl-chip);border:1px solid var(--hl-bd);border-radius:999px;padding:3px 9px;color:var(--hl-tx)}
+.hl-podio .pd small{color:var(--hl-dim);font-weight:600}
 @media (prefers-reduced-motion:reduce){.hl-live i{animation:none}}
 .sec-ic{width:46px;height:46px;border-radius:13px;object-fit:cover;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.25);border:1px solid var(--bd)}
 .prof .sec-ic{width:38px;height:38px;border-radius:11px;vertical-align:middle;margin-right:6px}
@@ -105,10 +109,10 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 .lgn-row button{background:#6366f1;color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:800;cursor:pointer}
 #lgnList[hidden],#lgnLock[hidden]{display:none}
 .lgn-err{font-size:.8rem;color:#f87171;font-weight:700}
-.lgn-sel{font-size:1rem;font-weight:900;letter-spacing:.02em;line-height:1.25;text-transform:uppercase;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 10px;margin:0 0 8px;min-height:38px;word-break:break-word}
+.lgn-sel{font-size:1rem;font-weight:900;letter-spacing:.02em;line-height:1.25;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 10px;margin:0 0 8px;min-height:38px;word-break:break-word}
 .lgn-filtros{display:flex;gap:8px}
 .lgn-filtros>div{flex:1;min-width:0}
-@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art,a.hero-live{height:126px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
+@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art{height:126px;border-radius:16px}a.hero-live{height:auto;min-height:190px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.hl-podio{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
 @media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art,a.hero-live{display:none}}
 </style>
 </head>
@@ -127,7 +131,9 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
       <span class="hl-num"><b id="hlAlunos">—</b><small>alunos</small></span>
       <span class="hl-num"><b id="hlResp">—</b><small>respostas · 15 min</small></span>
       <span class="hl-num"><b id="hlPct">—</b><small>acertos</small></span>
+      <span class="hl-num hl-dinheiro"><b id="hlDinheiro">R$ 0,00</b><small>no cofrinho</small></span>
     </span>
+    <span class="hl-podio" id="hlPodio"></span>
     <span class="hl-foot" id="hlAgora">Toque para abrir o painel completo</span>
   </a>
   <div class="how" id="how">
@@ -170,7 +176,7 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 <div class="tools"><div class="in">
   <input id="q" type="search" placeholder="🔎 Buscar atalho (ex.: inglês, khan, redação, 7)" autocomplete="off">
   <div class="chips" id="chips"></div>
-  <button id="lgnBtn" type="button" title="Lista de logins dos alunos (senha do professor)">🔑 Logins</button>
+  <button id="lgnBtn" type="button" data-logins-trigger title="Lista de logins dos alunos (senha do professor)">🔑 Logins</button>
 </div></div>
 
 <main id="main"></main>
@@ -178,28 +184,6 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 <footer>Atalhos 2026 · versão visual nova — a planilha original continua intacta.</footer>
 </div>
 <div class="toast" id="toast">Copiado!</div>
-
-<div class="lgn-box" id="lgnBox" hidden aria-label="Logins dos alunos">
-  <div class="lgn-head">
-    <strong>🔑 Logins dos alunos</strong>
-    <button id="lgnClose" type="button" aria-label="Fechar">✕</button>
-  </div>
-  <div class="lgn-sel" id="lgnTitulo">—</div>
-  <div id="lgnLock">
-    <label for="lgnPass">Senha do professor</label>
-    <input id="lgnPass" type="password" inputmode="numeric" autocomplete="off" placeholder="Digite a senha">
-    <div class="lgn-row"><button id="lgnOk" type="button">Entrar</button><span class="lgn-err" id="lgnErr"></span></div>
-  </div>
-  <div id="lgnList" hidden>
-    <div class="lgn-filtros">
-      <div><label for="lgnEscola">Colégio</label><select id="lgnEscola"></select></div>
-      <div><label for="lgnTurma">Turma</label><select id="lgnTurma"></select></div>
-    </div>
-    <label for="lgnSel">Aluno (ordem de chamada)</label>
-    <select id="lgnSel"></select>
-    <div class="lgn-row"><button id="lgnCopy" type="button">Copiar login</button><span class="lgn-err" id="lgnMsg"></span></div>
-  </div>
-</div>
 
 <script src="atalhos-nomes.js?v=1"></script>
 <script>
@@ -312,14 +296,48 @@ render();
   var END='https://script.google.com/macros/s/AKfycbyuRU8QZHIANlj_ApgBUaF6CtVT4oJrJEKnmOMhGFQpoHIlNLqYb4Ium4toW2ZF1tmO/exec';
   var CKEY='atalhos_live_v1';
   var aEl=document.getElementById('hlAlunos'),rEl=document.getElementById('hlResp'),pEl=document.getElementById('hlPct'),fEl=document.getElementById('hlAgora');
+  var mEl=document.getElementById('hlDinheiro'),podEl=document.getElementById('hlPodio');
+  var moneyMostrado=0,moneyAlvo=0,moneyRAF=0;
+  function fmtMoney(v){return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function animarDinheiro(v){
+    moneyAlvo=v;
+    if(moneyRAF)return;
+    var passo=function(){
+      moneyRAF=0;
+      var dif=moneyAlvo-moneyMostrado;
+      if(Math.abs(dif)<0.01){moneyMostrado=moneyAlvo;if(mEl)mEl.textContent=fmtMoney(moneyMostrado);return}
+      moneyMostrado+=dif*0.18;
+      if(mEl)mEl.textContent=fmtMoney(moneyMostrado);
+      moneyRAF=requestAnimationFrame(passo);
+    };
+    moneyRAF=requestAnimationFrame(passo);
+  }
+  function desenhaPodio(rec,now){
+    if(!podEl)return;
+    var corte=now-180000,cont={};
+    (rec||[]).forEach(function(r){
+      var t=+r.t||0;if(t<corte)return;
+      var k=String(r.login||'').toLowerCase();if(!k)return;
+      cont[k]=(cont[k]||0)+1;
+    });
+    var top=Object.keys(cont).sort(function(a,b){return cont[b]-cont[a]}).slice(0,3);
+    if(!top.length){podEl.innerHTML='<span class="pd">⏱️ Sem respostas nos últimos 3 min</span>';return}
+    var med=['🥇','🥈','🥉'];
+    podEl.innerHTML='<span class="pd" style="background:transparent;border:0;padding:0">⏱️ 3 min:</span>'+top.map(function(k,i){
+      var nome=(window.RBX_NOMES&&window.RBX_NOMES[k])||k;
+      return '<span class="pd">'+med[i]+' '+esc(nome)+' <small>'+cont[k]+'</small></span>';
+    }).join('');
+  }
   function paintLive(d){
     var now=+d.agora||Date.now(),al=d.alunos||[],rec=d.recentes||[];
     var ativos=al.filter(function(a){return now-(+a.ultima||0)<1200000}).length;
     var ults=rec.filter(function(r){return now-(+r.t||0)<900000}).length;
-    var rt=0,ro=0;al.forEach(function(a){rt+=+a.resp||0;ro+=+a.respOk||0});
+    var rt=0,ro=0,cofre=0;al.forEach(function(a){rt+=+a.resp||0;ro+=+a.respOk||0;cofre+=+a.cofrinho||0});
     aEl.textContent=al.length;
     rEl.textContent=ults;
     pEl.textContent=(rt?Math.round(ro/rt*100):0)+'%';
+    animarDinheiro(cofre);
+    desenhaPodio(rec,now);
     var jogos={},melhor='';
     al.forEach(function(a){var n=a.atual&&a.atual.nome;if(!n)return;jogos[n]=(jogos[n]||0)+1});
     Object.keys(jogos).forEach(function(k){if(!melhor||jogos[k]>jogos[melhor])melhor=k});
@@ -333,107 +351,7 @@ render();
   }
   loadLive();setInterval(loadLive,60000);
 })();
-
-(function(){
-  var PASS='45999699444',OKKEY='atalhos_logins_ok';
-  var btn=document.getElementById('lgnBtn'),box=document.getElementById('lgnBox'),
-      close=document.getElementById('lgnClose'),lock=document.getElementById('lgnLock'),
-      list=document.getElementById('lgnList'),pass=document.getElementById('lgnPass'),
-      go=document.getElementById('lgnOk'),err=document.getElementById('lgnErr'),
-      sel=document.getElementById('lgnSel'),msg=document.getElementById('lgnMsg'),
-      cp=document.getElementById('lgnCopy');
-  if(!btn)return;
-  var dados=null,END='https://script.google.com/macros/s/AKfycbyuRU8QZHIANlj_ApgBUaF6CtVT4oJrJEKnmOMhGFQpoHIlNLqYb4Ium4toW2ZF1tmO/exec';
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-  function unlocked(){try{return sessionStorage.getItem(OKKEY)==='1'}catch(e){return false}}
-  function show(un){lock.hidden=un;list.hidden=!un;err.textContent='';
-    if(un){fill()}else{try{pass.value=''}catch(e){}}
-  }
-  function abrevNome(nome){
-    var p=String(nome||'').trim().split(/\s+/).filter(Boolean);
-    if(!p.length)return '';
-    var p0=p[0].charAt(0).toUpperCase()+p[0].slice(1).toLowerCase();
-    return [p0].concat(p.slice(1).map(function(x){return x.charAt(0).toUpperCase()+'.'})).join(' ');
-  }
-  var escolaSel=document.getElementById('lgnEscola'),turmaSel=document.getElementById('lgnTurma'),titulo=document.getElementById('lgnTitulo');
-  var ESCOLAS={cla:'Colégio CLA',xus:'Colégio XUS'};
-  var filtro={escola:'TODOS',turma:'TODOS'};
-  function parseLogin(l){var m=String(l||'').match(/^(\d{1,3})([a-z]{3})(\d)([a-z])$/i);return m?{escola:m[2].toLowerCase(),turma:m[3]+m[4].toLowerCase()}:{escola:'',turma:''}}
-  function nomeEscola(c){return ESCOLAS[c]||('Colégio '+c.toUpperCase())}
-  function nomeTurma(t){return t?(t.slice(0,-1)+'º '+t.slice(-1).toUpperCase()):''}
-  function montaFiltros(){
-    var es={},tu={};
-    ((dados&&dados.alunos)||[]).forEach(function(a){var p=parseLogin(a.login);if(p.escola)es[p.escola]=1;if(p.turma)tu[p.turma]=1});
-    const eo = Object.keys(es).sort(), to = Object.keys(tu).sort(function(a,b){return (+a.slice(0,-1)-+b.slice(0,-1))||a.slice(-1).localeCompare(b.slice(-1))});
-    escolaSel.innerHTML='<option value="TODOS">Todos os colégios</option>'+eo.map(function(c){return '<option value="'+esc(c)+'">'+esc(nomeEscola(c))+'</option>'}).join('');
-    turmaSel.innerHTML='<option value="TODOS">Todas as turmas</option>'+to.map(function(t){return '<option value="'+esc(t)+'">'+esc(nomeTurma(t))+'</option>'}).join('');
-    escolaSel.value=eo.indexOf(filtro.escola)>=0?filtro.escola:'TODOS';
-    turmaSel.value=to.indexOf(filtro.turma)>=0?filtro.turma:'TODOS';
-  }
-  function fill(){
-    if(!dados||!dados.alunos){sel.innerHTML='<option>Carregando...</option>';if(titulo)titulo.textContent='—';return}
-    var arr=dados.alunos.filter(function(a){
-      var p=parseLogin(a.login);
-      return (filtro.escola==='TODOS'||p.escola===filtro.escola)&&(filtro.turma==='TODOS'||p.turma===filtro.turma);
-    }).map(function(a){
-      var lg=String(a.login||'').toLowerCase();
-      return {n:parseInt(lg,10)||999,nome:(a.nick||'').trim()||(window.RBX_NOMES&&window.RBX_NOMES[lg])||'',login:lg};
-    }).sort(function(a,b){return a.n-b.n||String(a.login).localeCompare(String(b.login))});
-    sel.innerHTML=arr.length?arr.map(function(o){
-      var rotulo=o.n+' · '+esc(o.login)+(o.nome?(' — '+esc(abrevNome(o.nome))):'');
-      return '<option value="'+esc(o.login)+'" title="'+esc(o.nome||o.login)+'">'+rotulo+'</option>';
-    }).join(''):'<option>Sem alunos nesses filtros</option>';
-    if(!arr.length){if(titulo)titulo.textContent='—';return}
-    atualizaTitulo();
-  }
-  function atualizaTitulo(){
-    if(!titulo)return;
-    var o=sel.options[sel.selectedIndex];
-    titulo.textContent=o?o.textContent.toUpperCase():'—';
-  }
-  sel.onchange=atualizaTitulo;
-  if(escolaSel)escolaSel.onchange=function(){filtro.escola=escolaSel.value;fill()};
-  if(turmaSel)turmaSel.onchange=function(){filtro.turma=turmaSel.value;fill()};
-  function arrastavel(el,handle){
-    var startX=0,startY=0,ox=0,oy=0,drag=false;
-    handle.style.cursor='move';handle.style.touchAction='none';
-    handle.addEventListener('pointerdown',function(e){
-      if(e.target.closest('button'))return;
-      var r=el.getBoundingClientRect();
-      el.style.left=r.left+'px';el.style.top=r.top+'px';el.style.right='auto';el.style.bottom='auto';
-      drag=true;startX=e.clientX;startY=e.clientY;ox=r.left;oy=r.top;
-      try{handle.setPointerCapture(e.pointerId)}catch(x){}
-      e.preventDefault();
-    });
-    handle.addEventListener('pointermove',function(e){
-      if(!drag)return;
-      var w=el.offsetWidth,h=el.offsetHeight;
-      var x=Math.min(Math.max(4,ox+e.clientX-startX),window.innerWidth-w-4);
-      var y=Math.min(Math.max(4,oy+e.clientY-startY),window.innerHeight-h-4);
-      el.style.left=x+'px';el.style.top=y+'px';
-    });
-    function fim(){drag=false}
-    handle.addEventListener('pointerup',fim);
-    handle.addEventListener('pointercancel',fim);
-  }
-  arrastavel(box,document.querySelector('.lgn-head'));
-  function load(){
-    fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){dados=j;montaFiltros();fill()}).catch(function(){fill()});
-  }
-  btn.onclick=function(){box.hidden=false;show(unlocked());if(!unlocked())pass.focus();load()};
-  close.onclick=function(){box.hidden=true};
-  function tentar(){
-    if(pass.value.trim()===PASS){try{sessionStorage.setItem(OKKEY,'1')}catch(e){}show(true)}
-    else{err.textContent='Senha incorreta';pass.select()}
-  }
-  go.onclick=tentar;
-  pass.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();tentar()}};
-  cp.onclick=function(){
-    var v=sel.value||'';if(!v)return;
-    try{navigator.clipboard.writeText(v)}catch(e){}
-    msg.textContent='Copiado: '+v;
-  };
-})();
 </script>
+<script src="logins-widget.js?v=1"></script>
 </body>
 </html>
