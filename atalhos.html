@@ -8,8 +8,8 @@
 <link rel="apple-touch-icon" href="atalhos-icon.png">
 <link rel="icon" type="image/png" sizes="180x180" href="atalhos-icon.png">%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%230f9d58'/%3E%3Cpath d='M19 9h17l11 11v35a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V13a4 4 0 0 1 4-4z' fill='%23fff'/%3E%3Cpath d='M36 9l11 11H36z' fill='%23a8dbb9'/%3E%3Cg fill='%230f9d58'%3E%3Crect x='22' y='26' width='20' height='4' rx='1'/%3E%3Crect x='22' y='33' width='20' height='4' rx='1'/%3E%3Crect x='22' y='40' width='20' height='4' rx='1'/%3E%3Crect x='22' y='47' width='20' height='4' rx='1'/%3E%3C/g%3E%3C/svg%3E">
 <style>
-:root{--bg:#0b1226;--bg2:#131c3a;--card:rgba(255,255,255,.07);--card-h:rgba(255,255,255,.13);--bd:rgba(255,255,255,.14);--tx:#f4f6ff;--dim:#a9b4d6;--shadow:0 10px 30px rgba(0,0,0,.35)}
-@media (prefers-color-scheme:light){:root{--bg:#eef2fb;--bg2:#dfe7fa;--card:rgba(255,255,255,.85);--card-h:#fff;--bd:rgba(20,30,70,.12);--tx:#121a38;--dim:#55618a;--shadow:0 10px 26px rgba(30,50,110,.14)}}
+:root{--bg:#0b1226;--bg2:#131c3a;--card:rgba(255,255,255,.07);--card-h:rgba(255,255,255,.13);--bd:rgba(255,255,255,.14);--tx:#f4f6ff;--dim:#a9b4d6;--shadow:0 10px 30px rgba(0,0,0,.35);--lk1:#60a5fa;--lk2:#a78bfa;--lk3:#f472b6;--hl-bg:linear-gradient(120deg,#121a33,#1b2350 55%,#2b1b4d);--hl-chip:rgba(255,255,255,.10);--hl-bd:rgba(255,255,255,.16);--hl-tx:#f4f6ff;--hl-dim:#c7d0ea;--hl-acc:#7dd3fc}
+@media (prefers-color-scheme:light){:root{--bg:#eef2fb;--bg2:#dfe7fa;--card:rgba(255,255,255,.85);--card-h:#fff;--bd:rgba(20,30,70,.12);--tx:#121a38;--dim:#55618a;--shadow:0 10px 26px rgba(30,50,110,.14);--lk1:#1d4ed8;--lk2:#6d28d9;--lk3:#be185d;--hl-bg:linear-gradient(120deg,#e3eafb,#e6e0fb 55%,#fde4ef);--hl-chip:rgba(255,255,255,.8);--hl-bd:rgba(20,30,70,.16);--hl-tx:#0f1730;--hl-dim:#3c4770;--hl-acc:#0b4f96}}
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
 html{scroll-behavior:smooth}
 body{background:radial-gradient(1200px 600px at 10% -10%,#27408f55,transparent),radial-gradient(900px 500px at 100% 0,#7c3aed40,transparent),linear-gradient(180deg,var(--bg),var(--bg2));color:var(--tx);min-height:100vh;padding:0 16px 60px}
@@ -54,11 +54,24 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 .toast.on{transform:translateX(-50%)}
 @media (prefers-reduced-motion:no-preference){a.card{animation:up .5s both}@keyframes up{from{opacity:0;transform:translateY(14px)}}}
 .hero-art{display:block;width:100%;max-width:920px;height:clamp(130px,22vw,220px);object-fit:cover;object-position:center 42%;margin:18px auto 0;border-radius:22px;border:1px solid var(--bd);box-shadow:var(--shadow)}
+a.hero-live{display:flex;flex-direction:column;justify-content:space-between;width:100%;max-width:920px;height:clamp(130px,22vw,220px);margin:18px auto 0;padding:12px 18px 13px;border-radius:22px;border:1px solid var(--hl-bd);box-shadow:var(--shadow);background:var(--hl-bg);color:var(--hl-tx);text-decoration:none;overflow:hidden;transition:transform .18s,box-shadow .18s}
+a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.32);outline:none}
+.hl-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hl-live{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--hl-acc);background:var(--hl-chip);border:1px solid var(--hl-bd);border-radius:999px;padding:5px 12px}
+.hl-live i{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:hlpulse 1.8s infinite}
+@keyframes hlpulse{0%{box-shadow:0 0 0 0 #22c55eaa}70%{box-shadow:0 0 0 9px #22c55e00}100%{box-shadow:0 0 0 0 #22c55e00}}
+.hl-btn{flex:none;font-size:.78rem;font-weight:800;background:linear-gradient(90deg,#6366f1,#a855f7);color:#fff;border-radius:999px;padding:8px 14px;white-space:nowrap}
+.hl-mid{display:flex;align-items:flex-end;gap:clamp(14px,4vw,44px);flex-wrap:wrap;min-width:0}
+.hl-num{display:flex;flex-direction:column;line-height:1;min-width:0}
+.hl-num b{font-size:clamp(1.35rem,4.2vw,2.3rem);font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hl-num small{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--hl-dim);margin-top:7px}
+.hl-foot{font-size:.76rem;font-weight:600;color:var(--hl-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (prefers-reduced-motion:reduce){.hl-live i{animation:none}}
 .sec-ic{width:46px;height:46px;border-radius:13px;object-fit:cover;flex:none;box-shadow:0 4px 12px rgba(0,0,0,.25);border:1px solid var(--bd)}
 .prof .sec-ic{width:38px;height:38px;border-radius:11px;vertical-align:middle;margin-right:6px}
 .how{justify-content:center;align-items:flex-start}
 .pill{flex-wrap:wrap;justify-content:center}
-.lk-hero{font-size:48px;line-height:1.08;margin:12px 0 4px;text-align:center;word-break:break-all;background:linear-gradient(90deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lk-hero{font-size:48px;line-height:1.08;margin:12px 0 4px;text-align:center;word-break:break-all;background:linear-gradient(90deg,var(--lk1),var(--lk2),var(--lk3));-webkit-background-clip:text;background-clip:text;color:transparent}
 #lkCfg{background:transparent;border:1px solid var(--bd);color:var(--dim);padding:5px 9px;font-size:1rem;line-height:1;border-radius:10px}
 #lkCfg[aria-expanded="true"]{background:var(--card-h);color:var(--tx)}
 .lk-panel{display:none;max-width:640px;margin:10px auto 0;padding:8px 15px 12px;background:var(--card);border:1px solid var(--bd);border-radius:16px;box-shadow:var(--shadow);text-align:left}
@@ -78,8 +91,22 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 .lk-cor.on{outline:2px solid var(--tx);outline-offset:2px}
 #lkColor{width:34px;height:30px;padding:0;border:1px solid var(--bd);border-radius:8px;background:transparent;cursor:pointer}
 .lk-reset{margin-left:auto}
-@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art{height:120px;border-radius:16px}.sec-ic{width:40px;height:40px;border-radius:11px}}
-@media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art{display:none}}
+#lgnBtn{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer;font-size:.88rem;white-space:nowrap}
+#lgnBtn:active{transform:scale(.97)}
+.lgn-box{position:fixed;right:16px;bottom:16px;z-index:60;width:min(380px,calc(100vw - 32px));background:var(--bg2);border:1px solid var(--bd);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.45);padding:14px 16px;color:var(--tx)}
+.lgn-box[hidden]{display:none}
+.lgn-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.lgn-head strong{font-size:.95rem}
+#lgnClose{background:transparent;border:0;color:var(--dim);font-size:1rem;cursor:pointer;padding:2px 6px}
+.lgn-box label{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:8px 0 5px}
+.lgn-box input,.lgn-box select{width:100%;background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:11px;padding:10px;font-size:.94rem;outline:none}
+.lgn-box input:focus,.lgn-box select:focus{border-color:#818cf8;box-shadow:0 0 0 3px #818cf855}
+.lgn-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.lgn-row button{background:#6366f1;color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:800;cursor:pointer}
+#lgnList[hidden],#lgnLock[hidden]{display:none}
+.lgn-err{font-size:.8rem;color:#f87171;font-weight:700}
+@media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art,a.hero-live{height:126px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
+@media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art,a.hero-live{display:none}}
 </style>
 </head>
 <body>
@@ -88,7 +115,18 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
   <a class="tag" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" title="Abrir o painel do professor">Atalhos 2026 · Prof. Rodrigo · Colégio Schuster</a>
   <h1 class="lk-hero" id="lkTxt">bit.ly/xus28</h1>
   <p class="sub">Toque no cartão e entre direto na atividade.</p>
-  <img class="hero-art" src="atalhos-img/hero.webp" alt="Estudantes usando tablets e cadernos em sala de aula" loading="lazy" width="1024" height="576">
+  <a class="hero-live" id="heroLive" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" aria-label="Resumo do painel ao vivo — abrir o painel completo">
+    <span class="hl-top">
+      <span class="hl-live"><i></i> Painel ao vivo</span>
+      <span class="hl-btn">Abrir painel →</span>
+    </span>
+    <span class="hl-mid">
+      <span class="hl-num"><b id="hlAlunos">—</b><small>alunos</small></span>
+      <span class="hl-num"><b id="hlResp">—</b><small>respostas · 15 min</small></span>
+      <span class="hl-num"><b id="hlPct">—</b><small>acertos</small></span>
+    </span>
+    <span class="hl-foot" id="hlAgora">Toque para abrir o painel completo</span>
+  </a>
   <div class="how" id="how">
     <div class="pill">🦊 <span>No tablet, abra o <b>Firefox Focus</b> e digite o endereço acima</span> <button id="cp" type="button">Copiar link</button> <button id="lkCfg" type="button" title="Ajustar tamanho, posição e cor do link" aria-controls="lkPanel" aria-expanded="false">⚙</button></div>
   </div>
@@ -129,6 +167,7 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 <div class="tools"><div class="in">
   <input id="q" type="search" placeholder="🔎 Buscar atalho (ex.: inglês, khan, redação, 7)" autocomplete="off">
   <div class="chips" id="chips"></div>
+  <button id="lgnBtn" type="button" title="Lista de logins dos alunos (senha do professor)">🔑 Logins</button>
 </div></div>
 
 <main id="main"></main>
@@ -136,6 +175,23 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 <footer>Atalhos 2026 · versão visual nova — a planilha original continua intacta.</footer>
 </div>
 <div class="toast" id="toast">Copiado!</div>
+
+<div class="lgn-box" id="lgnBox" hidden aria-label="Logins dos alunos">
+  <div class="lgn-head">
+    <strong>🔑 Logins dos alunos</strong>
+    <button id="lgnClose" type="button" aria-label="Fechar">✕</button>
+  </div>
+  <div id="lgnLock">
+    <label for="lgnPass">Senha do professor</label>
+    <input id="lgnPass" type="password" inputmode="numeric" autocomplete="off" placeholder="Digite a senha">
+    <div class="lgn-row"><button id="lgnOk" type="button">Entrar</button><span class="lgn-err" id="lgnErr"></span></div>
+  </div>
+  <div id="lgnList" hidden>
+    <label for="lgnSel">Aluno (ordem de chamada)</label>
+    <select id="lgnSel"></select>
+    <div class="lgn-row"><button id="lgnCopy" type="button">Copiar login</button><span class="lgn-err" id="lgnMsg"></span></div>
+  </div>
+</div>
 
 <script>
 var LG_LEIA=`https://accounts.google.com/AccountChooser/signinchooser?continue=https%3A%2F%2Faccounts.google.com%2Fo%2Fsaml2%2Fcontinue%3Fidpid%3DC03fukzmn%26SAMLRequest%3DPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8%252BPHNhbWwycDpBdXRoblJlcXVlc3QgeG1sbnM6c2FtbDJwPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6cHJvdG9jb2wiIEFzc2VydGlvbkNvbnN1bWVyU2VydmljZVVSTD0iaHR0cHM6Ly9zaXIub2RpbG90ay5lcy9jYWxsYmFjaz9jbGllbnRfbmFtZT1zZWVkIiBEZXN0aW5hdGlvbj0iaHR0cHM6Ly9hY2NvdW50cy5nb29nbGUuY29tL28vc2FtbDIvaWRwP2lkcGlkPUMwM2Z1a3ptbiIgRm9yY2VBdXRobj0iZmFsc2UiIElEPSJfYTExNjQxYTdiYjY2NDk4ZTljODBjZGE4OTM4YjVkMDgxNDY1YmU5IiBJc1Bhc3NpdmU9ImZhbHNlIiBJc3N1ZUluc3RhbnQ9IjIwMjUtMDItMTVUMTE6NTg6MjEuNjQ2WiIgUHJvdG9jb2xCaW5kaW5nPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YmluZGluZ3M6SFRUUC1QT1NUIiBQcm92aWRlck5hbWU9InBhYzRqLXNhbWwiIFZlcnNpb249IjIuMCI%252BPHNhbWwyOklzc3VlciB4bWxuczpzYW1sMj0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmFzc2VydGlvbiIgRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6bmFtZWlkLWZvcm1hdDplbnRpdHkiPmh0dHBzOi8vc2lyLm9kaWxvdGsuZXMvY2FsbGJhY2s%2FY2xpZW50X25hbWU9c2VlZDwvc2FtbDI6SXNzdWVyPjwvc2FtbDJwOkF1dGhuUmVxdWVzdD4%253D%26RelayState%3Dhttps%3A%2F%2Fsir.odilotk.es%2Fcallback%3Fclient_name%253Dseed%26omethod%3DPOST&faa=1&ddm=1&flowName=GlifWebSignIn&flowEntry=AccountChooser`;
@@ -242,6 +298,74 @@ qi.addEventListener('input',render);
   paint();
 })();
 render();
+
+(function(){
+  var END='https://script.google.com/macros/s/AKfycbyuRU8QZHIANlj_ApgBUaF6CtVT4oJrJEKnmOMhGFQpoHIlNLqYb4Ium4toW2ZF1tmO/exec';
+  var CKEY='atalhos_live_v1';
+  var aEl=document.getElementById('hlAlunos'),rEl=document.getElementById('hlResp'),pEl=document.getElementById('hlPct'),fEl=document.getElementById('hlAgora');
+  function paintLive(d){
+    var now=+d.agora||Date.now(),al=d.alunos||[],rec=d.recentes||[];
+    var ativos=al.filter(function(a){return now-(+a.ultima||0)<1200000}).length;
+    var ults=rec.filter(function(r){return now-(+r.t||0)<900000}).length;
+    var rt=0,ro=0;al.forEach(function(a){rt+=+a.resp||0;ro+=+a.respOk||0});
+    aEl.textContent=al.length;
+    rEl.textContent=ults;
+    pEl.textContent=(rt?Math.round(ro/rt*100):0)+'%';
+    var jogos={},melhor='';
+    al.forEach(function(a){var n=a.atual&&a.atual.nome;if(!n)return;jogos[n]=(jogos[n]||0)+1});
+    Object.keys(jogos).forEach(function(k){if(!melhor||jogos[k]>jogos[melhor])melhor=k});
+    fEl.textContent=melhor?('Agora: '+melhor):(ativos?('Agora: '+ativos+' aluno(s) em atividade'):'Toque para abrir o painel completo');
+  }
+  function cache(d){try{sessionStorage.setItem(CKEY,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
+  function lido(){try{var j=JSON.parse(sessionStorage.getItem(CKEY)||'null');if(j&&Date.now()-j.t<60000)return j.d}catch(e){}return null}
+  function loadLive(){
+    var c=lido();if(c){paintLive(c);return}
+    fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){if(j&&j.alunos){paintLive(j);cache(j)}}).catch(function(){});
+  }
+  loadLive();setInterval(loadLive,60000);
+})();
+
+(function(){
+  var PASS='45999699444',OKKEY='atalhos_logins_ok';
+  var btn=document.getElementById('lgnBtn'),box=document.getElementById('lgnBox'),
+      close=document.getElementById('lgnClose'),lock=document.getElementById('lgnLock'),
+      list=document.getElementById('lgnList'),pass=document.getElementById('lgnPass'),
+      go=document.getElementById('lgnOk'),err=document.getElementById('lgnErr'),
+      sel=document.getElementById('lgnSel'),msg=document.getElementById('lgnMsg'),
+      cp=document.getElementById('lgnCopy');
+  if(!btn)return;
+  var dados=null,END='https://script.google.com/macros/s/AKfycbyuRU8QZHIANlj_ApgBUaF6CtVT4oJrJEKnmOMhGFQpoHIlNLqYb4Ium4toW2ZF1tmO/exec';
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function unlocked(){try{return sessionStorage.getItem(OKKEY)==='1'}catch(e){return false}}
+  function show(un){lock.hidden=un;list.hidden=!un;err.textContent='';
+    if(un){fill()}else{try{pass.value=''}catch(e){}}
+  }
+  function fill(){
+    if(!dados||!dados.alunos){sel.innerHTML='<option>Carregando...</option>';return}
+    var arr=dados.alunos.map(function(a){
+      return {n:parseInt(a.login,10)||999,nome:(a.nick||'').trim()||a.login,login:a.login,serie:a.serie||''};
+    }).sort(function(a,b){return a.n-b.n||String(a.login).localeCompare(String(b.login))});
+    sel.innerHTML=arr.length?arr.map(function(o){
+      return '<option value="'+esc(o.login)+'">'+o.n+' · '+esc(o.nome)+' — '+esc(o.login)+'</option>';
+    }).join(''):'<option>Sem alunos registrados</option>';
+  }
+  function load(){
+    fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){dados=j;fill()}).catch(function(){fill()});
+  }
+  btn.onclick=function(){box.hidden=false;show(unlocked());if(!unlocked())pass.focus();load()};
+  close.onclick=function(){box.hidden=true};
+  function tentar(){
+    if(pass.value.trim()===PASS){try{sessionStorage.setItem(OKKEY,'1')}catch(e){}show(true)}
+    else{err.textContent='Senha incorreta';pass.select()}
+  }
+  go.onclick=tentar;
+  pass.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();tentar()}};
+  cp.onclick=function(){
+    var v=sel.value||'';if(!v)return;
+    try{navigator.clipboard.writeText(v)}catch(e){}
+    msg.textContent='Copiado: '+v;
+  };
+})();
 </script>
 </body>
 </html>

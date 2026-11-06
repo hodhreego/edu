@@ -95,6 +95,38 @@
             gap: 20px;
         }
 
+        .atalhos-link {
+            font-size: 1.45rem;
+            font-weight: 900;
+            letter-spacing: .01em;
+            text-decoration: none;
+            white-space: nowrap;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .atalhos-link:hover { filter: brightness(1.2); }
+
+        #filter-jogo {
+            background: var(--card); color: var(--text); border: 1px solid var(--border);
+            border-radius: 8px; padding: 6px 8px; font-weight: 700; max-width: 240px;
+        }
+
+        .lgn-ov { position: fixed; inset: 0; z-index: 130; background: rgba(3,7,18,.74); display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .lgn-ov[hidden] { display: none; }
+        .lgn-card { width: min(430px, 100%); background: #111a33; border: 1px solid var(--border); border-radius: 18px; padding: 16px 18px; box-shadow: 0 24px 60px rgba(0,0,0,.55); color: var(--text); }
+        .lgn-card h3 { margin: 0 0 10px; font-size: 1.05rem; display: flex; align-items: center; justify-content: space-between; }
+        .lgn-card h3 button { background: transparent; border: 0; color: var(--text-dim, #94a3b8); font-size: 1rem; cursor: pointer; }
+        .lgn-card label { display: block; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim, #94a3b8); margin: 10px 0 5px; }
+        .lgn-card input, .lgn-card select { width: 100%; background: #0b1120; color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: .95rem; outline: none; }
+        .lgn-card input:focus, .lgn-card select:focus { border-color: #818cf8; box-shadow: 0 0 0 3px #818cf855; }
+        .lgn-card .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .lgn-card .row button { background: #6366f1; color: #fff; border: 0; border-radius: 10px; padding: 9px 14px; font-weight: 800; cursor: pointer; }
+        .lgn-msg { font-size: .8rem; font-weight: 700; color: #f87171; }
+        .lgn-msg.ok { color: #34d399; }
+
         .clock-box {
             font-size: 1.5rem;
             font-weight: 800;
@@ -1063,6 +1095,7 @@
                 <div class="subtitle" id="sub">Painel ao vivo</div>
             </div>
             <div class="header-right">
+                <a class="atalhos-link" href="https://hodhreego.github.io/edu/atalhos.html" title="Abrir a página de atalhos">bit.ly/xus28</a>
                 <div id="clock" class="clock-box" title="Horário atual">00:00:00</div>
                 <div class="live-indicator">
                     <div class="pulse"></div> SINAL AO VIVO
@@ -1119,10 +1152,16 @@
                 <div id="filter-series" style="display:flex; gap:4px;"></div>
             </div>
 
+            <div class="filter-group">
+                <span class="filter-label">Atividade:</span>
+                <select id="filter-jogo" onchange="setFilterJogo(this.value)" aria-label="Mostrar apenas uma atividade"></select>
+            </div>
+
             <div class="nav-extra">
                 <button onclick="togglePresentation()" id="btn-present" title="Alternar rotação automática de telas">▶ Apresentar (Telão)</button>
                 <button onclick="toggleDemo()" id="btn-demo" title="Alternar modo demonstração fictícia">Modo Demo</button>
                 <select id="sel-foco" title="Escolher um aluno para acompanhar" onchange="setFoco(this.value)"><option value="">👁 Acompanhar aluno…</option></select>
+                <button onclick="toggleLogins()" id="btn-logins" title="Lista de logins dos alunos (senha do professor)">🔑 Logins</button>
                 <button onclick="cfgToggle()" id="btn-cfg" title="Personalizar o painel">🎨 Personalizar</button>
                 <button onclick="toggleFS()" id="btn-fs" title="Alternar tela cheia (Tecla F)">⛶ Tela Cheia [F]</button>
             </div>
@@ -1222,6 +1261,7 @@
             activeSection: 'ranking',
             isPresenting: false,
             filterSerie: 'TODOS',
+            filterJogo: 'TODOS',
             searchTerm: '',
             hasLoadedOnce: false
         };
@@ -1646,16 +1686,55 @@
         }
 
         // --- Renderização de Interface ---
+        function jogoBaseDe(a) {
+            const n = a && a.atual && a.atual.nome ? limpaJogo(a.atual.nome) : '';
+            return n.replace(/\s*[·\-–]\s*fase\s*\d+\s*\/\s*\d+\s*$/i, '').trim();
+        }
+        function alunoVisivel(a) {
+            if (state.filterSerie && state.filterSerie !== 'TODOS' && String(a.serie) !== String(state.filterSerie)) return false;
+            const j = state.filterJogo;
+            if (j && j !== 'TODOS') {
+                if (j === 'SEM') return !jogoBaseDe(a);
+                if (!mesmoJogo(jogoBaseDe(a), j)) return false;
+            }
+            return true;
+        }
+        function atualizarFiltroJogo() {
+            const sel = document.getElementById('filter-jogo');
+            if (!sel) return;
+            const nomes = new Set();
+            (state.alunos || []).forEach(a => { const n = jogoBaseDe(a); if (n) nomes.add(n); });
+            const lista = ['TODOS', 'SEM', ...Array.from(nomes).sort()];
+            const atual = state.filterJogo;
+            sel.innerHTML = '<option value="TODOS">Todas as atividades</option><option value="SEM">Sem atividade</option>' +
+                Array.from(nomes).sort().map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
+            sel.value = lista.includes(atual) ? atual : 'TODOS';
+            if (sel.value === 'TODOS') state.filterJogo = 'TODOS';
+        }
         function updateUI() {
-            updateStats();
-            renderRanking();
-            renderProgress();
-            renderFeed();
-            renderJogos();
-            renderEconomy();
-            renderFilters();
-            renderFoco();
-            renderRankingMark();
+            const todos = state.alunos, rec = state.recentes || [];
+            state._todos = todos;
+            const filtroAtivo = (state.filterSerie && state.filterSerie !== 'TODOS') || (state.filterJogo && state.filterJogo !== 'TODOS');
+            if (filtroAtivo) {
+                const vis = todos.filter(alunoVisivel);
+                const logins = new Set(vis.map(a => a.login));
+                state.alunos = vis;
+                state.recentes = rec.filter(r => logins.has(r.login) && (state.filterJogo === 'TODOS' || !state.filterJogo || (state.filterJogo === 'SEM' ? false : mesmoJogo(limpaJogo(r.mundo || ''), state.filterJogo))));
+            }
+            try {
+                updateStats();
+                renderRanking();
+                renderProgress();
+                renderFeed();
+                renderJogos();
+                renderEconomy();
+                renderFilters();
+                renderFoco();
+                renderRankingMark();
+            } finally {
+                state.alunos = todos;
+                state.recentes = rec;
+            }
         }
 
         function updateStats() {
@@ -2027,8 +2106,9 @@
         }
 
         function renderFilters() {
+            const base = state._todos || state.alunos;
             const seriesSet = new Set();
-            state.alunos.forEach(a => {
+            base.forEach(a => {
                 if (a.serie) seriesSet.add(String(a.serie));
             });
 
@@ -2037,9 +2117,10 @@
 
             container.innerHTML = seriesList.map(s => `
                 <button type="button" onclick="setFilter('${esc(s)}')" class="${state.filterSerie === s ? 'active' : ''}" style="padding: 4px 10px; font-size: 0.8rem;">
-                    ${esc(s)}
+                    ${esc(s === 'TODOS' ? 'Todas as turmas' : s)}
                 </button>
             `).join('');
+            atualizarFiltroJogo();
         }
 
         // --- Controles de Interface e Atalhos ---
@@ -2063,8 +2144,12 @@
 
         function setFilter(s) {
             state.filterSerie = s;
-            renderFilters();
-            renderProgress();
+            updateUI();
+        }
+
+        function setFilterJogo(j) {
+            state.filterJogo = j || 'TODOS';
+            updateUI();
         }
 
         function togglePresentation() {
@@ -2309,10 +2394,99 @@
             document.getElementById('btn-demo').textContent = 'Demo Ativa';
         }
 
+        /* ---- Logins dos alunos (protegido por senha) ---- */
+        const LGN_PASS = '45999699444';
+        function lgnUnlocked() { try { return sessionStorage.getItem('robiox_logins_ok') === '1'; } catch (e) { return false; } }
+        function lgnLista() {
+            const vistos = {}, out = [];
+            if (window.RCO_ALUNOS) {
+                for (const k in RCO_ALUNOS) {
+                    const t = RCO_ALUNOS[k] || {};
+                    for (const n in t) {
+                        const lg = String(n) + k;
+                        if (vistos[lg]) continue;
+                        vistos[lg] = 1;
+                        out.push({ login: lg, num: parseInt(n, 10) || 999, nome: t[n] || lg, turma: k });
+                    }
+                }
+            }
+            (state.alunos || []).forEach(a => {
+                if (!a.login || vistos[a.login]) return;
+                vistos[a.login] = 1;
+                out.push({ login: a.login, num: parseInt(a.login, 10) || 999, nome: rcoNome(a.login) || a.nick || a.login, turma: '' });
+            });
+            out.sort((a, b) => a.num - b.num || String(a.login).localeCompare(String(b.login)));
+            return out;
+        }
+        function lgnFill() {
+            const sel = document.getElementById('lgnSel2');
+            if (!sel) return;
+            const arr = lgnLista();
+            sel.innerHTML = arr.length
+                ? arr.map(o => '<option value="' + esc(o.login) + '">' + o.num + 'º · ' + esc(o.nome) + ' — ' + esc(o.login) + '</option>').join('')
+                : '<option>Sem alunos registrados</option>';
+        }
+        function toggleLogins(force) {
+            const ov = document.getElementById('lgnOv');
+            if (!ov) return;
+            const abrir = force === undefined ? ov.hidden : !!force;
+            ov.hidden = !abrir;
+            if (!abrir) return;
+            const un = lgnUnlocked();
+            document.getElementById('lgnLockBox').hidden = un;
+            document.getElementById('lgnListBox').hidden = !un;
+            document.getElementById('lgnMsg2').textContent = '';
+            document.getElementById('lgnMsg3').textContent = '';
+            lgnFill();
+            if (!un) setTimeout(() => { try { document.getElementById('lgnPass2').focus(); } catch (e) { } }, 60);
+        }
+        function tentarLogins() {
+            const inp = document.getElementById('lgnPass2'), msg = document.getElementById('lgnMsg2');
+            if (inp.value.trim() === LGN_PASS) {
+                try { sessionStorage.setItem('robiox_logins_ok', '1'); } catch (e) { }
+                document.getElementById('lgnLockBox').hidden = true;
+                document.getElementById('lgnListBox').hidden = false;
+                lgnFill();
+            } else {
+                msg.textContent = 'Senha incorreta';
+                inp.select();
+            }
+        }
+        function copiarLogin() {
+            const sel = document.getElementById('lgnSel2');
+            const v = sel && sel.value;
+            if (!v) return;
+            try { navigator.clipboard.writeText(v); } catch (e) { }
+            document.getElementById('lgnMsg3').textContent = 'Copiado: ' + v;
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const p = document.getElementById('lgnPass2');
+            if (p) p.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tentarLogins(); } });
+            const ov = document.getElementById('lgnOv');
+            if (ov) ov.addEventListener('click', e => { if (e.target === ov) toggleLogins(false); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && ov && !ov.hidden) toggleLogins(false); });
+        });
+
         cfgInit();
         festaHoje();
         initClock();
         startSyncLoop();
     </script>
+
+    <div class="lgn-ov" id="lgnOv" hidden>
+        <div class="lgn-card" role="dialog" aria-modal="true" aria-label="Logins dos alunos">
+            <h3><span>🔑 Logins dos alunos</span><button type="button" onclick="toggleLogins(false)" aria-label="Fechar">✕</button></h3>
+            <div id="lgnLockBox">
+                <label for="lgnPass2">Senha do professor</label>
+                <input id="lgnPass2" type="password" inputmode="numeric" autocomplete="off" placeholder="Digite a senha">
+                <div class="row"><button type="button" onclick="tentarLogins()">Entrar</button><span class="lgn-msg" id="lgnMsg2"></span></div>
+            </div>
+            <div id="lgnListBox" hidden>
+                <label for="lgnSel2">Aluno (ordem de chamada)</label>
+                <select id="lgnSel2"></select>
+                <div class="row"><button type="button" onclick="copiarLogin()">Copiar login</button><span class="lgn-msg ok" id="lgnMsg3"></span></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
