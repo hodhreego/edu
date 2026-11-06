@@ -259,7 +259,16 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ acao: 'rbxban', k: 'ludo2026', login: login, min: min })
         }).then(() => {
-          banEl.textContent = min ? (login + ' bloqueado') : (login + ' liberado');
+          /* no-cors não devolve resposta: confirma lendo o estado real no servidor */
+          banEl.textContent = 'Enviado. Confirmando no servidor…';
+          setTimeout(() => {
+            fetch(END + '?acao=rbxload&login=' + encodeURIComponent(login)).then(r => r.json()).then(j => {
+              const bloq = !!(j && j.bloqueado && j.ate > Date.now());
+              if (min && bloq) banEl.textContent = '✔ ' + login + ' bloqueado até ' + new Date(j.ate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ' (confirmado)';
+              else if (!min && !bloq) banEl.textContent = '✔ ' + login + ' liberado (confirmado)';
+              else banEl.textContent = '⚠ Servidor não confirmou. Publique a versão nova do Apps Script (veja LEIAME).';
+            }).catch(() => { banEl.textContent = '⚠ Enviado, mas não consegui confirmar.'; });
+          }, 1800);
         }).catch(() => { banEl.textContent = 'Não consegui enviar.'; });
       });
     }
