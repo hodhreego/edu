@@ -109,6 +109,16 @@
 
         .atalhos-link:hover { filter: brightness(1.2); }
 
+        .header-right { position: relative; }
+        #lkCfg2 { background: transparent; border: 1px solid var(--border); color: #94a3b8; border-radius: 9px; padding: 4px 8px; font-size: .95rem; cursor: pointer; line-height: 1; }
+        #lkCfg2[aria-expanded="true"] { background: rgba(255,255,255,.12); color: var(--text); }
+        .lk2-panel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 140; width: 240px; background: #111a33; border: 1px solid var(--border); border-radius: 14px; padding: 12px; box-shadow: 0 18px 44px rgba(0,0,0,.55); }
+        .lk2-panel[hidden] { display: none; }
+        .lk2-row { display: flex; justify-content: space-between; align-items: center; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
+        .lk2-row span { font-size: .85rem; font-weight: 900; color: var(--text); letter-spacing: 0; }
+        #lkSize2 { width: 100%; accent-color: #818cf8; }
+        #lkReset2 { margin-top: 8px; width: 100%; background: rgba(255,255,255,.1); border: 1px solid var(--border); color: var(--text); border-radius: 9px; padding: 7px; font-weight: 800; cursor: pointer; }
+
         #filter-jogo {
             background: var(--card); color: var(--text); border: 1px solid var(--border);
             border-radius: 8px; padding: 6px 8px; font-weight: 700; max-width: 240px;
@@ -1104,7 +1114,13 @@
                 <div class="subtitle" id="sub">Painel ao vivo</div>
             </div>
             <div class="header-right">
-                <a class="atalhos-link" href="https://hodhreego.github.io/edu/atalhos.html" title="Abrir a página de atalhos">bit.ly/xus28</a>
+                <a class="atalhos-link" id="lkPainel" href="https://hodhreego.github.io/edu/atalhos.html" title="Abrir a página de atalhos">bit.ly/xus28</a>
+                <button id="lkCfg2" type="button" title="Ajustar o tamanho do link" aria-expanded="false">⚙</button>
+                <div class="lk2-panel" id="lkPanel2" hidden>
+                    <div class="lk2-row"><label for="lkSize2">Tamanho do link</label><span id="lkVal2">23 px</span></div>
+                    <input id="lkSize2" type="range" min="16" max="96" step="2" value="23" aria-label="Tamanho do link">
+                    <button type="button" id="lkReset2">Restaurar</button>
+                </div>
                 <div id="clock" class="clock-box" title="Horário atual">00:00:00</div>
                 <div class="live-indicator">
                     <div class="pulse"></div> SINAL AO VIVO
@@ -2585,6 +2601,31 @@
                 b.addEventListener('click', () => banirAluno(+b.getAttribute('data-min')));
             });
         });
+
+        /* ---- Tamanho do link do cabeçalho ---- */
+        (function () {
+            const K = 'painel_lk_size', DEF = 23;
+            const a = document.getElementById('lkPainel'), r = document.getElementById('lkSize2'),
+                v = document.getElementById('lkVal2'), bt = document.getElementById('lkCfg2'),
+                pn = document.getElementById('lkPanel2');
+            if (!a || !r) return;
+            let s = parseInt(localStorage.getItem(K), 10);
+            if (!(s >= 16 && s <= 96)) s = DEF;
+            function ap() {
+                a.style.fontSize = s + 'px';
+                r.value = s; v.textContent = s + ' px';
+                try { localStorage.setItem(K, s); } catch (e) { }
+            }
+            ap();
+            r.addEventListener('input', function () { s = +r.value; ap(); });
+            document.getElementById('lkReset2').addEventListener('click', function () { s = DEF; ap(); });
+            bt.addEventListener('click', function () {
+                const abrir = pn.hidden;
+                pn.hidden = !abrir;
+                bt.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+            });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pn.hidden = true; bt.setAttribute('aria-expanded', 'false'); } });
+        })();
 
         cfgInit();
         festaHoje();
