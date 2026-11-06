@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RobIox · Painel ao vivo</title>
+    <script src="atalhos-nomes.js?v=1"></script>
     <style>
         :root {
             --bg: #0b1120;
@@ -2428,17 +2429,18 @@
                 for (const k in RCO_ALUNOS) {
                     const t = RCO_ALUNOS[k] || {};
                     for (const n in t) {
-                        const lg = String(n) + k;
+                        const lg = (String(n) + k).toLowerCase();
                         if (vistos[lg]) continue;
                         vistos[lg] = 1;
-                        out.push({ login: lg, num: parseInt(n, 10) || 999, nome: t[n] || lg, turma: k });
+                        out.push({ login: lg, num: parseInt(n, 10) || 999, nome: t[n] || (window.RBX_NOMES && window.RBX_NOMES[lg]) || '', turma: k });
                     }
                 }
             }
             (state.alunos || []).forEach(a => {
-                if (!a.login || vistos[a.login]) return;
-                vistos[a.login] = 1;
-                out.push({ login: a.login, num: parseInt(a.login, 10) || 999, nome: rcoNome(a.login) || a.nick || a.login, turma: '' });
+                const lg = String(a.login || '').toLowerCase();
+                if (!lg || vistos[lg]) return;
+                vistos[lg] = 1;
+                out.push({ login: lg, num: parseInt(lg, 10) || 999, nome: rcoNome(lg) || a.nick || (window.RBX_NOMES && window.RBX_NOMES[lg]) || '', turma: '' });
             });
             out.sort((a, b) => a.num - b.num || String(a.login).localeCompare(String(b.login)));
             return out;
