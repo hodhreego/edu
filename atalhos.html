@@ -105,6 +105,9 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
 .lgn-row button{background:#6366f1;color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:800;cursor:pointer}
 #lgnList[hidden],#lgnLock[hidden]{display:none}
 .lgn-err{font-size:.8rem;color:#f87171;font-weight:700}
+.lgn-sel{font-size:1rem;font-weight:900;letter-spacing:.02em;line-height:1.25;text-transform:uppercase;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:7px 10px;margin:0 0 8px;min-height:38px;word-break:break-word}
+.lgn-filtros{display:flex;gap:8px}
+.lgn-filtros>div{flex:1;min-width:0}
 @media(max-width:560px){section h2{flex-wrap:wrap}section h2 small{flex-basis:100%;margin-left:56px}.hero-art,a.hero-live{height:126px;border-radius:16px}.hero-live{padding:9px 12px}.hl-btn{font-size:.68rem;padding:6px 10px}.hl-live{font-size:.58rem;padding:4px 9px}.hl-num small{font-size:.55rem}.hl-foot{font-size:.66rem}.sec-ic{width:40px;height:40px;border-radius:11px}}
 @media print{body{background:#fff;color:#000}.tools,.pill button,.lk-panel{display:none!important}.lk-hero{color:#000!important;-webkit-text-fill-color:#000!important;background:none!important}a.card{box-shadow:none;break-inside:avoid}.hero-art,a.hero-live{display:none}}
 </style>
@@ -181,12 +184,17 @@ a.hero-live:hover,a.hero-live:focus-visible{transform:translateY(-2px);box-shado
     <strong>🔑 Logins dos alunos</strong>
     <button id="lgnClose" type="button" aria-label="Fechar">✕</button>
   </div>
+  <div class="lgn-sel" id="lgnTitulo">—</div>
   <div id="lgnLock">
     <label for="lgnPass">Senha do professor</label>
     <input id="lgnPass" type="password" inputmode="numeric" autocomplete="off" placeholder="Digite a senha">
     <div class="lgn-row"><button id="lgnOk" type="button">Entrar</button><span class="lgn-err" id="lgnErr"></span></div>
   </div>
   <div id="lgnList" hidden>
+    <div class="lgn-filtros">
+      <div><label for="lgnEscola">Colégio</label><select id="lgnEscola"></select></div>
+      <div><label for="lgnTurma">Turma</label><select id="lgnTurma"></select></div>
+    </div>
     <label for="lgnSel">Aluno (ordem de chamada)</label>
     <select id="lgnSel"></select>
     <div class="lgn-row"><button id="lgnCopy" type="button">Copiar login</button><span class="lgn-err" id="lgnMsg"></span></div>
@@ -346,16 +354,44 @@ render();
     var p0=p[0].charAt(0).toUpperCase()+p[0].slice(1).toLowerCase();
     return [p0].concat(p.slice(1).map(function(x){return x.charAt(0).toUpperCase()+'.'})).join(' ');
   }
+  var escolaSel=document.getElementById('lgnEscola'),turmaSel=document.getElementById('lgnTurma'),titulo=document.getElementById('lgnTitulo');
+  var ESCOLAS={cla:'Colégio CLA',xus:'Colégio XUS'};
+  var filtro={escola:'TODOS',turma:'TODOS'};
+  function parseLogin(l){var m=String(l||'').match(/^(\d{1,3})([a-z]{3})(\d)([a-z])$/i);return m?{escola:m[2].toLowerCase(),turma:m[3]+m[4].toLowerCase()}:{escola:'',turma:''}}
+  function nomeEscola(c){return ESCOLAS[c]||('Colégio '+c.toUpperCase())}
+  function nomeTurma(t){return t?(t.slice(0,-1)+'º '+t.slice(-1).toUpperCase()):''}
+  function montaFiltros(){
+    var es={},tu={};
+    ((dados&&dados.alunos)||[]).forEach(function(a){var p=parseLogin(a.login);if(p.escola)es[p.escola]=1;if(p.turma)tu[p.turma]=1});
+    const eo = Object.keys(es).sort(), to = Object.keys(tu).sort(function(a,b){return (+a.slice(0,-1)-+b.slice(0,-1))||a.slice(-1).localeCompare(b.slice(-1))});
+    escolaSel.innerHTML='<option value="TODOS">Todos os colégios</option>'+eo.map(function(c){return '<option value="'+esc(c)+'">'+esc(nomeEscola(c))+'</option>'}).join('');
+    turmaSel.innerHTML='<option value="TODOS">Todas as turmas</option>'+to.map(function(t){return '<option value="'+esc(t)+'">'+esc(nomeTurma(t))+'</option>'}).join('');
+    escolaSel.value=eo.indexOf(filtro.escola)>=0?filtro.escola:'TODOS';
+    turmaSel.value=to.indexOf(filtro.turma)>=0?filtro.turma:'TODOS';
+  }
   function fill(){
-    if(!dados||!dados.alunos){sel.innerHTML='<option>Carregando...</option>';return}
-    var arr=dados.alunos.map(function(a){
+    if(!dados||!dados.alunos){sel.innerHTML='<option>Carregando...</option>';if(titulo)titulo.textContent='—';return}
+    var arr=dados.alunos.filter(function(a){
+      var p=parseLogin(a.login);
+      return (filtro.escola==='TODOS'||p.escola===filtro.escola)&&(filtro.turma==='TODOS'||p.turma===filtro.turma);
+    }).map(function(a){
       return {n:parseInt(a.login,10)||999,nome:(a.nick||'').trim(),login:a.login,serie:a.serie||''};
     }).sort(function(a,b){return a.n-b.n||String(a.login).localeCompare(String(b.login))});
     sel.innerHTML=arr.length?arr.map(function(o){
       var rotulo=o.n+' · '+esc(o.login)+(o.nome?(' — '+esc(abrevNome(o.nome))):'');
       return '<option value="'+esc(o.login)+'" title="'+esc(o.nome||o.login)+'">'+rotulo+'</option>';
-    }).join(''):'<option>Sem alunos registrados</option>';
+    }).join(''):'<option>Sem alunos nesses filtros</option>';
+    if(!arr.length){if(titulo)titulo.textContent='—';return}
+    atualizaTitulo();
   }
+  function atualizaTitulo(){
+    if(!titulo)return;
+    var o=sel.options[sel.selectedIndex];
+    titulo.textContent=o?o.textContent.toUpperCase():'—';
+  }
+  sel.onchange=atualizaTitulo;
+  if(escolaSel)escolaSel.onchange=function(){filtro.escola=escolaSel.value;fill()};
+  if(turmaSel)turmaSel.onchange=function(){filtro.turma=turmaSel.value;fill()};
   function arrastavel(el,handle){
     var startX=0,startY=0,ox=0,oy=0,drag=false;
     handle.style.cursor='move';handle.style.touchAction='none';
@@ -380,7 +416,7 @@ render();
   }
   arrastavel(box,document.querySelector('.lgn-head'));
   function load(){
-    fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){dados=j;fill()}).catch(function(){fill()});
+    fetch(END+'?acao=rbxdash&k=ludo2026').then(function(r){return r.json()}).then(function(j){dados=j;montaFiltros();fill()}).catch(function(){fill()});
   }
   btn.onclick=function(){box.hidden=false;show(unlocked());if(!unlocked())pass.focus();load()};
   close.onclick=function(){box.hidden=true};
