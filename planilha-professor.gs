@@ -41,6 +41,16 @@ function doPost(e) {
   try { return gravaResultado_(d); } finally { lock.releaseLock(); }
 }
 
+// Coluna extra 'Login' (24), fora de DET para não recriar/limpar a aba.
+function loginCol_(sh, sid, login) {
+  if (!sh || !sid || !login) return;
+  if (sh.getMaxColumns() < 24) sh.insertColumnsAfter(sh.getMaxColumns(), 24 - sh.getMaxColumns());
+  if (sh.getRange(HR, 24).getValue() === '') sh.getRange(HR, 24).setValue('Login').setFontWeight('bold').setBackground(NAVY).setFontColor('#ffd54a').setHorizontalAlignment('center');
+  var n = sh.getLastRow(); if (n <= HR) return;
+  var ids = sh.getRange(HR + 1, 23, n - HR, 1).getValues();
+  for (var i = ids.length - 1; i >= 0; i--) if (ids[i][0] === sid) { sh.getRange(i + HR + 1, 24).setValue(String(login).toLowerCase()); return; }
+}
+
 function gravaResultado_(d) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var agora = new Date();
@@ -57,9 +67,11 @@ function gravaResultado_(d) {
   ];
   if (!liberada_(ss, d.escola)) {
     gravar_(det_(ss, 'Retidos (outros)'), linha, d.sid, DET.length, 17);
+    try { loginCol_(ss.getSheetByName('Retidos (outros)'), d.sid, d.login); } catch (err) { }
     return ok_('retido');
   }
   gravar_(det_(ss, 'Todos'), linha, d.sid, DET.length, 17);
+  try { loginCol_(ss.getSheetByName('Todos'), d.sid, d.login); } catch (err) { }
   paraPainel_(ss, linha, agora.getTime());
   try { resumo_(ss); } catch (err) { /* o resumo nunca pode impedir o registro do resultado */ }
   return ok_('ok');

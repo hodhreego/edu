@@ -34,9 +34,21 @@ function doPost(e) {
   try { d = JSON.parse(e.postData.contents); } catch (err) { return ok_('json inválido'); }
   if (d.acao === 'pontos') return rkPontos_(d);
   if (d.acao === 'rbxsave') return rbxSave_(d);
+  if (d.acao === 'rbxresp') return rbxResp_(d);
+  if (d.acao === 'rbxban') return rbxBan_(d);
   var lock = LockService.getScriptLock();
   try { lock.waitLock(100000); } catch (err) { return ok_('ocupado'); }
   try { return gravaResultado_(d); } finally { lock.releaseLock(); }
+}
+
+// Coluna extra 'Login' (24), fora de DET para não recriar/limpar a aba.
+function loginCol_(sh, sid, login) {
+  if (!sh || !sid || !login) return;
+  if (sh.getMaxColumns() < 24) sh.insertColumnsAfter(sh.getMaxColumns(), 24 - sh.getMaxColumns());
+  if (sh.getRange(HR, 24).getValue() === '') sh.getRange(HR, 24).setValue('Login').setFontWeight('bold').setBackground(NAVY).setFontColor('#ffd54a').setHorizontalAlignment('center');
+  var n = sh.getLastRow(); if (n <= HR) return;
+  var ids = sh.getRange(HR + 1, 23, n - HR, 1).getValues();
+  for (var i = ids.length - 1; i >= 0; i--) if (ids[i][0] === sid) { sh.getRange(i + HR + 1, 24).setValue(String(login).toLowerCase()); return; }
 }
 
 function gravaResultado_(d) {
@@ -55,9 +67,11 @@ function gravaResultado_(d) {
   ];
   if (!liberada_(ss, d.escola)) {
     gravar_(det_(ss, 'Retidos (outros)'), linha, d.sid, DET.length, 17);
+    try { loginCol_(ss.getSheetByName('Retidos (outros)'), d.sid, d.login); } catch (err) { }
     return ok_('retido');
   }
   gravar_(det_(ss, 'Todos'), linha, d.sid, DET.length, 17);
+  try { loginCol_(ss.getSheetByName('Todos'), d.sid, d.login); } catch (err) { }
   paraPainel_(ss, linha, agora.getTime());
   try { resumo_(ss); } catch (err) { /* o resumo nunca pode impedir o registro do resultado */ }
   return ok_('ok');
@@ -121,6 +135,9 @@ function reconstruir_() {
 function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxlive') return rbxLive_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxfmt' && e.parameter.k === RBX_KEY) { rbxBeleza_(); return ok_('formatado'); }
   return ok_('Planilha do professor ativa.');
 }
 function ok_(t) { return ContentService.createTextOutput(t); }
@@ -360,7 +377,9 @@ function rbxAba_() {
 }
 function rbxSave_(d) {
   var login = String(d.login || '').toLowerCase();
-  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre)$/.test(login)) return ok_('login inválido');
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste|mainara)$/.test(login)) return ok_('login inválido');
+  var ate = rbxBloqueio_(login);
+  if (ate > Date.now()) return ok_('bloqueado ate ' + new Date(ate).toLocaleString('pt-BR'));
   var lock = LockService.getScriptLock();
   try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
   try {
@@ -370,15 +389,180 @@ function rbxSave_(d) {
     if (js.length > 45000) return ok_('grande demais');
     var linha = [login, Number(d.ts) || Date.now(), js];
     if (row) sh.getRange(row, 1, 1, 3).setValues([linha]); else sh.appendRow(linha);
+    if (d.sum && login !== 'mestre') { try { rbxAlunos_(login, d.ts, d.sum); } catch (err) { } }
     return ok_('ok');
   } finally { lock.releaseLock(); }
 }
 function rbxLoad_(p) {
   var login = String(p.login || '').toLowerCase(), sh = rbxAba_(), n = sh.getLastRow();
+  var ate = rbxBloqueio_(login);
+  if (ate > Date.now()) return ContentService.createTextOutput(JSON.stringify({ ok: 0, bloqueado: 1, ate: ate })).setMimeType(ContentService.MimeType.JSON);
   var out = { ok: 0 };
   if (n > 1) {
     var v = sh.getRange(2, 1, n - 1, 3).getValues();
     for (var i = 0; i < v.length; i++) if (v[i][0] === login) { try { out = { ok: 1, ts: Number(v[i][1]), st: JSON.parse(v[i][2]) }; } catch (e) {} break; }
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+// Registro de cada resposta dos alunos no RobIox (aba "RobIox-Respostas")
+function rbxResp_(d) {
+  var login = String(d.login || '').toLowerCase();
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste|mainara)$/.test(login)) return ok_('login inválido');
+  var its = d.itens || [];
+  if (!its.length || its.length > 200) return ok_('vazio');
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
+  try {
+    var ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName('RobIox-Respostas');
+    if (!sh) {
+      sh = ss.insertSheet('RobIox-Respostas');
+      sh.appendRow(['Data/hora', 'Login', 'Matéria', 'Mundo', 'Fase', 'Tema', 'Nível', 'Pergunta', 'Resposta correta', 'Aluno marcou', 'Acertou?', 'Tentativa nº']);
+      sh.setFrozenRows(1);
+      try { rbxBeleza_(); } catch (err) { }
+    }
+    var rows = its.map(function (x) {
+      return [new Date(Number(x.t) || Date.now()), login, String(x.mat || ''), String(x.mundo || ''), Number(x.fase) || '', String(x.tema || ''), Number(x.nivel) || '', String(x.q || '').slice(0, 300), String(x.certa || '').slice(0, 100), String(x.marcou || '').slice(0, 100), x.ok ? 'SIM' : 'NÃO', Number(x.tent) || ''];
+    });
+    sh.getRange(sh.getLastRow() + 1, 1, rows.length, rows[0].length).setValues(rows);
+    return ok_('ok');
+  } finally { lock.releaseLock(); }
+}
+
+// ---- RobIox: planilha "RobIox-Alunos" (uma linha por aluno) e dados do painel ao vivo ----
+var RBX_KEY = 'ludo2026';
+var RBX_SENHA = '2026.2026';
+// ---- Bloqueio de acesso (banimento temporário) ----
+function rbxBloqAba_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('RobIox-Bloqueios');
+  if (!sh) { sh = ss.insertSheet('RobIox-Bloqueios'); sh.appendRow(['login', 'ate', 'minutos', 'quando']); sh.setFrozenRows(1); }
+  return sh;
+}
+function rbxBloqueio_(login) {
+  try {
+    var sh = rbxBloqAba_(), n = sh.getLastRow();
+    if (n < 2) return 0;
+    var v = sh.getRange(2, 1, n - 1, 2).getValues();
+    for (var i = 0; i < v.length; i++) if (String(v[i][0]) === login) return Number(v[i][1]) || 0;
+  } catch (e) { }
+  return 0;
+}
+function rbxBan_(d) {
+  if (String(d.k || '') !== RBX_KEY) return ok_('sem permissao');
+  var login = String(d.login || '').toLowerCase();
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste|mainara)$/.test(login)) return ok_('login invalido');
+  var min = Math.max(0, Math.min(10080, Math.round(Number(d.min) || 0)));
+  var ate = min ? Date.now() + min * 60000 : 0;
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(30000); } catch (err) { return ok_('ocupado'); }
+  try {
+    var sh = rbxBloqAba_(), n = sh.getLastRow(), ids = n > 1 ? sh.getRange(2, 1, n - 1, 1).getValues() : [], row = 0;
+    for (var i = 0; i < ids.length; i++) if (String(ids[i][0]) === login) { row = i + 2; break; }
+    var linha = [login, ate, min, new Date()];
+    if (row) sh.getRange(row, 1, 1, 4).setValues([linha]); else sh.appendRow(linha);
+    return ok_('ok');
+  } finally { lock.releaseLock(); }
+}
+
+var RBX_COLS = ['Login', 'Senha', 'Nick', 'Série / matéria', 'Nível', 'XP', 'Moedas', 'Cofrinho (R$)', 'Gasto na loja (moedas)', 'Vendido (moedas)', 'Itens', 'Fases começadas', 'Fases concluídas', '% concluído', 'Estrelas', 'Acertos (jogo)', 'Fases perfeitas', 'Melhor sequência', 'Mundos concluídos', 'Respostas registradas', '% acertos', 'Nota (% concluído)', 'Nota (% acertos)', 'Última atividade', 'Gastos detalhados', 'Cofrinho detalhado', 'json'];
+function rbxSerie_(a) { a = Number(a); return a >= 6 && a <= 9 ? a + 'º ano (Matemática)' : a === 10 ? 'Inglês' : ({ 11: '1ª série · Educação financeira', 11.5: '' })[a] || ({ 12: 'História', 13: 'Geografia', 14: 'Espanhol', 15: 'Educação Financeira' })[a] || String(a); }
+function rbxAlunos_(login, ts, s) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName('RobIox-Alunos');
+  if (!sh) {
+    sh = ss.insertSheet('RobIox-Alunos');
+    sh.getRange(1, 1, 1, RBX_COLS.length).setValues([RBX_COLS]).setBackground('#1e3a8a').setFontColor('#ffffff').setFontWeight('bold').setWrap(true).setVerticalAlignment('middle');
+    sh.setFrozenRows(1); sh.setFrozenColumns(1); sh.setRowHeight(1, 44);
+    sh.setColumnWidths(1, RBX_COLS.length - 1, 105); sh.setColumnWidth(25, 380); sh.setColumnWidth(26, 260); sh.hideColumns(27);
+    var r1 = SpreadsheetApp.newConditionalFormatRule().setGradientMaxpointWithValue('#57bb8a', SpreadsheetApp.InterpolationType.NUMBER, '10').setGradientMinpointWithValue('#f4c7c3', SpreadsheetApp.InterpolationType.NUMBER, '0').setRanges([sh.getRange('V2:W2000')]).build();
+    sh.setConditionalFormatRules([r1]);
+  }
+  var n = sh.getLastRow(), row = 0;
+  if (n > 1) { var ids = sh.getRange(2, 1, n - 1, 1).getValues(); for (var i = 0; i < ids.length; i++) if (ids[i][0] === login) { row = i + 2; break; } }
+  if (!row) row = n + 1;
+  var st = s.stat || {}, j = s.jar || {}, tot = Number(s.tot) || 50, fim = Number(s.fim) || 0, pct = Math.round(fim / tot * 100);
+  var gastos = (s.gastos || []).map(function (g) { return Utilities.formatDate(new Date(g.t), 'America/Sao_Paulo', 'dd/MM HH:mm') + ' ' + g.item + ' (' + g.preco + ' moedas)'; }).join(' | ');
+  var nd = j.nd || {}, notas = Object.keys(nd).sort(function (a, b) { return b - a; }).map(function (k) { return nd[k] + '× R$' + k; });
+  var cof = 'moedas: ' + (j.moedas1 || 0) + '× R$1 · ' + (j.moedas50 || 0) + '× 50c · ' + (j.moedas25 || 0) + '× 25c' + (notas.length ? ' · notas: ' + notas.join(', ') : '');
+  var vals = [login, RBX_SENHA, s.nick || '', rbxSerie_(s.ano), s.nivel || 1, s.xp || 0, s.coins || 0, (Number(s.cash) || 0) / 100, s.spent || 0, s.sold || 0, (s.own || []).length, Number(s.ini) || 0, fim, pct / 100, s.est || 0, st.correct || 0, st.perfeitas || 0, st.combo || 0, st.mundos || 0, '', '', '', '', new Date(Number(s.t) || Number(ts) || Date.now()), gastos, cof, JSON.stringify(s).slice(0, 45000)];
+  sh.getRange(row, 1, 1, 2).setNumberFormat('@');
+  sh.getRange(row, 1, 1, vals.length).setValues([vals]);
+  var rs = "'RobIox-Respostas'";
+  sh.getRange(row, 20).setFormula('=IFERROR(COUNTIF(' + rs + '!B:B,A' + row + '),0)');
+  sh.getRange(row, 21).setFormula('=IFERROR(COUNTIFS(' + rs + '!B:B,A' + row + ',' + rs + '!K:K,"SIM")/T' + row + ',0)');
+  sh.getRange(row, 22).setFormula('=ROUND(N' + row + '*10,1)');
+  sh.getRange(row, 23).setFormula('=ROUND(U' + row + '*10,1)');
+  sh.getRange(row, 14).setNumberFormat('0%'); sh.getRange(row, 21).setNumberFormat('0%'); sh.getRange(row, 8).setNumberFormat('"R$" #,##0.00'); sh.getRange(row, 24).setNumberFormat('dd/MM/yyyy HH:mm');
+}
+function rbxDash_(p) {
+  if (String(p.k || '') !== RBX_KEY) return ContentService.createTextOutput(JSON.stringify({ ok: 0 })).setMimeType(ContentService.MimeType.JSON);
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] }, sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
+  if (rs && rs.getLastRow() > 1) {
+    var rn = rs.getLastRow(), v = rs.getRange(2, 1, rn - 1, 12).getValues();
+    v.forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0, t: {} }; cnt[l].n++; var tm = String(r[5] || '-'); cnt[l].t[tm] = cnt[l].t[tm] || { n: 0, ok: 0 }; cnt[l].t[tm].n++; if (r[10] === 'SIM') { cnt[l].ok++; cnt[l].t[tm].ok++; } });
+    out.recentes = v.slice(-30).reverse().map(function (r) { return { t: new Date(r[0]).getTime(), login: r[1], mat: r[2], mundo: r[3], fase: r[4], tema: r[5], q: r[7], ok: r[10] === 'SIM' }; });
+  }
+  if (sh && sh.getLastRow() > 1) {
+    var d = sh.getRange(2, 1, sh.getLastRow() - 1, 27).getValues();
+    d.forEach(function (r) {
+      var s = {}; try { s = JSON.parse(r[26]); } catch (e) { }
+      var c = cnt[r[0]] || { n: 0, ok: 0 };
+      out.alunos.push({ login: r[0], nick: r[2], serie: r[3], nivel: r[4], xp: r[5], moedas: r[6], cofrinho: r[7], gasto: r[8], vendido: r[9], itens: r[10], ini: r[11], fim: r[12], pct: r[13], est: r[14], acertosJogo: r[15], perfeitas: r[16], combo: r[17], mundos: r[18], resp: c.n, respOk: c.ok, ultima: new Date(r[23]).getTime(), own: s.own || [], gastos: (s.gastos || []).slice(0, 8), ganhas: s.ganhas || 0, atual: s.atual || null, mw: s.mw || {}, temas: c.t || {} });
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Deixa as abas do RobIox bonitas e organizadas (não apaga nada)
+function rbxBeleza_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  function cab(sh, n, cor) { var h = sh.getRange(1, 1, 1, n); h.setBackground(cor).setFontColor('#ffffff').setFontWeight('bold').setWrap(true).setVerticalAlignment('middle').setHorizontalAlignment('center'); sh.setRowHeight(1, 44); sh.setFrozenRows(1); }
+  function faixas(sh, n) { try { sh.getBandings().forEach(function (b) { b.remove(); }); sh.getRange(1, 1, Math.max(sh.getMaxRows(), 2), n).applyRowBanding(SpreadsheetApp.BandingTheme.LIGHT_GREY, true, false); } catch (e) { } }
+  function filtro(sh, n) { try { var f = sh.getFilter(); if (f) f.remove(); sh.getRange(1, 1, Math.max(sh.getLastRow(), 2), n).createFilter(); } catch (e) { } }
+  var al = ss.getSheetByName('RobIox-Alunos');
+  if (al) {
+    al.setTabColor('#1e3a8a'); cab(al, 26, '#1e3a8a'); al.setFrozenColumns(1);
+    al.getRange(2, 2, Math.max(al.getMaxRows() - 1, 1), 25).setHorizontalAlignment('center').setVerticalAlignment('middle');
+    al.getRange(2, 25, Math.max(al.getMaxRows() - 1, 1), 2).setHorizontalAlignment('left').setWrap(true);
+    al.getRange(2, 1, Math.max(al.getMaxRows() - 1, 1), 1).setFontWeight('bold');
+    faixas(al, 26); filtro(al, 26);
+    al.getRange(1, 20, 1, 1).setNote('Total de respostas registradas na aba RobIox-Respostas');
+    al.getRange(1, 14, 1, 1).setNote('Fases concluídas ÷ total de fases da série');
+    al.getRange(1, 21, 1, 1).setNote('Acertos ÷ respostas registradas');
+  }
+  var rs = ss.getSheetByName('RobIox-Respostas');
+  if (rs) {
+    rs.setTabColor('#16a34a'); cab(rs, 12, '#15803d');
+    var w = [135, 90, 115, 130, 55, 130, 60, 420, 140, 140, 80, 80];
+    w.forEach(function (x, i) { rs.setColumnWidth(i + 1, x); });
+    var n = Math.max(rs.getMaxRows() - 1, 1);
+    rs.getRange(2, 1, n, 1).setNumberFormat('dd/MM/yyyy HH:mm');
+    rs.getRange(2, 8, n, 1).setWrap(true); rs.getRange(2, 5, n, 1).setHorizontalAlignment('center'); rs.getRange(2, 7, n, 1).setHorizontalAlignment('center'); rs.getRange(2, 11, n, 2).setHorizontalAlignment('center').setFontWeight('bold');
+    rs.setConditionalFormatRules([
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('SIM').setBackground('#c8f7d4').setFontColor('#166534').setRanges([rs.getRange(2, 11, n, 1)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('NÃO').setBackground('#fecaca').setFontColor('#991b1b').setRanges([rs.getRange(2, 11, n, 1)]).build()]);
+    faixas(rs, 12); filtro(rs, 12);
+  }
+  var pr = ss.getSheetByName('RobIox');
+  if (pr) { pr.setTabColor('#94a3b8'); cab(pr, 3, '#475569'); pr.setColumnWidth(1, 110); pr.setColumnWidth(2, 120); pr.setColumnWidth(3, 300); pr.getRange(1, 1).setNote('Aba técnica: guarda o progresso bruto de cada aluno (usada pelo jogo para continuar de onde parou). Veja os dados organizados em RobIox-Alunos.'); }
+  [['RobIox-Alunos', 0], ['RobIox-Respostas', 1], ['RobIox', 2]].forEach(function (x) { var sh = ss.getSheetByName(x[0]); if (sh) { ss.setActiveSheet(sh); ss.moveActiveSheet(ss.getNumSheets() - 2 + x[1]); } });
+}
+
+
+// ---- Corrida ao vivo (Batatinha Frita): presença em memória (CacheService), sem gravar na planilha ----
+function rbxLive_(p) {
+  var sala = String(p.sala || 'batatinha').replace(/[^a-z0-9_]/gi, '').slice(0, 20) || 'batatinha';
+  var cache = CacheService.getScriptCache(), key = 'live_' + sala;
+  var lock = LockService.getScriptLock(), got = false;
+  try { got = lock.tryLock(3000); } catch (err) {}
+  var m = {};
+  try { m = JSON.parse(cache.get(key) || '{}'); } catch (err) { m = {}; }
+  var now = Date.now();
+  if (p.login && /^[A-Za-z0-9]{3,12}$/.test(p.login)) {
+    m[p.login] = { n: String(p.nick || '').slice(0, 20), p: Number(p.pos) || 0, v: Number(p.vidas) || 0, s: String(p.est || '').slice(0, 10), t: now };
+  }
+  for (var k in m) { if (now - m[k].t > 12000 || m[k].s === 'saiu') delete m[k]; }
+  try { cache.put(key, JSON.stringify(m), 120); } catch (err) {}
+  if (got) lock.releaseLock();
+  return ContentService.createTextOutput(JSON.stringify({ now: now, players: m })).setMimeType(ContentService.MimeType.JSON);
 }
