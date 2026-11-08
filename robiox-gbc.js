@@ -54,7 +54,7 @@
  function lab(g,T,s){g.font='bold 11px monospace';g.fillStyle='rgba(0,0,0,.45)';g.fillText(s,9,23);g.fillStyle='#fff';g.fillText(s,8,22)}
  /* ---- mecânicas ---- */
  var MECH={
-  runner:function(st,easy){var sp=(62+st*5)*(easy?.8:1),hy=GY-16,vy=0,ob=[],dist=0,goal=420+st*16,nx=60;
+  runner:function(st,easy){var sp=(62+st*5)*(easy?.8:1),hy=GY-16,vy=0,ob=[],dist=0,goal=900+st*30,nx=60;
    return {move:false,txt:'Toque para PULAR os obstáculos!',
     u:function(dt,inp){if(inp.act&&hy>=GY-16){vy=-225;inp.beep(520)}vy+=640*dt;hy+=vy*dt;if(hy>GY-16){hy=GY-16;vy=0}dist+=sp*dt;nx-=sp*dt;if(nx<=0&&dist<goal-90){ob.push({x:W+4});nx=rnd(92,140)}
      ob.forEach(function(o){o.x-=sp*dt});ob=ob.filter(function(o){return o.x>-18});
@@ -114,6 +114,11 @@
    '<div id="gm" style="position:absolute;left:10px;right:10px;bottom:10px;display:none;justify-content:space-between;pointer-events:none"><button id="gl" type="button" style="pointer-events:auto;width:62px;height:62px;border-radius:50%;border:3px solid #fff;background:rgba(0,0,0,.45);font:900 26px monospace;color:#fff">◀</button><button id="gr" type="button" style="pointer-events:auto;width:62px;height:62px;border-radius:50%;border:3px solid #fff;background:rgba(0,0,0,.45);font:900 26px monospace;color:#fff">▶</button></div></div>'+
    '<div id="gq" style="width:min(98vw,640px);padding:8px 4px 14px;text-align:center"></div>';
   document.body.appendChild(o);
+  /* visual 3D: tela inclinada em perspectiva + espessura + sombra; botão 3D/2D */
+  (function(){var gw=o.querySelector('#gw'),on=true,hd=o.firstChild,bt=document.createElement('button');try{on=localStorage.getItem('rbx3d')!=='0'}catch(e){}
+   function ap(){gw.style.transformOrigin='50% 60%';gw.style.transition='transform .35s';gw.style.transform=on?'perspective(900px) rotateX(14deg) scale(.94)':'none';gw.style.filter=on?'drop-shadow(0 22px 16px rgba(0,0,0,.65))':'none';var c=gw.firstChild;if(c&&c.style)c.style.boxShadow=on?'0 3px 0 #1a1a1a,0 6px 0 #101010,0 9px 0 #0a0a0a,0 12px 0 #050505':'none';bt.textContent=on?'🧊 3D':'▭ 2D'}
+   bt.type='button';bt.style.cssText='font:900 13px Arial;padding:6px 9px;border:2px solid #fff;background:#444;color:#fff;border-radius:8px;white-space:nowrap';
+   bt.onclick=function(){on=!on;try{localStorage.setItem('rbx3d',on?'1':'0')}catch(e){}ap()};hd.insertBefore(bt,hd.lastElementChild);ap()})();
   var TL=window.RBX_TILT?RBX_TILT(o.firstChild):{dx:function(){return 0},edgeY:function(){return 0},destroy:function(){}};
   var $=function(i){return o.querySelector('#'+i)},cv=$('gc'),g=cv.getContext('2d');g.imageSmoothingEnabled=false;
   var erros=0,st=1,vidas=VIDAS,fase='act',mech=null,qd=null,tt=0,last=performance.now(),raf=0,alive=true,AC=null,msg='',msgT=0,passT=0,acertos=0;
