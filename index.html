@@ -84,7 +84,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <div class="empty" id="empty">Nada por aqui ainda.</div>
 </main>
 <footer>Ludopédia — uma marca da Loja de Matemática · Prof. Rodrigo · Novos jogos entram aqui a cada atualização.</footer>
-<script src="config.js?v=4"></script><script src="catalogo.js?v=10"></script><script src="imprimir.js?v=6"></script>
+<script src="config.js?v=4"></script><script src="catalogo.js?v=10"></script><script src="imprimir.js?v=6"></script><script src="edu-login.js?v=1"></script>
 <script>
 /* ===== COMO ATUALIZAR =====
    Jogo novo: acrescente um J(...) em JOGOS no tema certo (TEMAS). Cada tema pertence a uma matéria (MATS). */
@@ -106,7 +106,7 @@ function drawMats(){
   const n=m.id==='todos'?JOGOS.length:JOGOS.filter(j=>matOf[j.tema]===m.id).length;
   const b=document.createElement('button');b.className='mat'+(m.cls?' '+m.cls:'')+(fm===m.id?' on':'');b.style.setProperty('--c',m.cor);
   b.innerHTML='<div class="ic">'+m.ic+'</div>'+m.nome+'<small>'+m.sub+(m.cel?'':' · '+n+(n===1?" jogo":" jogos"))+'</small>';
-  b.onclick=()=>{if(m.rbx){location.href='robiox.html?ok=1';return}if(m.cel){celPick();return}fm=m.id;fs='todas';drawMats();chips();draw();if(fm!=='todos')bar.scrollIntoView({behavior:'smooth',block:'start'})};mats.appendChild(b)})}
+  b.onclick=()=>{if(m.rbx){EDU_EXIGE_LOGIN(function(){location.href='robiox.html?ok=1'});return}if(m.cel){celPick();return}fm=m.id;fs='todas';drawMats();chips();draw();if(fm!=='todos')bar.scrollIntoView({behavior:'smooth',block:'start'})};mats.appendChild(b)})}
 function chips(){
  bar.innerHTML='<span class="lab">Série:</span>';
  ['todas'].concat(SERIES).forEach(x=>{
@@ -129,12 +129,12 @@ function draw(){
   s.appendChild(g);out.appendChild(s)});
  empty.style.display=n?'none':'block'}
 function usar(c){var i=document.getElementById('codv');i.value=c;i.scrollIntoView({behavior:'smooth',block:'center'});i.focus()}
-function entrar(c){if(String(c).trim()==='7777'){celPick();return true}if(/^\s*rob[il]ox\s*$/i.test(c)||String(c).trim()==='7676'){location.href='robiox.html?ok=1';return true}var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
+function entrar(c){var _a=arguments;if(!EDU_LOGIN()&&(String(c).trim()==='7777'||/^\s*rob[il]ox\s*$/i.test(c)||String(c).trim()==='7676'||jogoPorCodigo(c))){EDU_EXIGE_LOGIN(function(){entrar(c)});return true}if(String(c).trim()==='7777'){celPick();return true}if(/^\s*rob[il]ox\s*$/i.test(c)||String(c).trim()==='7676'){location.href='robiox.html?ok=1';return true}var j=jogoPorCodigo(c);if(j){location.href=j.href;return true}return false}
 document.getElementById('codp').onclick=function(){var j=jogoPorCodigo(document.getElementById('codv').value);function go(){if(j)location.href=j.href+'?imp=1';else alert('Impressão liberada neste aparelho. Digite o código da atividade e clique em Imprimir.')}if(EDU_PROF_OK())go();else EDU_PROF_ASK(function(ok){if(ok)go()})};
 document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=document.getElementById('codv').value;document.getElementById('coderr').style.display=entrar(v)?'none':'block'};
 (function(){var m=/[?&]c=(\d+)/.exec(location.search);if(m)setTimeout(function(){entrar(m[1])},300)})();
 var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
-document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a.play');if(a&&!EDU_LOGIN()){e.preventDefault();EDU_EXIGE_LOGIN(function(){location.href=a.href})}},true);document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();
 </script>
 </body>
 </html>
