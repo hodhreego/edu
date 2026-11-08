@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Minijogo GBC — Matemática 6º ano</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#1a2a14;font-family:"Courier New",monospace;touch-action:manipulation}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px}
+#wrap{width:min(96vw,calc((100vh - 190px)*160/144),640px);aspect-ratio:160/144}
+canvas{width:100%;height:100%;image-rendering:pixelated;border:6px solid #3b4a2e;border-radius:10px;background:#9bbc0f;display:block}
+#opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(96vw,640px)}
+#opts button,#bar button{font:900 17px "Courier New",monospace;padding:14px 6px;border:4px solid #0f380f;border-radius:8px;background:#8bac0f;color:#0f380f;cursor:pointer;box-shadow:0 4px 0 #0f380f}
+#opts button:active,#bar button:active{transform:translateY(3px);box-shadow:0 1px 0 #0f380f}
+#opts button.ok{background:#306230;color:#e8ffc0}#opts button.no{background:#c0392b;color:#fff}
+#bar{display:flex;gap:8px;width:min(96vw,640px)}#bar button{flex:1;padding:10px;font-size:14px}
+#rs{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:14px}#rs div{background:#9bbc0f;border:6px solid #0f380f;border-radius:10px;padding:14px;max-width:520px;color:#0f380f;font-size:15px;line-height:1.4;max-height:90vh;overflow:auto}#rs b{display:block;margin-top:6px}
+</style></head><body>
+<div id="wrap"><canvas id="c" width="160" height="144"></canvas></div>
+<div id="opts"></div>
+<div id="bar"><button id="bRes">📖 Resumo</button><button id="bSom">🔊 Som</button></div>
+<div id="rs"><div id="rsb"></div></div>
+<script>
+(function(){
+var P=["#0f380f","#306230","#8bac0f","#9bbc0f"],cv=document.getElementById("c"),g=cv.getContext("2d");
+var BANCO={
+ serie:[ // 6º ano
+  ["Quanto é 3/4 de 20?","15",["12","16","18"],"Divida 20 por 4 e multiplique por 3."],
+  ["Qual é o MMC de 4 e 6?","12",["24","10","8"],"Menor número que é múltiplo de ambos."],
+  ["0,5 + 0,25 = ?","0,75",["0,30","0,70","1,25"],"Alinhe as vírgulas."],
+  ["Quantos graus tem um ângulo reto?","90°",["180°","45°","360°"],"É o canto de um quadrado."],
+  ["Resolva: 2 + 3 × 4","14",["20","24","12"],"Multiplicação vem antes da soma."],
+  ["10% de 250 é:","25",["10","2,5","50"],"Divida por 10."],
+  ["Um número divisível por 2 e por 5 termina em:","0",["5","2","1"],"Critérios de divisibilidade."]],
+ rev:[ // revisão 5º ao 1º ano
+  ["Quanto é 7 × 8?","56",["54","63","48"],"Tabuada do 7."],
+  ["Quantos centímetros tem 1 metro?","100",["10","1000","60"],"Centi = centésimo."],
+  ["Quantos lados tem um hexágono?","6",["5","8","7"],"Hexa = seis."],
+  ["R$ 5,00 + R$ 2,50 = ?","R$ 7,50",["R$ 7,05","R$ 6,50","R$ 8,00"],"Some reais com reais e centavos com centavos."],
+  ["1/2 é igual a:","0,5",["0,2","2,0","0,12"],"Metade."]]
+};
+var RES="<b>Frações</b>Numerador/denominador: 3/4 de 20 = 20÷4×3.<b>MMC</b>Menor múltiplo comum.<b>Decimais</b>Some alinhando a vírgula.<b>Ângulo reto</b>90°.<b>Ordem das contas</b>Primeiro × e ÷, depois + e −.<b>Porcentagem</b>10% = dividir por 10.<b>Divisibilidade</b>Por 2: termina em par; por 5: termina em 0 ou 5.<b>Revisão</b>Tabuada, medidas (1 m = 100 cm), figuras e dinheiro.";
+function sh(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.random()*(i+1)|0,t=a[i];a[i]=a[j];a[j]=t}return a}
+var Q=sh(BANCO.serie).slice(0,7).concat(sh(BANCO.rev).slice(0,3));Q=sh(Q);
+var i=0,vidas=3,pts=0,combo=0,state="q",flash=0,som=true,t0=0,AC;
+function beep(f,d){if(!som)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),v=AC.createGain();o.type="square";o.frequency.value=f;v.gain.value=.05;o.connect(v);v.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function txt(s,x,y,c,sz){g.fillStyle=P[c];g.font="bold "+(sz||8)+"px 'Courier New',monospace";g.fillText(s,x,y)}
+function wrap(s,x,y,w,c,lh){var p=s.split(" "),l="",yy=y;g.font="bold 8px 'Courier New',monospace";for(var k=0;k<p.length;k++){var t=l?l+" "+p[k]:p[k];if(g.measureText(t).width>w&&l){txt(l,x,yy,c);l=p[k];yy+=lh}else l=t}txt(l,x,yy,c)}
+function heart(x,y,on){g.fillStyle=P[on?0:2];g.fillRect(x+1,y,2,1);g.fillRect(x+4,y,2,1);g.fillRect(x,y+1,7,2);g.fillRect(x+1,y+3,5,1);g.fillRect(x+2,y+4,3,1);g.fillRect(x+3,y+5,1,1)}
+function hero(x,y,f){g.fillStyle=P[0];g.fillRect(x+3,y,6,5);g.fillRect(x+2,y+5,8,6);g.fillRect(x+(f?2:3),y+11,3,3);g.fillRect(x+(f?7:6),y+11,3,3);g.fillStyle=P[3];g.fillRect(x+4,y+1,4,3);g.fillRect(x+5,y+2,1,1);g.fillRect(x+7,y+2,1,1)}
+function draw(t){
+ g.fillStyle=P[3];g.fillRect(0,0,160,144);
+ // cenário: cofre/bloco de moedas ao fundo
+ g.fillStyle=P[2];for(var k=0;k<8;k++)g.fillRect(k*22+((t/90|0)%22)*0,40,10,2);
+ g.fillStyle=P[1];g.fillRect(0,120,160,24);g.fillStyle=P[0];for(k=0;k<20;k++)g.fillRect(k*8,120,4,2);
+ g.fillStyle=P[0];g.fillRect(0,0,160,12);txt("FASE "+(Math.min(i+1,10))+"/10",3,9,3);txt("PTS "+pts,62,9,3);for(k=0;k<3;k++)heart(122+k*12,3,k<vidas);
+ if(state==="end"){g.fillStyle=P[0];g.fillRect(14,30,132,70);g.fillStyle=P[3];g.fillRect(17,33,126,64);var n=Math.round(pts/10*10)/10;txt("FIM DE JOGO!",44,50,0);txt("NOTA: "+(pts).toFixed(1).replace(".",","),44,66,0,10);txt(pts>=7?"MUITO BEM! ★":"TENTE DE NOVO!",36,84,1);hero(76+(Math.sin(t/200)*3|0),104,(t/150|0)%2);return}
+ g.fillStyle=P[0];g.fillRect(6,18,148,56);g.fillStyle=P[3];g.fillRect(9,21,142,50);
+ wrap(Q[i][0],13,34,134,0,11);
+ if(state==="fb")txt(flash>0?"ACERTOU! +1":"ERROU! "+Q[i][1],13,66,flash>0?1:0);
+ hero(20+((t/40|0)%2)*0,106-(state==="fb"&&flash>0?(Math.abs(Math.sin((t-t0)/120))*14|0):0),(t/180|0)%2);
+ g.fillStyle=P[0];g.fillRect(100,108,16,12);g.fillStyle=P[3];g.fillRect(102,110,12,8);txt("?",106,117,0);
+}
+function showOpts(){var o=document.getElementById("opts");o.innerHTML="";if(state==="end")return;var a=sh([Q[i][1]].concat(Q[i][2]));a.forEach(function(v){var b=document.createElement("button");b.textContent=v;b.onclick=function(){resp(v,b)};o.appendChild(b)})}
+function resp(v,b){if(state!=="q")return;state="fb";t0=performance.now();var ok=v===Q[i][1];flash=ok?1:-1;
+ [].forEach.call(document.querySelectorAll("#opts button"),function(x){x.disabled=true;if(x.textContent===Q[i][1])x.classList.add("ok")});
+ if(ok){combo++;pts+=1;beep(660,.1);setTimeout(function(){beep(880,.12)},110)}else{b.classList.add("no");combo=0;vidas--;beep(140,.3)}
+ setTimeout(function(){i++;if(vidas<=0||i>=10){state="end";showOpts();draw(0);fim();return}state="q";showOpts()},1100)}
+function fim(){try{parent.postMessage({rbx:"gbc",jogo:"mat6a",nota:pts},"*")}catch(e){}var b=document.createElement("button");b.textContent="↻ Jogar de novo";b.style.gridColumn="1/3";b.onclick=function(){location.reload()};document.getElementById("opts").appendChild(b)}
+document.getElementById("bRes").onclick=function(){document.getElementById("rsb").innerHTML="<h3 style='margin:0'>📖 Resumo da aula</h3>"+RES+"<br><button onclick=\"document.getElementById('rs').style.display='none'\" style='font:900 15px monospace;padding:10px;border:3px solid #0f380f;background:#8bac0f'>Entendi! Voltar ao jogo</button>";document.getElementById("rs").style.display="flex"};
+document.getElementById("bSom").onclick=function(){som=!som;this.textContent=som?"🔊 Som":"🔇 Mudo"};
+document.addEventListener("keydown",function(e){var n=+e.key;if(n>=1&&n<=4){var b=document.querySelectorAll("#opts button")[n-1];if(b&&!b.disabled)b.click()}});
+function loop(t){draw(t);requestAnimationFrame(loop)}
+showOpts();requestAnimationFrame(loop);
+})();
+</script></body></html>
