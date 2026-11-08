@@ -158,7 +158,7 @@
   var gpPrev=false;
   function pad(){try{var gp=(navigator.getGamepads&&navigator.getGamepads()[0]);if(!gp)return 0;var x=gp.axes[0]||0;if(gp.buttons[14]&&gp.buttons[14].pressed)x=-1;if(gp.buttons[15]&&gp.buttons[15].pressed)x=1;var a=gp.buttons[0]&&gp.buttons[0].pressed;if(a&&!gpPrev)inp.act=true;gpPrev=!!a;return Math.abs(x)>.3?x:0}catch(e){return 0}}
   function loop(now){
-   if(!alive)return;raf=requestAnimationFrame(loop);var dt=Math.min(.04,(now-last)/1000||0);last=now;tt+=dt;
+   if(!alive)return;raf=requestAnimationFrame(loop);var dt=Math.min(.04,(now-last)/1000||0)*(window.RBX_SPEED||1);last=now;tt+=dt;
    var px=pad();inp.dx=((keys.ArrowRight||keys.d)?1:0)-((keys.ArrowLeft||keys.a)?1:0)+btn.r-btn.l+px+TL.dx();if(inp.dx>1)inp.dx=1;if(inp.dx<-1)inp.dx=-1;
    bg(g,T,tt);
    if(fase==='act'&&mech){var r=mech.u(dt,inp);mech.d(g,T,tt,th);

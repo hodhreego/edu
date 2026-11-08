@@ -532,6 +532,7 @@
 
         var dt = (now - lastFrameTime) / 1000;
         if (dt > 0.1) dt = 0.1;
+        dt *= (window.RBX_SPEED || 1);
         lastFrameTime = now;
 
         checkGamepad();

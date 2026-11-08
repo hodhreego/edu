@@ -117,7 +117,7 @@
   cv.addEventListener('pointerdown',function(e){inp.down=true;inp.tap=true;pos(e);try{cv.setPointerCapture(e.pointerId)}catch(x){}});
   cv.addEventListener('pointermove',function(e){if(inp.down)pos(e)});
   ['pointerup','pointercancel'].forEach(function(n){cv.addEventListener(n,function(){inp.down=false})});
-  function loop(now){if(!alive)return;raf=requestAnimationFrame(loop);var dt=Math.min(.04,(now-last)/1000||0);last=now;tt+=dt;
+  function loop(now){if(!alive)return;raf=requestAnimationFrame(loop);var dt=Math.min(.04,(now-last)/1000||0)*(window.RBX_SPEED||1);last=now;tt+=dt;
    inp.dx=((keys.ArrowRight||keys.d)?1:0)-((keys.ArrowLeft||keys.a)?1:0)+TL.dx();if(inp.dx>1)inp.dx=1;if(inp.dx<-1)inp.dx=-1;var ey=TL.edgeY();if(ey<0)inp.up=true;if(ey>0)inp.dn=true;
    g.clearRect(0,0,W,H);
    if(mech){if(fase==='act'){var r=mech.u(dt,inp);if(r==='win'){mech.d(g,tt);liberar();}}

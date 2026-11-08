@@ -223,7 +223,7 @@
             if (countdownVal < 0) { gameState = 'RUNNING'; nextQuestion(); }
           }
         } else if (gameState === 'RUNNING') {
-          progress += gateSpeed;
+          progress += gateSpeed*(window.RBX_SPEED||1);
           stripeOffset = (stripeOffset + 0.15) % 2.0;
           if (progress >= 1.0) {
             var chosen = Math.round(currentLane);
