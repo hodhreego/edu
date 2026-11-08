@@ -121,14 +121,13 @@
    bt.onclick=function(){on=!on;try{localStorage.setItem('rbx3d',on?'1':'0')}catch(e){}ap()};hd.insertBefore(bt,hd.lastElementChild);ap()})();
   var TL=window.RBX_TILT?RBX_TILT(o.firstChild):{dx:function(){return 0},edgeY:function(){return 0},destroy:function(){}};
   var $=function(i){return o.querySelector('#'+i)},cv=$('gc'),g=cv.getContext('2d');g.imageSmoothingEnabled=false;
-  var erros=0,st=1,vidas=VIDAS,fase='act',mech=null,qd=null,tt=0,last=performance.now(),raf=0,alive=true,AC=null,msg='',msgT=0,passT=0,acertos=0;
+  var SEEN={};var erros=0,st=1,vidas=VIDAS,fase='act',mech=null,qd=null,tt=0,last=performance.now(),raf=0,alive=true,AC=null,msg='',msgT=0,passT=0,acertos=0;
   var inp={act:false,dx:0,tx:null,beep:beep},keys={},btn={l:0,r:0},pdown=false;
   function beep(f,dur){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var os=AC.createOscillator(),v=AC.createGain();os.type='square';os.frequency.value=f;v.gain.value=.05;os.connect(v);v.connect(AC.destination);os.start();os.stop(AC.currentTime+(dur||.08))}catch(e){}}
   function hud(){$('gv').textContent=erros?'❌ '+erros:'';$('gf').textContent='FASE '+Math.min(st,FASES)+'/'+FASES}
   function novaAcao(){mech=MECH[d[4]](st,easy);fase='act';$('gm').style.display=mech.move?'flex':'none';$('gq').innerHTML='<div style="font-size:16px;font-weight:900;padding:10px;background:'+T.ui2+';color:'+T.ui+';border-radius:12px">🎮 '+esc(mech.txt)+'</div>'}
   function perg(){
-   var topics=(api.topics&&api.topics())||['Geral'];var tp=topics[(Math.random()*topics.length)|0];var q;
-   try{q=api.B.make(api.ANO||6,tp,api.tier?api.tier():1)}catch(e){q=null}
+   var topics=(api.topics&&api.topics())||['Geral'];var q=null,tries=0,tp;do{tp=topics[(Math.random()*topics.length)|0];try{q=api.B.make(api.ANO||6,tp,api.tier?api.tier():1)}catch(e){q=null}tries++}while(q&&q.q&&SEEN[q.q]&&tries<25);if(q&&q.q)SEEN[q.q]=1;
    if(!q||q.a==null)q={q:'Quanto é 5 + 5?',a:'10',d:['8','12','15'],e:'5 mais 5 é 10.'};
    var wr=(q.d||[]).slice().sort(function(){return Math.random()-.5}).slice(0,easy?1:3),ops=[String(q.a)].concat(wr.map(String));ops.sort(function(){return Math.random()-.5});qd={q:q,ops:ops};
    fase='ask';$('gm').style.display='none';

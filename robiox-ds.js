@@ -86,14 +86,13 @@
   document.body.appendChild(o);
   var TL=window.RBX_TILT?RBX_TILT(o.firstChild):{dx:function(){return 0},edgeY:function(){return 0},destroy:function(){}};
   var $=function(i){return o.querySelector('#'+i)},cv=$('dc'),g=cv.getContext('2d');
-  var erros=0,st=0,vidas=VIDAS,tt=0,last=performance.now(),raf=0,alive=true,qd=null,fase='act',acertos=0,AC=null,msg='',msgT=0,mech=null,locked=true;
+  var SEEN={};var erros=0,st=0,vidas=VIDAS,tt=0,last=performance.now(),raf=0,alive=true,qd=null,fase='act',acertos=0,AC=null,msg='',msgT=0,mech=null,locked=true;
   var inp={tap:false,act:false,dx:0,up:false,dn:false,l:false,r:false,px:null,py:null,down:false,beep:beep},keys={};
   function beep(f,dur,ty){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var os=AC.createOscillator(),v=AC.createGain();os.type=ty||'triangle';os.frequency.value=f;v.gain.value=.07;os.connect(v);v.connect(AC.destination);os.start();os.stop(AC.currentTime+(dur||.1))}catch(e){}}
   function hud(){$('dv').textContent=erros?'❌ '+erros:'';$('df').textContent='FASE '+Math.min(st+1,FASES)+'/'+FASES}
   function banner(){return locked?'<div id="dbn" style="font-weight:900;font-size:13px;padding:6px 8px;margin-bottom:8px;border-radius:8px;background:#fff;color:#555">🔒 Complete a fase na tela de cima para liberar a resposta</div>':'<div id="dbn" style="font-weight:900;font-size:13px;padding:6px 8px;margin-bottom:8px;border-radius:8px;background:#2ecc71;color:#fff">✅ Fase concluída! Responda para avançar</div>'}
   function pergunta(){
-   var topics=(api.topics&&api.topics())||['Geral'];var tp=topics[(Math.random()*topics.length)|0],q;
-   try{q=api.B.make(api.ANO||6,tp,api.tier?api.tier():1)}catch(e){q=null}
+   var topics=(api.topics&&api.topics())||['Geral'];var q=null,tries=0,tp;do{tp=topics[(Math.random()*topics.length)|0];try{q=api.B.make(api.ANO||6,tp,api.tier?api.tier():1)}catch(e){q=null}tries++}while(q&&q.q&&SEEN[q.q]&&tries<25);if(q&&q.q)SEEN[q.q]=1;
    if(!q||q.a==null)q={q:'Quanto é 5 + 5?',a:'10',d:['8','12','15'],e:'5 mais 5 é 10.'};
    var wr=(q.d||[]).slice().sort(function(){return Math.random()-.5}).slice(0,easy?1:3),ops=[String(q.a)].concat(wr.map(String));ops.sort(function(){return Math.random()-.5});qd={q:q,ops:ops};pintaPergunta()}
   function pintaPergunta(){var q=qd.q;$('dqi').innerHTML=banner()+'<div style="font-weight:800;font-size:clamp(15px,3.5vw,21px);line-height:1.3;margin-bottom:8px">'+esc(q.q)+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+qd.ops.map(function(x,i){return '<button type="button" data-i="'+i+'" '+(locked?'disabled':'')+' style="font:800 clamp(15px,3.6vw,21px) system-ui;padding:12px 6px;border:0;border-radius:10px;background:#fff;color:#222;opacity:'+(locked?.45:1)+';box-shadow:0 3px 0 '+C+',0 0 0 2px '+C+' inset">'+esc(x)+'</button>'}).join('')+'</div>'}
