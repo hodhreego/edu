@@ -25,3 +25,9 @@
   return api;
  };
 })();
+
+/* Ícones dos consoles de referência dos minijogos */
+window.RBX_CON={
+ gba:{nome:'Game Boy Advance',svg:function(w){return '<svg viewBox="0 0 48 28" width="'+(w||34)+'" height="'+((w||34)*28/48)+'" style="vertical-align:middle" aria-label="Game Boy Advance"><rect x="1" y="2" width="46" height="24" rx="9" fill="#6a5acd" stroke="#2d2566" stroke-width="1.5"/><rect x="13" y="6" width="22" height="16" rx="2" fill="#1c1c2e"/><rect x="15" y="8" width="18" height="12" fill="#9bd36a"/><rect x="5" y="12" width="7" height="2.4" fill="#2d2566"/><rect x="7.3" y="9.7" width="2.4" height="7" fill="#2d2566"/><circle cx="39" cy="15" r="2.3" fill="#d6c6ff"/><circle cx="43" cy="11.5" r="2.3" fill="#d6c6ff"/></svg>'}},
+ ds:{nome:'Nintendo DS',svg:function(w){return '<svg viewBox="0 0 32 40" width="'+((w||34)*.8)+'" height="'+((w||34)*.8*40/32)+'" style="vertical-align:middle" aria-label="Nintendo DS"><rect x="2" y="1" width="28" height="17" rx="4" fill="#d9dde3" stroke="#555a63" stroke-width="1.2"/><rect x="6" y="3.5" width="20" height="12" rx="1.5" fill="#1c1c2e"/><rect x="7.5" y="5" width="17" height="9" fill="#7fc4ff"/><rect x="11" y="18" width="10" height="2.5" fill="#8a8f98"/><rect x="2" y="21" width="28" height="18" rx="4" fill="#d9dde3" stroke="#555a63" stroke-width="1.2"/><rect x="6" y="23.5" width="20" height="12" rx="1.5" fill="#1c1c2e"/><rect x="7.5" y="25" width="17" height="9" fill="#ffd27f"/></svg>'}}
+};

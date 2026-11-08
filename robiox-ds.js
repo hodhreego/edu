@@ -73,12 +73,12 @@
   ['ds-batalha','Batalha de Monstros','👾','Acerte o tempo dos golpes para vencer o monstro e responda','batalha','#8e44ad','#f0e0ff'],
   ['ds-castelo','Construtor de Castelo','🏰','Empilhe os blocos alinhados e responda para subir de fase','castelo','#27ae60','#e2f9e8']
  ];
- DEFS.forEach(function(d){window.RBX_JOGOS[d[0]]={nome:d[1]+' '+d[2],icone:d[2],desc:d[3],start:function(api){run(d,api)}}});
+ DEFS.forEach(function(d){window.RBX_JOGOS[d[0]]={nome:d[1]+' '+d[2],icone:d[2],desc:d[3],console:'ds',start:function(api){run(d,api)}}});
  function run(d,api){
   var C=d[5],L=d[6],easy=api.easy&&api.easy();
   var o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#2b2b33;display:flex;flex-direction:column;align-items:center;font-family:system-ui,Arial,sans-serif;color:#fff;user-select:none;-webkit-user-select:none;touch-action:manipulation;overflow:auto';
   var sw='min(96vw,calc((100vh - 330px)*256/192),520px)';
-  o.innerHTML='<div style="display:flex;align-items:center;gap:8px;width:min(98vw,540px);padding:6px 6px;font-weight:900"><span style="flex:1;font-size:15px">'+esc(d[1])+' '+d[2]+'</span><span id="dv" style="font-size:16px"></span><span id="df" style="background:'+C+';padding:3px 9px;border-radius:99px;font-size:13px"></span><button id="dx" type="button" style="font:900 14px Arial;padding:6px 10px;border:2px solid #fff;background:#444;color:#fff;border-radius:8px">✕ Sair</button></div>'+
+  o.innerHTML='<div style="display:flex;align-items:center;gap:8px;width:min(98vw,540px);padding:6px 6px;font-weight:900"><span style="flex:1;font-size:15px">'+(window.RBX_CON?RBX_CON.ds.svg(36)+' ':'')+esc(d[1])+' '+d[2]+' <small style="opacity:.8;font-weight:700">· Nintendo DS</small></span><span id="dv" style="font-size:16px"></span><span id="df" style="background:'+C+';padding:3px 9px;border-radius:99px;font-size:13px"></span><button id="dx" type="button" style="font:900 14px Arial;padding:6px 10px;border:2px solid #fff;background:#444;color:#fff;border-radius:8px">✕ Sair</button></div>'+
    '<div style="background:#3a3a44;border-radius:18px 18px 8px 8px;padding:10px;box-shadow:0 6px 18px #000a"><div style="width:'+sw+';aspect-ratio:256/192;background:#000;border-radius:6px;overflow:hidden;box-shadow:inset 0 0 0 3px #111"><canvas id="dc" width="256" height="192" style="width:100%;height:100%;display:block;touch-action:none"></canvas></div></div>'+
    '<div style="width:90px;height:12px;background:linear-gradient(#555,#222);border-radius:0 0 8px 8px;margin-bottom:-1px"></div>'+
    '<div style="background:#3a3a44;border-radius:8px 8px 18px 18px;padding:10px;box-shadow:0 6px 18px #000a;width:'+sw+';max-width:520px;box-sizing:content-box"><div id="dqi" style="background:'+L+';color:#222;border-radius:6px;padding:10px;min-height:150px"></div></div><div style="height:16px;flex:none"></div>';
