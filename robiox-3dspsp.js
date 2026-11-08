@@ -138,5 +138,5 @@
   ['psp-cobra','Cobrinha Faminta','🐍','Coma as maçãs sem bater e responda','cobra','#16a085','#d9f7f0'],
   ['psp-memoria','Memória dos Pares','🃏','Ache os pares de cartas e responda','memoria','#6a5acd','#ebe6ff']];
  D3.forEach(function(d){window.RBX_JOGOS[d[0]]={nome:d[1]+' '+d[2],icone:d[2],desc:d[3],console:'3ds',start:function(api){var X=window.RBX_M3D,t3=X&&X[d[4]]&&window.THREE;K.run(d,api,t3?{W:480,H:270,con:'3ds',conn:'Nintendo 3DS',mech:X,maxw:620}:{W:320,H:192,con:'3ds',conn:'Nintendo 3DS',mech:M,maxw:560})}}});
- DP.forEach(function(d){window.RBX_JOGOS[d[0]]={nome:d[1]+' '+d[2],icone:d[2],desc:d[3],console:'psp',start:function(api){K.run(d,api,{W:320,H:180,con:'psp',conn:'PSP',mech:M,one:1,maxw:600})}}});
+ DP.forEach(function(d){window.RBX_JOGOS[d[0]]={nome:d[1]+' '+d[2],icone:d[2],desc:d[3],console:'psp',start:function(api){var X=window.RBX_M3D,t3=X&&X[d[4]]&&window.THREE;K.run(d,api,t3?{W:480,H:270,con:'psp',conn:'PSP',mech:X,one:1,maxw:640}:{W:320,H:180,con:'psp',conn:'PSP',mech:M,one:1,maxw:600})}}});
 })();
