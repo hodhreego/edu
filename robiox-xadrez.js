@@ -1,7 +1,7 @@
 /* Minijogo "Xadrez 3D" (Nintendo Switch): as brancas jogam e dão xeque-mate em 1 lance. Qualquer lance que dê mate vale. */
 (function(window){
  var X=window.RBX_XADREZ,R3=window.RBX3D;if(!X||!R3||!R3.chess||!window.THREE||!window.RBX_M3D)return;
- window.RBX_M3D.xadrez=function(st,easy,W,H){
+ var trad=function(st,easy,W,H){
   var s=R3.shared(W,H,{bgColor:0x2a3350,fogDensity:0,fov:44,ambientIntensity:.7,dirIntensity:.9});
   var C=R3.chess,bd=X.fen(X.PUZ[st%X.PUZ.length]),grp=new THREE.Group(),meshes={},sel=-1,targets=[],cur=60,keyUsed=false,flash={sq:-1,t:0},msg='',msgT=0,anim=null,won=0,t0=0;
   s.scene.add(grp);var sq=C.board(grp);
@@ -32,4 +32,22 @@
   mech.dbg=function(){return {sel:sel,t:targets.length,anim:!!anim,pend:!!pend,bd:bd.join('').length}};
   return mech;
  };
+ /* Seletor de tipo de jogo (toque ou setas+ação): 1 Tradicional (padrão), 2 Xadrez Chinês, 3 Mini-xadrez 5x5 */
+ var OPS=[['♟️','Xadrez tradicional','Ocidente · 3D · mate em 1','trad'],['🀄','Xadrez Chinês (Xiangqi)','Tabuleiro 9x10 · mate em 1','xiangqi'],['♛','Mini-xadrez 5x5','Tabuleiro pequeno · mate em 1','mini']];
+ window.RBX_M3D.xadrez=function(st,easy,W,H){
+  var V=window.RBX_XADREZ_VAR,sel=0,inner=null,w={txt:'♟️ Escolha o tipo de xadrez: toque numa opção (ou ↑ ↓ e ação).',p:0};
+  function by(i){return 70+i*58}
+  function start(i,inp){sel=i;if(inp)inp.beep(620,.08);inner=OPS[i][3]==='trad'?trad(st,easy,W,H):V.mech2d(OPS[i][3],st,W,H);w.txt=inner.txt;w.dbg=inner.dbg;w.mode=OPS[i][3]}
+  w.u=function(dt,inp){if(inner){var r=inner.u(dt,inp);w.p=inner.p;return r}
+   if(inp.up)sel=(sel+2)%3;if(inp.dn)sel=(sel+1)%3;if(inp.act){start(sel,inp);return}
+   if(inp.tap&&inp.px!=null){for(var i=0;i<3;i++)if(inp.py>=by(i)-4&&inp.py<=by(i)+48&&inp.px>=30&&inp.px<=W-30){start(i,inp);return}}};
+  w.d=function(g,t){if(inner){inner.d(g,t);return}
+   var gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#2a3350');gr.addColorStop(1,'#151a2c');g.fillStyle=gr;g.fillRect(0,0,W,H);
+   g.textAlign='center';g.fillStyle='#fff';g.font='bold 18px system-ui';g.fillText('Escolha o tipo de xadrez',W/2,38);g.font='11px system-ui';g.fillStyle='#9fb0e0';g.fillText('Em todos: dê xeque-mate em 1 lance',W/2,56);
+   for(var i=0;i<3;i++){var y=by(i),on=i===sel;g.fillStyle=on?'#f6e05e':'rgba(255,255,255,.12)';g.fillRect(30,y,W-60,48);g.strokeStyle=on?'#fff':'rgba(255,255,255,.3)';g.lineWidth=2;g.strokeRect(30,y,W-60,48);
+    g.textAlign='left';g.font='26px system-ui';g.fillStyle=on?'#222':'#fff';g.fillText(OPS[i][0],44,y+33);g.font='bold 15px system-ui';g.fillText((i+1)+') '+OPS[i][1],84,y+21);g.font='11px system-ui';g.fillStyle=on?'#444':'#b9c4ee';g.fillText(OPS[i][2],84,y+38)}
+   g.textAlign='left'};
+  return w;
+ };
+
 })(window);
