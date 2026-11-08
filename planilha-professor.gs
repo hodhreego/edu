@@ -365,7 +365,7 @@ function rbxAba_() {
 }
 function rbxSave_(d) {
   var login = String(d.login || '').toLowerCase();
-  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste)$/.test(login)) return ok_('login inválido');
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste|mainara)$/.test(login)) return ok_('login inválido');
   var ate = rbxBloqueio_(login);
   if (ate > Date.now()) return ok_('bloqueado ate ' + new Date(ate).toLocaleString('pt-BR'));
   var lock = LockService.getScriptLock();
@@ -397,7 +397,7 @@ function rbxLoad_(p) {
 // Registro de cada resposta dos alunos no RobIox (aba "RobIox-Respostas")
 function rbxResp_(d) {
   var login = String(d.login || '').toLowerCase();
-  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste)$/.test(login)) return ok_('login inválido');
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste|mainara)$/.test(login)) return ok_('login inválido');
   var its = d.itens || [];
   if (!its.length || its.length > 200) return ok_('vazio');
   var lock = LockService.getScriptLock();
@@ -439,7 +439,7 @@ function rbxBloqueio_(login) {
 function rbxBan_(d) {
   if (String(d.k || '') !== RBX_KEY) return ok_('sem permissao');
   var login = String(d.login || '').toLowerCase();
-  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste)$/.test(login)) return ok_('login invalido');
+  if (!/^(\d{1,3}[a-z]{3}\d[a-z]|teste|mainara)$/.test(login)) return ok_('login invalido');
   var min = Math.max(0, Math.min(10080, Math.round(Number(d.min) || 0)));
   var ate = min ? Date.now() + min * 60000 : 0;
   var lock = LockService.getScriptLock();
