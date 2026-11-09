@@ -38,6 +38,13 @@
     + '.rbxPainel .k{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);'
     + 'border-radius:.35em;padding:0 .38em;font:900 .95em Arial,sans-serif}'
     + '.rbxPainel .dica{color:#94a3b8;font-size:.92em;margin-top:.4em}'
+    /* Celular: acessibilidade/ajuda/logins no topo (abaixo do HUD), deixando o rodapé livre para os botões de jogo */
+    + '@media (max-width:820px){'
+    + '#rbxFonteBar{left:auto!important;bottom:auto!important;right:calc(8px / var(--rbxz,1));top:calc(52px / var(--rbxz,1));gap:calc(6px / var(--rbxz,1));opacity:.85}'
+    + '#rbxFonteBar button{width:calc(34px / var(--rbxz,1))!important;height:calc(34px / var(--rbxz,1))!important;border-radius:calc(10px / var(--rbxz,1))!important;font-size:calc(14px / var(--rbxz,1))!important}'
+    + '.rbxPainel{bottom:auto!important;left:auto!important;right:calc(8px / var(--rbxz,1));top:calc(92px / var(--rbxz,1))}'
+    + '.lgw-btn{left:auto!important;bottom:auto!important;right:calc(8px / var(--rbxz,1))!important;top:calc(92px / var(--rbxz,1))!important;padding:7px 10px!important;font-size:12px!important;opacity:.85}'
+    + '}'
     + '@media print{#rbxFonteBar,.rbxPainel{display:none!important}}';
 
   function ready(fn) {
