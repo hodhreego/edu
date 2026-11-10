@@ -55,13 +55,13 @@ document.addEventListener('DOMContentLoaded',function(){
  if(!/[?&]imp=1/.test(location.search))return;
  var st=document.createElement('style');
  st.textContent='#app,#cfg,#fim,.fim,#tray,#imp-bar{display:none!important}body{overflow:auto!important;height:auto!important}html{overflow:auto!important;height:auto!important}'
- +'#dm-sheet{background:#fff;color:#000;max-width:794px;margin:12px auto;padding:var(--dm-m,10mm);font-family:"Segoe UI",Arial,sans-serif;font-size:var(--dm-f,13px)}'
+ +'#dm-sheet{background:#fff;color:#000;width:194mm;box-sizing:border-box;max-width:none;margin:12px auto;padding:var(--dm-m,10mm);font-family:"Segoe UI",Arial,sans-serif;font-size:var(--dm-f,13px)}'
  +'#dm-sheet h1{font-size:1.5em;margin:0 0 4px}#dm-sheet .id{display:flex;gap:14px;margin:6px 0 10px}#dm-sheet .id span{flex:1;border-bottom:1px solid #000;padding-bottom:2px;font-size:.9em}'
  +'#dm-sheet h2{font-size:1.05em;margin:12px 0 6px;padding:3px 8px;background:#eee;border-left:5px solid #000;break-after:avoid}'
  +'#dm-g{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}'
- +'#dm-g .q{border:1px dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}#dm-g .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}'
+ +'#dm-g .q{border:var(--dm-b,1px) dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}#dm-g .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}'
  +'#dm-g .q img{height:var(--dm-i,9mm);width:auto;vertical-align:middle;margin:0 3px}#dm-g .r{margin-top:4px;font-weight:700}#dm-g .r u{display:inline-block;min-width:60px;text-decoration:none;border-bottom:1px solid #000}'
- +'#dm-cut{break-before:page;page-break-before:always}.cutg{display:flex;flex-wrap:wrap;gap:3mm}.ci{display:inline-flex;align-items:center;justify-content:center;border:1px dashed #555;padding:.6mm;box-sizing:content-box}.ci.co{border-radius:50%}.ci .cw{display:flex;align-items:center;justify-content:center}.ci img,.ci svg{height:var(--h)!important;width:auto;display:block;max-width:none}'
+ +'#dm-cut{break-before:page;page-break-before:always}.cutg{display:flex;flex-wrap:wrap;gap:2mm;align-content:flex-start;overflow:hidden}.ci{display:inline-flex;align-items:center;justify-content:center;border:var(--dm-b,1px) dashed #555;padding:.6mm;box-sizing:content-box}.ci.co{border-radius:50%}.ci .cw{display:flex;align-items:center;justify-content:center}.ci img,.ci svg{height:var(--h)!important;width:auto;display:block;max-width:none}'
  +'#dm-gab{break-before:page;page-break-before:always}#dm-gab ol{columns:3;font-size:.95em}'
  +'#dm-bar{position:sticky;top:0;z-index:2147483500;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#16213a;color:#fff;padding:8px 14px;font:700 13px "Segoe UI",Arial,sans-serif}#dm-bar label{display:flex;gap:6px;align-items:center}#dm-bar input[type=range]{width:110px}#dm-bar select,#dm-bar button{font:700 13px Arial;padding:3px 8px;border-radius:8px;border:0}'
  +'@media print{#dm-bar,#imp-bar{display:none!important}#dm-sheet{margin:0;max-width:none}@page{size:A4;margin:8mm}}';
@@ -69,12 +69,19 @@ document.addEventListener('DOMContentLoaded',function(){
  function esc(x){return String(x).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
 
  function cut(){
-  var K=+((document.getElementById('dm-k')||{}).value||3),H=+((document.getElementById('dm-s')||{}).value||12);
+  var H=+((document.getElementById('dm-i')||{}).value||8)*1.5;
   var B=window.BILLSET?Array.from(window.BILLSET).sort(function(x,y){return x-y}):[200,500,1000,2000,5000,10000];
-  var CD={1:.52,5:.669,10:.608,25:.76,50:.669,100:.821},NR={200:1.86,500:1.97,1000:2.08,2000:2.18,5000:2.29,10000:2.4,20000:2.5},o='';
-  B.forEach(function(v){for(var i=0;i<K;i++)o+='<span class="ci" style="width:'+(H*(NR[v]||2.3)).toFixed(1)+'mm;height:'+H+'mm"><span class="cw" style="--h:'+H+'mm">'+DR.bill(v)+'</span></span>'});
-  [1,5,10,25,50,100].forEach(function(v){for(var i=0;i<K*2;i++){var s=H*CD[v];o+='<span class="ci co" style="width:'+s.toFixed(1)+'mm;height:'+s.toFixed(1)+'mm"><span class="cw" style="--h:'+s.toFixed(1)+'mm">'+DR.coin(v)+'</span></span>'}});
-  return '<div id="dm-cut"><h2>✂️ Dinheirinho para recortar (cole no caderno)</h2><p style="margin:0 0 6px;font-size:.9em">Recorte pela linha pontilhada. Imagens ilustrativas, sem valor.</p><div class="cutg">'+o+'</div></div>';
+  var CD={1:.52,5:.669,10:.608,25:.76,50:.669,100:.821},NR={200:1.86,500:1.97,1000:2.08,2000:2.18,5000:2.29,10000:2.4,20000:2.5},base=[];
+  B.forEach(function(v){base.push(function(){return '<span class="ci" style="width:'+(H*(NR[v]||2.3)).toFixed(1)+'mm;height:'+H+'mm"><span class="cw" style="--h:'+H+'mm">'+DR.bill(v)+'</span></span>'})});
+  [1,5,10,25,50,100].forEach(function(v){for(var i=0;i<2;i++)base.push(function(){var s=H*CD[v]*.8;return '<span class="ci co" style="width:'+s.toFixed(1)+'mm;height:'+s.toFixed(1)+'mm"><span class="cw" style="--h:'+s.toFixed(1)+'mm">'+DR.coin(v)+'</span></span>'})});
+  var o='';for(var k=0;k<600;k++)o+=base[k%base.length]();
+  return '<div id="dm-cut"><h2>✂️ Dinheirinho para recortar (cole no caderno)</h2><p style="margin:0 0 6px;font-size:.9em">Recorte pela linha pontilhada. Imagens ilustrativas, sem valor. Pode repetir cédulas e moedas nas contas.</p><div class="cutg">'+o+'</div></div>';
+ }
+ function fitCut(){
+  var c=document.getElementById('dm-cut');if(!c)return;var g=c.querySelector('.cutg'),cs=g.children,mm=96/25.4,lim=275*mm,lo=0,hi=cs.length,t=c.getBoundingClientRect().top;
+  function ok(n){for(var i=cs.length-1;i>=n;i--)cs[i].style.display='none';var r=cs[Math.max(0,n-1)].getBoundingClientRect(),res=(r.bottom-t)<=lim;for(i=cs.length-1;i>=n;i--)cs[i].style.display='';return res}
+  while(lo<hi){var mid=(lo+hi+1)>>1;if(ok(mid))lo=mid;else hi=mid-1}
+  while(cs.length>Math.max(1,lo))g.removeChild(g.lastChild);
  }
  function build(){
   var D=window.DRG;if(!D)return;var old=document.getElementById('dm-wrap');if(old)old.remove();
@@ -82,7 +89,7 @@ document.addEventListener('DOMContentLoaded',function(){
   var ttl=(document.querySelector('#app h1,h1')||{}).textContent||document.title;
   var q='',gab='',n=0;
   var Y=+((document.getElementById('dm-y')||{}).value||0);D.FASES.forEach(function(F,fi){
-   if(Y&&(F.y||6)!==Y)return;var tasks=F.gen();q+='<h2>'+esc(F.t||'Fase '+(fi+1))+' — '+esc(F.s||'')+'</h2><div id="dm-g'+fi+'" class="dmg">';gab+='<li><b>'+esc(F.t||'Fase '+(fi+1))+'</b><br>';
+   if(Y&&(F.y||6)!==Y)return;var tasks=F.gen().slice(0,+((document.getElementById('dm-q')||{}).value||3));q+='<h2>'+esc(F.t||'Fase '+(fi+1))+' — '+esc(F.s||'')+'</h2><div id="dm-g'+fi+'" class="dmg">';gab+='<li><b>'+esc(F.t||'Fase '+(fi+1))+'</b><br>';
    tasks.forEach(function(t,k){
     n++;var h=DRQT(t,D.fmt).replace(/ Monte o troco na carteira\./,'').replace(/Monte <b>exatamente [^<]*<\/b> na carteira, com moedas e cédulas\./,'<b>Quais cédulas e moedas você usa para pagar?</b>').replace(/<b>Some os preços<\/b> e monte o total exato na carteira\./,'<b>Some os preços. Qual é o total?</b>');var pay=t.paid?' <span class="img">'+DR.bill(t.paid)+'</span>':'';
     q+='<div class="q"><b class="n">'+(k+1)+'</b>'+h+'<div class="r">'+(t.paid?'Troco: R$ <u>&nbsp;</u>':(t.items.length>1?'Total a pagar: R$ <u>&nbsp;</u>':'Resposta: <u style="min-width:70%">&nbsp;</u>'))+'</div></div>';
@@ -91,24 +98,26 @@ document.addEventListener('DOMContentLoaded',function(){
    q+='</div>';gab+='</li>';
   });
   wrap.innerHTML='<div id="dm-sheet"><h1>'+esc(ttl.replace(/[^\wÀ-ú ]/g,'').trim())+'</h1><div class="id"><span>Nome:</span><span style="max-width:90px">Data:</span><span style="max-width:90px">Turma:</span><span>Escola:</span></div>'
-   +'<p style="margin:0 0 6px"><b>✂️ Como fazer:</b> recorte cada problema (linha pontilhada) e <b>cole no caderno</b>. Recorte o <b>dinheirinho</b> da última folha, cole no caderno ao lado do problema e <b>resolva ali</b>, mostrando as cédulas e moedas que você usou.</p><style>.dmg{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}.dmg .q{border:1px dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}.dmg .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}.dmg .r{margin-top:4px;font-weight:700}.dmg .r u{display:inline-block;min-width:60px;border-bottom:1px solid #000;text-decoration:none}.dmg img{height:var(--dm-i,9mm);width:auto;vertical-align:middle}</style>'+q
+   +'<p style="margin:0 0 6px"><b>✂️ Como fazer:</b> recorte cada problema (linha pontilhada) e <b>cole no caderno</b>. Recorte o <b>dinheirinho</b> da última folha, cole no caderno ao lado do problema e <b>resolva ali</b>, mostrando as cédulas e moedas que você usou.</p><style>.dmg{display:grid;grid-template-columns:repeat(var(--dm-c,2),1fr);gap:6px 10px}.dmg .q{border:var(--dm-b,1px) dashed #555;border-radius:4px;padding:5px 7px;break-inside:avoid;line-height:1.35}.dmg .q b.n{display:inline-block;background:#000;color:#fff;border-radius:3px;padding:0 5px;margin-right:4px}.dmg .r{margin-top:4px;font-weight:700}.dmg .r u{display:inline-block;min-width:60px;border-bottom:1px solid #000;text-decoration:none}.dmg img{height:var(--dm-i,9mm);width:auto;vertical-align:middle}</style>'+q
    +cut()+'<div id="dm-gab"><h2>GABARITO — uso do professor · código <b class="gcod"></b></h2><ol>'+gab+'</ol></div></div>';
-  document.body.appendChild(wrap);
+  document.body.appendChild(wrap);fitCut();
  }
  var bar=document.createElement('div');bar.id='dm-bar';
  bar.innerHTML='<span>🖨️ Imprimir atividade</span>'
   +'<label>Ano <select id="dm-y"><option value="0">Todos</option><option value="6">6º</option><option value="7">7º</option><option value="8">8º</option><option value="9">9º</option></select></label>'
-  +'<label>Questões lado a lado <select id="dm-c"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>'
-  +'<label>Letra <input id="dm-f" type="range" min="9" max="18" value="13"></label>'
-  +'<label>Margem <input id="dm-m" type="range" min="3" max="20" value="8"></label>'
-  +'<label>Dinheiro recortável (qtd) <input id="dm-k" type="range" min="1" max="6" value="3"></label><label>Tamanho <input id="dm-s" type="range" min="8" max="20" value="12"></label>'
-  +'<label>Cédula <input id="dm-i" type="range" min="4" max="16" value="8"></label>'
+  +'<label>Questões por fase <input id="dm-q" type="range" min="1" max="8" value="3"><b id="dm-q_v">3</b></label>'
+  +'<label>Perguntas lado a lado <select id="dm-c"><option>1</option><option selected>2</option><option>3</option></select></label>'
+  +'<label>Tamanho da letra <input id="dm-f" type="range" min="9" max="18" value="14"><b id="dm-f_v">14</b></label>'
+  +'<label>Tamanho dos itens <input id="dm-i" type="range" min="4" max="16" value="8"><b id="dm-i_v">8</b></label>'
+  +'<label>Borda <input id="dm-b" type="range" min="0" max="4" step="0.5" value="1"><b id="dm-b_v">1</b></label>'
+  +'<label>Margem <input id="dm-m" type="range" min="3" max="20" value="8"><b id="dm-m_v">8</b></label>'
   +'<button id="dm-n">🔄 Novas questões</button><button onclick="window.print()" style="background:#ffd24d">Imprimir / Salvar PDF</button>';
  addEventListener('load',function(){
   document.body.insertBefore(bar,document.body.firstChild);build();
   var R=document.documentElement.style;
-  function ap(){R.setProperty('--dm-c',document.getElementById('dm-c').value);R.setProperty('--dm-f',document.getElementById('dm-f').value+'px');R.setProperty('--dm-m',document.getElementById('dm-m').value+'mm');R.setProperty('--dm-i',document.getElementById('dm-i').value+'mm')}
-  ['dm-c','dm-f','dm-m','dm-i'].forEach(function(i){document.getElementById(i).addEventListener('input',ap)});['dm-k','dm-s'].forEach(function(i){document.getElementById(i).addEventListener('input',build)});ap();
+  function ap(){R.setProperty('--dm-c',document.getElementById('dm-c').value);R.setProperty('--dm-f',document.getElementById('dm-f').value+'px');R.setProperty('--dm-m',document.getElementById('dm-m').value+'mm');R.setProperty('--dm-i',document.getElementById('dm-i').value+'mm');R.setProperty('--dm-b',document.getElementById('dm-b').value+'px');
+   ['q','f','i','b','m'].forEach(function(k){var o=document.getElementById('dm-'+k+'_v');if(o)o.textContent=document.getElementById('dm-'+k).value})}
+  ['dm-c','dm-f','dm-m','dm-b'].forEach(function(i){document.getElementById(i).addEventListener('input',ap)});['dm-i','dm-q'].forEach(function(i){document.getElementById(i).addEventListener('input',function(){ap();build()})});ap();
   document.getElementById('dm-n').onclick=build;document.getElementById('dm-y').onchange=build;
  });
 })();

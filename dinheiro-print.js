@@ -23,14 +23,15 @@
     '#dprintBar input[type=range]{width:110px}' +
     '#dprintBar button{border:0;border-radius:99px;padding:8px 14px;font:800 13px "Segoe UI",Arial;cursor:pointer;background:#ffd24d;color:#16213a}' +
     '#dprintBar button.sec{background:#fff}' +
-    '.dpsheet{background:#fff;color:#111;max-width:794px;margin:0 auto;padding:14mm 12mm;font-family:"Segoe UI",Arial,sans-serif}' +
+    '.dpsheet{background:#fff;color:#111;width:190mm;box-sizing:border-box;margin:0 auto;padding:0;font-family:"Segoe UI",Arial,sans-serif}' +
     '.dpsheet h1{font-size:22px;margin:0 0 2px;color:#1f3a8a}.dpsheet .dpsub{font-size:12px;color:#475569;margin-bottom:8px}' +
     '.dpgrid{display:flex;flex-wrap:wrap;gap:var(--dgap,2mm);align-content:flex-start}' +
     '.dpm{display:inline-flex;height:var(--dh,22mm);align-items:center;justify-content:center;position:relative;overflow:hidden}' +
     '.dpm img,.dpm svg{height:var(--dh,22mm);width:auto;display:block;filter:none}' +
     '.dpm::after{content:"SEM VALOR";position:absolute;right:2.5%;top:50%;width:16%;height:12%;transform:translateY(-50%) rotate(-18deg);display:flex;align-items:center;justify-content:center;font:800 5px Arial;color:#7a0b0b;background:rgba(255,255,255,.38);border:1px solid rgba(122,11,11,.35);opacity:.5;white-space:nowrap;pointer-events:none;box-sizing:border-box}' +
+    '.dpm.coin{width:var(--dh,12mm)}.dpm.coin img,.dpm.coin svg{width:100%;height:100%;object-fit:contain}' +
     '.dpm.coin::after{width:30%;height:8%;font-size:4px;right:0}' +
-    '@media print{body.dprint-on>*:not(#dprintSheet){display:none!important}body.dprint-on #dprintSheet{display:block!important;position:static;overflow:visible;background:#fff;padding:0}#dprintBar{display:none!important}.dpsheet{max-width:none;margin:0;padding:0}@page{size:A4;margin:10mm}}';
+    '@media print{body.dprint-on>*:not(#dprintSheet){display:none!important}body.dprint-on #dprintSheet{display:block!important;position:static;overflow:visible;background:#fff;padding:0}#dprintBar{display:none!important}.dpsheet{max-width:none;margin:0;padding:0}.dpgrid{overflow:hidden}@page{size:A4;margin:10mm}}';
   document.head.appendChild(css);
 
   function init() {
@@ -72,6 +73,8 @@
   sheet.id = 'dprintSheet';
   document.body.appendChild(sheet);
 
+  build._t = 0;
+  window.addEventListener('beforeprint', function () { if (document.body.classList.contains('dprint-on')) build(true); });
   function save() { try { localStorage.setItem('dprint_cfg', JSON.stringify(CFG)); } catch (e) {} }
   function moneyItems() {
     var base = [];
@@ -79,16 +82,9 @@
     COINS.forEach(function (v) { for (var i = 0; i < CFG.qc; i++) base.push(v); });
     if (!base.length) return [];
     if (!CFG.fill) return base;
-    var pageW = 186, pageH = 235, h = CFG.h, gap = CFG.gap;
-    var out = [], rows = 1, x = 0;
-    for (var k = 0; k < 400; k++) {
-      var v = base[k % base.length];
-      var w = v >= 200 ? h * 2.05 : h * 0.62;
-      if (x + w + gap > pageW) { rows++; x = 0; }
-      if (rows * (h + gap) > pageH) break;
-      out.push(v); x += w + gap;
-    }
-    return out.length ? out : base.slice();
+    var out = [];
+    for (var k = 0; k < 700; k++) out.push(base[k % base.length]);
+    return out;
   }
   function itemHTML(v) {
     var bill = v >= 200;
@@ -96,16 +92,34 @@
     var html = bill ? window.DR.bill(v) : window.DR.coin(v);
     return '<span class="dpm ' + (bill ? 'bill' : 'coin') + '" style="--dh:' + h + 'mm;--h:' + h + 'mm">' + html + '</span>';
   }
-  function build() {
+  function build(skipWait) {
     var items = moneyItems();
+    var all = items.length;
     sheet.innerHTML = '<div class="dpsheet"><h1>Dinheiro para recortar</h1><div class="dpsub">Tamanho ' + CFG.h + ' mm · espaço ' + CFG.gap + ' mm · ' + items.length + ' peça(s) · Loja de Matemática</div><div class="dpgrid" style="--dgap:' + CFG.gap + 'mm">' + items.map(itemHTML).join('') + '</div></div>';
+    if (CFG.fill) {
+      fitPage();
+      if (!skipWait) {
+        var ims = [].slice.call(sheet.querySelectorAll('img')), tk = ++build._t;
+        Promise.all(ims.map(function (im) { return im.decode ? im.decode().catch(function () {}) : 0; })).then(function () { if (tk === build._t) build(true); });
+      }
+    }
+  }
+  function fitPage() {
+    /* mede o layout real: tira peças do fim até a folha caber em 1 página A4 (277 mm úteis) */
+    var sh = sheet.querySelector('.dpsheet'), g = sheet.querySelector('.dpgrid'), mm = 96 / 25.4, lim = 276 * mm, k;
+    var cs = g.children, lo = 0, hi = cs.length;
+    function ok(n) { for (var i = cs.length - 1; i >= n; i--) cs[i].style.display = 'none'; var last = cs[Math.max(0, n - 1)]; var r = last.getBoundingClientRect(), t = sh.getBoundingClientRect().top, res = (r.bottom - t) <= lim; for (i = cs.length - 1; i >= n; i--) cs[i].style.display = ''; return res; }
+    while (lo < hi) { var mid = (lo + hi + 1) >> 1; if (ok(mid)) lo = mid; else hi = mid - 1; }
+    while (cs.length > Math.max(1, lo)) g.removeChild(g.lastChild);
+    var sub = sheet.querySelector('.dpsub'); if (sub) sub.textContent = sub.textContent.replace(/\d+ peça\(s\)/, cs.length + ' peça(s)');
   }
   function open() {
     document.body.classList.add('dprint-on');
+    btn.style.setProperty('display', 'none', 'important');
     build();
     window.scrollTo(0, 0);
   }
-  function close() { document.body.classList.remove('dprint-on'); }
+  function close() { document.body.classList.remove('dprint-on'); fixBtn(); }
 
   function bind(id, key, min) {
     var el = document.getElementById(id), out = document.getElementById(id + '_v');
