@@ -90,7 +90,7 @@ css.textContent+='@media print{#cfg,#bCfg,#bLimpar,#bSoma,#bOk,#dots,.dots,#pain
   '.a5h{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden}'+
   '.a5h+.a5h{border-left:1px dashed #888;padding-left:6mm;box-sizing:border-box}'+
   '.a5h .folha{display:flex!important;flex-direction:column;height:100%;margin:0!important;padding:0!important;box-shadow:none!important;border:0!important;max-width:none!important;width:100%!important;box-sizing:border-box}'+
-  '.a5h .jgrid{flex:1 1 auto;min-height:0;grid-auto-rows:1fr;align-content:stretch}'+
+  '.a5h .jgrid{flex:1 1 auto;min-height:0;grid-template-rows:none!important;grid-auto-rows:minmax(0,1fr)!important;align-content:stretch}.a5h .jc{max-height:50mm}.a5h .jgrid.few{align-content:space-evenly;grid-auto-rows:46mm!important}.a5h .jgrid.fewer{grid-template-columns:repeat(3,1fr)!important;grid-auto-rows:minmax(0,1fr)!important;align-content:stretch}.a5h .jgrid.fewer .jc{max-height:none}'+
   '.a5h .jmsg,.a5h .jmao,.a5h .jdica{display:none!important}.a5h .jbank{flex:none}'+
   '.a5g{padding:4mm;font-family:"Segoe UI",Arial,sans-serif;color:#000;width:100%}.a5g h2{margin:0 0 4mm;font-size:8mm}.a5g p{margin:0 0 8mm;font-size:5mm}.a5g ol{columns:3;column-gap:10mm;font-size:9mm;line-height:2.5;padding-left:9mm;margin:0}.a5g li{break-inside:avoid}.a5g b{display:inline-block;width:1.5em;height:1.5em;line-height:1.5em;text-align:center;border:1.5px solid #000;border-radius:50%;margin-right:2mm}'+
   '@media print{@page{size:A4 landscape;margin:0}html,body{background:#fff!important}#a5{background:#fff;padding:0}.a5pg{margin:0;page-break-after:always;break-after:page;width:297mm;height:209mm}.a5pg:last-child{page-break-after:auto;break-after:auto}}';
@@ -98,7 +98,7 @@ css.textContent+='@media print{#cfg,#bCfg,#bLimpar,#bSoma,#bOk,#dots,.dots,#pain
   function copy(){var c=F.cloneNode(true);c.removeAttribute('id');[].forEach.call(c.querySelectorAll('[id]'),function(e){e.removeAttribute('id')});return c}
   var w=document.createElement('div');w.id='a5';
   w.innerHTML='<div class="a5pg"><div class="a5h"></div><div class="a5h"></div></div><div class="a5pg"><div class="a5g"></div></div>';
-  var hs=w.querySelectorAll('.a5h');hs[0].appendChild(copy());hs[1].appendChild(copy());
+  var hs=w.querySelectorAll('.a5h');if(F.querySelectorAll('.jgrid .jc').length<=14)[].forEach.call(F.querySelectorAll('.jgrid'),function(x){x.classList.add(F.querySelectorAll('.jgrid .jc').length<=8?'fewer':'few')});hs[0].appendChild(copy());hs[1].appendChild(copy());
   if(G)w.querySelector('.a5g').innerHTML=G.innerHTML;
   document.body.appendChild(w);
   var g=w.querySelector('.gcod');
