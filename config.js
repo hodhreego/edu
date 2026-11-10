@@ -4,3 +4,5 @@ window.EDU_ENDPOINT='https://script.google.com/macros/s/AKfycbyuRU8QZHIANlj_ApgB
 /* Senha do professor para liberar a impressão: guardada só como hash PBKDF2-SHA256 (600 mil voltas). */
 window.EDU_PRINT_SALT='17e541ad9864b868d3ecaca64a4c9937';
 window.EDU_PRINT_HASH='3546cc550308fc752b4656ca82bc9c90da11d43da766fd5ba1997875aab9859f';
+
+window.EDU_PRINT_HASH_LIM='039f80057acc78482016de28c960fe96208406d4337b5346e6af013bd83f241f';window.EDU_PRINT_LIM_PAGES=['soma-de-inteiros-jogo.html','fracoes-jogo.html'];
