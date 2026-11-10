@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded',function(){
   return '<div id="dm-cut"><h2>✂️ Dinheirinho para recortar (cole no caderno)</h2><p style="margin:0 0 6px;font-size:.9em">Recorte pela linha pontilhada. Imagens ilustrativas, sem valor. Pode repetir cédulas e moedas nas contas.</p><div class="cutg">'+o+'</div></div>';
  }
  function fitCut(){
-  var c=document.getElementById('dm-cut');if(!c)return;var g=c.querySelector('.cutg'),cs=g.children,mm=96/25.4,lim=275*mm,lo=0,hi=cs.length,t=c.getBoundingClientRect().top;
+  var c=document.getElementById('dm-cut');if(!c)return;var g=c.querySelector('.cutg'),cs=g.children,mm=96/25.4,lim=279*mm,lo=0,hi=cs.length,t=c.getBoundingClientRect().top;
   function ok(n){for(var i=cs.length-1;i>=n;i--)cs[i].style.display='none';var r=cs[Math.max(0,n-1)].getBoundingClientRect(),res=(r.bottom-t)<=lim;for(i=cs.length-1;i>=n;i--)cs[i].style.display='';return res}
   while(lo<hi){var mid=(lo+hi+1)>>1;if(ok(mid))lo=mid;else hi=mid-1}
   while(cs.length>Math.max(1,lo))g.removeChild(g.lastChild);
@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded',function(){
   function ap(){R.setProperty('--dm-c',document.getElementById('dm-c').value);R.setProperty('--dm-f',document.getElementById('dm-f').value+'px');R.setProperty('--dm-m',document.getElementById('dm-m').value+'mm');R.setProperty('--dm-i',document.getElementById('dm-i').value+'mm');R.setProperty('--dm-b',document.getElementById('dm-b').value+'px');
    ['q','f','i','b','m'].forEach(function(k){var o=document.getElementById('dm-'+k+'_v');if(o)o.textContent=document.getElementById('dm-'+k).value})}
   ['dm-c','dm-f','dm-m','dm-b'].forEach(function(i){document.getElementById(i).addEventListener('input',ap)});['dm-i','dm-q'].forEach(function(i){document.getElementById(i).addEventListener('input',function(){ap();build()})});ap();
+  var my=(location.pathname.match(/(\d)ano/)||[])[1];if(my&&document.getElementById('dm-y').querySelector('option[value="'+my+'"]')){document.getElementById('dm-y').value=my;build()}
   document.getElementById('dm-n').onclick=build;document.getElementById('dm-y').onchange=build;
  });
 })();
