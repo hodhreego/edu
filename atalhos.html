@@ -309,8 +309,8 @@ var SEC=[
 ];
 var main=document.getElementById('main'),chips=document.getElementById('chips'),qi=document.getElementById('q'),cur='todos';
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function slugT(t){return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
-function card(it,c){return '<a class="card" style="--c:'+c+'" href="'+esc(it.u)+'" target="_blank" rel="noopener"><img class="art" src="atalhos-img/cards/'+slugT(it.t)+'.webp?v=2" alt="" loading="lazy" onerror="this.remove()"><div class="top"><div class="ic">'+it.i+'</div><div class="nm">'+esc(it.t)+'</div></div>'+(it.n?'<span class="num">'+esc(it.n)+'</span>':'')+'<div class="ds">'+esc(it.d||'')+'</div><div class="bd">'+(it.b||[]).map(function(b){return '<span class="b">'+esc(b)+'</span>'}).join('')+'<span class="go">Abrir ➜</span></div></a>'}
+function slugT(t){return String(t).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
+function card(it,c){return '<a class="card" style="--c:'+c+'" href="'+esc(it.u)+'" target="_blank" rel="noopener"><img class="art" src="atalhos-img/cards/'+slugT(it.t)+'.webp?v=3" alt="" loading="lazy" onerror="this.remove()"><div class="top"><div class="ic">'+it.i+'</div><div class="nm">'+esc(it.t)+'</div></div>'+(it.n?'<span class="num">'+esc(it.n)+'</span>':'')+'<div class="ds">'+esc(it.d||'')+'</div><div class="bd">'+(it.b||[]).map(function(b){return '<span class="b">'+esc(b)+'</span>'}).join('')+'<span class="go">Abrir ➜</span></div></a>'}
 function render(){
   var q=qi.value.trim().toLowerCase(),html='',shown=0;
   SEC.forEach(function(s){
