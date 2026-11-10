@@ -146,5 +146,10 @@ var SK=[
 {id:'ninja',n:'Ninja',c:150,col:0x1f2937,hat:'band'},{id:'pink',n:'Estrela rosa',c:180,col:0xec4899,hat:'crown'}];
 var MIS=[{id:'ac',t:'Acerte {n} perguntas',n:[6,8,10]},{id:'cb',t:'Faça um combo de {n} acertos seguidos',n:[3,4,5]},{id:'fs',t:'Complete {n} fases',n:[3,4,5]},{id:'es',t:'Ganhe {n} estrelas',n:[5,7,9]},{id:'mo',t:'Colete {n} moedas',n:[10,15,20]},{id:'pf',t:'Complete {n} fases sem errar',n:[1,2,3]}];
 window.RBXB={G:G,W:W,TN:TN,SK:SK,MIS:MIS,ri:ri,pick:pick,shuf:shuf,fm:fm,
- make:function(ano,topic,tier){var f=G[ano][topic],r;try{r=f(Math.max(1,Math.min(5,tier)))}catch(e){r=null}return r||G[ano][Object.keys(G[ano])[0]](1)}};
+ make:function(ano,topic,tier){var f=G[ano][topic],r,n=0,K=ano+'|'+topic,U=(window.__RBX_USED=window.__RBX_USED||{}),u=(U[K]=U[K]||{});
+  var one=function(t){var x;try{x=f(Math.max(1,Math.min(5,t)))}catch(e){x=null}return x};
+  do{r=one(tier+(n>12?((n%3)-1):0));n++}while(r&&u[String(r.q)]&&n<40);
+  if(r&&u[String(r.q)]){U[K]=u={};}
+  if(r)u[String(r.q)]=1;
+  return r||G[ano][Object.keys(G[ano])[0]](1)}};
 })();
