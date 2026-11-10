@@ -262,6 +262,13 @@ var LG_LEIA=`https://accounts.google.com/AccountChooser/signinchooser?continue=h
 var LG_INGLES=`https://accounts.google.com/AccountChooser/signinchooser?continue=https%3A%2F%2Faccounts.google.com%2Fo%2Fsaml2%2Fcontinue%3Fidpid%3DC03fukzmn%26SAMLRequest%3DrZLLbtswEEV%2FReBeL0q2a8JyYTsIGiBFjVjtohuDpkYOEYmjcsj08fWlFDdNN151wQUv55LnznBFsu8GsfHu0TzANw%2Fkoh99Z0iMBxXz1giUpEkY2QMJp8Rh8%2FFe8CQTkgis02hYdHdTsSPwopRykcXlsizjkreLeAkyi9WykUVeyPKUL1j0BSwFT8XCFcFI5OHOkJPGBSnjszjjcT6rcy4yLvJ3ybzI53M%252B%252B8qimwCnjXST%252B9G5gUSaSqXQG0fJGfHcQaKwTzEd4Xmqm%252BF9WLqpdlnR%252BqdffUC9RatgyluxVnYEI8Q%252BZNHP8KrsLTpU2G21abQ5X%252B%2FD6aWIxIe63sf7T4eaRZs%2FvdmhId%252BDPYB91go%252BP9z%2FZYdWN%252BCTE1cdnrWZ2C8aml4ri4Stm%252BQt3x3zzbG2ntytDQjf0T5tJcEUdUiJMH2dh7q8yd6McrieYbgEZuvVWC2mudixWb10162jopu4nUoFGKfdT7b%252BnxlX6Rum9cvu3z%252B7%2Fg0%253D%26RelayState%3DStateProperties%253DeyJUSUQiOiJmYzYxMWMyMi1hN2NmLTQ0NGItOTA5Ny0wMGNhNTQxNjZhOGYifQ%26SigAlg%3Dhttp%3A%2F%2Fwww.w3.org%2F2000%2F09%2Fxmldsig%2523rsa-sha1%26Signature%3DXTeSn7BvF9b9WLucE4gIpUsPZ%252BJ35SUWRXD8r1jyO43kgx9JbXQYcCNAf54WJqey5vnEcrlTqZv%252B4FqasA6DACl9%2FDuKVPgDzHo%252BqjmtN6kucnwFKRCa6hAYX7y7PhVlcw5oRNLrjfCGmgFDtiDOBwQm5Xn6c23Vb%252BxAgTyGtX6N8vggo4pnS2I3KQbZxPJ5BHFyS%252B%252B9jxNIk1P23HRXr5GO6iIACoEdur2YsLuwaSQwOuBVo621NNoaEcA3qdTIcUGe2zqn2%2FwUlQAx2PyT3zia8rPgQ4O2pf4InMLjte%252BP2%2FtMNUToekrMIGcgSJN0JyHaY4FYjbmVwqdp4SPT6sck7FBCPQQqV%2Fnm7S%252BKxRxQwdgkYbqRp7ofR4t8kUhhlxIRzZP2CvUE6X7m1QjoFthMshEeo7eJwcuf4WKempZKU2b5khHGjPRHkqlpg4a5qXcC2RMD1ujOAFHsL8vyErpt%2FXh42pVtV%252BUFcTqHPAjksrgffGj5pUZ8JR%252BFx1BTuYY41KMnNYHq5rQfwZPzm3hAOmK0RIhd3C7Z0QbXYFfri7LuP1UrEzkNAnUNOfcXeenfaVLm%2FTjglvA590Unb45wVcv4ja4ETOeN5giuSDIXgFgTI0kzGawBTcdQZeBXDTdj%252Bla6N54kB14P6Ume37InTMnnTvO7m%2Fmo0l%2F9fC8%253D%26omethod%3DGET&faa=1&ddm=1&flowName=GlifWebSignIn&flowEntry=AccountChooser`;
 
 var SEC=[
+ {id:'ingles',im:'ingles',t:'🇬🇧 Inglês Paraná',c:'#38bdf8',d:'Entre pelo login e depois escolha o trimestre atual',it:[
+  {n:'1',i:'🔑',t:'Login · Inglês Paraná Teens',d:'Entre por aqui primeiro. Depois de logado com o Google, clique no botão da turma e escolha o TRIMESTRE atual.',u:'https://pt.englishcentral.com/partner/parana'},
+  {n:'2',i:'6️⃣',t:'6º ano · Inglês Paraná Teens',d:'Curso do 6º ano.',u:'https://pt.englishcentral.com/course/9499'},
+  {n:'2',i:'8️⃣',t:'8º ano · Inglês Paraná Teens',d:'Curso do 8º ano.',u:'https://www.englishcentral.com/course/9501'},
+  {n:'2',i:'📝',t:'Sem frequência · Inglês Paraná Teens',d:'Curso para atividades sem registro de frequência.',u:'https://pt.englishcentral.com/course/8563'},
+  {n:'9',i:'🗣️',t:'Inglês Paraná',d:'Plataforma do ensino médio.',u:LG_INGLES,b:['Login com o Google']}
+ ]},
  {id:'jogos',im:'jogos',t:'🎮 Jogos e treino',c:'#f472b6',d:'Para jogar e praticar',it:[
   {i:'🎮',t:'RobIox',d:'Jogo de matemática. Entre com o seu login do RCO.',u:'https://hodhreego.github.io/edu/robiox.html'},
   {i:'🎲',t:'Ludopédia',d:'Jogos e desafios da turma.',u:'https://hodhreego.github.io/edu/'},
@@ -270,13 +277,6 @@ var SEC=[
   {n:'3',i:'🎯',t:'Quizizz · Wayground',d:'Quizzes e revisões.',u:'https://quizizz.com/join/dashboard'},
   {n:'4',i:'📘',t:'Khan Academy',d:'Videoaulas e exercícios.',u:'https://pt.khanacademy.org/'},
   {n:'5',i:'🧮',t:'Matific',d:'Matemática do Paraná.',u:'https://www.matific.com/social/login/parana/',b:['Login com o Paraná']}
- ]},
- {id:'ingles',im:'ingles',t:'🇬🇧 Inglês Paraná',c:'#38bdf8',d:'Entre pelo login e depois escolha o trimestre atual',it:[
-  {n:'1',i:'🔑',t:'Login · Inglês Paraná Teens',d:'Entre por aqui primeiro. Depois de logado com o Google, clique no botão da turma e escolha o TRIMESTRE atual.',u:'https://pt.englishcentral.com/partner/parana'},
-  {n:'2',i:'6️⃣',t:'6º ano · Inglês Paraná Teens',d:'Curso do 6º ano.',u:'https://pt.englishcentral.com/course/9499'},
-  {n:'2',i:'8️⃣',t:'8º ano · Inglês Paraná Teens',d:'Curso do 8º ano.',u:'https://www.englishcentral.com/course/9501'},
-  {n:'2',i:'📝',t:'Sem frequência · Inglês Paraná Teens',d:'Curso para atividades sem registro de frequência.',u:'https://pt.englishcentral.com/course/8563'},
-  {n:'9',i:'🗣️',t:'Inglês Paraná',d:'Plataforma do ensino médio.',u:LG_INGLES,b:['Login com o Google']}
  ]},
  {id:'escola',im:'escola',t:'📚 Plataformas da escola',c:'#34d399',d:'Contas do Paraná e do Google',it:[
   {n:'6',i:'🏫',t:'Google Classroom',d:'Suas turmas e tarefas.',u:'https://classroom.google.com/',b:['Login com o Google']},
