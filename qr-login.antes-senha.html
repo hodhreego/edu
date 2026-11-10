@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR de login do RobIox</title>
+<script src="qrcode.min.js"></script>
+<script src="alunos-rco.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#eef1f7;color:#111}
+.pn{position:sticky;top:0;z-index:5;background:#1b2a5a;color:#fff;padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pn label{font-size:13px;display:flex;flex-direction:column;gap:2px}.pn select,.pn input,.pn textarea,.pn button{font:inherit;padding:6px 8px;border-radius:8px;border:0}
+.pn button{background:#16a34a;color:#fff;font-weight:800;cursor:pointer}.pn button.b2{background:#e5e7eb;color:#111}
+.ro{display:none;background:#fff;padding:10px 14px}.ro.on{display:block}.ro textarea{width:100%;height:140px;border:1px solid #bbb}
+.pg{width:210mm;margin:8px auto;background:#fff;padding:7mm;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:auto repeat(6,44mm);gap:2mm;page-break-after:always;break-after:page}
+.cd{border:1.5px dashed #888;border-radius:2.5mm;padding:1.6mm;text-align:center;height:44mm;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden}
+.cd>*{flex:none}.cd .t{font:400 6.5pt Arial,sans-serif;line-height:1.15;height:2.3em;overflow:hidden;width:100%}.cd .t.vz{color:#999;font-weight:700}
+.cd .q{width:20mm;height:20mm}.cd .q img,.cd .q canvas{width:20mm!important;height:20mm!important}.cd .k{font:700 6pt Arial,sans-serif;color:#0033ff;line-height:1.1;word-break:break-all}
+.cd .l{font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:12pt;letter-spacing:.3px;-webkit-text-stroke:.35px #000;color:#000}.cd .n{font:700 8pt Arial,sans-serif;color:#555}
+.ti{grid-column:1/-1;font:800 11pt Arial,sans-serif;display:flex;justify-content:space-between;border-bottom:2px solid #1b2a5a;padding-bottom:1mm}
+@media print{body{background:#fff}.pn,.ro{display:none!important}.pg{margin:0;width:auto;padding:6mm}@page{size:A4;margin:0}}
+.cd .pw{font:700 7pt Arial,sans-serif;color:#e00000;line-height:1.1}.cd .pw b{font-size:8pt;color:#e00000}
+.cd .up{font:700 6pt Arial,sans-serif;color:#111;line-height:1}
+.cd .q{width:19mm!important;height:19mm!important}.cd .q img,.cd .q canvas{width:19mm!important;height:19mm!important}
+.cd{position:relative;padding-right:5mm!important}.cd .pw{position:absolute;right:1mm;top:0;bottom:0;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;font:700 7pt Arial,sans-serif;color:#e00000;white-space:nowrap}.cd .pw b{font-size:9pt;color:#e00000;letter-spacing:.3px}.cd .q{width:var(--qr)!important;height:var(--qr)!important}.cd .q img,.cd .q canvas{width:22mm!important;height:22mm!important}
+</style><style id="ajcss">
+:root{--qr:30mm;--fl:12pt;--fn:6.5pt;--fp:9pt;--fk:6pt;--fnl:8pt;--mg:7mm;--ch:44mm;--gp:0mm}
+.cd .q,.cd .q img,.cd .q canvas{width:var(--qr)!important;height:var(--qr)!important}
+.cd .l{font-size:var(--fl)!important}.cd .t{font-size:var(--fn)!important}
+.cd .pw b{font-size:var(--fp)!important}.cd .pw{font-size:calc(var(--fp)*.78)!important}
+.cd .k{font-size:var(--fk)!important}.cd .k b{font-size:calc(var(--fk)*1.3)!important}.cd .n{font-size:var(--fnl)!important}
+.pg{padding:var(--mg)!important;grid-template-rows:auto repeat(6,var(--ch))!important;gap:var(--gp)!important}.cd{height:var(--ch)!important}
+#ajb{position:fixed;right:14px;bottom:14px;z-index:50;width:46px;height:46px;border-radius:50%;border:0;background:#1b2a5a;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 14px #0006}
+#ajp{display:none;position:fixed;right:14px;bottom:68px;z-index:50;width:min(92vw,300px);max-height:78vh;overflow:auto;background:#fff;border:2px solid #1b2a5a;border-radius:14px;padding:10px 12px;box-shadow:0 8px 30px #0005;font:13px Arial,sans-serif}
+#ajp.on{display:block}#ajp h3{margin:0 0 6px;font-size:14px}#ajp label{display:block;margin:7px 0 0}#ajp label span{float:right;font-weight:700;color:#16a34a}#ajp input[type=range]{width:100%}
+#ajp button{width:100%;margin-top:8px;padding:8px;border:0;border-radius:9px;background:#16a34a;color:#fff;font-weight:800;cursor:pointer}#ajp button.b2{background:#e5e7eb;color:#111}
+@media print{#ajb,#ajp{display:none!important}}
+.cd{border:0!important;border-radius:0!important;border-right:var(--lw,1.5px) dotted #555!important;border-bottom:var(--lw,1.5px) dotted #555!important}.cd:nth-child(-n+6){border-top:var(--lw,1.5px) dotted #555!important}.cd:nth-child(5n+2){border-left:var(--lw,1.5px) dotted #555!important}
+.cd{padding-left:6.5mm!important}.cd .t{position:absolute!important;left:.8mm;top:0;bottom:0;width:auto!important;height:auto!important;min-height:0!important;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;line-height:1.1}
+.cd{padding-left:5mm!important;padding-right:5mm!important}.cd .t{left:.5mm!important}.cd .pw{right:.5mm!important}.cd .q{margin-left:auto;margin-right:auto}
+.cd .t.vz{top:2.5mm!important;bottom:2.5mm!important;width:var(--qw,3.4mm)!important;left:1mm!important;border:.3mm solid #666;background:linear-gradient(#777 .25mm,transparent .25mm) 0 0/100% 3.4mm;color:transparent}
+.ms{position:relative;font-size:13px;display:flex;flex-direction:column;gap:2px}.ms details{position:relative}.ms summary{list-style:none;cursor:pointer;background:#fff;color:#111;border-radius:8px;padding:6px 10px;min-width:130px;font-weight:700}.ms .mb{position:absolute;z-index:20;top:100%;left:0;margin-top:4px;background:#fff;color:#111;border-radius:10px;box-shadow:0 8px 24px #0006;padding:8px;min-width:200px;max-height:60vh;overflow:auto}.ms .mk{display:flex;gap:6px;margin-bottom:6px}.ms .mk button{font-size:12px;padding:4px 8px}.ms .ml label{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:14px;padding:3px 2px;color:#111}.ms .ml input{width:auto;padding:0;margin:0}
+.cd{padding-left:var(--pl,4.4mm)!important;padding-right:var(--pr,4.4mm)!important}.cd .t{left:var(--nx,.3mm)!important}.cd .t.vz{left:calc(var(--nx,.3mm) + .3mm)!important}.cd .pw{right:var(--px,0mm)!important}.cd .q{transform:translate(var(--qx,0mm),var(--qy,0mm))}.cd .l{position:relative;top:var(--ly,0mm);left:var(--lx,0mm)}.cd .k{position:relative;top:var(--ky,0mm);left:var(--kx,0mm)}
+#ajp{max-height:82vh;overflow:auto}
+.cd .t{transform:rotate(180deg) translate(0,var(--ny,0mm))!important;line-height:var(--nlh,1.1)!important;top:var(--nt,0mm)!important;bottom:var(--nt,0mm)!important}
+body{background:#000}.pg{position:relative}.pg::after{content:'';position:absolute;inset:0;border:var(--zn,4mm) solid #000;pointer-events:none;z-index:9;box-sizing:border-box}.pg.vaza::after{animation:vzp .6s steps(1) infinite}@keyframes vzp{0%{border-color:#000}50%{border-color:#f00}}@media print{body{background:#fff}.pg::after{display:none!important}}
+.pg{padding-left:calc(var(--mg,7mm) + var(--bm,0mm) + var(--ml,0mm))!important;padding-right:calc(var(--mg,7mm) + var(--mr,0mm))!important;padding-top:calc(var(--mg,7mm) + var(--mt,0mm))!important;padding-bottom:calc(var(--mg,7mm) + var(--mb,0mm))!important}
+</style><script src="edu-aviso-ia.js?v=1"></script></head><body>
+<div class="pn">
+<div class="ms" id="mE"><b>Escola</b><details><summary id="sE">—</summary><div class="mb"><div class="mk"><button type="button" class="b2" data-a="all">Selecionar tudo</button><button type="button" class="b2" data-a="none">Desmarcar tudo</button></div><div class="ml"></div></div></details></div>
+<div class="ms" id="mT"><b>Turma</b><details><summary id="sT">—</summary><div class="mb"><div class="mk"><button type="button" class="b2" data-a="all">Selecionar tudo</button><button type="button" class="b2" data-a="none">Desmarcar tudo</button></div><div class="ml"></div></div></details></div>
+<label>Link curto do RobIox<input id="lk" size="22" placeholder="ex.: bit.ly/robiox"></label>
+<label>Até o nº<input id="mx" type="number" value="60" min="1" max="99" style="width:70px"></label>
+<button id="go">Gerar QR</button><button class="b2" id="rs">Colar lista de alunos</button><button class="b2" id="al">Gerar TODAS as turmas</button><button id="pr">🖨️ Imprimir</button>
+</div>
+<div class="ro" id="ro"><b>Cole a lista da turma</b> (uma linha por aluno: <code>número nome</code>, ex.: <code>7 Maria da Silva</code>). Números sem aluno ficam como "alu".<textarea id="ta"></textarea><button id="ok" style="background:#16a34a;color:#fff;border:0;border-radius:8px;padding:8px 14px;font-weight:800">Usar esta lista</button></div>
+<div id="out"></div>
+<script>
+var $=function(i){return document.getElementById(i)},R=window.RCO_ALUNOS||{},BASE=location.origin+location.pathname.replace(/[^/]*$/,'')+'robiox.html?l=';
+$('rs').onclick=function(){$('ro').classList.toggle('on')};
+var MAN={};function LK(){return ($('lk').value||'').trim().replace(/^https?:\/\//,'')}$('lk').value='bit.ly/xus26';try{var _l=localStorage.getItem('qr_lk2');if(_l)$('lk').value=_l}catch(e){}$('lk').oninput=function(){try{localStorage.setItem('qr_lk2',$('lk').value)}catch(e){}};
+$('ok').onclick=function(){MAN={};$('ta').value.split(/\n/).forEach(function(l){var m=l.trim().match(/^(\d{1,2})\s*[-.;:\t ]\s*(.+)$/);if(m)MAN[+m[1]]=m[2].trim()});$('ro').classList.remove('on');gera()};
+function nomeAbrev(n){return String(n||'').trim().split(/\s+/).map(function(w,i,a){return (i&&['da','de','do','das','dos','e'].indexOf(w.toLowerCase())>=0)?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}).join(' ')}
+function cards(esc,tur,max,nomes,out){
+ var tot=Math.ceil(max/30),ord=[],k0,n;for(k0=1;k0<=max;k0++)if(nomes&&nomes[k0])ord.push(k0);for(k0=1;k0<=max;k0++)if(!(nomes&&nomes[k0]))ord.push(k0);var oi=0;
+ for(var p=0;p<tot;p++){var pg=document.createElement('div');pg.className='pg';
+  pg.innerHTML='<div class="ti"><span>RobIox · turma '+tur.toUpperCase()+' · '+esc.toUpperCase()+'</span><span>pág. '+(p+1)+'/'+tot+'</span></div>';
+  for(var i=0;i<30&&oi<ord.length;i++,oi++){n=ord[oi];
+   var lg=n+esc+tur,c=document.createElement('div');c.className='cd';
+   var nm=nomes&&nomes[n];
+   c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'')+'</div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
+   pg.appendChild(c);
+   new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
+  out.appendChild(pg)}}
+var ESC=[],TUR=[];Object.keys(R).forEach(function(k){var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){if(ESC.indexOf(m[1])<0)ESC.push(m[1]);if(TUR.indexOf(m[2])<0)TUR.push(m[2])}});if(!ESC.length)ESC=['cla','xus'];if(!TUR.length)TUR=['6a','6b','6c','7a','7b','7c','8a','8b','8c','9a','9b','9c'];ESC.sort();TUR.sort();
+var EN={cla:'Clarito',xus:'Schuster'};
+function msInit(id,list,lab){var box=$(id),ml=box.querySelector('.ml');ml.innerHTML=list.map(function(v){return '<label><input type="checkbox" value="'+v+'" checked> '+(lab&&lab[v]?lab[v]+' ('+v+')':v.toUpperCase())+'</label>'}).join('');
+ var upd=function(){var c=ml.querySelectorAll('input:checked').length;box.querySelector('summary').textContent=c===list.length?'Todas ('+c+')':c?c+' de '+list.length:'Nenhuma'};
+ ml.onchange=upd;box.querySelectorAll('.mk button').forEach(function(bt){bt.onclick=function(){ml.querySelectorAll('input').forEach(function(i){i.checked=bt.dataset.a==='all'});upd()}});upd()}
+msInit('mE',ESC,EN);msInit('mT',TUR);
+function msGet(id){return Array.prototype.map.call($(id).querySelectorAll('.ml input:checked'),function(i){return i.value})}
+function gera(){var es=msGet('mE'),ts=msGet('mT'),mx=Math.min(99,+$('mx').value||60);
+ if(!es.length||!ts.length){alert('Marque ao menos uma escola e uma turma.');return}
+ var jobs=[];es.forEach(function(e){ts.forEach(function(t){if(!Object.keys(R).length||R[e+t])jobs.push([e,t])})});
+ if(!jobs.length){alert('Não há alunos carregados para essa combinação de escola e turma.');return}
+ $('out').innerHTML='';jobs.forEach(function(j){var nomes=(jobs.length===1&&Object.keys(MAN).length)?MAN:(R[j[0]+j[1]]||{});cards(j[0],j[1],Math.max(mx,Math.max.apply(null,[0].concat(Object.keys(nomes).map(Number)))),nomes,$('out'))})}
+$('go').onclick=gera;
+$('al').onclick=function(){var ks=Object.keys(R);if(!ks.length){alert('Ainda não há lista de alunos carregada.');return}$('out').innerHTML='';var mx=Math.min(99,+$('mx').value||60);ks.forEach(function(k){var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m)cards(m[1],m[2],Math.max(mx,Math.max.apply(null,Object.keys(R[k]).map(Number))),R[k],$('out'))})};
+$('pr').onclick=function(){window.print()};
+</script><button id="ajb" type="button" title="Ajustes">⚙</button>
+<div id="ajp"><h3>⚙ Ajustes finos dos cartões</h3><div id="ajs"></div><button type="button" id="ajr" class="b2">Restaurar padrão</button><button type="button" id="ajpr">🖨️ Imprimir</button></div>
+<script>
+(function(){var D=[['--ny','Nome: mover ↑ ↓',-15,15,.5,'mm',0],['--nt','Nome: margem no topo e na base',0,12,.5,'mm',0],['--nlh','Nome: espaço entre linhas',.9,1.8,.05,'',1.1],['--qw','Nome vazio: largura do quadriculado',2,6,.2,'mm',3.4],['--pl','Recuo esquerdo do cartão',2,9,.1,'mm',4.4],['--pr','Recuo direito do cartão',2,9,.1,'mm',4.4],['--qx','QR: mover ← →',-6,6,.1,'mm',0],['--qy','QR: mover ↑ ↓',-6,6,.1,'mm',0],['--ly','Login (topo): mover ↑ ↓',-6,6,.1,'mm',0],['--lx','Login (topo): mover ← →',-10,10,.1,'mm',0],['--ky','Link: mover ↑ ↓',-4,4,.1,'mm',0],['--kx','Link: mover ← →',-8,8,.1,'mm',0],['--nx','Nome: distância da borda esq.',-1,5,.1,'mm',.3],['--px','Senha: distância da borda dir.',-1,5,.1,'mm',0],['--lw','Espessura das linhas pontilhadas',.5,3,.25,'px',1.5],['--qr','Tamanho do QR',14,32,.5,'mm',30],['--fl','Login (topo)',9,16,.5,'pt',12],['--fn','Nome do aluno (lateral)',5,9,.25,'pt',6],['--fp','Senha (lateral)',6,12,.5,'pt',9],['--fk','Link curto',5,9,.25,'pt',6],['--fnl','Linha "nº · login"',6,10,.25,'pt',8],['--zn','Faixa não imprimível da impressora (preto)',0,10,.5,'mm',4],['--mg','Margem da folha',2,15,.5,'mm',7],['--ml','Margem esquerda (ajuste)',-6,20,.5,'mm',0],['--mr','Margem direita (ajuste)',-6,20,.5,'mm',0],['--mt','Margem superior (ajuste)',-6,20,.5,'mm',0],['--mb','Margem inferior (ajuste)',-6,20,.5,'mm',0],['--bm','Margem de encadernação (furação, lado esquerdo)',0,30,.5,'mm',0],['--ch','Altura do cartão',38,47,.5,'mm',44],['--gp','Espaço entre cartões',0,6,.5,'mm',0]],R=document.documentElement,K='qr_aj',S={};
+try{S=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+function ap(v,x){R.style.setProperty(v,x)}
+function build(box){var doc=box.ownerDocument;box.innerHTML='';
+D.forEach(function(d){var val=S[d[0]]!=null?S[d[0]]:d[6],l=doc.createElement('label');l.innerHTML=d[1]+'<span>'+val+d[5]+'</span><input type="range" min="'+d[2]+'" max="'+d[3]+'" step="'+d[4]+'" value="'+val+'">';
+ var inp=l.querySelector('input'),sp=l.querySelector('span');ap(d[0],val+d[5]);
+ inp.oninput=function(){sp.textContent=inp.value+d[5];ap(d[0],inp.value+d[5]);S[d[0]]=+inp.value;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};box.appendChild(l)})}
+function reset(){S={};try{localStorage.removeItem(K)}catch(e){}D.forEach(function(d){ap(d[0],d[6]+d[5])});if(PW&&!PW.closed)build(PW.document.getElementById('ajs'))}
+var PW=null;
+function pop(){if(PW&&!PW.closed){PW.focus();return}
+ PW=window.open('','qr_ajustes','width=380,height=760,resizable=yes,scrollbars=yes');
+ if(!PW){document.getElementById('ajp').classList.toggle('on');return}
+ var d=PW.document;d.open();d.write('<!doctype html><html><head><meta charset="utf-8"><title>Ajustes finos dos cartões</title><style>body{font:13px Arial,sans-serif;margin:0;padding:12px 14px;background:#fff}h3{margin:0 0 6px;font-size:15px}label{display:block;margin:9px 0 0}label span{float:right;font-weight:700;color:#16a34a}input[type=range]{width:100%}button{width:100%;margin-top:10px;padding:9px;border:0;border-radius:9px;background:#16a34a;color:#fff;font-weight:800;cursor:pointer}button.b2{background:#e5e7eb;color:#111}</style></head><body><h3>⚙ Ajustes finos dos cartões</h3><div id="ajs"></div><button class="b2" id="ajr2">Restaurar padrão</button><button id="ajp2">🖨️ Imprimir (janela dos cartões)</button></body></html>');d.close();
+ build(d.getElementById('ajs'));d.getElementById('ajr2').onclick=reset;d.getElementById('ajp2').onclick=function(){window.focus();window.print()}}
+var box=document.getElementById('ajs');build(box);
+document.getElementById('ajb').onclick=pop;
+document.getElementById('ajr').onclick=reset;
+document.getElementById('ajpr').onclick=function(){window.print()};
+})();
+</script>
+<script>
+(function(){var mm=96/25.4;function chk(){document.querySelectorAll('.pg').forEach(function(pg){var r=pg.getBoundingClientRect(),cs=getComputedStyle(pg),pl=parseFloat(cs.paddingLeft),pr=parseFloat(cs.paddingRight),pt=parseFloat(cs.paddingTop),pb=parseFloat(cs.paddingBottom),over=false,tol=1.5;
+ if(r.height>297*mm+tol||r.width>210*mm+tol)over=true;
+ var af=getComputedStyle(pg,'::after'),zl=parseFloat(af.borderLeftWidth)||0,zr=parseFloat(af.borderRightWidth)||0,zt=parseFloat(af.borderTopWidth)||0,zb=parseFloat(af.borderBottomWidth)||0;var L=r.left+zl-tol,R=r.right-zr+tol,T=r.top+zt-tol,B=r.bottom-zb+tol;
+ for(var i=0;i<pg.children.length&&!over;i++){var c=pg.children[i].getBoundingClientRect();if(c.left<L||c.right>R||c.top<T||c.bottom>B)over=true}
+ pg.classList.toggle('vaza',over)})}
+setInterval(chk,500)})();
+</script>
+</body></html>
