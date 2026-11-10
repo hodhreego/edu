@@ -516,6 +516,23 @@ render();
   }
   document.getElementById('curioMais').onclick=carrega;carrega();
 })();
+
+/* Digitar o número do atalho abre o link (vários dígitos: aguarda um instante). */
+(function(){
+  var buf='',tm=0;
+  function go(){
+    var n=buf;buf='';if(!n)return;
+    var all=[].slice.call(document.querySelectorAll('.card')).filter(function(c){var x=c.querySelector('.num');return x&&x.textContent.trim()===n&&c.offsetParent!==null});
+    if(all.length===1){all[0].click();return}
+    if(all.length>1){all.forEach(function(c){c.style.outline='3px solid #facc15';setTimeout(function(){c.style.outline=''},2500)});all[0].scrollIntoView({block:'center',behavior:'smooth'})}
+  }
+  document.addEventListener('keydown',function(e){
+    var t=e.target,tg=t&&t.tagName;
+    if(e.ctrlKey||e.metaKey||e.altKey||tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT'||(t&&t.isContentEditable))return;
+    if(!/^[0-9]$/.test(e.key))return;
+    buf+=e.key;clearTimeout(tm);tm=setTimeout(go,550);
+  });
+})();
 </script>
 </body>
 </html>
