@@ -130,16 +130,34 @@ G[9].rad=function(t){var r=ri(3,9),s=ri(2,7),k=ri(0,t>=3?2:1),f=pick([2,3,5,6]),
  if(k===0)return Q('Quanto é √'+r*r+' + √'+r*r+'?',2*r,[r,r*r,2*r+2],'√'+r*r+' = '+r+', e '+r+' + '+r+' = '+2*r);
  if(k===1)return Q('Quanto é √'+r*r+' × √'+s*s+'?',r*s,[r+s,r*s+r,r*s-s],r+' × '+s+' = '+r*s);
  return Q('Simplificando √'+f*f*q+', obtemos…',f+'√'+q,[q+'√'+f,(f*q)+'√'+q,f+'√'+(q+1),(f+1)+'√'+q],f*f*q+' = '+f*f+' × '+q+'; tirando '+f+'² da raiz: '+f+'√'+q)};
+/* Valor numérico de expressões: tiers 1-2 = fácil, 3 = médio, 4-5 = difícil */
+function VN(t){var x,y,a,b,e,v,ex,k;
+ if(t<=2){x=ri(1,9);a=ri(2,6);b=ri(1,9);k=ri(0,2);
+  if(k===0){v=x+b;return Q('Qual o valor de x + '+b+' para x = '+x+'?',v,[v+1,v-1,x*b],x+' + '+b+' = '+v)}
+  if(k===1){v=a*x;return Q('Qual o valor de '+a+'x para x = '+x+'?',v,[a+x,v+a,v-1],a+'x = '+a+' · '+x+' = '+v)}
+  v=a*x+b;return Q('Qual o valor de '+a+'x + '+b+' para x = '+x+'?',v,[a*(x+b),a+x+b,v+1],a+'·'+x+' + '+b+' = '+(a*x)+' + '+b+' = '+v)}
+ if(t===3){x=ri(-6,6);a=ri(2,6);b=ri(1,9);k=ri(0,3);
+  if(k===0){v=a*x+b;return Q('Qual o valor de '+a+'x + '+b+' para x = '+fm(x)+'?',v,[a*x-b,-a*x+b,a*Math.abs(x)+b],a+'·('+fm(x)+') + '+b+' = '+fm(a*x)+' + '+b+' = '+fm(v))}
+  if(k===1){v=x*x+a*x;return Q('Qual o valor de x² + '+a+'x para x = '+fm(x)+'?',v,[-x*x+a*x,x*x-a*x,x*x+a],'('+fm(x)+')² + '+a+'·('+fm(x)+') = '+x*x+' '+(a*x<0?'− '+(-a*x):'+ '+a*x)+' = '+fm(v))}
+  a=ri(-5,6);b=ri(-5,6);if(k===2){v=2*a+3*b;return Q('Qual o valor de 2a + 3b para a = '+fm(a)+' e b = '+fm(b)+'?',v,[2*a-3*b,3*a+2*b,-2*a+3*b],'2·('+fm(a)+') + 3·('+fm(b)+') = '+fm(2*a)+' + ('+fm(3*b)+') = '+fm(v))}
+  v=a*b+a;return Q('Qual o valor de a·b + a para a = '+fm(a)+' e b = '+fm(b)+'?',v,[a*b-a,a+b+a,-(a*b)+a],'('+fm(a)+')·('+fm(b)+') + ('+fm(a)+') = '+fm(a*b)+' + ('+fm(a)+') = '+fm(v))}
+ x=ri(-5,6);y=pick([-4,-3,-2,-1,1,2,3,4,5]);a=ri(2,4);b=ri(2,8);k=ri(0,4);
+ if(k===0){v=(x+y)*(x+y);return Q('Qual o valor de (a + b)² para a = '+fm(x)+' e b = '+fm(y)+'?',v,[x*x+y*y,x*x+y*y+x*y,-(x+y)*(x+y)],'a + b = '+fm(x+y)+', e '+fm(x+y)+'² = '+fm(v))}
+ if(k===1){v=x*x-(a+2)*x+b;return Q('Qual o valor de x² − '+(a+2)+'x + '+b+' para x = '+fm(x)+'?',v,[x*x+(a+2)*x+b,-x*x-(a+2)*x+b,x*x-(a+2)*x-b],'('+fm(x)+')² − '+(a+2)+'·('+fm(x)+') + '+b+' = '+x*x+' '+(x*(a+2)>0?'− '+x*(a+2):'+ '+(-x*(a+2)))+' + '+b+' = '+fm(v))}
+ if(k===2){v=(x-y)*(x+y);return Q('Qual o valor de (x − y)(x + y) para x = '+fm(x)+' e y = '+fm(y)+'?',v,[x*x+y*y,(x-y)*(x-y),x*x-y*y+1],'x − y = '+fm(x-y)+' e x + y = '+fm(x+y)+'; o produto é '+fm(v))}
+ if(k===3){v=a*x*x-b*x+1;return Q('Qual o valor de '+a+'x² − '+b+'x + 1 para x = '+fm(x)+'?',v,[a*x*x+b*x+1,-a*x*x-b*x+1,a*x*x-b*x-1],a+'·'+x*x+' '+(b*x>0?'− '+b*x:'+ '+(-b*x))+' + 1 = '+fm(v))}
+ v=x*x*x-x*x;return Q('Qual o valor de x³ − x² para x = '+fm(x)+'?',v,[x*x*x+x*x,-(x*x*x)-x*x,x*x-x*x*x],'('+fm(x)+')³ = '+fm(x*x*x)+' e ('+fm(x)+')² = '+x*x+'; a diferença é '+fm(v))}
+G[8].vn=VN;G[9].vn=VN;
 /* ===== mundos ===== */
 var W={
 6:[{n:'Ilha das Contas',em:'🏝️',t:['add','ops','exp']},{n:'Floresta das Frações',em:'🌲',t:['frac','dec']},{n:'Cidade das Formas',em:'🏙️',t:['geo','mmc']},{n:'Vulcão Misto',em:'🌋',t:['ops','frac','geo','dec']},{n:'Castelo Final',em:'🏰',t:['ops','exp','frac','dec','geo','mmc']}],
 7:[{n:'Vale dos Negativos',em:'🏔️',t:['add','int','eq']},{n:'Mercado Maluco',em:'🛒',t:['pct','prop']},{n:'Torre das Potências',em:'🗼',t:['pot','ang']},{n:'Laboratório Misto',em:'🧪',t:['eq','est','pct','int']},{n:'Castelo Final',em:'🏰',t:['int','eq','pct','prop','pot','ang','est']}],
-8:[{n:'Reino das Letras',em:'🔤',t:['add','alg','eq']},{n:'Ponte dos Sistemas',em:'🌉',t:['sis','raiz']},{n:'Campo das Áreas',em:'🌾',t:['area','est']},{n:'Oficina Científica',em:'🔬',t:['not','alg','raiz']},{n:'Castelo Final',em:'🏰',t:['alg','eq','sis','raiz','area','est','not']}],
-9:[{n:'Templo de Pitágoras',em:'📐',t:['pit','eq2']},{n:'Banco Central',em:'🏦',t:['fun','jur']},{n:'Fábrica de Sólidos',em:'🏭',t:['vol','rad']},{n:'Arena dos Chefes',em:'🥊',t:['eq2','fun','pit','jur']},{n:'Castelo Final',em:'🏰',t:['pit','eq2','fun','jur','vol','rad']}]};
+8:[{n:'Reino das Letras',em:'🔤',t:['add','alg','vn','eq']},{n:'Ponte dos Sistemas',em:'🌉',t:['sis','raiz']},{n:'Campo das Áreas',em:'🌾',t:['area','est']},{n:'Oficina Científica',em:'🔬',t:['not','alg','raiz']},{n:'Castelo Final',em:'🏰',t:['alg','vn','eq','sis','raiz','area','est','not']}],
+9:[{n:'Templo de Pitágoras',em:'📐',t:['pit','eq2']},{n:'Banco Central',em:'🏦',t:['fun','jur']},{n:'Fábrica de Sólidos',em:'🏭',t:['vol','rad']},{n:'Arena dos Chefes',em:'🥊',t:['eq2','fun','pit','jur','vn']},{n:'Castelo Final',em:'🏰',t:['pit','eq2','fun','jur','vol','rad','vn']}]};
 G[6].add=function(t){var a=ri(1,9),b=ri(1,10-a),k=ri(0,2);if(k===1&&t>=2)return Q('Quanto falta para chegar a 10? '+a+' + ? = 10',10-a,[a,10-a+1,10-a-1<0?11-a:10-a-1],a+' + '+(10-a)+' = 10');if(k===2)return Q('Ana tem '+a+' balas e ganhou mais '+b+'. Com quantas ficou?',a+b,[a+b+1,a+b-1<0?a+b+2:a+b-1,a],a+' + '+b+' = '+(a+b));return Q(a+' + '+b+' = ?',a+b,[a+b+1,Math.max(0,a+b-1),a+b+2],a+' + '+b+' = '+(a+b))};
 G[7].add=function(t){var a=ri(3,15),b=ri(1,20-a),k=ri(0,2);if(k===1&&t>=2)return Q('Quanto falta para chegar a 20? '+a+' + ? = 20',20-a,[a,20-a+1,Math.max(0,20-a-1)],a+' + '+(20-a)+' = 20');if(k===2)return Q('Pedro tinha '+a+' figurinhas e ganhou '+b+'. Com quantas ficou?',a+b,[a+b+1,Math.max(0,a+b-1),a+b+10],a+' + '+b+' = '+(a+b));return Q(a+' + '+b+' = ?',a+b,[a+b+1,Math.max(0,a+b-1),a+b+10],a+' + '+b+' = '+(a+b))};
 G[8].add=function(t){var a=ri(11,99)/10,b=ri(11,99)/10,k=ri(0,1),fm=function(v){return (Math.round(v*10)/10).toFixed(1).replace('.',',')},r=Math.round((a+b)*10)/10;if(k===1)return Q('Maria usou '+fm(a)+' m de fita e depois mais '+fm(b)+' m. Quantos metros usou ao todo?',fm(r),[fm(r+.1),fm(r-.1),fm(r+1)],fm(a)+' + '+fm(b)+' = '+fm(r));return Q(fm(a)+' + '+fm(b)+' = ?',fm(r),[fm(r+.1),fm(r-.1),fm(r+1)],'Alinhe as vírgulas: '+fm(a)+' + '+fm(b)+' = '+fm(r))};
-var TN={add:'Somas fáceis',ops:'Operações',exp:'Expressões',frac:'Frações',dec:'Decimais',geo:'Geometria',mmc:'MMC e MDC',int:'Inteiros',eq:'Equações',pct:'Porcentagem',prop:'Proporção',pot:'Potências',ang:'Ângulos',est:'Estatística',alg:'Álgebra',sis:'Sistemas',raiz:'Raízes',area:'Áreas',not:'Notação científica',pit:'Pitágoras',eq2:'Equação do 2º grau',fun:'Funções',jur:'Juros',vol:'Volumes',rad:'Radicais'};
+var TN={add:'Somas fáceis',ops:'Operações',exp:'Expressões',frac:'Frações',dec:'Decimais',geo:'Geometria',mmc:'MMC e MDC',int:'Inteiros',eq:'Equações',pct:'Porcentagem',prop:'Proporção',pot:'Potências',ang:'Ângulos',est:'Estatística',alg:'Álgebra',vn:'Valor numérico',sis:'Sistemas',raiz:'Raízes',area:'Áreas',not:'Notação científica',pit:'Pitágoras',eq2:'Equação do 2º grau',fun:'Funções',jur:'Juros',vol:'Volumes',rad:'Radicais'};
 var SK=[
 {id:'red',n:'Vermelho',c:0,col:0xe11d48,hat:''},{id:'blue',n:'Azul',c:25,col:0x2563eb,hat:''},{id:'green',n:'Verde',c:25,col:0x16a34a,hat:''},
 {id:'cap',n:'Boné ciano',c:60,col:0x0891b2,hat:'cap'},{id:'gold',n:'Rei dourado',c:90,col:0xf5b800,hat:'crown'},{id:'wiz',n:'Mago',c:120,col:0x6d28d9,hat:'cone'},
