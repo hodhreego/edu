@@ -67,7 +67,7 @@ function cards(esc,tur,max,nomes,out){
    var nm=nomes&&nomes[n];
    c.innerHTML='<div class="l">'+lg+'</div><div class="pw">senha: <b>2026.2026</b></div><div class="q"></div><div class="t'+(nm?'':' vz')+'">'+(nm?nomeAbrev(nm):'')+'</div>'+(LK()?'<div class="k">Digite: <b style="color:#0033ff;font-size:8pt">'+LK()+'</b></div>':'');
    pg.appendChild(c);
-   new QRCode(c.querySelector('.q'),{text:'rbx:'+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
+   new QRCode(c.querySelector('.q'),{text:'https://hodhreego.github.io/edu/?l='+lg,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
   out.appendChild(pg)}}
 var ESC=[],TUR=[];Object.keys(R).forEach(function(k){var m=k.match(/^([a-z]{3})(\d[a-z])$/);if(m){if(ESC.indexOf(m[1])<0)ESC.push(m[1]);if(TUR.indexOf(m[2])<0)TUR.push(m[2])}});if(!ESC.length)ESC=['cla','xus'];if(!TUR.length)TUR=['6a','6b','6c','7a','7b','7c','8a','8b','8c','9a','9b','9c'];ESC.sort();TUR.sort();
 var EN={cla:'Clarito',xus:'Schuster'};

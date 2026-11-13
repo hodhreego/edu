@@ -5,6 +5,9 @@
  window.EDU_LOGIN=function(){var l=ls('edu_login');return RE.test(l)?l:''};
  window.EDU_LOGIN_SAIR=function(){try{localStorage.removeItem('edu_login');sessionStorage.removeItem('rbx_login');sessionStorage.removeItem('rbx_ok')}catch(e){}};
  function grava(l){ls('edu_login',l);try{sessionStorage.setItem('rbx_login',l);if(l==='mestre')sessionStorage.setItem('rbx_master','1')}catch(e){}}
+ /* Entrada direta por link/QR: ?l=7cla6b */
+ try{var _q=new URLSearchParams(location.search),_l=(_q.get('l')||'').trim().toLowerCase();
+  if(RE.test(_l)&&_l!=='mestre'){grava(_l);_q.delete('l');var _s=_q.toString();history.replaceState(null,'',location.pathname+(_s?'?'+_s:'')+location.hash)}}catch(e){}
  window.EDU_EXIGE_LOGIN=function(cb){
   if(EDU_LOGIN()){grava(EDU_LOGIN());return cb()}
   var o=document.createElement('div');o.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#0b1020e8;display:flex;align-items:center;justify-content:center;padding:14px;font-family:Arial,sans-serif';
