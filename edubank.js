@@ -293,11 +293,11 @@ function formTransferir(c,pre){
     var tr=document.createElement('button');tr.className='eb-btn sec';tr.textContent='🔑 Trocar senha do EduBank';tr.onclick=function(){telaSenha(true,function(){telaTransferir(pre)})};c.appendChild(tr);
   }
 }
-function pwIn(id,lab,ac){return '<label for="'+id+'">'+lab+'</label><input id="'+id+'" type="password" autocomplete="'+ac+'">'}
+function pwIn(id,lab,ac){return '<label for="'+id+'">'+lab+'</label><input id="'+id+'" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="4 números" autocomplete="'+ac+'">'}
 function telaSenha(troca,ok){
   var c=shell(troca?'Trocar senha do EduBank':'Crie sua senha do EduBank',true);
   c.innerHTML='<div class="eb-card"><h2>'+(troca?'Trocar senha do EduBank':'Crie sua senha do EduBank')+'</h2>'+
-  '<p class="eb-muted">'+(troca?'Esta senha só serve para transferir dinheiro. Ela é diferente da senha de login.':'Para sua segurança, crie uma senha só sua para transferir. Ela não é a senha de login. Mínimo 6 caracteres. Guarde bem: sem ela ninguém transfere do seu EduBank.')+'</p>'+
+  '<p class="eb-muted">'+(troca?'Esta senha só serve para transferir dinheiro. Ela é diferente da senha de login.':'Para sua segurança, crie uma senha só sua para transferir: 4 números, o dia e o mês do seu aniversário (ex.: 0401 para 4 de janeiro). Ela não é a senha de login. Guarde bem: sem ela ninguém transfere do seu EduBank.')+'</p>'+
   (troca?pwIn('eb-sa','Senha atual do EduBank','current-password'):'')+pwIn('eb-sn','Senha nova','new-password')+pwIn('eb-sc','Repita a senha nova','new-password')+
   '<button class="eb-btn" id="eb-ss">Salvar senha</button><button class="eb-btn sec" id="eb-sv">Cancelar</button></div>';
   var box=c.firstChild;
@@ -305,7 +305,7 @@ function telaSenha(troca,ok){
   $('#eb-ss').onclick=function(){
     var a=troca?$('#eb-sa').value:'',n=$('#eb-sn').value,r=$('#eb-sc').value,btn=this;
     if(troca&&!a)return setErr(box,'Digite a senha atual do EduBank.');
-    if(n.length<6)return setErr(box,'A senha nova precisa ter pelo menos 6 caracteres.');
+    if(!/^\d{4}$/.test(n))return setErr(box,'A senha tem 4 números: dia e mês do seu aniversário (ex.: 0401).');
     if(n!==r)return setErr(box,'As duas senhas novas não são iguais.');
     if(troca&&n===a)return setErr(box,'A senha nova precisa ser diferente da atual.');
     if(n==='2026.2026')return setErr(box,'Escolha uma senha diferente da senha de login.');
@@ -323,7 +323,7 @@ function telaConfirmar(p){
   var m=MAP[p.moeda],c=shell('Confirmar',true);
   c.innerHTML='<div class="eb-card eb-comp"><h2>Confirme a transferência</h2><div style="font-size:1.7em;font-weight:800;color:#3b2bb0;overflow-wrap:anywhere">'+esc(qtd(m,p.v))+'</div>'+
   '<dl><dt>Para</dt><dd>'+esc(aluno(p.para))+'</dd><dt>Chave</dt><dd>'+esc(p.para)+'</dd>'+(p.nota?'<dt>Mensagem</dt><dd>'+esc(p.nota)+'</dd>':'')+'</dl>'+
-  '<label for="eb-pw">Senha do EduBank</label><input id="eb-pw" type="password" autocomplete="current-password" placeholder="senha do EduBank">'+
+  '<label for="eb-pw">Senha do EduBank</label><input id="eb-pw" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 números (dia e mês)">'+
   '<button class="eb-btn" id="eb-ok">Confirmar e transferir</button><button class="eb-btn sec" id="eb-no">Voltar</button></div>';
   var box=c.firstChild;
   $('#eb-no').onclick=function(){telaTransferir(p.moeda)};

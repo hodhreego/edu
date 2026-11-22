@@ -961,9 +961,9 @@ if(SCI[id])return sciHtml(id);
  var EBL={};
  function ebIcon(w,ios){var G=w==='eb'?window.EDUBANK:window.BOLETIM;
   if(G&&G.icone)return G.icone(100);
-  if(w==='eb'&&!EBL.eb){EBL.eb=1;ebLoad('edubank.js?v=1',function(){try{if(ph&&ph.app==='home')draw()}catch(e){}})}
+  if(w==='eb'&&!EBL.eb){EBL.eb=1;ebLoad('edubank.js?v=2',function(){try{if(ph&&ph.app==='home')draw()}catch(e){}})}
   return w==='eb'?'<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ebg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f7a8a"/><stop offset="1" stop-color="#5a1fa8"/></linearGradient></defs><rect width="100" height="100" fill="url(#ebg)"/><circle cx="50" cy="48" r="28" fill="#f5b81c"/><text x="50" y="62" text-anchor="middle" font-size="40" font-weight="800" font-family="Georgia,serif" fill="#8a5200">$</text></svg>':'<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="blg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e6fe0"/><stop offset="1" stop-color="#16a085"/></linearGradient></defs><rect width="100" height="100" fill="url(#blg)"/><rect x="24" y="52" width="12" height="26" rx="2" fill="#fff"/><rect x="44" y="36" width="12" height="42" rx="2" fill="#fff"/><rect x="64" y="22" width="12" height="56" rx="2" fill="#fff"/></svg>'}
- function ebOpen(w){var G=w==='eb'?'EDUBANK':'BOLETIM',f=w==='eb'?'edubank.js?v=1':'boletim.js?v=1';function go(){window[G].open({host:$('phone'),onClose:function(){try{if(ph.app==='home')draw()}catch(e){}}})}
+ function ebOpen(w){var G=w==='eb'?'EDUBANK':'BOLETIM',f=w==='eb'?'edubank.js?v=2':'boletim.js?v=1';function go(){window[G].open({host:$('phone'),onClose:function(){try{if(ph.app==='home')draw()}catch(e){}}})}
   if(window[G]){go();return}ebLoad(f,function(){go();try{if(ph.app==='home')draw()}catch(e){}})}
  function openApp(k){if(k==='ebank'){ebOpen('eb');return}if(k==='bolet'){ebOpen('bol');return}if(MSGAPPS[k]&&!swOn()){leftOpen(k);return}if(FOLD()&&ph.app!=='lock'&&T&&T.modo!=='pos'){fopen(FPF,k);return}if(k==='calc'){CAL={e:'',r:null};ph.app='calc';draw();calcShow();return}if(/^(sys|ins):/.test(k)){ph.app='x';ph.x=k;XS={};draw();return}if(k==='wa'){swapTo('wa');return}swapTo('bank',k)}
  (function(){var P=$('phone'),rg=null;
