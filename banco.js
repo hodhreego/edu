@@ -727,7 +727,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
  function cdzHtml(m){var S=CST[m.id]||(CST[m.id]={e:0,msg:''}),v=m.v,done=!!PRIZE[m.id],h='<div class="cdz" data-id="'+m.id+'" data-g="'+m.gid+'"><b>'+({qz:'📊 Enquete',tx:'✍️ Desafio',multi:'🧩 Desafio',par:'🔗 Combine os pares',drag:'🧲 Arraste e solte',ord:'🔢 Coloque em ordem',vf:'✅ Verdadeiro ou falso'}[m.t]||'🎁 Desafio')+' · valendo '+fmt(v)+' no Pix!</b>'+notasHtml(v)+'<p>'+m.pergunta+'</p>'+(m.pesq&&!done?'<small class="pq">🔎 Pode pesquisar na internet para responder.</small>':'');
   if(done)h+='<div class="dmsg ok">✅ Resolvido! '+fmt(v)+' foram para o seu 🎰 Jackpot.'+(m.expl?'<br><em>'+m.expl+'</em>':'')+'</div>';
   else{if(m.t==='qz')h+='<div class="cops">'+m.opts.map(function(o,i){return '<button type="button" class="cop" data-w="qzopt" data-i="'+i+'">'+String.fromCharCode(65+i)+') '+o+'</button>'}).join('')+'</div>';
-   else if(NVT[m.t])h+=nvBody(m,S);else h+='<input class="cin" type="text" placeholder="'+(m.t==='multi'?'Digite '+m.need+' respostas, separadas por vírgula':'Sua resposta')+'" autocomplete="off"><button type="button" class="cbt" data-w="tsend">📨 Enviar resposta</button>';
+   else if(NVT[m.t])h+=nvBody(m,S);else h+=(m.t==='multi'?((S.got&&S.got.length)?'<div style="margin:4px 0 6px;font:700 14px Arial;color:#0b7a3b">✅ '+S.got.map(function(x){return String(x.t).replace(/[<>&]/g,'')}).join(' · ')+'</div>':'')+'<input class="cin" type="text" placeholder="Digite uma resposta ('+((S.got||[]).length+1)+' de '+m.need+')" autocomplete="off"><button type="button" class="cbt" data-w="tsend">📨 Enviar resposta</button>':'<input class="cin" type="text" placeholder="Sua resposta" autocomplete="off"><button type="button" class="cbt" data-w="tsend">📨 Enviar resposta</button>');
    if(S.e>=2&&m.dica)h+='<small class="dic">💡 Dica: '+m.dica+'</small>';h+='<div class="dmsg">'+(S.msg||'')+'</div>'}
   return h+'</div>'}
  function dzRefresh(gid){var wb=document.querySelector('.wg .wb'),st=wb?wb.scrollTop:0;waShow(groupHtml(gid));wb=document.querySelector('.wg .wb');if(wb)wb.scrollTop=st}
@@ -740,7 +740,11 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   if(w==='pk'||w==='pr'||w==='dgc'||w==='dgs'||w==='ordp'||w==='vfa'||w==='nclr'||w==='nsend'){nvAct(b,w,box);return}
   if(w==='qzopt'||w==='tsend'){var m=dzMsg(box.dataset.id);if(!m||PRIZE[m.id])return;var S=CST[m.id]||(CST[m.id]={e:0,msg:''}),raw=w==='qzopt'?b.dataset.i:((box.querySelector('.cin')||{}).value||'').trim();
    if(w==='tsend'&&!raw){S.msg='⚠️ Escreva a sua resposta.';box.outerHTML=cdzHtml(m);return}
-   if(dzCheck(m,raw)){PRIZE[m.id]=true;JACK+=m.v;JTOT+=m.v;DZN++;setPts(10);dzRefresh(box.dataset.g);toast('🎰 +'+fmt(m.v)+' no Jackpot!')}
+   if(m.t==='multi'){var gt=S.got||(S.got=[]),gi=-1,tk=dznz(raw);m.lista.forEach(function(g,i){if(gi<0&&gt.every(function(q){return q.i!==i})&&[].concat(g).some(function(x){return dzEq(dznz(x),tk)}))gi=i});
+    if(gi<0){S.e++;DZW[m.id]=1;S.msg=gt.some(function(q){return[].concat(m.lista[q.i]).some(function(x){return dzEq(dznz(x),tk)})})?'⚠️ Essa você já enviou. Mande outra.':'❌ Ainda não foi. Tente outra!'+(S.e>=2&&m.dica?' Olhe a dica 💡':'');box.outerHTML=cdzHtml(m);var nb2=document.querySelector('.cdz[data-id="'+m.id+'"] .cin');if(nb2)nb2.focus();return}
+    gt.push({i:gi,t:String(raw)});
+    if(gt.length<m.need){S.msg='✅ Certo! Faltam '+(m.need-gt.length)+'.';box.outerHTML=cdzHtml(m);var nb3=document.querySelector('.cdz[data-id="'+m.id+'"] .cin');if(nb3)nb3.focus();return}}
+   if(m.t==='multi'||dzCheck(m,raw)){PRIZE[m.id]=true;JACK+=m.v;JTOT+=m.v;DZN++;setPts(10);dzRefresh(box.dataset.g);toast('🎰 +'+fmt(m.v)+' no Jackpot!')}
    else{S.e++;DZW[m.id]=1;S.msg='❌ Ainda não foi. Tente de novo!'+(S.e>=2&&m.dica?' Olhe a dica 💡':'');box.outerHTML=cdzHtml(m);var nb=document.querySelector('.cdz[data-id="'+m.id+'"] .cin');if(nb)nb.focus()}return}
   if(w==='jk'){DZM='';waShow(jackHtml());return}
   if(w==='cen'){VAPP=null;$('txt').innerHTML=centralHtml();return}
