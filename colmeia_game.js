@@ -107,8 +107,8 @@
   var all=[].slice.call(bx.querySelectorAll('input'));
   if(!it.ok&&!it.typed&&all.every(function(x,k){return x.value===it.w[k]})){
    it.typed=1;setPts(pts+5);
-   if(it.rev){marcar(it,'quadrinhos');say('Certo! Essa palavra apareceu na colmeia.','ok')}
-   else{bx.parentNode.classList.add('feito');all.forEach(function(x){x.disabled=true});say('Palavra certa! Agora ache “'+it.w+'” na colmeia para ganhar os pontos.','ok')}
+   marcar(it,'quadrinhos');
+   say('Certo! A palavra foi marcada na colmeia.','ok');
   }
  });
  fill.addEventListener('keydown',function(e){var n=e.target;if(n.tagName!=='INPUT')return;var p=n.parentNode,j=+n.dataset.j;
