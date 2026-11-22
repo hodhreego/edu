@@ -209,7 +209,76 @@ function telaInicio(){
 }
 function cartao(m){
   var v=saldoDe(m.c);
-  return '<button class="eb-m'+(v?'':' zero')+(m.x?' cr':'')+'" data-a="moeda" data-c="'+m.c+'"><span class="f">'+m.f+'</span><small>'+m.c+' · '+esc(m.n)+'</small><b>'+qtd(m,v)+'</b><em>1 = '+fmtTaxa(m.c)+'</em></button>';
+  return '<button class="eb-m'+(v?'':' zero')+(m.x?' cr':'')+'" data-a="grafico" data-c="'+m.c+'"><span class="f">'+m.f+'</span><small>'+m.c+' · '+esc(m.n)+'</small><b>'+qtd(m,v)+'</b><em>1 = '+fmtTaxa(m.c)+'</em></button>';
+}
+
+/* ---------- gráfico de velas ---------- */
+var GRAF_TF=[['5m','5 min'],['30m','30 min'],['1h','1 hora'],['1d','1 dia']];
+function grafSerie(c,tf){
+  var m=MAP[c];
+  if(m.x){
+    return fetch('https://api.binance.com/api/v3/klines?symbol='+c+'USDT&interval='+tf+'&limit=120')
+      .then(function(r){if(!r.ok)throw new Error('cotação indisponível');return r.json()})
+      .then(function(a){return a.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]}})});
+  }
+  return fetch('https://economia.awesomeapi.com.br/json/daily/'+c+'-BRL/7')
+    .then(function(r){if(!r.ok)throw new Error('cotação indisponível');return r.json()})
+    .then(function(a){
+      a=a.slice().reverse();var out=[],prev=null;
+      a.forEach(function(x){
+        var cl=Number(x.bid),hi=Number(x.high),lo=Number(x.low),op=prev==null?cl:prev;
+        out.push({t:Number(x.timestamp)*1000,o:op,h:hi,l:lo,c:cl});prev=cl;
+      });
+      return out;
+    });
+}
+function grafDesenha(cv,serie){
+  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pad=10;
+  ctx.clearRect(0,0,W,H);
+  if(!serie||!serie.length)return;
+  var lo=Math.min.apply(null,serie.map(function(k){return k.l})),hi=Math.max.apply(null,serie.map(function(k){return k.h}));
+  var faixa=(hi-lo)||1,n=serie.length,cw=(W-pad*2)/n,bw=Math.max(2,Math.min(10,cw*.62));
+  function Y(v){return pad+(hi-v)/faixa*(H-pad*2)}
+  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='10px system-ui';ctx.lineWidth=1;
+  for(var g=0;g<=4;g++){var y=pad+(H-pad*2)*g/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();
+    ctx.fillText((hi-faixa*g/4).toLocaleString('pt-BR',{maximumFractionDigits:4}),W-86,y-3)}
+  serie.forEach(function(k,i){
+    var x=pad+i*cw+cw/2,sobe=k.c>=k.o;
+    ctx.strokeStyle=sobe?'#22c55e':'#ef4444';ctx.fillStyle=ctx.strokeStyle;
+    ctx.beginPath();ctx.moveTo(x,Y(k.h));ctx.lineTo(x,Y(k.l));ctx.stroke();
+    var y1=Y(Math.max(k.o,k.c)),y2=Y(Math.min(k.o,k.c));
+    ctx.fillRect(x-bw/2,y1,bw,Math.max(1,y2-y1));
+  });
+}
+function telaGrafico(c){
+  aba='inicio';
+  comDados(function(cx){
+    var m=MAP[c];
+    cx.innerHTML='<div class="eb-card eb-graf"><h2>'+m.f+' '+esc(m.n)+'</h2>'+
+      '<p class="eb-muted">Saldo: <b>'+qtd(m,saldoDe(c))+'</b> · 1 '+esc(m.c)+' = <b>'+fmtTaxa(c)+'</b></p>'+
+      '<div class="eb-tf" id="eb-tf" style="display:flex;gap:6px;margin:10px 0 6px">'+GRAF_TF.map(function(t,i){return '<button type="button" data-tf="'+t[0]+'" class="'+(i===GRAF_TF.length-1?'on':'')+'" style="flex:1;padding:8px 4px;border-radius:9px;border:1px solid '+(i===GRAF_TF.length-1?'#2563eb':'rgba(255,255,255,.25)')+';background:'+(i===GRAF_TF.length-1?'#2563eb':'rgba(255,255,255,.08)')+';color:#fff;font-weight:800;font-size:.78rem">'+t[1]+'</button>'}).join('')+'</div>'+
+      '<canvas id="eb-cv" width="680" height="300" style="width:100%;height:auto;display:block;background:#0b1220;border-radius:12px;margin:6px 0"></canvas><div class="eb-muted" id="eb-gmsg"></div>'+
+      '<div class="eb-gacts"><button class="eb-btn" data-a="aba" data-k="cambio">Comprar/Vender</button>'+
+      '<button class="eb-btn sec" data-a="traf" data-c="'+c+'">Transferir</button></div></div>';
+    var cv=cx.querySelector('#eb-cv'),msg=cx.querySelector('#eb-gmsg'),tf='1d';
+    function carrega(){
+      msg.textContent='Carregando velas…';
+      grafSerie(c,tf).then(function(s){grafDesenha(cv,s);msg.textContent=(m.x?'Fonte: Binance (ao vivo)':'Fonte: AwesomeAPI (fechamento diário)')+' · '+s.length+' velas';})
+        .catch(function(e){msg.textContent='Não consegui carregar o gráfico agora ('+e.message+'). Tente outro período.'});
+    }
+    cx.querySelector('#eb-tf').onclick=function(e){
+      var b=e.target.closest('[data-tf]');if(!b)return;
+      tf=b.getAttribute('data-tf');
+      [].forEach.call(this.querySelectorAll('[data-tf]'),function(x){
+        var on=x===b;x.classList.toggle('on',on);
+        x.style.background=on?'#2563eb':'rgba(255,255,255,.08)';
+        x.style.borderColor=on?'#2563eb':'rgba(255,255,255,.25)';
+      });
+      if(!m.x&&tf!=='1d'){msg.textContent='Para moedas estrangeiras só temos o fechamento diário (7 dias).';return}
+      carrega();
+    };
+    carrega();
+  },'Gráfico');
 }
 
 /* ---------- câmbio ---------- */
@@ -279,7 +348,7 @@ function formTransferir(c,pre){
     '<label for="eb-n">Mensagem (opcional)</label><input id="eb-n" maxlength="40" autocomplete="off">'+
     '<button class="eb-btn" id="eb-rev">Revisar transferência</button></div>';
     var box=c.firstChild;
-    function sd(){var m=MAP[$('#eb-mo').value];$('#eb-sd').textContent='Disponível: '+qtd(m,saldoDe(m.c))}
+    function sd(){var m=MAP[$('#eb-mo').value];$('#eb-sd').innerHTML='<span style="display:inline-block;font-size:1.05rem;font-weight:800;color:#e5e7eb;margin:4px 0 2px">Disponível: '+qtd(m,saldoDe(m.c))+'</span>'}
     $('#eb-mo').onchange=sd;sd();
     $('#eb-rev').onclick=function(){
       var para=$('#eb-pa').value.trim().toLowerCase().replace(/\s+/g,''),m=MAP[$('#eb-mo').value],v=parseQ(m,$('#eb-v').value),nota=$('#eb-n').value.replace(/[<>]/g,'').slice(0,40);
@@ -387,6 +456,8 @@ function aoClicar(e){
   else if(a==='trocasenha')statSenha().then(function(t){telaSenha(t,function(){irAba('inicio')})},function(e){toast(e.message)});
   else if(a==='aba')irAba(b.getAttribute('data-k'));
   else if(a==='moeda'){var c=b.getAttribute('data-c');if(saldoDe(c)>0)telaTransferir(c);else telaCambio(c)}
+  else if(a==='grafico'){telaGrafico(b.getAttribute('data-c'))}
+  else if(a==='traf'){telaTransferir(b.getAttribute('data-c'))}
 }
 /* dentro do celular simulado: cobre exatamente a tela do aparelho */
 function encaixa(){
