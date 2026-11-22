@@ -1,4 +1,5 @@
 /* Endereço da planilha que recebe as notas (Google Apps Script). Vazio = só guarda no aparelho do aluno. */
+window.EDU_AUTH_ON=true; /* login obrigatorio; para desligar: false */
 window.EDU_ENDPOINT='https://script.google.com/macros/s/AKfycbyuRU8QZHIANlj_ApgBUaF6CtVT4oJrJEKnmOMhGFQpoHIlNLqYb4Ium4toW2ZF1tmO/exec';
 
 /* Senha do professor para liberar a impressão: guardada só como hash PBKDF2-SHA256 (600 mil voltas). */
