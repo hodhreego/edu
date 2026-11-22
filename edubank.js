@@ -344,12 +344,20 @@ function formTransferir(c,pre){
     c.innerHTML='<div class="eb-card"><h2>Transferir</h2><p class="eb-muted">Só para alunos da turma '+esc(turma(LOGIN))+', em moedas estrangeiras e criptomoedas.</p>'+
     '<label for="eb-pa">Chave Pix do colega</label><input id="eb-pa" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ex.: 7'+esc(turma(LOGIN))+'">'+
     '<label for="eb-mo">Moeda</label><select id="eb-mo">'+opcoes(sel,true)+'</select><div class="eb-muted" id="eb-sd"></div>'+
-    '<label for="eb-v">Valor</label><input id="eb-v" inputmode="decimal" autocomplete="off" placeholder="0,00">'+
+    '<label for="eb-v">Valor</label><input id="eb-v" inputmode="decimal" autocomplete="off" placeholder="0,00"><div class="eb-muted" id="eb-rs" style="font-size:1.02rem;font-weight:700;color:#e5e7eb;margin-top:4px"></div>'+
     '<label for="eb-n">Mensagem (opcional)</label><input id="eb-n" maxlength="40" autocomplete="off">'+
     '<button class="eb-btn" id="eb-rev">Revisar transferência</button></div>';
     var box=c.firstChild;
     function sd(){var m=MAP[$('#eb-mo').value];$('#eb-sd').innerHTML='<span style="display:inline-block;font-size:1.05rem;font-weight:800;color:#e5e7eb;margin:4px 0 2px">Disponível: '+qtd(m,saldoDe(m.c))+'</span>'}
     $('#eb-mo').onchange=sd;sd();
+    var vin=$('#eb-v');
+    function rsPrev(){
+      var m=MAP[$('#eb-mo').value],v=parseQ(m,vin.value||''),el=$('#eb-rs');
+      if(!el)return;
+      if(!(v>=1)||!taxaDe(m.c)){el.textContent='';return}
+      el.innerHTML='O colega recebe o equivalente a <b>'+rs(estim(m.c,v,'vender'))+'</b> se converter na hora (spread de 2%).';
+    }
+    vin.oninput=rsPrev;
     $('#eb-rev').onclick=function(){
       var para=$('#eb-pa').value.trim().toLowerCase().replace(/\s+/g,''),m=MAP[$('#eb-mo').value],v=parseQ(m,$('#eb-v').value),nota=$('#eb-n').value.replace(/[<>]/g,'').slice(0,40);
       if(!RE.test(para))return setErr(box,'Chave inválida. Use o login do colega, ex.: 7'+turma(LOGIN)+'.');
