@@ -802,6 +802,8 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   sysList().forEach(function(a){ap.push({k:'sys:'+a[0],n:a[1],ic:sysIc2(a),d:ios?/web|cam|store|cod/.test(a[0]):/web|cam|gal|cod/.test(a[0])})});
   if(swOn()){var nd=0;try{GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&!PRIZE[x.id])nd++})})}catch(e){}ap.push({k:'wa',n:appNm(),ic:appIc(),bd:nd})}
   ap.push({k:'calc',n:'Calculadora',ic:'<span class="bi sy svgic">'+calcSvg(ios)+'</span>'});
+  ap.push({k:'ebank',n:'EduBank',ic:'<span class="bi sy svgic">'+ebIcon('eb',ios)+'</span>'});
+  ap.push({k:'bolet',n:'Meu Boletim',ic:'<span class="bi sy svgic">'+ebIcon('bol',ios)+'</span>'});
   Object.keys(BANKS).forEach(function(k){ap.push({k:k,n:BANKS[k].n,ic:bicon(k)})});
   if(INST.indexOf('rbx')<0)INST.push('rbx');
   INST.forEach(function(k){var a=IAPP[k];if(a)ap.push({k:'ins:'+k,n:a[0],ic:sysIc(a[1],'#fff',a[2]),bd:appBd(k)})});
@@ -820,7 +822,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
   else if(op.test(c)){if(CAL.r!==null&&CAL.r!=='Erro'){CAL.e=String(CAL.r);CAL.r=null}if(!CAL.e){if(c==='-')CAL.e='-';calcShow();return}if(op.test(CAL.e.slice(-1)))CAL.e=CAL.e.slice(0,-1);CAL.e+=c}
   else{if(CAL.r!==null){CAL.e='';CAL.r=null}if(c==='.'&&/\.[0-9]*$/.test(CAL.e))return;CAL.e+=c}
   calcShow()}
- (function(){var P=$('phone');P.addEventListener('click',function(e){var l=e.target.closest('[data-l]'),c=e.target.closest('[data-c]');if(!l&&!c)return;e.stopPropagation();if(c){calcKey(c.dataset.c);return}var k=l.dataset.l;if(MSGAPPS[k]&&!swOn()&&ph.app!=='lock'){leftOpen(k);return}if(FOLD()&&ph.app!=='lock'){var pc=l.closest('.pane');fopen(pc&&pc.classList.contains('pb')?'b':'a',k);return}if(k==='calc'){CAL={e:'',r:null};ph.app='calc';draw();calcShow();return}if(/^(sys|ins):/.test(k)){ph.app='x';ph.x=k;XS={};draw();return}if(k==='wa'){swapTo('wa');return}swapTo('bank',k)},true)})();
+ (function(){var P=$('phone');P.addEventListener('click',function(e){var l=e.target.closest('[data-l]'),c=e.target.closest('[data-c]');if(!l&&!c)return;e.stopPropagation();if(c){calcKey(c.dataset.c);return}var k=l.dataset.l;if(k==='ebank'||k==='bolet'){openApp(k);return}if(MSGAPPS[k]&&!swOn()&&ph.app!=='lock'){leftOpen(k);return}if(FOLD()&&ph.app!=='lock'){var pc=l.closest('.pane');fopen(pc&&pc.classList.contains('pb')?'b':'a',k);return}if(k==='calc'){CAL={e:'',r:null};ph.app='calc';draw();calcShow();return}if(/^(sys|ins):/.test(k)){ph.app='x';ph.x=k;XS={};draw();return}if(k==='wa'){swapTo('wa');return}swapTo('bank',k)},true)})();
 
  (function(){var P=$('phone'),gs=null;
   P.addEventListener('click',function(e){var q=e.target.closest('[data-q]');if(!q)return;var k=q.dataset.q;if(k==='bri')return;e.stopPropagation();
@@ -955,7 +957,15 @@ if(SCI[id])return sciHtml(id);
  (function(){var t=$('txt');if(!t||!window.MutationObserver)return;var ob=new MutationObserver(function(){var on=T&&T.chat;[['tgm',TG()],['msm',MS()],['smsm',SM()]].forEach(function(x){t.classList.toggle(x[0],!!(on&&x[1]&&!swOn()))})});ob.observe(t,{childList:true})})();
  var MSGAPPS={'sys:zap':'WhatsApp','sys:msg':'Messenger','sys:tel':'Telegram','sys:sms':'Mensagens'};
  function leftOpen(k){var an=MSGAPPS[k],t=$('txt');VAPP=null;if(T&&T.chat&&appNm()===an){ph.view='chat';ph.app='home';t.innerHTML=txtChat()}else{VAPP=an;ph.view='list';ph.app='home';t.innerHTML=chatList()}if(0)t.innerHTML='<div class="wa"><div class="wh"><span class="av">'+an.charAt(0)+'</span><div class="wn"><b>'+an+'</b></div></div><div class="wb"><p class="wn" style="padding:1em">Nenhuma conversa nova neste aplicativo.</p></div></div>';t.classList.add('flashw');try{t.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}setTimeout(function(){t.classList.remove('flashw')},2200);toast('◀ '+an+' aberto na janela ao lado')}
- function openApp(k){if(MSGAPPS[k]&&!swOn()){leftOpen(k);return}if(FOLD()&&ph.app!=='lock'&&T&&T.modo!=='pos'){fopen(FPF,k);return}if(k==='calc'){CAL={e:'',r:null};ph.app='calc';draw();calcShow();return}if(/^(sys|ins):/.test(k)){ph.app='x';ph.x=k;XS={};draw();return}if(k==='wa'){swapTo('wa');return}swapTo('bank',k)}
+ function ebLoad(f,cb){var sc=document.createElement('script');sc.src=f;sc.onload=cb;document.head.appendChild(sc)}
+ var EBL={};
+ function ebIcon(w,ios){var G=w==='eb'?window.EDUBANK:window.BOLETIM;
+  if(G&&G.icone)return G.icone(100);
+  if(w==='eb'&&!EBL.eb){EBL.eb=1;ebLoad('edubank.js?v=1',function(){try{if(ph&&ph.app==='home')draw()}catch(e){}})}
+  return w==='eb'?'<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ebg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f7a8a"/><stop offset="1" stop-color="#5a1fa8"/></linearGradient></defs><rect width="100" height="100" fill="url(#ebg)"/><circle cx="50" cy="48" r="28" fill="#f5b81c"/><text x="50" y="62" text-anchor="middle" font-size="40" font-weight="800" font-family="Georgia,serif" fill="#8a5200">$</text></svg>':'<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="blg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e6fe0"/><stop offset="1" stop-color="#16a085"/></linearGradient></defs><rect width="100" height="100" fill="url(#blg)"/><rect x="24" y="52" width="12" height="26" rx="2" fill="#fff"/><rect x="44" y="36" width="12" height="42" rx="2" fill="#fff"/><rect x="64" y="22" width="12" height="56" rx="2" fill="#fff"/></svg>'}
+ function ebOpen(w){var G=w==='eb'?'EDUBANK':'BOLETIM',f=w==='eb'?'edubank.js?v=1':'boletim.js?v=1';function go(){window[G].open({host:$('phone'),onClose:function(){try{if(ph.app==='home')draw()}catch(e){}}})}
+  if(window[G]){go();return}ebLoad(f,function(){go();try{if(ph.app==='home')draw()}catch(e){}})}
+ function openApp(k){if(k==='ebank'){ebOpen('eb');return}if(k==='bolet'){ebOpen('bol');return}if(MSGAPPS[k]&&!swOn()){leftOpen(k);return}if(FOLD()&&ph.app!=='lock'&&T&&T.modo!=='pos'){fopen(FPF,k);return}if(k==='calc'){CAL={e:'',r:null};ph.app='calc';draw();calcShow();return}if(/^(sys|ins):/.test(k)){ph.app='x';ph.x=k;XS={};draw();return}if(k==='wa'){swapTo('wa');return}swapTo('bank',k)}
  (function(){var P=$('phone'),rg=null;
   P.addEventListener('click',function(e){var b=e.target.closest('[data-rc]');if(!b||!REC)return;var k=b.dataset.rc;if(k==='clear'){e.stopPropagation();RECS=[];recSet(true)}else if(k==='bg'&&(e.target===b)){e.stopPropagation();recSet(false)}else if(k.indexOf('win:')===0){e.stopPropagation();recSet(false);var kk=k.slice(4);FW=kk==='wa'||kk==='calc'?kk:(/^(sys|ins):/.test(kk)?'x:'+kk:null);if(!FW)toast('Bancos abrem em tela cheia ou dividida.');XS={};draw()}else if(k.indexOf('split:')===0){e.stopPropagation();recSet(false);fopen('b',k.slice(6))}},true);
   P.addEventListener('pointerdown',function(e){var c=REC&&!e.target.closest('.rcs2')&&e.target.closest('.rcd');if(c)rg={id:c.dataset.id,y:e.clientY,x:e.clientX,el:c}},true);

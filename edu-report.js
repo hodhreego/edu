@@ -14,10 +14,19 @@
  document.addEventListener('click',function(e){var el=e.target;if(!el||!el.closest)return;var b=el.closest('button,a,label,li,td,.opt,.op,.alt,.card,[data-i],[data-a]')||el;clk={t:Date.now(),a:tx(b,50),q:quest()}},true);
  function logar(d,p){setTimeout(function(){var c=clk&&Date.now()-clk.t<3000?clk:null;ACT.push('['+mm()+'] '+(d>0?'✔ +':'✘ ')+d+' pontos (total '+p+')'+(c&&c.q?' · pergunta: '+c.q:'')+(c&&c.a?' · resposta: '+c.a:'')+(fback()?' · '+fback():''))},350)}
  function aluno(){return window.EDU_ALUNO?EDU_ALUNO():{nome:'',turma:'',data:''}}
- function dados(){var a=aluno();var ex={};try{ex=window.EDU_EXTRA?EDU_EXTRA():{certas:ca,erradas:er}}catch(e){}return{aparelho:(window.EDU_DISP&&EDU_DISP.rotulo)||'',certas:ex.certas,erradas:ex.erradas,dinheiro:ex.dinheiro,gasto:ex.gasto,itens:ex.itens,senhas:ex.senhas,acoes:(ex.acoes||ACT.join(NL).slice(-3800)),cenario:ex.cenario,fase:ex.fase,sid:sid,login:(window.EDU_LOGIN?EDU_LOGIN():(function(){try{return localStorage.getItem('edu_login')||''}catch(e){return ''}})()),nome:a.nome,turma:a.turma,escola:a.escola||'',tema:cur&&cur.tema?cur.tema:'',serie:cur&&cur.serie?cur.serie:'',jogo:cur?cur.titulo:file,arquivo:file,codigo:cur?cur.cod:'',aula:cur&&cur.aula?cur.aula:'',pontos:pts(),maximo:max,segundos:Math.round((Date.now()-t0)/1000),quando:new Date().toISOString(),dia:new Date().toLocaleDateString('pt-BR')}}
+ function dados(){var a=aluno();var ex={};try{ex=window.EDU_EXTRA?EDU_EXTRA():{certas:ca,erradas:er}}catch(e){}return{aparelho:(window.EDU_DISP&&EDU_DISP.rotulo)||'',certas:ex.certas,erradas:ex.erradas,dinheiro:ex.dinheiro,gasto:ex.gasto,itens:ex.itens,senhas:ex.senhas,acoes:(ex.acoes||ACT.join(NL).slice(-3800)),cenario:ex.cenario,fase:ex.fase,sid:sid,t:(window.EDU_TOKEN?EDU_TOKEN():''),login:(window.EDU_LOGIN?EDU_LOGIN():(function(){try{return localStorage.getItem('edu_login')||''}catch(e){return ''}})()),nome:a.nome,turma:a.turma,escola:a.escola||'',tema:cur&&cur.tema?cur.tema:'',serie:cur&&cur.serie?cur.serie:'',jogo:cur?cur.titulo:file,arquivo:file,codigo:cur?cur.cod:'',aula:cur&&cur.aula?cur.aula:'',pontos:pts(),maximo:max,segundos:Math.round((Date.now()-t0)/1000),quando:new Date().toISOString(),dia:new Date().toLocaleDateString('pt-BR')}}
  function guardar(d){try{var a=JSON.parse(localStorage.getItem('edu_resultados')||'[]'),i=-1;a.forEach(function(x,k){if(x.sid===d.sid)i=k});if(i<0)a.push(d);else a[i]=d;localStorage.setItem('edu_resultados',JSON.stringify(a.slice(-300)))}catch(e){}}
+ function disc(){try{if(!cur)return '';var t=TEMAS.filter(function(x){return x.id===cur.tema})[0],m=MATS.filter(function(x){return x.id===t.mat})[0];return m?m.nome:''}catch(e){return ''}}
+ function concl(){try{if(window.EDU_EXTRA){var x=EDU_EXTRA();if(x&&x.concluido!=null)return x.concluido?1:0}var f=document.getElementById('jg-fim');return f&&(f.classList.contains('on')||(getComputedStyle(f).display!=='none'&&f.getClientRects().length))?1:0}catch(e){return 0}}
+ var rsent=0;
+ /* ação 'resultado' (login+token): só quando o porteiro está ligado; envia ao concluir ou ao sair com pontos */
+ function resultado(fim){var T=window.EDU_TOKEN?EDU_TOKEN():'',L=window.EDU_LOGIN?EDU_LOGIN():'',u=window.EDU_ENDPOINT;if(!T||!L||!u||!cur)return;
+  var c=concl(),d0=dados(),ac=+d0.certas||0,er2=+d0.erradas||0;if(!c&&!fim)return;if(!c&&max<=0&&ac+er2===0)return;if(rsent===2||(rsent===1&&!c))return;rsent=c?2:1;
+  var d={sid:sid,cod:cur.cod||'',atividade:cur.titulo||file,disc:disc(),serie:cur.serie||'',acertos:ac,erros:er2,pontos:max,pct:(ac+er2)>0?Math.round(100*ac/(ac+er2)):null,concluido:c,dur:Math.round((Date.now()-t0)/1000)};
+  var b={acao:'resultado',login:L,t:T,d:d};for(var k in d)b[k]=d[k];
+  try{fetch(u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b),keepalive:true})}catch(e){}}
  function enviar(fim){
-  var p=pts();if(p>max)max=p;if(max<=0)return;var d=dados();guardar(d);
+  var p=pts();if(p>max)max=p;try{resultado(fim)}catch(e){}if(max<=0)return;var d=dados();guardar(d);
   var u=window.EDU_ENDPOINT;if(!u)return;var body=JSON.stringify(d);
   try{if(fim&&navigator.sendBeacon){navigator.sendBeacon(u,new Blob([body],{type:'text/plain'}));return}}catch(e){}
   try{fetch(u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:body,keepalive:true})}catch(e){}
