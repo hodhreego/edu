@@ -18,7 +18,7 @@ if(!NOUI){
 }
 var RE=/^\d{1,3}[a-z]{3}\d[a-z]$/,RESP=/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste|mainara)$/,MESTRA='45999699444';
 var ESCOLAS={cla:'Jardim Clarito — Cascavel - PR',xus:'Marcos Claudio Schuster — Cascavel - PR'};
-var DIAS30=30*864e5,curPw='',ready=false,cbs=[],sess=null;
+var SENHA_FIXA='2026.2026',DIAS30=30*864e5,ready=false,cbs=[],sess=null;
 
 function ep(){return window.EDU_ENDPOINT||''}
 function norm(u){return String(u||'').trim().toLowerCase().replace(/\s+/g,'')}
@@ -65,16 +65,10 @@ function entrar(u,p){
  return hash(u,p).then(function(h){return api('entrar',{login:u,h:h}).then(function(j){
   if(j&&j.ok&&!j.token)return{ok:0,erro:'Servidor ainda nao atualizado (login indisponivel). Fale com o professor.'};
   if(j&&!j.ok&&(j.net||!j.erro||/desconhec|a[cç][aã]o/i.test(j.erro)))return{ok:0,net:j.net,erro:'Servidor ainda nao atualizado ou sem conexao. Somente o professor (senha mestra) consegue entrar agora.'};
-  if(j&&j.ok&&j.token){curPw=p;wr({login:u,t:j.token,exp:Date.now()+DIAS30,turma:j.turma||turmaDe(u),trocar:j.trocar?1:0})}
+  if(j&&j.ok&&j.token){j.trocar=0;wr({login:u,t:j.token,exp:Date.now()+DIAS30,turma:j.turma||turmaDe(u)})}
   return j})},function(){return{ok:0,erro:'Este navegador não permite entrar (precisa de https).'}});
 }
 function quem(){return sess&&!sess.local?api('quem',{login:sess.login,t:sess.t}):Promise.resolve({ok:1,local:1})}
-function trocarSenha(atual,nova){
- if(!sess||sess.local)return Promise.resolve({ok:0,erro:'Esta conta não tem senha própria.'});
- if(String(nova||'').length<6)return Promise.resolve({ok:0,erro:'A senha nova precisa ter pelo menos 6 caracteres.'});
- return Promise.all([hash(sess.login,atual),hash(sess.login,nova)]).then(function(h){
-  return api('senha',{login:sess.login,t:sess.t,h:h[0],novo:h[1]}).then(function(j){if(j&&j.ok){curPw=nova;sess.trocar=0;wr(sess)}return j})});
-}
 function sair(){
  var go=function(){clearLocalMirror();wr(null);ls('edu_nuvem_login',null);ls('edu_nuvem_ts',null);try{sessionStorage.removeItem('edu_idok')}catch(e){}location.reload()};
  pushNow(true);setTimeout(go,300);
@@ -159,7 +153,7 @@ function pwf(id,lab,ac){return '<label for="'+id+'">'+lab+'</label><div class="p
 function ver(g){g.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-ver]');if(!b)return;var i=g.querySelector('#'+b.dataset.ver);i.type=i.type==='password'?'text':'password'})}
 
 function telaLogin(msg){
- var g=gate('<div class="gl">Ludopédia</div><h2>Entrar</h2><p class="s">Use o login do RCO (ex.: <b>7cla6b</b>) e a sua senha. No primeiro acesso você cria uma senha nova.</p>'
+ var g=gate('<div class="gl">Ludopédia</div><h2>Entrar</h2><p class="s">Use o login do RCO (ex.: <b>7cla6b</b>) e a sua senha. A senha é a da turma.</p>'
   +'<form id="gf" autocomplete="on"><label for="gu">Login</label><input id="gu" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: 7cla6b" inputmode="text">'
   +pwf('gp','Senha','current-password')+'<button class="go" type="submit">▶ Entrar</button></form><div class="er" id="ge" aria-live="polite"></div>');
  ver(g);var $=function(i){return g.querySelector('#'+i)};$('ge').textContent=msg||'';
@@ -168,24 +162,7 @@ function telaLogin(msg){
  $('gf').onsubmit=function(e){e.preventDefault();var b=g.querySelector('.go');b.disabled=true;b.textContent='⏳ Entrando…';$('ge').textContent='';
   entrar($('gu').value,$('gp').value).then(function(j){
    if(!j||!j.ok){b.disabled=false;b.textContent='▶ Entrar';$('ge').textContent=(j&&j.erro)||'Não foi possível entrar.';if(j&&j.net)$('ge').textContent+=' Verifique a internet e tente de novo.';return}
-   if(j.trocar)return telaTroca(true,function(){liberar(true)});
    liberar(true)})};
-}
-function telaTroca(forcada,ok){
- var pedeAtual=!curPw;
- var g=gate('<div class="gl">Ludopédia</div><h2>'+(forcada?'Crie a sua senha':'Trocar senha')+'</h2><p class="s">'+(forcada?'Por segurança, escolha uma senha só sua (mínimo 6 caracteres). Ninguém mais poderá mexer no seu dinheiro.':'Escolha uma senha nova (mínimo 6 caracteres).')+'</p>'
-  +'<form id="gf">'+(pedeAtual?pwf('ga','Senha atual','current-password'):'')+pwf('gn','Senha nova','new-password')+pwf('gc','Repita a senha nova','new-password')+'<button class="go" type="submit">Salvar senha</button></form>'
-  +(forcada?'<button class="lk" id="gs" type="button">Sair</button>':'<button class="lk" id="gx" type="button">Cancelar</button>')+'<div class="er" id="ge" aria-live="polite"></div>');
- ver(g);var $=function(i){return g.querySelector('#'+i)};setTimeout(function(){$(pedeAtual?'ga':'gn').focus()},50);
- if($('gs'))$('gs').onclick=function(){sair()};if($('gx'))$('gx').onclick=function(){fecha()};
- $('gf').onsubmit=function(e){e.preventDefault();var a=pedeAtual?$('ga').value:curPw,n=$('gn').value,c=$('gc').value,er=$('ge');
-  if(n.length<6)return er.textContent='A senha nova precisa ter pelo menos 6 caracteres.';
-  if(n!==c)return er.textContent='As senhas novas não são iguais.';
-  if(n===a||n==='2026.2026')return er.textContent='Escolha uma senha diferente da atual.';
-  var b=g.querySelector('.go');b.disabled=true;b.textContent='⏳ Salvando…';
-  trocarSenha(a,n).then(function(j){
-   if(j&&j.ok){er.style.color='#15803d';er.textContent='Senha salva!';setTimeout(function(){fecha();if(ok)ok()},700);return}
-   b.disabled=false;b.textContent='Salvar senha';er.style.color='';er.textContent=(j&&j.erro)||'Não foi possível trocar a senha.'})};
 }
 function liberar(novo){
  fecha();preencheIdentidade();ready=true;
@@ -204,10 +181,9 @@ function fim(){
 function contaBtn(){
  if(NOUI||document.getElementById('edu-conta-b')||document.getElementById('edu-conta-f'))return;css();
  var t0=Date.now(),L=sess.login;
- function menu(btn){var m=document.getElementById('edu-conta-m');if(!m){m=el('<div id="edu-conta-m"><b></b><button type="button" data-a="s">🔑 Trocar senha</button><button type="button" data-a="x">🚪 Sair</button></div>');
+ function menu(btn){var m=document.getElementById('edu-conta-m');if(!m){m=el('<div id="edu-conta-m"><b></b><button type="button" data-a="x">🚪 Sair</button></div>');
   m.querySelector('b').textContent=(sess.mestre?'Professor':sess.login==='teste'||sess.login==='mainara'?'Conta de teste':'Conta ')+(sess.mestre||sess.local?' ('+sess.login+')':' '+sess.login);
-  if(sess.local)m.querySelector('[data-a=s]').remove();
-  m.onclick=function(e){var a=e.target.getAttribute&&e.target.getAttribute('data-a');if(a==='s'){m.classList.remove('on');telaTroca(false)}if(a==='x')sair()};document.body.appendChild(m);
+  m.onclick=function(e){var a=e.target.getAttribute&&e.target.getAttribute('data-a');if(a==='x')sair()};document.body.appendChild(m);
   document.addEventListener('pointerdown',function(e){if(m.classList.contains('on')&&!m.contains(e.target)&&e.target!==btn)m.classList.remove('on')},true)}
   m.classList.toggle('on')}
  (function tenta(){
@@ -218,11 +194,26 @@ function contaBtn(){
  })();
 }
 
+/* ---------- entrada por QR (?l=login) ---------- */
+function loginQR(){try{var l=norm(new URLSearchParams(location.search).get('l'));return RE.test(l)?l:''}catch(e){return ''}}
+function limpaParamL(){try{var u=new URL(location.href);if(u.searchParams.has('l')){u.searchParams.delete('l');history.replaceState(null,'',u.pathname+(u.search||'')+u.hash)}}catch(e){}}
 /* ---------- partida ---------- */
 function iniciar(){
+ var ql=loginQR();
+ if(ql&&!(sess&&(sess.login===ql||sess.mestre))){
+  if(sess){clearLocalMirror();wr(null);ls('edu_nuvem_login',null);ls('edu_nuvem_ts',null)}
+  var cur=ql;limpaParamL();
+  if(!NOUI)gate('<div class="gl">Ludopédia</div><h2>Entrando…</h2><p class="s">Aguarde um instante.</p>');
+  entrar(cur,SENHA_FIXA).then(function(j){
+   if(j&&j.ok){if(NOUI){ready=true;syncOn=false;if(!(sess&&sess.local))syncOn=true;fim();try{window.dispatchEvent(new CustomEvent('edu-auth-qr',{detail:{login:cur}}))}catch(e){}location.reload();return}liberar(true);return}
+   if(NOUI){return}
+   telaLogin((j&&j.erro)||'Não foi possível entrar pelo QR. Digite a senha.')});
+  return;
+ }
+ if(ql)limpaParamL();
  if(sess){
   if(sess.local){if(!NOUI)liberar(false);else{ready=true;fim()}return}
-  if(sess.trocar&&!NOUI){preencheIdentidade();return telaTroca(true,function(){liberar(true)})}
+  if(sess.trocar){sess.trocar=0;wr(sess)}
   ready=true;if(!NOUI)preencheIdentidade();
   quem().then(function(j){
    if(j&&j.ok){if(j.turma&&sess.turma!==j.turma){sess.turma=j.turma;wr(sess)}if(!NOUI)pullEReload().then(function(){});else syncOn=true;fim();return}
@@ -236,9 +227,9 @@ function iniciar(){
 window.EDU_AUTH={
  onReady:function(f){if(ready)try{f(sess)}catch(e){}else cbs.push(f)},
  sessao:function(){return sess},login:function(){return sess?sess.login:''},token:function(){return sess&&sess.t||''},
- entrar:entrar,quem:quem,trocarSenha:trocarSenha,sair:function(){if(NOUI){wr(null);ls('edu_nuvem_login',null)}else sair()},
+ entrar:entrar,quem:quem,sair:function(){if(NOUI){wr(null);ls('edu_nuvem_login',null)}else sair()},
  api:api,hash:hash,pull:pull,push:function(){return pushNow(false)},turmaDe:turmaDe,
- trocaForcada:function(ok){telaTroca(true,ok)},
+ trocaForcada:function(ok){if(ok)ok()},
  telaLogin:telaLogin,fecha:fecha,
  reg:RE,especial:RESP
 };

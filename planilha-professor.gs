@@ -164,7 +164,7 @@ function liberada_(ss, escola) {
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Professor').addItem('Liberar escolas da aba Config', 'liberarRetidos').addItem('Reconstruir painéis', 'reconstruirPaineis').addToUi();
-  ui.createMenu('🔑 EduBank').addItem('Resetar senha de um aluno', 'resetarSenha').addItem('Resetar TODAS as senhas', 'resetarTodas').addItem('Desbloquear aluno', 'desbloquear').addSeparator().addItem('Ver aluno (aba Aluno)', 'verAluno').addItem('Zerar carteira de um aluno', 'zerarCarteira').addSeparator().addItem('Atualizar câmbio agora', 'atualizarCambio').addItem('Preparar abas do EduBank', 'prepararEduBank').addToUi();
+  ui.createMenu('🔑 EduBank').addItem('Resetar senha do EduBank de um aluno', 'resetarSenha').addItem('Resetar senha do EduBank de TODOS', 'resetarTodas').addItem('Desbloquear aluno', 'desbloquear').addSeparator().addItem('Ver aluno (aba Aluno)', 'verAluno').addItem('Zerar carteira de um aluno', 'zerarCarteira').addItem('Definir senha do professor', 'definirSenhaProfessor').addSeparator().addItem('Atualizar câmbio agora', 'atualizarCambio').addItem('Preparar abas do EduBank', 'prepararEduBank').addToUi();
 }
 // Depois de acrescentar uma escola na aba Config, este menu move os resultados retidos dela para as notas.
 function liberarRetidos() {
@@ -412,7 +412,7 @@ function rbxLoad_(p) {
 
 // ================= EduBank (spec v2): contas, sessões, nuvem, câmbio, transferências, boletim =================
 // Resposta sempre JSON: {ok:1,...} ou {ok:0,erro:'texto'}. Ação pelo parâmetro "acao" (GET ou POST JSON).
-var EB_ACOES = { entrar: 1, senha: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1 };
+var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1 };
 var EB_ALUNO = /^\d{1,3}[a-z]{3}\d[a-z]$/;
 var EB_ESPECIAL = /^(mestre|teste|mainara)$/;
 var EB_FIAT = ['USD', 'EUR', 'GBP', 'JPY', 'ARS', 'CNY'];
@@ -423,7 +423,7 @@ var EB_URL_FIAT = 'https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,
 var EB_URL_CRIPTO = 'https://economia.awesomeapi.com.br/json/last/BTC-BRL,ETH-BRL,SOL-BRL,XRP-BRL,DOGE-BRL,USDT-BRL';
 var EB_MAX_ERROS = 5, EB_BLOQ_MIN = 10, EB_SESSAO_DIAS = 30, EB_SENHA_INICIAL = '2026.2026';
 var EB_ABAS = {
-  Contas: { cab: ['login', 'turma', 'salt', 'hash', 'trocar', 'erros', 'bloqueio_ate', 'criado', 'ultimo_acesso'], cor: '#1e3a8a', w: [110, 80, 150, 420, 60, 60, 150, 150, 150], txt: [1, 2, 3, 4] },
+  Contas: { cab: ['login', 'turma', 'salt', 'hash', 'trocar', 'erros', 'bloqueio_ate', 'criado', 'ultimo_acesso', 'banco_salt', 'banco_hash'], cor: '#1e3a8a', w: [110, 80, 150, 420, 60, 60, 150, 150, 150, 150, 420], txt: [1, 2, 3, 4, 10, 11] },
   Sessoes: { cab: ['token_hash', 'login', 'expira', 'criado'], cor: '#475569', w: [420, 110, 140, 150], txt: [1, 2] },
   Nuvem: { cab: ['login', 'chave', 'ts', 'json'], cor: '#0f766e', w: [110, 70, 140, 500], txt: [1, 2] },
   Carteiras: { cab: ['login'].concat(EB_MOEDAS, ['atualizado']), cor: '#6a2fd6', w: [110], txt: [1] },
@@ -562,11 +562,14 @@ function eb_dispatch_(p) {
   var a = String(p.acao || '');
   if (a === 'entrar') return eb_entrar_(p);
   if (a === 'taxas') return eb_taxasResp_();
+  if (a === 'profreset') return eb_profReset_(p);
+  if (a === 'senha') return eb_erro_('A senha de login é fixa e não pode ser alterada. Só a senha do EduBank pode ser criada ou trocada.');
   var au = eb_auth_(p);
   if (!au.ok) return au;
   var l = au.login;
   if (a === 'quem') return { ok: 1, turma: eb_turma_(l) };
-  if (a === 'senha') return eb_senha_(p, l, au.th);
+  if (a === 'bancostat') return eb_bancoStat_(l);
+  if (a === 'bancosenha') return eb_bancoSenha_(p, l);
   if (a === 'nuvemsalvar') return eb_nuvemSalvar_(p, l);
   if (a === 'nuvemcarregar') return eb_nuvemCarregar_(p, l);
   if (a === 'carteira') return eb_carteiraResp_(l);
@@ -612,11 +615,8 @@ function eb_limpaSessoes_(sh) {   // chamar com lock
 }
 
 // ---------- contas ----------
-function eb_confere_(login, r, h) {
-  var hash = String(r[3] || '');
-  if (!hash) return h === eb_hashInicial_(login);          // hash vazio = senha inicial
-  return eb_sha_(h + String(r[2])) === hash;
-}
+// Senha de LOGIN é FIXA (2026.2026) e não pode ser alterada; colunas salt/hash/trocar da aba Contas ficam sem uso.
+function eb_confere_(login, r, h) { return h === eb_hashInicial_(login); }
 function eb_entrar_(p) {
   var login = eb_loginOk_(p.login), h = String(p.h || '').toLowerCase();
   if (!login || !/^[0-9a-f]{64}$/.test(h)) return eb_erro_('Login ou senha incorretos.');
@@ -641,42 +641,101 @@ function eb_entrar_(p) {
       if (bl) return eb_msgBloq_(bl);
       return eb_erro_('Login ou senha incorretos. Restam ' + rest + ' tentativa(s).');
     }
-    var trocar = row ? (Number(r[4]) ? 1 : 0) : (EB_ESPECIAL.test(login) ? 0 : 1);
-    if (!row) sh.appendRow([login, eb_turma_(login), '', '', trocar, 0, '', new Date(), new Date()]);
-    else sh.getRange(row, 6, 1, 4).setValues([[0, '', r[7], new Date()]]);
+    if (!row) sh.appendRow([login, eb_turma_(login), '', '', 0, 0, '', new Date(), new Date(), '', '']);
+    else sh.getRange(row, 5, 1, 5).setValues([[0, 0, '', r[7], new Date()]]);
     var token = (eb_sha_(Utilities.getUuid() + Date.now() + Math.random())).slice(0, 24), th = eb_sha_(token), exp = agora + EB_SESSAO_DIAS * 86400000;
     var ss = eb_aba_('Sessoes'); if (ss.getLastRow() > 300) eb_limpaSessoes_(ss);
     ss.appendRow([th, login, exp, new Date()]);
     try { cache.put('s_' + th, login + '|' + exp, 21600); } catch (e) { }
-    eb_log_(login, 'entrar', trocar ? 'primeiro acesso/senha inicial' : 'ok');
-    return { ok: 1, token: token, trocar: trocar, turma: eb_turma_(login) };
+    eb_log_(login, 'entrar', 'ok');
+    return { ok: 1, token: token, trocar: 0, turma: eb_turma_(login) };
   });
 }
-function eb_senha_(p, login, th) {
-  var h = String(p.h || '').toLowerCase(), novo = String(p.novo || '').toLowerCase();
-  if (!/^[0-9a-f]{64}$/.test(h) || !/^[0-9a-f]{64}$/.test(novo)) return eb_erro_('Senha inválida.');
-  if (novo === eb_hashInicial_(login)) return eb_erro_('Escolha uma senha diferente da inicial.');
-  if (novo === h) return eb_erro_('A nova senha deve ser diferente da atual.');
+// ---------- senha do EduBank (única senha alterável; só para transferir) ----------
+// hash do cliente = SHA-256 hex de (login + ':' + senha + ':bank'); servidor guarda sha256(hash + salt).
+function eb_bHex_(x) { x = String(x == null ? '' : x).toLowerCase(); return /^[0-9a-f]{64}$/.test(x) ? x : ''; }
+function eb_bTem_(r) { return !!(r && r[10]); }
+function eb_bConfere_(r, hb) { return eb_sha_(hb + String(r[9])) === String(r[10]); }
+function eb_msgBloqBanco_(ate) { var m = Math.max(1, Math.ceil((ate - Date.now()) / 60000)); return eb_erro_('Muitas tentativas erradas na senha do EduBank. Transferências bloqueadas por ' + m + ' min.', { bloqueado: 1, ate: ate }); }
+// chamar com lock; ok=true zera o contador; senão devolve o erro a responder
+function eb_bTentativa_(login, ok) {
+  var c = CacheService.getScriptCache(), agora = Date.now();
+  if (ok) { c.remove('bbad_' + login); return null; }
+  var n = (Number(c.get('bbad_' + login)) || 0) + 1;
+  if (n >= EB_MAX_ERROS) {
+    var bl = agora + EB_BLOQ_MIN * 60000;
+    c.put('bblk_' + login, String(bl), EB_BLOQ_MIN * 60); c.remove('bbad_' + login);
+    eb_log_(login, 'falha', 'senha do EduBank: bloqueado por ' + EB_BLOQ_MIN + ' min');
+    return eb_msgBloqBanco_(bl);
+  }
+  c.put('bbad_' + login, String(n), EB_BLOQ_MIN * 60);
+  eb_log_(login, 'falha', 'senha do EduBank incorreta');
+  return eb_erro_('Senha do EduBank incorreta. Restam ' + (EB_MAX_ERROS - n) + ' tentativa(s).');
+}
+function eb_bBloq_(login) { var b = Number(CacheService.getScriptCache().get('bblk_' + login)) || 0; return b > Date.now() ? eb_msgBloqBanco_(b) : null; }
+function eb_bancoStat_(login) {
+  var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
+  return { ok: 1, tem: eb_bTem_(row ? sh.getRange(row, 1, 1, 11).getValues()[0] : null) };
+}
+function eb_bancoSenha_(p, login) {
+  var novo = eb_bHex_(p.h_novo), atual = eb_bHex_(p.h_atual);
+  if (!novo) return eb_erro_('Senha do EduBank inválida.');
   return eb_lock_(function () {
-    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login), agora = Date.now();
+    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
     if (!row) return eb_erro_('Conta não encontrada.');
-    var r = sh.getRange(row, 1, 1, 9).getValues()[0], ate = Number(r[6]) || 0;
-    if (ate > agora) return eb_msgBloq_(ate);
-    if (!eb_confere_(login, r, h)) {
-      var e = (Number(r[5]) || 0) + 1, bl = 0;
-      if (e >= EB_MAX_ERROS) { bl = agora + EB_BLOQ_MIN * 60000; e = 0; }
-      sh.getRange(row, 6, 1, 2).setValues([[e, bl || '']]);
-      eb_log_(login, 'falha', 'troca de senha: senha atual incorreta');
-      return bl ? eb_msgBloq_(bl) : eb_erro_('Senha atual incorreta. Restam ' + (EB_MAX_ERROS - e) + ' tentativa(s).');
+    var bq = eb_bBloq_(login); if (bq) return bq;
+    var r = sh.getRange(row, 1, 1, 11).getValues()[0], tem = eb_bTem_(r);
+    if (tem) {
+      if (!atual) return eb_erro_('Informe a senha atual do EduBank.');
+      if (!eb_bConfere_(r, atual)) return eb_bTentativa_(login, false);
+      eb_bTentativa_(login, true);
+      if (novo === atual) return eb_erro_('A nova senha deve ser diferente da atual.');
     }
-    var salt = eb_sha_(Utilities.getUuid() + agora).slice(0, 16);
-    sh.getRange(row, 3, 1, 5).setValues([[salt, eb_sha_(novo + salt), 0, 0, '']]);
-    var out = eb_sessoesApagar_(login, th);
-    eb_log_(login, 'senha', 'senha trocada; outras sessões encerradas: ' + out);
+    var salt = eb_sha_(Utilities.getUuid() + Date.now()).slice(0, 16);
+    if (!String(sh.getRange(1, 10).getValue())) sh.getRange(1, 10, 1, 2).setValues([['banco_salt', 'banco_hash']]);
+    sh.getRange(row, 10, 1, 2).setValues([[salt, eb_sha_(novo + salt)]]);
+    eb_log_(login, 'banco', tem ? 'senha do EduBank trocada' : 'senha do EduBank criada');
     return { ok: 1 };
   });
 }
 function eb_limpaFalhas_(login) { var c = CacheService.getScriptCache(); c.remove('bad_' + login); c.remove('blk_' + login); }
+function eb_limpaFalhasBanco_(login) { var c = CacheService.getScriptCache(); c.remove('bbad_' + login); c.remove('bblk_' + login); }
+
+// ---------- senha do PROFESSOR (guardada só em PropertiesService: sha256(hp+salt); hp = SHA-256 hex de 'prof:'+senha) ----------
+function eb_logL_(l, e, d) { eb_lock_(function () { eb_log_(l, e, d); return 0; }); }   // só fora de lock
+function eb_hpDe_(senha) { return eb_sha_('prof:' + senha); }
+function eb_profTem_() { return !!PropertiesService.getScriptProperties().getProperty('prof_hash'); }
+// devolve null se a senha confere; senão {ok:0,erro}
+function eb_profCheck_(hp) {
+  var c = CacheService.getScriptCache(), p = PropertiesService.getScriptProperties(), agora = Date.now();
+  if (!p.getProperty('prof_hash')) return eb_erro_('Defina a senha do professor primeiro (menu EduBank > Definir senha do professor).', { semProf: 1 });
+  var b = Number(c.get('pblk')) || 0;
+  if (b > agora) return eb_erro_('Muitas tentativas erradas. Tente de novo em ' + Math.max(1, Math.ceil((b - agora) / 60000)) + ' min.', { bloqueado: 1 });
+  hp = eb_bHex_(hp);
+  if (hp && eb_sha_(hp + p.getProperty('prof_salt')) === p.getProperty('prof_hash')) { c.remove('pbad'); return null; }
+  var n = (Number(c.get('pbad')) || 0) + 1;
+  if (n >= EB_MAX_ERROS) { c.put('pblk', String(agora + EB_BLOQ_MIN * 60000), EB_BLOQ_MIN * 60); c.remove('pbad'); eb_logL_('', 'falha', 'senha do professor: bloqueado por ' + EB_BLOQ_MIN + ' min'); return eb_erro_('Muitas tentativas erradas. Bloqueado por ' + EB_BLOQ_MIN + ' min.', { bloqueado: 1 }); }
+  c.put('pbad', String(n), EB_BLOQ_MIN * 60);
+  eb_logL_('', 'falha', 'senha do professor incorreta');
+  return eb_erro_('Senha do professor incorreta. Restam ' + (EB_MAX_ERROS - n) + ' tentativa(s).');
+}
+// define/troca; 1a vez sem atual; depois exige a atual correta
+function eb_profDefinir_(hpNovo, hpAtual) {
+  hpNovo = eb_bHex_(hpNovo); if (!hpNovo) return eb_erro_('Senha inválida.');
+  if (eb_profTem_()) { var e = eb_profCheck_(hpAtual); if (e) return e; }
+  var p = PropertiesService.getScriptProperties(), salt = eb_sha_(Utilities.getUuid() + Date.now()).slice(0, 16);
+  p.setProperty('prof_salt', salt); p.setProperty('prof_hash', eb_sha_(hpNovo + salt));
+  eb_logL_('', 'prof', 'senha do professor definida/alterada');
+  return { ok: 1 };
+}
+// ação web profreset: {acao:'profreset',alvo:'login'|'todas',hp}
+function eb_profReset_(p) {
+  var e = eb_profCheck_(p.hp); if (e) return e;
+  var alvo = String(p.alvo || '').toLowerCase().trim();
+  if (alvo === 'todas') return eb_resetTodasCore_();
+  var login = eb_loginOk_(alvo); if (!login) return eb_erro_('Login inválido.');
+  return eb_resetCore_(login);
+}
 
 // ---------- nuvem ----------
 function eb_nuvemSalvar_(p, login) {
@@ -800,7 +859,14 @@ function eb_transferir_(p, de) {
   if (isNaN(v)) return eb_erro_('Valor inválido.');
   if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
   if (nota.length > 40 || /[<>]/.test(nota)) return eb_erro_('Mensagem inválida (até 40 caracteres, sem < ou >).');
+  var hb = eb_bHex_(p.hb);
   return eb_lock_(function () {
+    var cs = eb_aba_('Contas'), crow = eb_find_(cs, 1, de), cr = crow ? cs.getRange(crow, 1, 1, 11).getValues()[0] : null;
+    if (!eb_bTem_(cr)) return eb_erro_('Crie sua senha do EduBank antes de transferir.', { semBanco: 1 });
+    var bq = eb_bBloq_(de); if (bq) return bq;
+    if (!hb) return eb_erro_('Informe a senha do EduBank.');
+    if (!eb_bConfere_(cr, hb)) return eb_bTentativa_(de, false);
+    eb_bTentativa_(de, true);
     var uso = eb_idUso_(id, de);
     if (uso && uso.t === 'meu') return { ok: 1, dup: 1, saldos: eb_saldosLogin_(de), para: eb_anon_(para) };
     if (uso) return eb_erro_('Identificador já usado.');
@@ -890,54 +956,85 @@ function eb_alvo_(login, t) {
   login = login ? String(login).toLowerCase().trim() : eb_pergunta_(t, 'Digite o login do aluno (ex.: 12cla6b):');
   return eb_loginOk_(login);
 }
-function resetarSenha(login) {
-  login = eb_alvo_(login, 'Resetar senha');
-  if (!login) return eb_aviso_('Login não informado ou inválido.');
-  var r = eb_lock_(function () {
-    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
-    if (!row) return { ok: 1, msg: login + ': conta ainda não ativada (já usa a senha inicial).' };
-    sh.getRange(row, 3, 1, 5).setValues([['', '', EB_ESPECIAL.test(login) ? 0 : 1, 0, '']]);
-    var c = eb_sessoesApagar_(login, '');
-    eb_limpaFalhas_(login);
-    eb_log_(login, 'reset', 'senha resetada pelo professor; sessões encerradas: ' + c);
-    return { ok: 1, msg: login + ': senha voltou à inicial; precisa criar nova no próximo acesso.' };
-  });
-  return eb_aviso_(r.ok ? r.msg : r.erro);
+// Senha do professor digitada na hora (ui.prompt) ou hp (SHA-256 de 'prof:'+senha) quando chamado por código. Devolve null se ok.
+function eb_profMenu_(hp) {
+  if (!hp) {
+    var ui = eb_ui_();
+    if (!ui) return eb_erro_('Informe a senha do professor.');
+    if (!eb_profTem_()) return eb_erro_('Defina a senha do professor primeiro (menu EduBank > Definir senha do professor).', { semProf: 1 });
+    var r = ui.prompt('Senha do professor', 'Digite a senha do professor:', ui.ButtonSet.OK_CANCEL);
+    if (r.getSelectedButton() !== ui.Button.OK) return eb_erro_('cancelado');
+    hp = eb_hpDe_(String(r.getResponseText() || ''));
+  }
+  return eb_profCheck_(hp);
 }
-function resetarTodas() {
-  var ui = eb_ui_();
-  if (ui && ui.alert('Resetar TODAS as senhas', 'Todos os alunos voltarão à senha inicial e precisarão criar uma nova. Todas as sessões serão encerradas. Continuar?', ui.ButtonSet.YES_NO) !== ui.Button.YES) return 'cancelado';
-  var r = eb_lock_(function () {
+function definirSenhaProfessor() {
+  var ui = eb_ui_(); if (!ui) return eb_aviso_('Use o menu da planilha.');
+  var atual = '';
+  if (eb_profTem_()) {
+    var a = ui.prompt('Definir senha do professor', 'Senha ATUAL do professor:', ui.ButtonSet.OK_CANCEL);
+    if (a.getSelectedButton() !== ui.Button.OK) return 'cancelado';
+    atual = eb_hpDe_(String(a.getResponseText() || ''));
+  }
+  var n = ui.prompt('Definir senha do professor', 'Nova senha do professor (mín. 6 caracteres):', ui.ButtonSet.OK_CANCEL);
+  if (n.getSelectedButton() !== ui.Button.OK) return 'cancelado';
+  var t = String(n.getResponseText() || '');
+  if (t.length < 6) return eb_aviso_('Senha curta demais (mínimo 6 caracteres).');
+  var r = eb_profDefinir_(eb_hpDe_(t), atual);
+  return eb_aviso_(r.ok ? 'Senha do professor definida.' : r.erro);
+}
+function eb_resetCore_(login) {
+  return eb_lock_(function () {
+    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
+    eb_limpaFalhasBanco_(login);
+    if (!row) return { ok: 1, msg: login + ': conta ainda não ativada (não há senha do EduBank).' };
+    sh.getRange(row, 10, 1, 2).setValues([['', '']]);
+    eb_log_(login, 'reset', 'senha do EduBank resetada pelo professor');
+    return { ok: 1, msg: login + ': senha do EduBank apagada; o aluno cria uma nova. A senha de login não muda.' };
+  });
+}
+function eb_resetTodasCore_() {
+  return eb_lock_(function () {
     var sh = eb_aba_('Contas'), n = sh.getLastRow(), qtd = 0;
     if (n >= 2) {
       var ls = sh.getRange(2, 1, n - 1, 1).getValues();
-      sh.getRange(2, 3, n - 1, 5).setValues(ls.map(function (x) { return ['', '', EB_ESPECIAL.test(String(x[0])) ? 0 : 1, 0, '']; }));
+      sh.getRange(2, 10, n - 1, 2).setValues(ls.map(function () { return ['', '']; }));
+      ls.forEach(function (x) { eb_limpaFalhasBanco_(String(x[0])); });
       qtd = n - 1;
     }
-    var ss = eb_aba_('Sessoes'), m = ss.getLastRow();
-    if (m >= 2) {
-      var ks = ss.getRange(2, 1, m - 1, 1).getValues().map(function (x) { return 's_' + x[0]; }), c = CacheService.getScriptCache();
-      for (var j = 0; j < ks.length; j += 100) c.removeAll(ks.slice(j, j + 100));
-      ss.getRange(2, 1, m - 1, 4).clearContent();
-    }
-    eb_log_('', 'reset', 'TODAS as senhas resetadas (' + qtd + ' contas); todas as sessões encerradas');
-    return { ok: 1, msg: qtd + ' conta(s) resetada(s). Todas as sessões foram encerradas.' };
+    eb_log_('', 'reset', 'senha do EduBank de TODAS as contas apagada (' + qtd + ' contas)');
+    return { ok: 1, msg: qtd + ' conta(s): senha do EduBank apagada. A senha de login não muda.' };
   });
+}
+function resetarSenha(login, hp) {
+  var e = eb_profMenu_(hp); if (e) return eb_aviso_(e.erro);
+  login = eb_alvo_(login, 'Resetar senha do EduBank');
+  if (!login) return eb_aviso_('Login não informado ou inválido.');
+  var r = eb_resetCore_(login);
   return eb_aviso_(r.ok ? r.msg : r.erro);
 }
-function desbloquear(login) {
+function resetarTodas(hp) {
+  var e = eb_profMenu_(hp); if (e) return eb_aviso_(e.erro);
+  var ui = eb_ui_();
+  if (ui && ui.alert('Resetar senha do EduBank de TODOS', 'Todos os alunos precisarão criar uma nova senha do EduBank antes de transferir. A senha de login não muda. Continuar?', ui.ButtonSet.YES_NO) !== ui.Button.YES) return 'cancelado';
+  var r = eb_resetTodasCore_();
+  return eb_aviso_(r.ok ? r.msg : r.erro);
+}
+function desbloquear(login, hp) {
+  var e = eb_profMenu_(hp); if (e) return eb_aviso_(e.erro);
   login = eb_alvo_(login, 'Desbloquear aluno');
   if (!login) return eb_aviso_('Login não informado ou inválido.');
   var r = eb_lock_(function () {
     var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
     if (row) sh.getRange(row, 6, 1, 2).setValues([[0, '']]);
-    eb_limpaFalhas_(login);
+    eb_limpaFalhas_(login); eb_limpaFalhasBanco_(login);
     eb_log_(login, 'desbloquear', 'bloqueio removido pelo professor');
     return { ok: 1, msg: login + ': desbloqueado.' };
   });
   return eb_aviso_(r.ok ? r.msg : r.erro);
 }
-function zerarCarteira(login) {
+function zerarCarteira(login, hp) {
+  var e = eb_profMenu_(hp); if (e) return eb_aviso_(e.erro);
   login = eb_alvo_(login, 'Zerar carteira');
   if (!login) return eb_aviso_('Login não informado ou inválido.');
   var ui = eb_ui_();
@@ -963,9 +1060,9 @@ function verAluno(login) {
   if (!login) return eb_aviso_('Login não informado ou inválido.');
   var ss = SpreadsheetApp.getActiveSpreadsheet(), rows = [], tit = [];
   function sec(t) { if (rows.length) rows.push([]); tit.push(rows.length); rows.push([t]); }
-  var ct = eb_aba_('Contas'), cr = eb_find_(ct, 1, login), c = cr ? ct.getRange(cr, 1, 1, 9).getValues()[0] : null;
+  var ct = eb_aba_('Contas'), cr = eb_find_(ct, 1, login), c = cr ? ct.getRange(cr, 1, 1, 11).getValues()[0] : null;
   sec('Aluno ' + login + ' · turma ' + (eb_turma_(login) || '-'));
-  if (c) { rows.push(['Troca de senha pendente', Number(c[4]) ? 'sim' : 'não']); rows.push(['Bloqueado até', Number(c[6]) > Date.now() ? new Date(Number(c[6])) : '-']); rows.push(['Último acesso', c[8] || '-']); }
+  if (c) { rows.push(['Senha do EduBank criada', c[10] ? 'sim' : 'não']); rows.push(['Bloqueado até', Number(c[6]) > Date.now() ? new Date(Number(c[6])) : '-']); rows.push(['Último acesso', c[8] || '-']); }
   else rows.push(['Conta', 'ainda não ativada']);
   sec('Carteira (menor unidade da moeda)');
   var sh = eb_aba_('Carteiras'), s = eb_lerSaldos_(sh, eb_carteiraRow_(sh, login, false));

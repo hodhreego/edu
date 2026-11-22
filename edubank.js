@@ -78,7 +78,7 @@ function marca(tam){return icone(tam)}
 
 /* ---------- sessão / API ---------- */
 function sessao(){
-  var l=window.EDU_LOGIN,t=window.EDU_TOKEN;
+  var l=window.EDU_LOGIN,t=window.EDU_TOKEN;if(typeof l==='function')l=l();if(typeof t==='function')t=t();
   if(!(l&&t)){var s=lget('edu_sess',null);if(s&&s.login&&s.t&&(!s.exp||Number(s.exp)>Date.now())){l=s.login;t=s.t}}
   l=String(l||'').toLowerCase();
   if(RE.test(l)&&t){LOGIN=l;TOKEN=String(t);return true}
@@ -94,6 +94,18 @@ function api(p){
     if(!j.ok&&/sess|token|login/i.test(j.erro||'')&&/inv|expir|entre/i.test(j.erro||''))j.sessao=1;
     return j;
   },function(){throw new Error('Sem conexão com o banco. Tente de novo.')});
+}
+function hb(senha){
+  if(!(window.crypto&&crypto.subtle))return Promise.reject(new Error('Este navegador não permite criar senha (precisa de https).'));
+  return crypto.subtle.digest('SHA-256',new TextEncoder().encode(LOGIN+':'+senha+':bank')).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return('0'+x.toString(16)).slice(-2)}).join('')});
+}
+var TEMSENHA=null;
+function statSenha(){
+  if(TEMSENHA!==null)return Promise.resolve(TEMSENHA);
+  return api({acao:'bancostat'}).then(function(j){
+    if(!j.ok)throw new Error(msgErro(j));
+    TEMSENHA=!!j.tem;return TEMSENHA;
+  });
 }
 function msgErro(j){return (j&&j.erro)||'Não foi possível concluir.'}
 function novoId(){return ('e'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)).slice(0,40)}
@@ -192,7 +204,7 @@ function telaInicio(){
     '<div class="eb-chave">Chave Pix: <code>'+esc(LOGIN)+'</code><button data-a="copiar">Copiar</button></div></div>'+
     '<h2>Moedas estrangeiras</h2><div class="eb-moedas">'+MOEDAS.filter(function(m){return !m.x}).map(cartao).join('')+'</div>'+
     '<h2>Criptomoedas</h2><div class="eb-moedas">'+MOEDAS.filter(function(m){return m.x}).map(cartao).join('')+'</div>'+
-    '<div class="eb-card eb-muted">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
+    '<button class="eb-btn sec" data-a="trocasenha">🔑 Trocar senha do EduBank</button><div class="eb-card eb-muted" style="margin-top:12px">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
   },'EduBank');
 }
 function cartao(m){
@@ -247,6 +259,16 @@ function telaCambio(pre){
 function telaTransferir(pre){
   aba='transferir';
   comDados(function(c){
+    c.innerHTML='<div class="eb-card eb-muted">Verificando sua senha do EduBank…</div>';
+    statSenha().then(function(tem){
+      if(!root)return;
+      if(!tem)return telaSenha(false,function(){telaTransferir(pre)});
+      formTransferir(shell('Transferir'),pre);
+    },function(e){if(!root)return;setErr(c,e.message)});
+  },'Transferir');
+}
+function formTransferir(c,pre){
+  {
     var tem=MOEDAS.filter(function(m){return saldoDe(m.c)>0});
     if(!tem.length){c.innerHTML='<div class="eb-card"><h2>Transferir</h2><p>Você ainda não tem moeda estrangeira nem criptomoeda para transferir.</p><p class="eb-muted">Compre no Câmbio com seus reais.</p><button class="eb-btn" data-a="aba" data-k="cambio">Ir para o Câmbio</button></div>';return}
     var sel=(pre&&saldoDe(pre)>0)?pre:tem[0].c;
@@ -268,20 +290,50 @@ function telaTransferir(pre){
       if(v>saldoDe(m.c))return setErr(box,'Saldo insuficiente. Você tem '+qtd(m,saldoDe(m.c))+'.');
       telaConfirmar({id:novoId(),para:para,moeda:m.c,v:v,nota:nota});
     };
-  },'Transferir');
+    var tr=document.createElement('button');tr.className='eb-btn sec';tr.textContent='🔑 Trocar senha do EduBank';tr.onclick=function(){telaSenha(true,function(){telaTransferir(pre)})};c.appendChild(tr);
+  }
+}
+function pwIn(id,lab,ac){return '<label for="'+id+'">'+lab+'</label><input id="'+id+'" type="password" autocomplete="'+ac+'">'}
+function telaSenha(troca,ok){
+  var c=shell(troca?'Trocar senha do EduBank':'Crie sua senha do EduBank',true);
+  c.innerHTML='<div class="eb-card"><h2>'+(troca?'Trocar senha do EduBank':'Crie sua senha do EduBank')+'</h2>'+
+  '<p class="eb-muted">'+(troca?'Esta senha só serve para transferir dinheiro. Ela é diferente da senha de login.':'Para sua segurança, crie uma senha só sua para transferir. Ela não é a senha de login. Mínimo 6 caracteres. Guarde bem: sem ela ninguém transfere do seu EduBank.')+'</p>'+
+  (troca?pwIn('eb-sa','Senha atual do EduBank','current-password'):'')+pwIn('eb-sn','Senha nova','new-password')+pwIn('eb-sc','Repita a senha nova','new-password')+
+  '<button class="eb-btn" id="eb-ss">Salvar senha</button><button class="eb-btn sec" id="eb-sv">Cancelar</button></div>';
+  var box=c.firstChild;
+  $('#eb-sv').onclick=function(){irAba(aba&&aba!=='transferir'?aba:'inicio')};
+  $('#eb-ss').onclick=function(){
+    var a=troca?$('#eb-sa').value:'',n=$('#eb-sn').value,r=$('#eb-sc').value,btn=this;
+    if(troca&&!a)return setErr(box,'Digite a senha atual do EduBank.');
+    if(n.length<6)return setErr(box,'A senha nova precisa ter pelo menos 6 caracteres.');
+    if(n!==r)return setErr(box,'As duas senhas novas não são iguais.');
+    if(troca&&n===a)return setErr(box,'A senha nova precisa ser diferente da atual.');
+    if(n==='2026.2026')return setErr(box,'Escolha uma senha diferente da senha de login.');
+    btn.disabled=true;setErr(box,'');
+    Promise.all([hb(n),troca?hb(a):Promise.resolve(undefined)]).then(function(h){
+      var p={acao:'bancosenha',h_novo:h[0]};if(troca)p.h_atual=h[1];
+      return api(p)}).then(function(j){
+      btn.disabled=false;
+      if(!j.ok)return setErr(box,msgErro(j)||'Não foi possível salvar a senha.');
+      TEMSENHA=true;toast('Senha do EduBank salva!');setTimeout(function(){if(root&&ok)ok()},600);
+    }).catch(function(e){btn.disabled=false;setErr(box,e.message)});
+  };
 }
 function telaConfirmar(p){
   var m=MAP[p.moeda],c=shell('Confirmar',true);
   c.innerHTML='<div class="eb-card eb-comp"><h2>Confirme a transferência</h2><div style="font-size:1.7em;font-weight:800;color:#3b2bb0;overflow-wrap:anywhere">'+esc(qtd(m,p.v))+'</div>'+
   '<dl><dt>Para</dt><dd>'+esc(aluno(p.para))+'</dd><dt>Chave</dt><dd>'+esc(p.para)+'</dd>'+(p.nota?'<dt>Mensagem</dt><dd>'+esc(p.nota)+'</dd>':'')+'</dl>'+
+  '<label for="eb-pw">Senha do EduBank</label><input id="eb-pw" type="password" autocomplete="current-password" placeholder="senha do EduBank">'+
   '<button class="eb-btn" id="eb-ok">Confirmar e transferir</button><button class="eb-btn sec" id="eb-no">Voltar</button></div>';
   var box=c.firstChild;
   $('#eb-no').onclick=function(){telaTransferir(p.moeda)};
   $('#eb-ok').onclick=function(){
-    var btn=this;btn.disabled=true;setErr(box,'');
-    api({acao:'transferir',para:p.para,moeda:p.moeda,v:p.v,id:p.id,nota:p.nota}).then(function(j){
+    var btn=this,pw=$('#eb-pw').value;setErr(box,'');
+    if(!pw)return setErr(box,'Digite a senha do EduBank para confirmar.');
+    btn.disabled=true;
+    hb(pw).then(function(h){return api({acao:'transferir',para:p.para,moeda:p.moeda,v:p.v,id:p.id,nota:p.nota,hb:h})}).then(function(j){
       btn.disabled=false;
-      if(!j.ok)return setErr(box,msgErro(j));
+      if(!j.ok){var m0=msgErro(j);if(/senha/i.test(m0)&&!/EduBank|bloq|tentativas/i.test(m0))m0='Senha do EduBank incorreta. '+m0;return setErr(box,m0)}
       if(j.saldos)DADOS.saldos=j.saldos;else DADOS.saldos[p.moeda]=saldoDe(p.moeda)-p.v;
       telaComprovante({id:p.id,para:p.para,moeda:p.moeda,v:p.v,nota:p.nota,ts:Date.now()});
     }).catch(function(e){btn.disabled=false;setErr(box,e.message+' Pode tentar de novo: a transferência não será duplicada.')});
@@ -323,7 +375,7 @@ function copiar(){
 function fechar(){
   window.removeEventListener('resize',encaixa);
   if(root){root.remove();root=null}
-  var cb=O&&O.onClose;O=null;DADOS=null;
+  var cb=O&&O.onClose;O=null;DADOS=null;TEMSENHA=null;
   if(typeof cb==='function'){try{cb()}catch(e){}}
 }
 function aoClicar(e){
@@ -332,6 +384,7 @@ function aoClicar(e){
   if(a==='fechar')fechar();
   else if(a==='voltar')irAba(aba||'inicio');
   else if(a==='copiar')copiar();
+  else if(a==='trocasenha')statSenha().then(function(t){telaSenha(t,function(){irAba('inicio')})},function(e){toast(e.message)});
   else if(a==='aba')irAba(b.getAttribute('data-k'));
   else if(a==='moeda'){var c=b.getAttribute('data-c');if(saldoDe(c)>0)telaTransferir(c);else telaCambio(c)}
 }

@@ -43,4 +43,16 @@ document.getElementById('av').innerHTML=window.EDU_ENDPOINT?'✅ Conectado à pl
 document.getElementById('bA').onclick=carregar;
 document.getElementById('bC').onclick=function(){var l=['Aluno;Turma;Jogo;Codigo;Aula;Pontos;Segundos'].concat((window._a||[]).map(function(x){return[x.nome,x.turma,x.jogo,x.codigo,x.aula,x.maximo||x.pontos,x.segundos].join(';')}));var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+l.join('\n')],{type:'text/csv'}));a.download='resultados.csv';a.click()};
 carregar();setInterval(carregar,10000);
-</script></body></html>
+</script><div id="eb-reset" style="margin:14px;padding:12px;border:2px solid #6a2fd6;border-radius:12px;max-width:520px;font:14px Arial"><b>🔑 Resetar senha do EduBank</b><br>
+<input id="eb-alvo" placeholder="login do aluno (ex.: 12cla6b) ou todas" style="margin:6px 0;padding:8px;width:95%"><br>
+<input id="eb-sp" type="password" placeholder="sua senha de professor" style="margin:0 0 6px;padding:8px;width:95%"><br>
+<button id="eb-go" style="padding:8px 14px">Resetar</button> <span id="eb-msg"></span></div>
+<script>
+document.getElementById('eb-go').onclick=async function(){var m=document.getElementById('eb-msg'),a=document.getElementById('eb-alvo').value.trim().toLowerCase(),sp=document.getElementById('eb-sp').value;
+if(!a||!sp){m.textContent='Preencha os dois campos.';return}
+if(a==='todas'&&!confirm('Resetar a senha do EduBank de TODOS os alunos?'))return;
+try{var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('prof:'+sp));var hp=[].map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2)}).join('');
+var r=await fetch(window.EDU_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({acao:'profreset',alvo:a,hp:hp})});var j=await r.json();
+m.textContent=j.ok?('✅ '+(j.msg||'Pronto')):('⛔ '+(j.erro||'Falhou'));document.getElementById('eb-sp').value=''}catch(e){m.textContent='Erro de conexão.'}};
+</script>
+</body></html>

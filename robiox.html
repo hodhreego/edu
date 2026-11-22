@@ -54,7 +54,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
 <style>.pf{text-align:left}.pfh{display:flex;gap:10px;align-items:center}.pfa{flex:none;width:84px;display:flex;justify-content:center}.pfi{display:flex;flex-direction:column;gap:1px;font-size:13px}.pfl{font-size:22px}.pfj{display:flex;gap:10px;align-items:center;margin:10px 0;background:#fff8e1;border:3px solid #111;border-radius:14px;padding:8px}.pfjar{flex:none;width:96px}.pfjar>*{max-width:100%}.pfm{display:flex;flex-direction:column;gap:2px;font-size:13px}.pfv{font-size:26px;font-weight:900;color:#15803d}.pfg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.pfg div{background:#eef2ff;border:2px solid #111;border-radius:10px;text-align:center;padding:5px 2px}.pfg b{display:block;font-size:18px}.pfg small{font-size:10px}.pft{display:flex;flex-wrap:wrap;gap:4px}.pft span{width:44px;display:inline-block}</style>
 <style>.tabs{grid-template-columns:repeat(3,1fr)!important}.tabs button{font-size:14px!important;padding:10px 2px!important}.tabs button[data-t="j"]{font-size:17px!important}</style><style>.anosw{position:relative;container-type:inline-size;margin:6px auto;border:3px solid #1e3a8a;border-radius:14px;padding:22px 6px 6px;background:#eff6ff;max-width:100%;min-width:min(300px,100%)}.anosw .anos{margin:0;grid-template-columns:repeat(4,minmax(0,1fr))!important}.anosw .anos button{min-width:0;overflow-wrap:normal;hyphens:none}.anosw .anos button{font-size:clamp(6px,3.3cqw,30px)!important;padding:1.6cqw 1px!important}.anoh{position:absolute;top:-3px;right:-3px;width:30px;height:30px;border-radius:0 11px 0 12px;background:#1e3a8a;color:#fff;font:900 16px/30px Arial;text-align:center;cursor:nesw-resize;touch-action:none;user-select:none;font-style:normal}.anosw::before{content:"Disciplina e ano";position:absolute;top:3px;left:10px;font:900 11px Nunito,Arial;color:#1e3a8a}</style><script src="edu-aviso-ia.js?v=1"></script><style>body.rbx-jogando .lgw-btn,body.rbx-jogando #rbxFonteBtn,body.rbx-jogando #rbxAjudaBtn{transform:scale(.45);transform-origin:left bottom;opacity:.55;transition:transform .2s,opacity .2s}body.rbx-jogando #rbxAjudaBtn{transform-origin:left bottom}body.rbx-jogando .lgw-btn:hover,body.rbx-jogando #rbxFonteBtn:hover,body.rbx-jogando #rbxAjudaBtn:hover{transform:scale(.8);opacity:1}</style><style>.mjr i.cn{font-style:normal;margin-right:4px}</style></head>
 <body>
-<div id="lgn"><div class="lgb"><div class="lgl">Rob<b style="color:#1e3a8a">I</b>ox</div><h2>Entrar</h2><p class="lgs">Use o login do RCO (ex.: <b>7cla6b</b>) e a senha da turma.</p>
+<div id="lgn"><div class="lgb"><div class="lgl">Rob<b style="color:#1e3a8a">I</b>ox</div><h2>Entrar</h2><p class="lgs">Use o login do RCO (ex.: <b>7cla6b</b>) e a senha da turma, ou leia o QR do seu login.</p>
 <label>Login<input id="lgU" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: 7cla6b"></label>
 <label>Senha<input id="lgP" type="password" autocomplete="current-password" placeholder="senha"></label>
 <button type="button" id="lgG">▶ Entrar</button><div class="lgo">ou</div><button type="button" id="lgQ" class="lg2">📷 Entrar com QR code</button>
@@ -70,8 +70,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
  var RE=/^(\d{1,3}[a-z]{3}\d[a-z]|mestre|teste|mainara)$/,SENHA='2026.2026',MESTRA='45999699444';
  var NEW=!!window.EDU_AUTH&&!emb;
  if(NEW){var as=EDU_AUTH.sessao();if(as){window.RBX_LOGIN=as.login;window.RBX_TOKEN=as.t||'';if(as.mestre)window.RBX_MASTER=1;
-   if(!as.local)EDU_AUTH.quem().then(function(j){if(j&&!j.ok&&!j.net){EDU_AUTH.sair();location.reload()}});
-   if(as.trocar)EDU_AUTH.trocaForcada(function(){})}}
+   if(!as.local)EDU_AUTH.quem().then(function(j){if(j&&!j.ok&&!j.net){EDU_AUTH.sair();location.reload()}});}}
  else if(lg&&RE.test(lg))window.RBX_LOGIN=lg;
  if(NEW){if(window.RBX_LOGIN)return}else if(emb||ok||window.RBX_LOGIN)return;
  var $=function(i){return document.getElementById(i)},o=$('lgn');o.className='on';
@@ -101,7 +100,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#7ec8ff;font-family:Nu
    if(st){var k='robiox_v2_'+L,loc=null;try{loc=JSON.parse(localStorage.getItem(k))}catch(e){}if(!loc||ts>(loc._ts||0)){try{st._ts=ts;localStorage.setItem(k,JSON.stringify(st))}catch(e){}}}return true},function(){return true})}
  function tentaNovo(){var A=EDU_AUTH,b=$('lgG');b.disabled=true;b.textContent='⏳ Entrando…';err('');
   A.entrar($('lgU').value,$('lgP').value).then(function(j){if(!j||!j.ok){b.disabled=false;b.textContent='▶ Entrar';return err((j&&j.erro)||'Não foi possível entrar.')}
-   var go=function(){carregaNuvem(A.sessao()).then(function(okk){if(okk)location.reload();else{b.disabled=false;b.textContent='▶ Entrar'}})};if(j.trocar)A.trocaForcada(go);else go()})}
+   var go=function(){carregaNuvem(A.sessao()).then(function(okk){if(okk)location.reload();else{b.disabled=false;b.textContent='▶ Entrar'}})};go()})}
  function tenta(){if(NEW)return tentaNovo();var u=$('lgU').value.trim().toLowerCase().replace(/\s+/g,''),p=$('lgP').value;
   if(u==='teste'&&p==='teste')return entra('teste');
   if(u==='mainara'&&p==='mainara')return entra('mainara');
