@@ -44,7 +44,7 @@ function parseQ(m,t){
 function taxaDe(c){var t=DADOS&&DADOS.taxas&&DADOS.taxas[c];if(t==null)return 0;return Number(typeof t==='object'?t.t:t)||0}
 function escalaDe(c){var t=DADOS&&DADOS.taxas&&DADOS.taxas[c];return (t&&typeof t==='object'&&Number(t.e))||MAP[c].e}
 /* valor estimado em centavos de R$ (só exibição; o servidor é quem manda) */
-function estim(c,v,op){var k=taxaDe(c)*(1+(op==='vender'?-0.006:0.006))*v/escalaDe(c)*100;return op==='vender'?Math.floor(k):Math.ceil(k-1e-9)}
+function estim(c,v,op){var k=taxaDe(c)*(1+(op==='vender'?-0.02:0.02))*v/escalaDe(c)*100;return op==='vender'?Math.floor(k):Math.ceil(k-1e-9)}
 function fmtTaxa(c){var t=taxaDe(c);if(!t)return '—';return 'R$ '+t.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:t<1?4:2})}
 
 /* ---------- ícone ---------- */
@@ -217,7 +217,7 @@ function telaCambio(pre){
   aba='cambio';
   comDados(function(c){
     var op='comprar',moeda=(pre&&MAP[pre])?pre:'USD';
-    c.innerHTML='<div class="eb-card"><h2>Câmbio</h2><p class="eb-muted">Seu saldo: <b id="eb-sr">'+rs(getCash())+'</b> · taxa do dia, com spread de 0,6%.</p>'+
+    c.innerHTML='<div class="eb-card"><h2>Câmbio</h2><p class="eb-muted">Seu saldo: <b id="eb-sr">'+rs(getCash())+'</b> · taxa do dia, com spread de 2%.</p>'+
     '<div class="eb-seg"><button data-op="comprar" class="on">Comprar</button><button data-op="vender">Vender</button></div>'+
     '<label for="eb-mo">Moeda</label><select id="eb-mo">'+opcoes(moeda)+'</select><div class="eb-muted" id="eb-tx"></div>'+
     '<label for="eb-q" id="eb-ql">Quantidade que quero comprar</label><input id="eb-q" inputmode="decimal" autocomplete="off" placeholder="0,00">'+

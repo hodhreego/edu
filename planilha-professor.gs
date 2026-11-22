@@ -417,6 +417,7 @@ var EB_ALUNO = /^\d{1,3}[a-z]{3}\d[a-z]$/;
 var EB_ESPECIAL = /^(mestre|teste|mainara)$/;
 var EB_FIAT = ['USD', 'EUR', 'GBP', 'JPY', 'ARS', 'CNY'];
 var EB_CRIPTO = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'USDT'];
+var EB_MESTRE = '4599699444';
 var EB_MOEDAS = EB_FIAT.concat(EB_CRIPTO);
 var EB_RESERVA = { USD: 5.4, EUR: 6.3, GBP: 7.25, JPY: 0.036, ARS: 0.0055, CNY: 0.75, BTC: 350000, ETH: 18000, SOL: 800, XRP: 12, DOGE: 1, USDT: 5.4 };
 var EB_URL_FIAT = 'https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,JPY-BRL,ARS-BRL,CNY-BRL';
@@ -429,6 +430,7 @@ var EB_ABAS = {
   Carteiras: { cab: ['login'].concat(EB_MOEDAS, ['atualizado']), cor: '#6a2fd6', w: [110], txt: [1] },
   Extratos: { cab: ['ts', 'login', 'tipo', 'moeda', 'v', 'brl', 'outro', 'nota', 'saldo_apos', 'id'], cor: '#b45309', w: [150, 110, 70, 70, 110, 100, 110, 220, 110, 200], txt: [2, 7, 8, 10] },
   Logs: { cab: ['ts', 'login', 'evento', 'detalhe'], cor: '#334155', w: [150, 110, 110, 520], txt: [2, 4] },
+  Mestre: { cab: ['ts', 'aluno', 'operacao', 'moeda', 'spread_brl', 'conta_mestre'], cor: '#7c3aed', w: [150, 110, 80, 80, 110, 130], txt: [2, 4, 6] },
   Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160], txt: [2, 3, 5, 6, 7, 14, 15] }
 };
 
@@ -512,7 +514,7 @@ function eb_trimestre_(d) {
   return 3;
 }
 function eb_spread_(cfg, m) {
-  var k = EB_CRIPTO.indexOf(m) >= 0 ? 'spread_cripto_pct' : 'spread_pct', d = EB_CRIPTO.indexOf(m) >= 0 ? 1 : 0.6, s = Number(cfg[k]);
+  var k = EB_CRIPTO.indexOf(m) >= 0 ? 'spread_cripto_pct' : 'spread_pct', d = 2, s = Number(cfg[k]);
   if (!isFinite(s) || s < 0 || s > 20) s = d;
   return s / 100;
 }
@@ -835,6 +837,7 @@ function eb_cambio_(p, login) {
       s[moeda] += v; eb_gravaSaldos_(sh, row, s);
       eb_aba_('Extratos').appendRow([new Date(), login, 'compra', moeda, v, custo, '', '', s[moeda], id]);
       eb_log_(login, 'cambio', 'compra ' + moeda + ' ' + v + ' custo_centavos=' + custo + ' taxa=' + tx.t + ' id=' + id);
+      try { eb_aba_('Mestre').appendRow([new Date(), login, 'compra', moeda, (custo - Math.ceil(eb_r6_(v / esc * tx.t * 100))) / 100, EB_MESTRE]); } catch (e) { }
       return { ok: 1, custo: custo, taxa: tx.t, saldos: s };
     }
     if (s[moeda] < v) return eb_erro_('Saldo insuficiente nessa moeda.');
@@ -843,6 +846,7 @@ function eb_cambio_(p, login) {
     s[moeda] -= v; eb_gravaSaldos_(sh, row, s);
     eb_aba_('Extratos').appendRow([new Date(), login, 'venda', moeda, v, rec, '', '', s[moeda], id]);
     eb_log_(login, 'cambio', 'venda ' + moeda + ' ' + v + ' recebe_centavos=' + rec + ' taxa=' + tx.t + ' id=' + id);
+    try { eb_aba_('Mestre').appendRow([new Date(), login, 'venda', moeda, (Math.floor(eb_r6_(v / esc * tx.t * 100)) - rec) / 100, EB_MESTRE]); } catch (e) { }
     return { ok: 1, recebe: rec, taxa: tx.t, saldos: s };
   });
 }
