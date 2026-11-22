@@ -16,7 +16,7 @@ window.EDU_COD=function(){var f=decodeURIComponent(location.pathname.split('/').
  if(/[?&]imp=1/.test(location.search)||/^professor|gabaritos-professor/i.test(decodeURIComponent(location.pathname.split('/').pop()))||window.EDU_AUTH)return;
  var f=decodeURIComponent(location.pathname.split('/').pop()),ok=false;if(typeof JOGOS!=='undefined')JOGOS.forEach(function(j){if(j.href===f)ok=true});if(!ok)return;
  var s0=JSON.parse(localStorage.getItem('edu_sess')||'null');if(s0&&s0.login&&s0.exp>Date.now())sessionStorage.setItem('edu_idok','1');
- var sc=document.createElement('script');sc.src='edu-auth.js?v=1';document.head.appendChild(sc)}catch(e){}})();
+ var sc=document.createElement('script');sc.src='edu-auth.js?v=2';document.head.appendChild(sc)}catch(e){}})();
 /* Menu superior dos jogos (Prof. Rodrigo). Depende de catalogo.js (MATS, TEMAS, JOGOS, jogoPorCodigo). */
 (function(){
  var HUB='https://hodhreego.github.io/edu/';

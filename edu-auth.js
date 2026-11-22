@@ -86,7 +86,7 @@ function preencheIdentidade(){
 
 /* ---------- espelho em nuvem ---------- */
 var EXC={edu_sess:1,edu_login:1,edu_resultados:1,edu_nuvem_ts:1,edu_nuvem_login:1,edu_nome:1,edu_turma:1,edu_escola:1,edu_data:1};
-function mirrored(k){return typeof k==='string'&&!EXC[k]&&/^(edu_|pc47_|at32_|pm37_|cr38_|apt_|colmeia|vocab_)/.test(k)}
+function mirrored(k){return typeof k==='string'&&!EXC[k]&&(/^(edu_|pc47_|at32_|pm37_|cr38_|apt_|colmeia|vocab_)/.test(k)||(!!sess&&k==='robiox_v2_'+sess.login))}
 var merging=false,dirtyT=0,syncOn=false,pushing=false;
 function snap(){
  var o={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(mirrored(k))o[k]=localStorage.getItem(k)}}catch(e){}
