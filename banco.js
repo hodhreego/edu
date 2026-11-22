@@ -186,7 +186,7 @@ window.BANK={run:function(cfg){
  var app=$('app');
  app.innerHTML='<div class="top"><div><h1>'+cfg.titulo+'</h1><div class="sub" id="sub"></div></div><div class="coin"><i>$</i><span id="pts">0 pontos</span></div><div class="btns"><div id="bkbar" class="bkmini"></div><div class="dots" id="dots"></div><button type="button" id="navb" class="ndiv" title="Como é o seu celular?">📱</button><button type="button" id="rotb" class="ndiv" title="Girar o celular">🔄</button><button type="button" id="fsb" class="ndiv" title="Celular em tela cheia">⛶</button><select id="nivel" class="ndiv"><option value="1">6º ano</option><option value="2">7º ano</option><option value="3">8º ano</option><option value="4">9º ano</option></select></div></div><div class="inst" id="inst"></div><div class="main"><div class="card" id="ped"><h2>📋 Pedido</h2><div id="txt" class="stm"></div><div id="qrs"></div></div><div id="tipm"></div><div class="card" id="stage"><div class="phone" id="phone"></div><div class="msg" id="msg"></div></div></div><div class="card" id="dash"></div><div class="fim" id="fim"><div class="box"><h2 id="fT"></h2><p id="fP"></p><div id="ext"></div><button class="btn ok" id="fB"></button></div></div><div id="bpick"></div><div id="notif"></div><div id="exm"></div>';
  function iniSal(){BLOQ={};INV={};var v=[125000,98050,210075,56030,342010,87500,150025,73540,64020,118030];Object.keys(BANKS).forEach(function(k,i){SAL[k]=v[i%v.length];SAL0[k]=SAL[k]})}
- var OKEY={};
+ var OKEY={};function LG(){var l=window.EDU_LOGIN;if(typeof l==='function')l=l();return /^\d{1,3}[a-z]{3}\d[a-z]$/.test(l||'')?l:''}function SHK(b){return LG()||OKEY[b]}
  (function(){var P=$('phone'),dec=null;
   function crack(){if(P.querySelector('.dcrk'))return;var o=document.createElement('div'),y=52+Math.random()*16,vb=Math.random()<.4,v=Math.random()<.5;o.className='dcrk'+(vb?' vb':Math.random()<.5?' gr':'');o.style.setProperty('--y',y.toFixed(1)+'%');o.style.setProperty('--x',(28+Math.random()*20).toFixed(1)+'%');
    o.innerHTML='<i class="dv1"></i><i class="dv2"></i><i class="dkn"></i><i class="ddm"></i>'+(v&&!vb?'<i class="dhb"></i>':'<i class="dhw"></i>');P.appendChild(o)}
@@ -203,7 +203,7 @@ window.BANK={run:function(cfg){
  function uu(){var h='0123456789abcdef',o='';for(var i=0;i<32;i++){o+=h[rnd(0,15)];if(i===7||i===11||i===15||i===19)o+='-'}return o}
  function iniKeys(){Object.keys(BANKS).forEach(function(k){OKEY[k]=uu()})}
  iniKeys();
- function ownC(k){return {nome:'Você (Aluno)',banco:BANKS[k].n,chave:OKEY[k],own:k}}
+ function ownC(k){return {nome:'Você (Aluno)',banco:BANKS[k].n,chave:SHK(k),own:k}}
  function scarce(){var need=0,pix=false;tasks.forEach(function(t){if(t.target&&t.modo!=='pos'){need+=t.target.valor;pix=true}});if(!pix){iniSal();return}
   var tot=Math.ceil(need*1.6/10000)*10000,w=[.02,.03,.05,.07,.1,.12,.14,.14,.16,.17],ks=Object.keys(BANKS),i,a=[],sum=0;
   for(i=w.length-1;i>0;i--){var j=rnd(0,i),t=w[i];w[i]=w[j];w[j]=t}
@@ -370,7 +370,7 @@ var ACT=[],ACTN=0,T0=Date.now();
  function desafio(btn){var box=btn.closest('.des'),id=btn.dataset.id,m=null;GRUPOS.forEach(function(g){g.msgs.forEach(function(x){if(x.t==='desafio'&&x.id===id)m=x})});var out=box.querySelector('.dmsg');if(!m)return;
   if(PRIZE[id]){out.innerHTML='✅ Você já ganhou este prêmio!';return}
   var r=norm(box.querySelector('.dres').value),k=norm(box.querySelector('.dkey').value),ok=[].concat(m.resp).some(function(x){return norm(String(x))===r});
-  var bk=Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0];
+  var bk=(Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0]||(LG()&&k===norm(LG())?BK:undefined));
   if(!r)return out.innerHTML='⚠️ Escreva a sua resposta.';
   if(!bk)return out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';
   if(!ok){setPts(-3);return out.innerHTML='❌ Resposta errada. Pense mais um pouco e tente de novo!'}
@@ -616,7 +616,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
  function rbxHtml(){if(!XS.rbxOk){var tk=Date.now();XS.rbxS=tk;setTimeout(function(){if(XS.rbxS===tk){XS.rbxOk=1;draw()}},900);return '<div class="xapp rbsp"><div class="rbl">Rob<b>I</b>ox</div><div class="rbsn"></div><small>Iniciando RobIox…</small></div>'}return '<div class="xapp rb">'+xh('RobIox')+'<iframe class="rbxf" src="robiox.html?embed=1&ano='+rbxAno()+'" allow="autoplay" title="RobIox"></iframe><div class="rbj"><span>🎰 Jackpot: <b id="rJ">'+fmt(SJ.rbx||0)+'</b></span><input id="rK" type="text" placeholder="Cole a chave Pix" autocomplete="off"><button type="button" data-x="rbs:rbx">💸 Sacar</button></div><div id="rN" class="dmsg"></div></div>'}
  function rbxSaque(){var j=SJ.rbx||0,out=$('phone').querySelector('#rN');if(!out)return;if(j<=0){out.innerHTML='⚠️ Jackpot vazio. Acerte as fases do jogo!';return}
   var k=norm(($('phone').querySelector('#rK')||{}).value);if(!k){out.innerHTML='⚠️ Cole a sua chave Pix.';return}
-  var bk=Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0];
+  var bk=(Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0]||(LG()&&k===norm(LG())?BK:undefined));
   if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
   SAL[bk]+=j;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot RobIox (app)',b:'prêmio do app',v:j,ok:true,h:nowS(),id:eid()});SJ.rbx=0;setPts(5);dash();
   var e=$('phone').querySelector('#rJ');if(e)e.textContent=fmt(0);out.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — RobIox')}
@@ -642,7 +642,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
  function sciRefresh(id,msg){var P=$('phone'),b=P.querySelector('.xapp.sc');if(!b)return;var t=document.createElement('div');t.innerHTML=sciHtml(id);b.replaceWith(t.firstChild);var m=P.querySelector('#sM');if(m&&msg)m.innerHTML=msg}
  function sciSaque(id){var a=SCI[id],j=SJ[id]||0,out=$('phone').querySelector('#sN');if(!out)return;if(j<=0){out.innerHTML='⚠️ O jackpot deste app está vazio. Resolva os desafios primeiro!';return}
   var k=norm(($('phone').querySelector('#sK')||{}).value);if(!k){out.innerHTML='⚠️ Cole a sua chave Pix.';return}
-  var bk=Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0];
+  var bk=(Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0]||(LG()&&k===norm(LG())?BK:undefined));
   if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
   SAL[bk]+=j;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot '+a.t+' (app)',b:'prêmio do app',v:j,ok:true,h:nowS(),id:eid()});SJ[id]=0;setPts(5);dash();
   sciRefresh(id,'');var o2=$('phone').querySelector('#sN');if(o2)o2.innerHTML='🎉 Pix de <b>'+fmt(j)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>. Confira no extrato!';toast('💸 Pix recebido: '+fmt(j)+' — '+a.t)}
@@ -737,7 +737,7 @@ function notasHtml(v){var DN=[[10000,'100','#3f78b5','#cfe3f7'],[5000,'50','#d68
  function jackSend(){var inp=document.getElementById('jkKey'),k=norm(inp&&inp.value),out=document.getElementById('jkMsg');if(JACK<=0)return;if(!k){out.innerHTML='⚠️ Cole a sua chave Pix.';return}
   var ebl=window.EDU_LOGIN;if(typeof ebl==='function')ebl=ebl();
   if(ebl&&k===norm(ebl)){var vE=JACK;out.innerHTML='⏳ Enviando para o seu EduBank...';(window.EDUBANK?function(f,c){c()}:ebLoad)('edubank.js?v=2',function(){try{window.EDUBANK.adaptadorLocal(ebl).addCash(vE,'Jackpot dos Desafios');DZSAC+=vE;JACK=0;setPts(5);DZM='🎉 Pix de <b>'+fmt(vE)+'</b> enviado para o seu <b>EduBank</b>! Abra o app EduBank para ver o saldo.';waShow(jackHtml());toast('💸 Pix recebido no EduBank: '+fmt(vE))}catch(e){out.innerHTML='⚠️ Não consegui enviar ao EduBank. Tente de novo.'}});return}
-  var bk=Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0];if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
+  var bk=(Object.keys(BANKS).filter(function(b){return norm(OKEY[b])===k})[0]||(LG()&&k===norm(LG())?BK:undefined));if(!bk){out.innerHTML='⚠️ Não reconheci essa chave Pix. Copie a sua em <b>Pix → Minhas chaves</b> do banco que vai receber.';return}
   var v=JACK;SAL[bk]+=v;LEDGER.push({f:fi,bk:bk,cr:1,n:'Jackpot dos Desafios',b:'prêmio',v:v,ok:true,h:nowS(),id:eid()});DZSAC+=v;JACK=0;setPts(5);dash();DZM='🎉 Pix de <b>'+fmt(v)+'</b> enviado para o seu <b>'+BANKS[bk].n+'</b>! Confira no extrato.';waShow(jackHtml());toast('💸 Pix recebido: '+fmt(v))}
  function centralHtml(){return '<div class="cen"><h3>🎰 Central de Desafios</h3><p>Você começou com a <b>conta vazia</b>! Resolva desafios no <b>WhatsApp</b>, <b>Telegram</b> e <b>Messenger</b> (toque nos ícones do celular) e ganhe Pix no seu 🎰 <b>Jackpot</b>.</p><div class="jkc"><span>Jackpot agora</span><b>'+fmt(JACK)+'</b>'+notasHtml(JACK)+'</div><div class="cbs"><button type="button" data-w="goapp" data-app="WhatsApp">💬 WhatsApp</button><button type="button" data-w="goapp" data-app="Telegram">✈️ Telegram</button><button type="button" data-w="goapp" data-app="Messenger">🟣 Messenger</button><button type="button" data-w="jk">💸 Sacar jackpot</button></div><p class="jks">Resolvidos: <b>'+DZN+'/'+dzTot()+'</b> · Total ganho: <b>'+fmt(JTOT)+'</b> · Já sacado: <b>'+fmt(DZSAC)+'</b></p><small>Pode pesquisar na internet. Cada conversa tem desafios diferentes!</small></div>'}
  function cdzAct(b){var w=b.dataset.w,box=b.closest('.cdz');
@@ -1039,7 +1039,7 @@ if(SCI[id])return sciHtml(id);
   else if(s==='home')h=hd(b.n)+'<div class="sal">Saldo<b>'+fmt(sal())+'</b></div>';
   else if(s==='boleto')h=hd('Pagar conta','home')+'<div class="bd"><label>Código de barras do boleto</label><input id="inChave" type="text" autocomplete="off" placeholder="Digite ou cole o código" value="'+(ph.chave||'')+'"><button class="pb sec" data-a="colar">📋 Colar</button><button class="pb" data-a="bol-ok">Continuar</button><p class="hint">Copie o código de barras da conta (na tela do pedido).</p></div>';
   else if(s==='bol-val')h=hd('Dados da conta','boleto')+'<div class="bd"><div class="cf"><span>Beneficiário</span><b>'+ph.c.nome+'</b><span>Valor do documento</span><b class="big">'+fmt(T.bill.base)+'</b>'+(T.bill.mes?'<span>Vencimento</span><b>'+T.bill.venc+'</b><span>Hoje</span><b>'+T.bill.hj+'</b><span>Situação</span><b>⚠️ Vencida há '+T.bill.mes+' '+(T.bill.mes>1?'meses':'mês')+'</b>':'<span>Vencimento</span><b>'+T.bill.venc+'</b><span>Hoje</span><b>'+T.bill.hj+'</b><span>Situação</span><b>No prazo</b>')+'</div><label>'+(T.bill.mes?'Valor a pagar (com multa e juros)':'Valor a pagar')+'</label><input id="inVal" type="text" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00" value="'+(T.bill.mes?'':fmt(T.bill.base).replace('R$ ',''))+'"><button class="pb" data-a="bol-val-ok">Continuar</button></div>';
-  else if(s==='minhas')h=hd('Minhas chaves',backFor('minhas'))+'<div class="bd"><div class="cf"><span>Banco</span><b>'+b.n+'</b><span>Chave aleatória</span><b class="mk">'+OKEY[BK]+'</b></div><button class="pb" data-a="mykey">📋 Copiar chave</button><p class="hint">Use esta chave para receber dinheiro de outro banco seu.</p></div>';
+  else if(s==='minhas')h=hd('Minhas chaves',backFor('minhas'))+'<div class="bd"><div class="cf"><span>Banco</span><b>'+b.n+'</b><span>Chave Pix (seu login)</span><b class="mk">'+SHK(BK)+'</b></div><button class="pb" data-a="mykey">📋 Copiar chave</button><p class="hint">Use esta chave para receber dinheiro de outro banco seu.</p></div>';
   else if(s==='menu')h=hd('Área Pix','home')+'<div class="ls"><button data-a="chave"><i>📤</i>Transferir<small>Por chave: CPF, celular, e-mail...</small></button><button data-a="cam"><i>📷</i>Pagar com QR Code<small>Aponte a câmera</small></button><button data-a="off"><i>📥</i>Receber</button><button data-a="minhas"><i>🔑</i>Minhas chaves</button></div>';
   else if(s==='chave')h=hd('Transferir com Pix',backFor('chave'))+'<div class="bd"><label>Para quem você quer enviar?</label><input id="inChave" type="text" autocomplete="off" placeholder="CPF/CNPJ, celular, e-mail ou chave aleatória" value="'+(ph.chave||'')+'"><button class="pb sec" data-a="colar">📋 Colar</button><button class="pb" data-a="chave-ok">Continuar</button><p class="hint">Digite a chave exatamente como está no pedido.</p></div>';
   else if(s==='valor')h=hd('Valor','chave')+'<div class="bd"><div class="who">Para <b>'+ph.c.nome+'</b></div><label>Qual valor você quer enviar?</label><input id="inVal" type="text" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00"><button class="pb" data-a="valor-ok">Continuar</button></div>';
@@ -1176,8 +1176,8 @@ function startFinal(){var ks=Object.keys(BANKS).filter(function(k){return SAL0[k
   if(a==='cam-foto'){var ff=$('camf');ff.onchange=function(){camFoto(ff.files[0]);ff.value=''};return ff.click()}
   if(a==='cam-cod')return camCod();
   if(a==='minhas')return go('minhas');
-  if(a==='mykey'){var mk=OKEY[BK];return tabu(function(){doCopy(mk)})}
-  if(a==='chave-ok'){var v=$('inChave').value;ph.chave=v;var c=null;Object.keys(BANKS).forEach(function(k){if(norm(OKEY[k])===norm(v)){if(k===BK)c='mesmo';else c=ownC(k)}});if(c==='mesmo')return toast('Esta chave é deste mesmo banco. Use a chave do OUTRO banco.');if(!c)c=T.contacts.filter(function(x){return norm(x.chave)===norm(v)})[0];if(!c)return toast('Chave Pix não encontrada. Confira os dados.');ph.c=c;go('valor');return}
+  if(a==='mykey'){var mk=SHK(BK);return tabu(function(){doCopy(mk)})}
+  if(a==='chave-ok'){var v=$('inChave').value;ph.chave=v;var c=null;Object.keys(BANKS).forEach(function(k){if(norm(OKEY[k])===norm(v)){if(k===BK)c='mesmo';else c=ownC(k)}});if(!c&&LG()&&norm(v)===norm(LG()))c='mesmo';if(c==='mesmo')return toast('Esta chave é deste mesmo banco. Use a chave do OUTRO banco.');if(!c)c=T.contacts.filter(function(x){return norm(x.chave)===norm(v)})[0];if(!c)return toast('Chave Pix não encontrada. Confira os dados.');ph.c=c;go('valor');return}
   if(a==='valor-ok'){var n=parse($('inVal').value);if(!(n>0))return toast('Digite um valor válido');if(n>sal())return toast(BLOQ[BK]?'🔒 Esta conta está NEGATIVA e bloqueada para Pix. Cubra o negativo com um Pix de outro banco seu.':'Saldo insuficiente neste banco. Transfira dinheiro de outro banco seu.');ph.v=n;go('conf');return}
   if(a==='conf-ok'){ph.pb='';if((BANKS[BK]||{}).kind==='caixa'){go('cx-rev');return}go('pin');return}
   if(a==='cancel'){ph.c=null;toast('Pix cancelado');go('home');return}
