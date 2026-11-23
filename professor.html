@@ -2,58 +2,232 @@
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Painel do Professor - Ludopédia</title>
 <style>
-:root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#f4f7fc;--brand:#1f4fd8}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:16px}
-h1{margin:0 0 4px}.sub{color:var(--muted);margin:0 0 14px}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-input,select,button{font:600 15px "Segoe UI",Arial,sans-serif;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
-button{background:var(--brand);color:#fff;border-color:var(--brand);cursor:pointer}
-.wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px}
-table{border-collapse:collapse;width:100%;min-width:560px}th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:15px}
-th{background:#eef2fc;position:sticky;top:0}tr:first-child td b{color:#b98300}
-.pill{display:inline-block;background:#e6edff;color:var(--brand);border-radius:99px;padding:2px 10px;font-weight:800;font-size:13px}
-.aviso{background:#fff8d6;border:1.5px solid #e6c200;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:14px}
-.alertas{background:#ffe9e9;border:1.5px solid #d00000;border-radius:12px;padding:10px 14px;margin-top:12px;font-size:14px}
+:root{--ink:#16213a;--muted:#5b6785;--line:#dbe3f1;--bg:#f4f7fc;--brand:#1f4fd8;--az:#1d4ed8;--vd:#15803d;--vm:#c62828;--ouro:#b98300}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;padding:12px;max-width:1100px;margin:0 auto}
+h1{margin:6px 0 2px;font-size:24px}h2{margin:16px 0 8px;font-size:19px}h3{margin:14px 0 6px;font-size:16px}
+.sub{color:var(--muted);margin:0 0 10px;font-size:14px}
+.links a{display:inline-block;font:700 14px Arial;padding:8px 14px;color:#fff;border-radius:10px;text-decoration:none;margin:0 6px 6px 0}
+button{font:700 15px "Segoe UI",Arial,sans-serif;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);cursor:pointer;padding:10px 14px;margin:0 6px 6px 0}
+button:hover{border-color:var(--brand)}
+button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+button.big{min-width:150px;padding:18px 20px;font-size:18px;text-align:center}
+button.big small{display:block;font-weight:600;font-size:13px;color:var(--muted);margin-top:4px}
+button.big.on small{color:#dfe8ff}
+button.ok{background:var(--vd);color:#fff;border-color:var(--vd)}button.warn{background:#fff;color:var(--vm);border-color:var(--vm)}button.perigo{background:var(--vm);color:#fff;border-color:var(--vm)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.grid button.big{margin:0;width:100%}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.card{margin:0;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:600}
+.card b{font-size:16px}.card .l{color:var(--muted);font-size:13px;margin:2px 0 8px}.card .r{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px}
+.nota{display:inline-block;min-width:38px;text-align:center;border-radius:99px;padding:3px 10px;font-weight:800;font-size:14px;color:#fff}
+.nota.az{background:var(--az)}.nota.vd{background:var(--vd)}.nota.vm{background:var(--vm)}.nota.cz{background:#9aa5be}
+.chip{display:inline-block;background:#eaf0ff;color:var(--brand);border-radius:99px;padding:2px 10px;font-weight:700;font-size:12px}
+.chip.r{background:#ffe6e6;color:var(--vm)}.chip.g{background:#e3f7e8;color:var(--vd)}.chip.y{background:#fff3cd;color:#8a6500}
+#top{display:flex;flex-wrap:wrap;gap:0;margin:8px 0}
+#bc{font-size:14px;margin:6px 0 4px;color:var(--muted)}#bc a{color:var(--brand);cursor:pointer;font-weight:700}
+.wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px}
+table{border-collapse:collapse;width:100%;min-width:480px}th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+th{background:#eef2fc}tr.cl{cursor:pointer}tr.cl:hover td{background:#f3f7ff}
+.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.kv{display:flex;flex-wrap:wrap;gap:8px}.kv>div{background:#f4f7fc;border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted)}.kv b{display:block;font-size:20px;color:var(--ink)}
+.aviso{background:#fff8d6;border:1.5px solid #e6c200;border-radius:12px;padding:8px 12px;margin:8px 0;font-size:13px}
+.msg{padding:8px 12px;border-radius:10px;margin:8px 0;font-weight:700;font-size:14px}.msg.ok{background:#e3f7e8;color:var(--vd)}.msg.er{background:#ffe6e6;color:var(--vm)}
+.load{color:var(--muted);padding:20px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:0;margin:4px 0}.row>.t{font-weight:700;font-size:13px;color:var(--muted);margin:0 8px 6px 0}
+.br{display:grid;grid-template-columns:minmax(110px,32%) 1fr minmax(70px,auto);gap:8px;align-items:center;padding:5px 4px;border-bottom:1px solid #edf1f9;cursor:pointer;border-radius:8px}
+.br:hover{background:#f3f7ff}.br .lb{font-size:13px;font-weight:700;overflow-wrap:anywhere}.br .lb small{display:block;color:var(--muted);font-weight:600;font-size:11px}
+.br .tr{background:#e9eef9;border-radius:6px;height:20px;position:relative;overflow:hidden}.br .fl{height:100%;border-radius:6px;background:var(--brand);min-width:2px}
+.br .fl.az{background:var(--az)}.br .fl.vd{background:var(--vd)}.br .fl.vm{background:var(--vm)}
+.br .vl{font-size:13px;font-weight:800;text-align:right;white-space:nowrap}
+.seg{display:flex;height:7px;border-radius:4px;overflow:hidden;margin-top:3px}.seg i{display:block;height:100%}
+#login{max-width:380px;margin:40px auto;background:#fff;border:2px solid var(--line);border-radius:16px;padding:22px;text-align:center}
+#login input{font:600 18px Arial;padding:12px;width:100%;border:2px solid var(--line);border-radius:12px;margin:12px 0}
+@media(max-width:560px){body{padding:8px}.br{grid-template-columns:1fr 70px}.br .tr{grid-column:1/3;order:3}.br .vl{order:2}button.big{min-width:0;padding:14px 10px;font-size:16px}}
 </style><script src="edu-aviso-ia.js?v=1"></script></head><body>
-<p style="margin:10px 14px"><a href="painel.html" style="font:700 14px Arial;padding:8px 14px;background:#2a52d6;color:#fff;border-radius:10px;text-decoration:none">📈 Painel ao vivo (ranking e progresso)</a> <a href="atalhos.html" style="font:700 14px Arial;padding:8px 14px;background:#6a2fd6;color:#fff;border-radius:10px;text-decoration:none;margin-left:6px">🔗 Atalhos</a></p>
-<h1>🏛️ Painel do Professor</h1><p class="sub">Notas e pontuações dos alunos em tempo real, com ranking por jogo e turma.</p>
-<div class="aviso" id="av"></div>
-<div class="bar"><input id="fc" placeholder="Código do jogo (ex.: 6964)" inputmode="numeric" maxlength="4"><input id="ft" placeholder="Turma (ex.: 6A)"><select id="fo"><option value="max">Ordenar por pontos</option><option value="nome">Ordenar por nome</option><option value="recente">Mais recentes</option></select><button id="bA">↻ Atualizar</button><button id="bC">⬇ Baixar CSV</button></div>
-<div class="wrap"><table><thead><tr><th>#</th><th>Aluno</th><th>Turma</th><th>Jogo</th><th>Código</th><th>Aula</th><th>Pontos</th><th>Tempo</th></tr></thead><tbody id="tb"></tbody></table></div>
-<div class="alertas" id="al" style="display:none"></div>
+<div id="login"><h2 style="margin-top:0">🔐 Senha do professor</h2><p class="sub">Digite uma vez; fica guardada só nesta aba até você sair.</p><input id="sp" type="password" autocomplete="current-password" placeholder="senha"><br><button class="big on" id="go" style="width:100%">Entrar</button><div id="lm"></div></div>
+<div id="app"></div>
+<template id="tpl">
+<p class="links"><a href="painel.html" style="background:#2a52d6">📈 Painel ao vivo (ranking e progresso)</a><a href="atalhos.html" style="background:#6a2fd6">🔗 Atalhos</a></p>
+<h1>🏛️ Painel do Professor</h1>
+<p class="sub">Tudo por clique: escola → turma → aluno, notas por conteúdo e dashboards.</p>
+<div id="top"><button class="big on" data-a="tab" data-k="alu">👥 Turmas e alunos</button><button class="big" data-a="tab" data-k="cont">📚 Por conteúdo</button><button class="big" data-a="tab" data-k="dash">📊 Dashboards</button><button class="big" data-a="sair" style="margin-left:auto">🚪 Sair</button></div>
+<div id="bc"></div><div id="v"></div>
+</template>
 <script src="config.js"></script>
 <script>
-var dados=[];
-function loc(){try{return JSON.parse(localStorage.getItem('edu_resultados')||'[]')}catch(e){return[]}}
-function carregar(){
- var u=window.EDU_ENDPOINT,c=document.getElementById('fc').value.trim();
- if(u){fetch(u+(c?'?codigo='+encodeURIComponent(c):'')).then(function(r){return r.json()}).then(function(a){dados=a.map(function(x){return{nome:x.nome,turma:x.turma,jogo:x.jogo,codigo:x.codigo,aula:x.aula,maximo:+x.maximo,segundos:+x.segundos,quando:x.dia+' '+x.hora}});desenha()}).catch(function(){dados=loc();desenha()})}
- else{dados=loc();desenha()}
-}
-function desenha(){
- var c=document.getElementById('fc').value.trim(),t=document.getElementById('ft').value.trim().toLowerCase(),o=document.getElementById('fo').value;
- var a=dados.filter(function(x){return(!c||String(x.codigo)===c)&&(!t||String(x.turma||'').toLowerCase()===t)});
- a.sort(o==='nome'?function(x,y){return String(x.nome).localeCompare(y.nome)}:o==='recente'?function(x,y){return String(y.quando).localeCompare(String(x.quando))}:function(x,y){return y.maximo-x.maximo});
- document.getElementById('tb').innerHTML=a.map(function(x,i){return'<tr><td>'+(i+1)+'</td><td><b>'+(x.nome||'(sem nome)')+'</b></td><td>'+(x.turma||'')+'</td><td>'+(x.jogo||'')+'</td><td><span class="pill">'+(x.codigo||'')+'</span></td><td>'+(x.aula||'')+'</td><td><b>'+(x.maximo||x.pontos||0)+'</b></td><td>'+Math.floor((x.segundos||0)/60)+'min '+((x.segundos||0)%60)+'s</td></tr>'}).join('')||'<tr><td colspan="8">Nenhum resultado ainda.</td></tr>';
- window._a=a;
- var al=[];try{al=JSON.parse(localStorage.getItem('edu_alertas')||'[]')}catch(e){}
- var b=document.getElementById('al');if(al.length){b.style.display='block';b.innerHTML='<b>⚠️ Alertas de anti-cola neste aparelho:</b><br>'+al.slice(-10).reverse().map(function(x){return x.quando+' — '+(x.nome||'aluno')+' — '+x.tipo+' — '+x.jogo}).join('<br>')}
-}
-document.getElementById('av').innerHTML=window.EDU_ENDPOINT?'✅ Conectado à planilha. Atualiza a cada 10 segundos.':'⚠️ A planilha ainda não foi conectada: aqui aparecem só os resultados guardados <b>neste aparelho</b>. Veja o arquivo <code>apps-script-planilha.gs</code> para ligar a planilha do Google.';
-['fc','ft','fo'].forEach(function(i){document.getElementById(i).addEventListener('input',function(){i==='fc'?carregar():desenha()})});
-document.getElementById('bA').onclick=carregar;
-document.getElementById('bC').onclick=function(){var l=['Aluno;Turma;Jogo;Codigo;Aula;Pontos;Segundos'].concat((window._a||[]).map(function(x){return[x.nome,x.turma,x.jogo,x.codigo,x.aula,x.maximo||x.pontos,x.segundos].join(';')}));var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+l.join('\n')],{type:'text/csv'}));a.download='resultados.csv';a.click()};
-carregar();setInterval(carregar,10000);
-</script><div id="eb-reset" style="margin:14px;padding:12px;border:2px solid #6a2fd6;border-radius:12px;max-width:520px;font:14px Arial"><b>🔑 Resetar senha do EduBank</b><br>
-<input id="eb-alvo" placeholder="login do aluno (ex.: 12cla6b) ou todas" style="margin:6px 0;padding:8px;width:95%"><br>
-<input id="eb-sp" type="password" placeholder="sua senha de professor" style="margin:0 0 6px;padding:8px;width:95%"><br>
-<button id="eb-go" style="padding:8px 14px">Resetar</button> <span id="eb-msg"></span></div>
-<script>
-document.getElementById('eb-go').onclick=async function(){var m=document.getElementById('eb-msg'),a=document.getElementById('eb-alvo').value.trim().toLowerCase(),sp=document.getElementById('eb-sp').value;
-if(!a||!sp){m.textContent='Preencha os dois campos.';return}
-if(a==='todas'&&!confirm('Resetar a senha do EduBank de TODOS os alunos?'))return;
-try{var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('prof:'+sp));var hp=[].map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2)}).join('');
-var r=await fetch(window.EDU_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({acao:'profreset',alvo:a,hp:hp})});var j=await r.json();
-m.textContent=j.ok?('✅ '+(j.msg||'Pronto')):('⛔ '+(j.erro||'Falhou'));document.getElementById('eb-sp').value=''}catch(e){m.textContent='Erro de conexão.'}};
+var EP=window.EDU_ENDPOINT,HP=null,ESC=[],ESCN={},path=[],SEQ=0,ROWS=[],DS={escola:'',turma:'',disc:'',met:'turma',sub:{turma:'media',disc:'media',ativ:'media',moedas:'ganhas'},desc:true,lim:30},DD=null,DDC={},CUR={},CT=null,CN=null,FI=null,FA={};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function nc(n){return n==null?'cz':n>=8?'az':n>=6?'vd':'vm'}
+function fn(n){return n==null?'–':String(n).replace('.',',')}
+function pill(n){return'<span class="nota '+nc(n)+'">'+fn(n)+'</span>'}
+function tl(t){var a=+t.charAt(3),l=t.charAt(4).toUpperCase();return(a>=6?a+'º ':a+'ª série ')+l}
+function en(c){return ESCN[c]||c.toUpperCase()}
+function tle(t){return en(t.slice(0,3))+' · '+tl(t)}
+function brl(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function dt(ms){return ms?new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'nunca'}
+function ago(ms){if(!ms)return'';var m=Math.round((Date.now()-ms)/60000);return m<1?'agora':m<60?'há '+m+' min':m<1440?'há '+Math.round(m/60)+' h':'há '+Math.round(m/1440)+' d'}
+async function sha(s){var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[].map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2)}).join('')}
+function api(b){b.hp=HP;return fetch(EP,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(j&&!j.ok&&/Senha do professor incorreta|Defina a senha|Informe a senha|Bloqueado|Muitas tentativas/.test(j.erro||''))sair(j.erro);return j}).catch(function(){return{ok:0,erro:'Erro de conexão.'}})}
+function err(my,j){put(my,'<div class="msg er">⛔ '+esc((j&&j.erro)||'Falhou')+'</div>')}
+function put(my,h){if(my===SEQ)$('v').innerHTML=h}
+/* ---------- sessão ---------- */
+async function entrar(){var sp=$('sp').value;if(!sp){$('lm').innerHTML='<div class="msg er">Digite a senha.</div>';return}
+ $('lm').innerHTML='<p class="load">Conferindo…</p>';
+ try{HP=await sha('prof:'+sp)}catch(e){$('lm').innerHTML='<div class="msg er">Navegador sem suporte (use https).</div>';return}
+ $('sp').value='';var j=await api({acao:'profturmas'});
+ if(j.ok){try{sessionStorage.setItem('edu_prof_hp',HP)}catch(e){}ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});abre()}else{HP=null;$('lm').innerHTML='<div class="msg er">⛔ '+esc(j.erro||'Falhou')+'</div>'}}
+function sair(m){HP=null;ESC=[];ESCN={};DDC={};DD=null;CUR={};CT=null;CN=null;FI=null;path=[];SEQ++;try{sessionStorage.removeItem('edu_prof_hp')}catch(e){}$('app').innerHTML='';$('login').style.display='block';$('lm').innerHTML=m?'<div class="msg er">⛔ '+esc(m)+'</div>':''}
+function abre(){$('login').style.display='none';$('app').appendChild($('tpl').content.cloneNode(true));tab('alu')}
+async function retoma(h){HP=h;var j=await api({acao:'profturmas'});if(j.ok){ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});abre()}else sair(j.erro)}
+/* ---------- navegação ---------- */
+function go(t,f){path.push({t:t,f:f});draw()}
+function draw(){var c=path[path.length-1],my=++SEQ,h='';
+ if(path.length>1)h+='<button data-a="volta" style="padding:6px 12px;margin:0 8px 0 0">← Voltar</button>';
+ h+=path.map(function(p,i){return i<path.length-1?'<a data-a="crumb" data-i="'+i+'">'+esc(p.t)+'</a>':'<b style="color:var(--ink)">'+esc(p.t)+'</b>'}).join(' › ');
+ $('bc').innerHTML=h;$('v').innerHTML='<p class="load">Carregando…</p>';window.scrollTo(0,0);
+ Promise.resolve(c.f(my)).catch(function(e){put(my,'<div class="msg er">Erro: '+esc(e&&e.message)+'</div>')})}
+function tab(k){
+ [].forEach.call(document.querySelectorAll('#top button[data-a=tab]'),function(b){b.classList.toggle('on',b.getAttribute('data-k')===k)});
+ path=[];
+ if(k==='alu')go('Turmas e alunos',function(my){return vEscolas(my,'alu')});
+ else if(k==='cont')go('Por conteúdo',function(my){return vEscolas(my,'cont')});
+ else go('Dashboards',vDash)}
+async function carregaEsc(my){if(ESC.length)return true;var j=await api({acao:'profturmas'});if(!j.ok){err(my,j);return false}ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});return true}
+/* ---------- escola -> turma ---------- */
+async function vEscolas(my,mode){if(!await carregaEsc(my))return;
+ if(!ESC.length)return put(my,'<div class="aviso">Nenhum aluno encontrado ainda.</div>');
+ put(my,'<h2>Escolha a escola</h2><div class="grid">'+ESC.map(function(e,i){var t=0;e.turmas.forEach(function(x){t+=x.alunos});return'<button class="big" data-a="esc" data-m="'+mode+'" data-i="'+i+'">🏫 '+esc(e.nome)+'<small>'+t+' alunos · '+e.turmas.length+' turmas</small></button>'}).join('')+'</div>')}
+function vTurmas(my,mode,i){var e=ESC[i];
+ put(my,'<h2>'+esc(e.nome)+': escolha a turma</h2><div class="grid">'+e.turmas.map(function(t){return'<button class="big" data-a="turma" data-m="'+mode+'" data-t="'+t.turma+'">'+esc(tl(t.turma))+'<small>'+t.alunos+' alunos</small></button>'}).join('')+'</div>')}
+/* ---------- lista de alunos ---------- */
+async function vAlunos(my,turma){var j=await api({acao:'profturma',turma:turma});if(!j.ok)return err(my,j);CUR={turma:turma,alunos:j.alunos,sort:'num',my:my};rAlunos()}
+function rAlunos(){var a=CUR.alunos.slice(),s=CUR.sort;
+ a.sort(s==='media'?function(x,y){return(y.media==null?-1:y.media)-(x.media==null?-1:x.media)||x.num-y.num}:s==='n'?function(x,y){return y.n-x.n||x.num-y.num}:function(x,y){return x.num-y.num});
+ var h='<h2>'+esc(tle(CUR.turma))+' · '+a.length+' alunos</h2><div class="row"><span class="t">Ordenar por:</span>'+[['num','Nº do aluno'],['media','Média'],['n','Atividades feitas']].map(function(o){return'<button data-a="ord" data-k="'+o[0]+'" class="'+(s===o[0]?'on':'')+'" style="padding:8px 12px">'+o[1]+'</button>'}).join('')+'</div><div class="cards">';
+ h+=a.map(function(x){return'<button class="card" data-a="aluno" data-l="'+x.login+'"><b>Aluno nº '+x.num+' · '+x.login+'</b><div class="l">'+(x.conta?'':'<span class="chip y">sem acesso ainda</span> ')+(x.bloq?'<span class="chip r">bloqueado</span> ':'')+(x.conta&&!x.banco?'<span class="chip">sem senha EduBank</span>':'')+'</div><div class="r"><span>Média '+pill(x.media)+'</span><span class="chip">'+x.n+' atividades</span><span class="chip g">🪙 '+x.saldo+' (ganhas '+x.ganhas+')</span></div></button>'}).join('')+'</div>';
+ put(CUR.my,h)}
+/* ---------- ficha ---------- */
+async function vFicha(my,login){var j=await api({acao:'profaluno',login:login});if(!j.ok)return err(my,j);FI=j;FA={disc:''};FI.my=my;rFicha('')}
+function acoesHtml(conf){
+ if(conf){var t={reset:'Apagar a senha do EduBank deste aluno?',desb:'Remover o bloqueio deste aluno?',zerar:'Zerar a carteira (moedas estrangeiras/cripto) deste aluno?'}[conf];return'<div class="msg er">'+t+'</div><button class="perigo" data-a="faz" data-k="'+conf+'">✔ Sim, confirmar</button><button data-a="cancela">✖ Cancelar</button>'}
+ return'<button class="warn" data-a="conf" data-k="reset">🔑 Resetar senha do EduBank</button><button class="warn" data-a="conf" data-k="desb">🔓 Desbloquear</button><button class="warn" data-a="conf" data-k="zerar">🧹 Zerar carteira</button>'}
+function rFicha(msg){var f=FI,b=f.boletim,c=f.conta,h='';
+ h+='<h2>Aluno nº '+f.num+' · '+esc(f.login)+'</h2><p class="sub">'+esc(tle(f.turma))+'</p>';
+ h+='<div class="box"><div class="kv"><div>Média geral<b>'+pill(b.geral.media)+'</b></div><div>Atividades<b>'+b.geral.n+'</b></div><div>Concluídas<b>'+b.geral.conc+'</b></div><div>Moedas (saldo)<b>🪙 '+f.moedas.saldo+'</b></div><div>Acesso<b style="font-size:14px">'+(c.ativada?'ativo · '+ago(c.ultimo):'sem acesso')+'</b></div><div>Senha EduBank<b style="font-size:14px">'+(c.banco?'criada':'não criada')+'</b></div>'+(c.bloq?'<div style="background:#ffe6e6;color:var(--vm)">Situação<b style="font-size:14px">🔒 bloqueado</b></div>':'')+'</div></div>';
+ h+='<div class="box"><b>Ações</b><div id="acoes" style="margin-top:8px">'+acoesHtml('')+'</div><div id="am">'+(msg||'')+'</div></div>';
+ var ds=Object.keys(b.porDisc).sort();
+ h+='<h3>Boletim por disciplina e trimestre</h3><div class="wrap"><table><tr><th>Disciplina</th><th>1º tri</th><th>2º tri</th><th>3º tri</th><th>Geral</th></tr>';
+ h+=ds.map(function(d){var p=b.porDisc[d],t=b.totais[d];return'<tr><td><b>'+esc(d)+'</b></td>'+[1,2,3].map(function(i){return'<td>'+(p[i].n?pill(p[i].media)+' <small>('+p[i].n+')</small>':'–')+'</td>'}).join('')+'<td>'+pill(t.media)+' <small>('+t.n+')</small></td></tr>'}).join('')||'<tr><td colspan="5">Sem atividades ainda.</td></tr>';
+ h+='<tr style="background:#f4f7fc"><td><b>GERAL</b></td>'+[1,2,3].map(function(i){var x=b.geral.porTri[i];return'<td>'+(x.n?pill(x.media)+' <small>('+x.n+')</small>':'–')+'</td>'}).join('')+'<td>'+pill(b.geral.media)+' <small>('+b.geral.n+')</small></td></tr></table></div>';
+ h+='<h3>Meus conteúdos</h3><div class="row"><button data-a="fd" data-i="-1" class="'+(FA.disc===''?'on':'')+'" style="padding:6px 12px">Todos</button>'+ds.map(function(d,i){return'<button data-a="fd" data-i="'+i+'" class="'+(FA.disc===d?'on':'')+'" style="padding:6px 12px">'+esc(d)+'</button>'}).join('')+'</div>';
+ var cs=b.conteudos.filter(function(x){return!FA.disc||x.disc===FA.disc});
+ h+='<div class="wrap"><table><tr><th>Disciplina</th><th>Conteúdo</th><th>Tri</th><th>Nota (melhor)</th><th>Última</th><th>Tentativas</th></tr>'+(cs.map(function(x){return'<tr><td>'+esc(x.disc)+'</td><td>'+esc(x.atividade)+(x.concluido?' ✔':'')+'</td><td>'+x.tri+'º</td><td>'+pill(x.melhor)+'</td><td>'+pill(x.ultima)+'</td><td>'+x.tent+'</td></tr>'}).join('')||'<tr><td colspan="6">Nenhum conteúdo.</td></tr>')+'</table></div>';
+ var cart=Object.keys(f.carteira);
+ h+='<h3>Moedas e carteira</h3><div class="box"><div class="kv"><div>Ganhas<b>'+f.moedas.ganhas+'</b></div><div>Trocadas<b>'+f.moedas.trocadas+'</b></div><div>Saldo<b>'+f.moedas.saldo+'</b></div></div>'+(cart.length?'<p style="margin:10px 0 0"><b>Carteira EduBank:</b> '+cart.map(function(m){return'<span class="chip">'+m+' '+String(f.carteira[m])+'</span>'}).join(' ')+'</p>':'<p class="sub" style="margin:10px 0 0">Carteira EduBank vazia.</p>')+(f.trocas.length?'<p style="margin:10px 0 0"><b>Últimas trocas de moedas:</b> '+f.trocas.map(function(t){return'<span class="chip g">'+dt(t.ts)+' · '+t.q+' moedas = '+brl(t.centavos/100)+'</span>'}).join(' ')+'</p>':'')+'</div>';
+ h+='<h3>Últimas transações</h3><div class="wrap"><table><tr><th>Quando</th><th>Tipo</th><th>Moeda</th><th>Valor</th><th>Detalhe</th></tr>'+(f.extrato.map(function(x){var tp={env:'Enviou',rec:'Recebeu',compra:'Comprou',venda:'Vendeu'}[x.tipo]||x.tipo;return'<tr><td>'+dt(x.ts)+'</td><td>'+tp+'</td><td>'+esc(x.moeda)+'</td><td>'+String(x.v)+(x.brl!=null?' ('+brl(x.brl)+')':'')+'</td><td>'+esc((x.outro?x.outro+' ':'')+(x.nota||''))+'</td></tr>'}).join('')||'<tr><td colspan="5">Sem transações.</td></tr>')+'</table></div>';
+ put(f.my,h)}
+async function faz(k){var f=FI,acao={reset:'profreset',desb:'profdesbloquear',zerar:'profzerar'}[k],b={acao:acao};
+ if(k==='reset')b.alvo=f.login;else b.login=f.login;
+ var my=f.my;$('acoes').innerHTML='<span class="load">Executando…</span>';
+ var j=await api(b),m=j.ok?'<div class="msg ok">✅ '+esc(j.msg||'Pronto')+'</div>':'<div class="msg er">⛔ '+esc(j.erro||'Falhou')+'</div>';
+ if(my!==SEQ)return;
+ var g=await api({acao:'profaluno',login:f.login});if(my!==SEQ)return;if(g.ok){g.my=my;FI=g}rFicha(m)}
+/* ---------- por conteúdo ---------- */
+async function vDiscs(my,turma){var j=await api({acao:'profconteudos',turma:turma});if(!j.ok)return err(my,j);CT=j;
+ put(my,'<h2>'+esc(tle(turma))+': escolha a disciplina</h2>'+(j.discs.length?'<div class="grid">'+j.discs.map(function(d,i){return'<button class="big" data-a="disc" data-i="'+i+'">'+esc(d.disc)+'<small>'+d.conteudos.length+' conteúdos</small></button>'}).join('')+'</div>':'<div class="aviso">Nenhum resultado registrado nesta turma ainda.</div>'))}
+function vConts(my,i){var d=CT.discs[i];
+ put(my,'<h2>'+esc(d.disc)+': escolha o conteúdo</h2><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">'+d.conteudos.map(function(c,k){return'<button class="big" data-a="cont" data-d="'+i+'" data-i="'+k+'" style="font-size:15px">'+esc(c.atividade||c.cod)+'<small>'+c.feitos+' de '+CT.total+' alunos fizeram</small></button>'}).join('')+'</div>')}
+async function vConteudo(my,turma,disc,cod){var j=await api({acao:'profconteudo',turma:turma,disc:disc,cod:cod});if(!j.ok)return err(my,j);CN=j;CN.f='todos';CN.my=my;rConteudo()}
+function catN(a){var n=a.melhor;return!a.feito?'nf':n==null?'nf':n<6?'lt6':n<8?'m68':'ge8'}
+function rConteudo(){var j=CN,c={todos:j.alunos.length,lt6:0,m68:0,ge8:0,nf:0};
+ j.alunos.forEach(function(a){c[catN(a)]++});
+ var fl=[['todos','Todos'],['lt6','Abaixo de 6'],['m68','6 a 8'],['ge8','8 ou mais'],['nf','Não fez']];
+ var l=j.alunos.filter(function(a){return j.f==='todos'||catN(a)===j.f}).sort(function(a,b){return(b.melhor==null?-1:b.melhor)-(a.melhor==null?-1:a.melhor)||a.num-b.num});
+ var h='<h2>'+esc(j.atividade)+'</h2><p class="sub">'+esc(j.disc)+' · '+esc(tle(j.turma))+'</p><div class="row"><span class="t">Filtrar:</span>'+fl.map(function(o){return'<button data-a="fc" data-k="'+o[0]+'" class="'+(j.f===o[0]?'on':'')+'" style="padding:8px 12px">'+o[1]+' ('+c[o[0]]+')</button>'}).join('')+'</div>';
+ h+='<div class="wrap"><table><tr><th>Aluno</th><th>Nota (melhor)</th><th>Última</th><th>Tentativas</th></tr>'+(l.map(function(a){return'<tr class="cl" data-a="aluno" data-l="'+a.login+'"><td><b>Aluno nº '+a.num+'</b> <small>'+a.login+'</small></td><td>'+(a.feito?pill(a.melhor):'<span class="chip y">não fez</span>')+'</td><td>'+(a.feito?pill(a.ultima):'–')+'</td><td>'+(a.feito?a.tent+(a.conc?' ✔':''):'–')+'</td></tr>'}).join('')||'<tr><td colspan="4">Nenhum aluno neste filtro.</td></tr>')+'</table></div>';
+ put(j.my,h)}
+/* ---------- dashboards ---------- */
+var MET=[['turma','🏫 Por turma'],['disc','📘 Por disciplina'],['ativ','📝 Por atividade'],['pts','🏆 Pontuação'],['cash','💵 Dinheiro R$'],['moedas','🪙 Moedas'],['patr','💎 Patrimônio EduBank']];
+var SUB={turma:[['media','Média'],['feitos','Atividades feitas'],['conc','Concluídas'],['pts','Pontos']],disc:[['media','Média'],['feitos','Atividades feitas'],['conc','Concluídas'],['pts','Pontos']],ativ:[['media','Média'],['alunos','Alunos que fizeram'],['pctConc','% concluída']],moedas:[['ganhas','Ganhas'],['saldo','Saldo']]};
+function dkey(cash){return[DS.escola,DS.turma,DS.disc,cash?1:0].join('|')}
+async function dLoad(my,atual){var cash=(DS.met==='cash'||DS.met==='patr')?1:0,k=dkey(cash),c=DDC[k];
+ if(!atual&&c&&Date.now()-c.t<120000){DD=c.d;return true}
+ var b={acao:'profdash',escola:DS.escola,turma:DS.turma,disc:DS.disc};if(cash)b.cash=1;if(atual)b.atualizar=1;
+ var j=await api(b);if(!j.ok){err(my,j);return false}DD=j;DDC[k]={t:Date.now(),d:j};return true}
+async function vDash(my){if(!await carregaEsc(my))return;DS.my=my;if(!await dLoad(my,false))return;rDash(my)}
+async function dRefetch(atual){var my=SEQ;DS.my=my;$('dc').innerHTML='<p class="load">Carregando…</p>';if(await dLoad(my,atual))rDash(my)}
+function btn(a,k,t,on,x){return'<button data-a="'+a+'" data-k="'+esc(k)+'" class="'+(on?'on':'')+'" style="padding:7px 12px"'+(x||'')+'>'+esc(t)+'</button>'}
+function barRows(){var m=DS.met,s=DS.sub[m],r=[],D=DD;
+ if(m==='turma')r=D.turmas.map(function(x){var v=x[s];return{lb:tle(x.turma),sb:x.alunos+' alunos · '+x.feitos+' atividades',v:v,d:s==='media'?fn(v):String(v),cls:s==='media'?nc(v):'',k:'turma',id:x.turma,max:s==='media'?10:0}});
+ else if(m==='disc')r=D.disciplinas.map(function(x){var v=x[s];return{lb:x.disc,sb:x.alunos+' alunos · '+x.feitos+' atividades',v:v,d:s==='media'?fn(v):String(v),cls:s==='media'?nc(v):'',k:'disc',id:x.disc,max:s==='media'?10:0}});
+ else if(m==='ativ')r=D.atividades.map(function(x,i){var v=x[s];return{lb:x.atividade||x.cod,sb:x.disc+' · '+x.alunos+' alunos · '+x.pctConc+'% concluída',v:v,d:s==='media'?fn(v):s==='pctConc'?v+'%':String(v),cls:s==='media'?nc(v):'',k:'ativ',id:i,max:s==='media'?10:s==='pctConc'?100:0,seg:[x.lt6,x.m68,x.ge8],segt:'<6: '+x.lt6+' · 6–8: '+x.m68+' · ≥8: '+x.ge8}});
+ else{var base=D.alunos.map(function(x){var v,d,sb=tle(x.turma);
+   if(m==='pts'){v=x.pts;d=v+' pts'}else if(m==='cash'){v=x.cash;d=v==null?'':brl(v);sb+=x.cashTs?' · cópia '+ago(x.cashTs):''}
+   else if(m==='moedas'){v=x[s];d='🪙 '+v;sb+=' · ganhas '+x.ganhas+' · saldo '+x.saldo}
+   else{v=x.patr;d=brl(v);sb+=' · R$ jogo '+(x.cash==null?'sem cópia':brl(x.cash))+' · carteira '+brl(x.cart)}
+   return{lb:'Aluno nº '+x.num,sb:sb,v:v,d:d,cls:'',k:'aluno',id:x.login,max:0}});r=base}
+ r=r.filter(function(x){return x.v!=null});
+ r.sort(function(a,b){return DS.desc?b.v-a.v:a.v-b.v});
+ return r}
+function rDash(my){var D=DD,m=DS.met,h='';
+ var turmasF=[];ESC.forEach(function(e){if(!DS.escola||DS.escola===e.cod)e.turmas.forEach(function(t){turmasF.push(t.turma)})});
+ h+='<div class="box"><div class="row"><span class="t">Escola:</span>'+btn('de','',' Todas',!DS.escola)+ESC.map(function(e){return btn('de',e.cod,e.nome,DS.escola===e.cod)}).join('')+'</div>';
+ h+='<div class="row"><span class="t">Turma:</span>'+btn('dt','','Todas',!DS.turma)+turmasF.map(function(t){return btn('dt',t,(DS.escola?'':en(t.slice(0,3)).slice(0,3)+' ')+tl(t),DS.turma===t)}).join('')+'</div>';
+ h+='<div class="row"><span class="t">Disciplina:</span>'+btn('dd','','Todas',!DS.disc)+D.discs.map(function(d){return btn('dd',d,d,DS.disc===d)}).join('')+'</div></div>';
+ h+='<div class="row"><span class="t">Ver:</span>'+MET.map(function(o){return btn('dm',o[0],o[1],m===o[0])}).join('')+'</div>';
+ h+='<div class="row">'+(SUB[m]?'<span class="t">Valor:</span>'+SUB[m].map(function(o){return btn('ds',o[0],o[1],DS.sub[m]===o[0])}).join(''):'')+'<span class="t" style="margin-left:8px">Ordem:</span>'+btn('do','d','↓ Decrescente',DS.desc)+btn('do','c','↑ Crescente',!DS.desc)+'</div>';
+ if(m==='cash')h+='<div class="aviso">💵 Mostra a <b>cópia da última sincronização</b> do R$ do jogo (aba Nuvem) de cada aluno; pode estar desatualizada. Alunos sem cópia não aparecem.</div>';
+ if(m==='patr')h+='<div class="aviso">💎 Patrimônio = R$ do jogo (cópia da última sincronização) + moedas estrangeiras e criptos da carteira × cotação atual. Cotação: <b>'+dt(D.cotacao.ts)+'</b> ('+esc(D.cotacao.fonte)+') <button data-a="cot" style="padding:5px 10px;margin:0 0 0 6px">↻ Atualizar cotação</button></div>';
+ h+='<div id="dc">';
+ ROWS=barRows();var shown=ROWS.slice(0,DS.lim);
+ if(!ROWS.length)h+='<div class="aviso">Sem dados para este filtro.</div>';
+ else{var mx=0;ROWS.forEach(function(x){if(x.v>mx)mx=x.v});
+  h+='<p class="sub">'+ROWS.length+' itens · toque numa barra para abrir</p><div class="box" style="padding:6px 8px">'+shown.map(function(x,i){var mxx=x.max||mx||1,w=Math.max(0,Math.min(100,100*x.v/mxx));
+   return'<div class="br" data-a="bar" data-i="'+i+'"><div class="lb">'+esc(x.lb)+'<small>'+esc(x.sb)+'</small></div><div><div class="tr"><div class="fl '+x.cls+'" style="width:'+w+'%"></div></div>'+(x.seg?segHtml(x.seg,x.segt):'')+'</div><div class="vl">'+esc(x.d)+'</div></div>'}).join('')+'</div>';
+  if(ROWS.length>DS.lim)h+='<button data-a="mais">Mostrar mais ('+(ROWS.length-DS.lim)+')</button>';
+  else if(DS.lim>30)h+='<button data-a="menos">Mostrar menos</button>'}
+ if(m==='ativ')h+='<div class="sub">Barra fina: <span style="color:var(--vm)">■</span> abaixo de 6 · <span style="color:var(--vd)">■</span> 6 a 8 · <span style="color:var(--az)">■</span> 8 ou mais (pela melhor nota de cada aluno).</div><div id="pick"></div>';
+ h+='</div>';put(my,h)}
+function segHtml(s,t){var n=s[0]+s[1]+s[2];if(!n)return'';return'<div class="seg" title="'+esc(t)+'"><i style="width:'+100*s[0]/n+'%;background:var(--vm)"></i><i style="width:'+100*s[1]/n+'%;background:var(--vd)"></i><i style="width:'+100*s[2]/n+'%;background:var(--az)"></i></div><div style="font-size:11px;color:var(--muted)">'+esc(t)+'</div>'}
+function barClick(i){var x=ROWS[i];if(!x)return;
+ if(x.k==='aluno'){go('Aluno nº '+parseInt(x.id,10),function(my){return vFicha(my,x.id)})}
+ else if(x.k==='turma')go(tl(x.id),function(my){return vAlunos(my,x.id)});
+ else if(x.k==='disc'){DS.disc=x.id;DS.met='ativ';dRefetch(false)}
+ else if(x.k==='ativ'){var a=DD.atividades[x.id];
+  if(DS.turma)go(a.atividade||a.cod,function(my){return vConteudo(my,DS.turma,a.disc,a.cod)});
+  else{var tf=[];DD.turmas.forEach(function(t){tf.push('<button data-a="pickt" data-t="'+t.turma+'" data-i="'+x.id+'" style="padding:7px 12px">'+esc(tle(t.turma))+'</button>')});$('pick').innerHTML='<div class="box"><b>Escolha a turma para abrir “'+esc(a.atividade||a.cod)+'”:</b><div style="margin-top:8px">'+tf.join('')+'</div></div>'}}}
+/* ---------- cliques ---------- */
+document.addEventListener('click',function(ev){var el=ev.target.closest('[data-a]');if(!el)return;var a=el.getAttribute('data-a'),g=function(n){return el.getAttribute('data-'+n)};
+ if(a==='tab')tab(g('k'));
+ else if(a==='sair')sair('');
+ else if(a==='volta'){path.pop();draw()}
+ else if(a==='crumb'){path.length=+g('i')+1;draw()}
+ else if(a==='esc'){var i=+g('i'),m=g('m');go(ESC[i].nome,function(my){return vTurmas(my,m,i)})}
+ else if(a==='turma'){var t=g('t'),m2=g('m');if(m2==='alu')go(tl(t),function(my){return vAlunos(my,t)});else go(tl(t),function(my){return vDiscs(my,t)})}
+ else if(a==='ord'){CUR.sort=g('k');rAlunos()}
+ else if(a==='aluno'){var l=g('l');go('Aluno nº '+parseInt(l,10),function(my){return vFicha(my,l)})}
+ else if(a==='conf'){$('acoes').innerHTML=acoesHtml(g('k'))}
+ else if(a==='cancela'){$('acoes').innerHTML=acoesHtml('')}
+ else if(a==='faz')faz(g('k'));
+ else if(a==='fd'){var q=+g('i');FA.disc=q<0?'':Object.keys(FI.boletim.porDisc).sort()[q];rFicha('')}
+ else if(a==='disc'){var di=+g('i');go(CT.discs[di].disc,function(my){return vConts(my,di)})}
+ else if(a==='cont'){var d=CT.discs[+g('d')],c=d.conteudos[+g('i')],tu=CT.turma;go(c.atividade||c.cod,function(my){return vConteudo(my,tu,d.disc,c.cod)})}
+ else if(a==='fc'){CN.f=g('k');rConteudo()}
+ else if(a==='de'){DS.escola=g('k');if(DS.turma&&DS.turma.slice(0,3)!==DS.escola&&DS.escola)DS.turma='';dRefetch(false)}
+ else if(a==='dt'){DS.turma=g('k');if(DS.turma)DS.escola=DS.turma.slice(0,3);dRefetch(false)}
+ else if(a==='dd'){DS.disc=g('k');dRefetch(false)}
+ else if(a==='dm'){DS.met=g('k');DS.lim=30;dRefetch(false)}
+ else if(a==='ds'){DS.sub[DS.met]=g('k');rDash(SEQ)}
+ else if(a==='do'){DS.desc=g('k')==='d';rDash(SEQ)}
+ else if(a==='mais'){DS.lim=9999;rDash(SEQ)}
+ else if(a==='menos'){DS.lim=30;rDash(SEQ)}
+ else if(a==='cot')dRefetch(true);
+ else if(a==='bar')barClick(+g('i'));
+ else if(a==='pickt'){var tt=g('t'),at=DD.atividades[+g('i')];DS.turma=tt;DS.escola=tt.slice(0,3);go(at.atividade||at.cod,function(my){return vConteudo(my,tt,at.disc,at.cod)})}
+});
+$('go').onclick=entrar;$('sp').addEventListener('keydown',function(e){if(e.key==='Enter')entrar()});
+try{var h0=sessionStorage.getItem('edu_prof_hp');if(h0&&/^[0-9a-f]{64}$/.test(h0))retoma(h0)}catch(e){}
 </script>
 </body></html>

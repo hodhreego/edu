@@ -412,7 +412,7 @@ function rbxLoad_(p) {
 
 // ================= EduBank (spec v2): contas, sessões, nuvem, câmbio, transferências, boletim =================
 // Resposta sempre JSON: {ok:1,...} ou {ok:0,erro:'texto'}. Ação pelo parâmetro "acao" (GET ou POST JSON).
-var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1 };
+var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, profentrar: 1, profturmas: 1, profturma: 1, profaluno: 1, profconteudos: 1, profconteudo: 1, profdesbloquear: 1, profzerar: 1, profdash: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1 };
 var EB_ALUNO = /^\d{1,3}[a-z]{3}\d[a-z]$/;
 var EB_ESPECIAL = /^(mestre|teste|mainara)$/;
 var EB_FIAT = ['USD', 'EUR', 'GBP', 'JPY', 'ARS', 'CNY'];
@@ -431,6 +431,7 @@ var EB_ABAS = {
   Extratos: { cab: ['ts', 'login', 'tipo', 'moeda', 'v', 'brl', 'outro', 'nota', 'saldo_apos', 'id'], cor: '#b45309', w: [150, 110, 70, 70, 110, 100, 110, 220, 110, 200], txt: [2, 7, 8, 10] },
   Logs: { cab: ['ts', 'login', 'evento', 'detalhe'], cor: '#334155', w: [150, 110, 110, 520], txt: [2, 4] },
   Mestre: { cab: ['ts', 'aluno', 'operacao', 'moeda', 'spread_brl', 'conta_mestre'], cor: '#7c3aed', w: [150, 110, 80, 80, 110, 130], txt: [2, 4, 6] },
+  Moedas: { cab: ['ts', 'login', 'id', 'tipo', 'qtd', 'centavos'], cor: '#ca8a04', w: [150, 110, 200, 80, 80, 90], txt: [2, 3, 4] },
   Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160], txt: [2, 3, 5, 6, 7, 14, 15] }
 };
 
@@ -565,6 +566,7 @@ function eb_dispatch_(p) {
   if (a === 'entrar') return eb_entrar_(p);
   if (a === 'taxas') return eb_taxasResp_();
   if (a === 'profreset') return eb_profReset_(p);
+  if (a.indexOf('prof') === 0) return eb_profAcao_(p);
   if (a === 'senha') return eb_erro_('A senha de login é fixa e não pode ser alterada. Só a senha do EduBank pode ser criada ou trocada.');
   var au = eb_auth_(p);
   if (!au.ok) return au;
@@ -580,6 +582,8 @@ function eb_dispatch_(p) {
   if (a === 'extrato') return eb_extratoResp_(l);
   if (a === 'resultado') return eb_resultado_(p, l);
   if (a === 'boletim') return eb_boletimResp_(l);
+  if (a === 'moedas') return eb_moedasResp_(l);
+  if (a === 'trocarmoedas') return eb_trocarMoedas_(p, l);
   if (a === 'classificacao') return eb_classifResp_(l);
   return eb_erro_('Ação desconhecida.');
 }
@@ -738,6 +742,241 @@ function eb_profReset_(p) {
   if (alvo === 'todas') return eb_resetTodasCore_();
   var login = eb_loginOk_(alvo); if (!login) return eb_erro_('Login inválido.');
   return eb_resetCore_(login);
+}
+
+// ---------- painel do professor (profentrar/profturmas/profturma/profaluno/profconteudos/profconteudo/profdesbloquear/profzerar) ----------
+// Todas exigem hp (mesma checagem/bloqueio do profreset). Nunca devolvem hash, salt, token nem senha.
+var EB_ESCOLAS = { cla: 'Clarito', xus: 'Schuster' };
+function eb_turmaOk_(t) { t = String(t || '').toLowerCase().trim(); return /^[a-z]{3}\d[a-z]$/.test(t) ? t : ''; }
+function eb_numLogin_(l) { return parseInt(l, 10) || 0; }
+function eb_msAte_(v) { return Number(v) || 0; }
+// {login:{key:{disc,cod,atividade,tri,ts,pct,melhor,tent,conc,pts}}} lendo Resultados uma vez
+function eb_profResultados_() {
+  var res = {}, sh = eb_aba_('Resultados'), n = sh.getLastRow();
+  if (n < 2) return res;
+  sh.getRange(2, 1, n - 1, 12).getValues().forEach(function (r, i) {
+    var lg = String(r[1]); if (!EB_ALUNO.test(lg)) return;
+    var key = r[4] + '|' + (r[5] || r[6] || ('#' + i)), o = res[lg] || (res[lg] = {}), c = o[key];
+    if (!c) c = o[key] = { disc: String(r[4]), cod: String(r[5] || r[6] || ''), atividade: String(r[6] || r[5] || ''), tri: 1, ts: -1, pct: null, melhor: null, tent: 0, conc: 0, pts: 0, ptsAll: 0 };
+    var pc = (r[9] === '' || r[9] == null) ? null : Number(r[9]), ts = new Date(r[0]).getTime() || 0;
+    if (pc !== null && !isFinite(pc)) pc = null;
+    c.tent++;
+    if (pc !== null && (c.melhor === null || pc > c.melhor)) c.melhor = pc;
+    if (ts >= c.ts) { c.ts = ts; c.pct = pc; c.tri = Number(r[3]) || 1; c.atividade = String(r[6] || r[5] || ''); }
+    if (Number(r[10]) === 1) c.conc = 1;
+    var v = Number(r[11]); if (!isFinite(v) || v <= 0) v = Number(r[7]); if (!isFinite(v) || v < 0) v = 0;
+    if (v > c.ptsAll) c.ptsAll = v;
+    if (Number(r[10]) === 1 && v > c.pts) c.pts = v;   // moedas: só linhas concluídas
+  });
+  return res;
+}
+function eb_profResumo_(o) {   // o = {key:{...}} de um aluno (ou undefined)
+  var n = 0, s = 0, nn = 0, conc = 0, g = 0;
+  if (o) Object.keys(o).forEach(function (k) { var c = o[k]; n++; if (c.pct !== null) { s += c.pct; nn++; } conc += c.conc; g += Math.floor(c.pts); });
+  return { n: n, media: nn ? eb_round1_(s / nn / 10) : null, conc: conc, ganhas: g };
+}
+function eb_profTrocadas_() {
+  var sh = eb_aba_('Moedas'), n = sh.getLastRow(), t = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 6).getValues().forEach(function (r) { if (String(r[3]) === 'troca') t[String(r[1])] = (t[String(r[1])] || 0) + (Number(r[4]) || 0); });
+  return t;
+}
+function eb_profContas_() {   // {login:{turma,bloq,banco,ultimo}}
+  var sh = eb_aba_('Contas'), n = sh.getLastRow(), o = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 11).getValues().forEach(function (r) {
+    var lg = String(r[0]); if (!EB_ALUNO.test(lg)) return;
+    var u = r[8] ? new Date(r[8]).getTime() : 0;
+    o[lg] = { bloq: eb_msAte_(r[6]) > Date.now() ? 1 : 0, banco: r[10] ? 1 : 0, ultimo: isFinite(u) ? u : 0 };
+  });
+  return o;
+}
+function eb_profBloqCache_(login) {
+  var c = CacheService.getScriptCache(), a = Date.now();
+  return (Number(c.get('blk_' + login)) || 0) > a || (Number(c.get('bblk_' + login)) || 0) > a ? 1 : 0;
+}
+function eb_profLogins_(turma, contas, res) {
+  var seen = {}, out = [];
+  [contas, res].forEach(function (m) { Object.keys(m).forEach(function (l) { if (eb_turma_(l) === turma && !seen[l]) { seen[l] = 1; out.push(l); } }); });
+  out.sort(function (a, b) { return eb_numLogin_(a) - eb_numLogin_(b); });
+  return out;
+}
+function eb_profAcao_(p) {
+  var a = String(p.acao || ''), e = eb_profCheck_(p.hp); if (e) return e;
+  if (a === 'profentrar') return { ok: 1 };
+  if (a === 'profturmas') return eb_profTurmas_();
+  if (a === 'profturma') return eb_profTurma_(p);
+  if (a === 'profaluno') return eb_profAluno_(p);
+  if (a === 'profconteudos') return eb_profConteudos_(p);
+  if (a === 'profconteudo') return eb_profConteudo_(p);
+  if (a === 'profdash') return eb_profDash_(p);
+  if (a === 'profdesbloquear') { var l1 = eb_loginOk_(p.login); return l1 ? eb_desbloquearCore_(l1) : eb_erro_('Login inválido.'); }
+  if (a === 'profzerar') { var l2 = eb_loginOk_(p.login); return l2 ? eb_zerarCore_(l2) : eb_erro_('Login inválido.'); }
+  return eb_erro_('Ação desconhecida.');
+}
+// {ok,escolas:[{cod,nome,turmas:[{turma,ano,letra,alunos,ativos}]}]}
+function eb_profTurmas_() {
+  var contas = eb_profContas_(), res = eb_profResultados_(), por = {};
+  [contas, res].forEach(function (m, k) {
+    Object.keys(m).forEach(function (l) {
+      var t = eb_turma_(l), o = por[t] || (por[t] = { all: {}, ativos: {} });
+      o.all[l] = 1; if (k === 0) o.ativos[l] = 1;
+    });
+  });
+  var esc = {};
+  Object.keys(por).forEach(function (t) {
+    var cod = t.slice(0, 3), e = esc[cod] || (esc[cod] = { cod: cod, nome: EB_ESCOLAS[cod] || cod.toUpperCase(), turmas: [] });
+    e.turmas.push({ turma: t, ano: Number(t.charAt(3)), letra: t.charAt(4), alunos: Object.keys(por[t].all).length, ativos: Object.keys(por[t].ativos).length });
+  });
+  var lista = Object.keys(esc).sort().map(function (k) {
+    esc[k].turmas.sort(function (x, y) { return (x.ano - y.ano) || (x.letra < y.letra ? -1 : 1); });
+    return esc[k];
+  });
+  return { ok: 1, escolas: lista };
+}
+// {ok,turma,alunos:[{login,num,n,media,conc,ganhas,saldo,conta,banco,bloq,ultimo}]}
+function eb_profTurma_(p) {
+  var turma = eb_turmaOk_(p.turma); if (!turma) return eb_erro_('Turma inválida.');
+  var contas = eb_profContas_(), res = eb_profResultados_(), troc = eb_profTrocadas_();
+  var alunos = eb_profLogins_(turma, contas, res).map(function (l) {
+    var r = eb_profResumo_(res[l]), c = contas[l];
+    return { login: l, num: eb_numLogin_(l), n: r.n, media: r.media, conc: r.conc, ganhas: r.ganhas, saldo: Math.max(0, r.ganhas - (troc[l] || 0)), conta: c ? 1 : 0, banco: c ? c.banco : 0, bloq: (c && c.bloq) || eb_profBloqCache_(l) ? 1 : 0, ultimo: c ? c.ultimo : 0 };
+  });
+  return { ok: 1, turma: turma, alunos: alunos };
+}
+// ficha: {ok,login,num,turma,conta:{ativada,banco,bloq,ultimo},boletim,moedas:{ganhas,trocadas,saldo},carteira:{USD:1.5,...},extrato:[...],trocas:[...]}
+function eb_profAluno_(p) {
+  var login = eb_loginOk_(p.login); if (!login) return eb_erro_('Login inválido.');
+  var ct = eb_profContas_()[login], b = eb_boletimDe_(login), g = eb_moedasGanhas_(login), t = eb_moedasTrocadas_(login);
+  var sc = eb_saldosLogin_(login), cart = {};
+  EB_MOEDAS.forEach(function (m) { if (sc[m]) cart[m] = sc[m] / eb_escala_(m); });
+  var ex = [], sx = eb_aba_('Extratos'), n = sx.getLastRow();
+  if (n >= 2) {
+    var ini = Math.max(2, n - 2999), v = sx.getRange(ini, 1, n - ini + 1, 10).getValues();
+    for (var i = v.length - 1; i >= 0 && ex.length < 30; i--) {
+      var r = v[i]; if (String(r[1]) !== login) continue;
+      ex.push({ ts: new Date(r[0]).getTime(), tipo: String(r[2]), moeda: String(r[3]), v: Number(r[4]) / eb_escala_(String(r[3])), brl: r[5] === '' ? null : Number(r[5]) / 100, outro: String(r[6]), nota: String(r[7]) });
+    }
+  }
+  var tr = [], sm = eb_aba_('Moedas'), nm = sm.getLastRow();
+  if (nm >= 2) {
+    var vm = sm.getRange(2, 1, nm - 1, 6).getValues();
+    for (var j = vm.length - 1; j >= 0 && tr.length < 10; j--) if (String(vm[j][1]) === login && String(vm[j][3]) === 'troca') tr.push({ ts: new Date(vm[j][0]).getTime(), q: Number(vm[j][4]) || 0, centavos: Number(vm[j][5]) || 0 });
+  }
+  return { ok: 1, login: login, num: eb_numLogin_(login), turma: eb_turma_(login), conta: { ativada: ct ? 1 : 0, banco: ct ? ct.banco : 0, bloq: (ct && ct.bloq) || eb_profBloqCache_(login) ? 1 : 0, ultimo: ct ? ct.ultimo : 0 }, boletim: b, moedas: { ganhas: g, trocadas: t, saldo: Math.max(0, g - t) }, carteira: cart, extrato: ex, trocas: tr };
+}
+// {ok,turma,discs:[{disc,conteudos:[{cod,atividade,feitos}]}],total}  (total = alunos da turma)
+function eb_profConteudos_(p) {
+  var turma = eb_turmaOk_(p.turma); if (!turma) return eb_erro_('Turma inválida.');
+  var contas = eb_profContas_(), res = eb_profResultados_(), logins = eb_profLogins_(turma, contas, res), md = {};
+  logins.forEach(function (l) {
+    Object.keys(res[l] || {}).forEach(function (k) {
+      var c = res[l][k], d = md[c.disc] || (md[c.disc] = {}), x = d[c.cod] || (d[c.cod] = { cod: c.cod, atividade: c.atividade, feitos: 0, ts: 0 });
+      x.feitos++; if (c.ts > x.ts) { x.ts = c.ts; x.atividade = c.atividade; }
+    });
+  });
+  var discs = Object.keys(md).sort().map(function (d) {
+    return { disc: d, conteudos: Object.keys(md[d]).map(function (k) { return md[d][k]; }).sort(function (a, b) { return b.ts - a.ts; }).map(function (x) { return { cod: x.cod, atividade: x.atividade, feitos: x.feitos }; }) };
+  });
+  return { ok: 1, turma: turma, discs: discs, total: logins.length };
+}
+// {ok,turma,disc,cod,atividade,alunos:[{login,num,feito,melhor,ultima,tent,conc}]}  notas 0-10
+function eb_profConteudo_(p) {
+  var turma = eb_turmaOk_(p.turma), disc = eb_t_(p.disc, 30), cod = eb_t_(p.cod, 80);
+  if (!turma || !disc || !cod) return eb_erro_('Informe turma, disciplina e conteúdo.');
+  var contas = eb_profContas_(), res = eb_profResultados_(), ativ = cod;
+  var alunos = eb_profLogins_(turma, contas, res).map(function (l) {
+    var c = (res[l] || {})[disc + '|' + cod];
+    if (!c) return { login: l, num: eb_numLogin_(l), feito: 0, melhor: null, ultima: null, tent: 0, conc: 0 };
+    ativ = c.atividade || ativ;
+    return { login: l, num: eb_numLogin_(l), feito: 1, melhor: c.melhor === null ? null : eb_round1_(c.melhor / 10), ultima: c.pct === null ? null : eb_round1_(c.pct / 10), tent: c.tent, conc: c.conc };
+  });
+  return { ok: 1, turma: turma, disc: disc, cod: cod, atividade: ativ, alunos: alunos };
+}
+
+// R$ do jogo guardado na Nuvem (cópia da última sincronização): {login:{cash:reais,ts}}; chaves 'rbx' (cash) ou 'edu' (robiox_v2_<login>.cash), vence a de ts maior
+function eb_profCash_(logins) {
+  var sh = eb_aba_('Nuvem'), n = sh.getLastRow(), o = {};
+  if (n < 2) return o;
+  sh.getRange(2, 1, n - 1, 4).getValues().forEach(function (r) {
+    var lg = String(r[0]); if (!logins[lg]) return;
+    var k = String(r[1]), ts = Number(r[2]) || 0, cash = null;
+    if (o[lg] && o[lg].ts >= ts) return;
+    try {
+      var j = JSON.parse(String(r[3]));
+      if (k === 'rbx') cash = Number(j.cash);
+      else if (k === 'edu') { var s = j['robiox_v2_' + lg]; if (s) cash = Number(JSON.parse(s).cash); }
+    } catch (e) { cash = null; }
+    if (cash !== null && isFinite(cash)) o[lg] = { cash: cash / 100, ts: ts };
+  });
+  return o;
+}
+// profdash {escola?,turma?,disc?,cash?:1,atualizar?:1}
+// -> {ok,filtro,cotacao:{ts,fonte},discs:[nomes],turmas:[{turma,alunos,feitos,media,conc,pts}],disciplinas:[{disc,alunos,feitos,media,conc,pts}],
+//     atividades:[{disc,cod,atividade,alunos,media,pctConc,lt6,m68,ge8}],
+//     alunos:[{login,num,turma,n,media,conc,pts,ganhas,saldo,cash,cashTs,cart,patr}]}  (patr = cash + moedas estrangeiras/cripto em R$ pela cotação atual; cash/cashTs null se sem cópia na Nuvem; cash só vem com cash:1)
+function eb_profDash_(p) {
+  var esc = String(p.escola || '').toLowerCase().trim(), turma = p.turma ? eb_turmaOk_(p.turma) : '', disc = p.disc ? eb_t_(p.disc, 30) : '', cash = p.cash ? 1 : 0;
+  if (p.turma && !turma) return eb_erro_('Turma inválida.');
+  if (esc && !/^[a-z]{3}$/.test(esc)) return eb_erro_('Escola inválida.');
+  var cache = CacheService.getScriptCache(), ck = 'pd_' + eb_sha_([esc, turma, disc, cash].join('|')).slice(0, 24);
+  if (p.atualizar) { cache.remove('eb_tx_f'); cache.remove('eb_tx_c'); }
+  else { var cv = cache.get(ck); if (cv) { try { return JSON.parse(cv); } catch (e) { } } }
+  var tx = eb_taxas_(), contas = eb_profContas_(), res = eb_profResultados_(), troc = eb_profTrocadas_(), logins = {};
+  [contas, res].forEach(function (m) { Object.keys(m).forEach(function (l) { var t = eb_turma_(l); if ((!esc || t.slice(0, 3) === esc) && (!turma || t === turma)) logins[l] = 1; }); });
+  var ls = Object.keys(logins);
+  // carteiras
+  var shc = eb_aba_('Carteiras'), nc = shc.getLastRow(), cart = {};
+  if (nc >= 2) shc.getRange(2, 1, nc - 1, EB_MOEDAS.length + 1).getValues().forEach(function (r) {
+    var lg = String(r[0]); if (!logins[lg]) return;
+    var v = 0; EB_MOEDAS.forEach(function (m, i) { v += (Number(r[i + 1]) || 0) / eb_escala_(m) * tx.taxas[m].t; });
+    cart[lg] = Math.round(v * 100) / 100;
+  });
+  var cs = cash ? eb_profCash_(logins) : {};
+  var discs = {}, dd = {}, tt = {}, at = {}, alunos = [];
+  ls.forEach(function (l) {
+    var o = res[l] || {}, n = 0, s = 0, nn = 0, conc = 0, pts = 0, g = 0, ga = 0, t = eb_turma_(l);
+    Object.keys(o).forEach(function (k) {
+      var c = o[k]; discs[c.disc] = 1; ga += Math.floor(c.pts);
+      if (disc && c.disc !== disc) return;
+      n++; if (c.pct !== null) { s += c.pct; nn++; } conc += c.conc; pts += c.ptsAll; g += Math.floor(c.pts);
+      var d = dd[c.disc] || (dd[c.disc] = { disc: c.disc, a: {}, n: 0, s: 0, nn: 0, conc: 0, pts: 0 });
+      d.a[l] = 1; d.n++; if (c.pct !== null) { d.s += c.pct; d.nn++; } d.conc += c.conc; d.pts += c.ptsAll;
+      var ak = c.disc + '|' + c.cod, x = at[ak] || (at[ak] = { disc: c.disc, cod: c.cod, atividade: c.atividade, ts: 0, a: 0, s: 0, nn: 0, conc: 0, lt6: 0, m68: 0, ge8: 0 });
+      x.a++; x.conc += c.conc; if (c.ts > x.ts) { x.ts = c.ts; x.atividade = c.atividade; }
+      if (c.melhor !== null) { x.s += c.melhor; x.nn++; var nt = c.melhor / 10; if (nt < 6) x.lt6++; else if (nt < 8) x.m68++; else x.ge8++; }
+    });
+    var tg = tt[t] || (tt[t] = { turma: t, alunos: 0, feitos: 0, s: 0, nn: 0, conc: 0, pts: 0 });
+    tg.alunos++; tg.feitos += n; tg.s += s; tg.nn += nn; tg.conc += conc; tg.pts += pts;
+    var c1 = cs[l], pv = cart[l] || 0;
+    alunos.push({ login: l, num: eb_numLogin_(l), turma: t, n: n, media: nn ? eb_round1_(s / nn / 10) : null, conc: conc, pts: Math.round(pts), ganhas: g, saldo: Math.max(0, ga - (troc[l] || 0)), cash: c1 ? c1.cash : null, cashTs: c1 ? c1.ts : null, cart: pv, patr: Math.round(((c1 ? c1.cash : 0) + pv) * 100) / 100 });
+  });
+  var out = {
+    ok: 1, filtro: { escola: esc, turma: turma, disc: disc }, cotacao: { ts: tx.ts, fonte: tx.fonte }, discs: Object.keys(discs).sort(),
+    turmas: Object.keys(tt).sort().map(function (k) { var x = tt[k]; return { turma: x.turma, alunos: x.alunos, feitos: x.feitos, media: x.nn ? eb_round1_(x.s / x.nn / 10) : null, conc: x.conc, pts: Math.round(x.pts) }; }),
+    disciplinas: Object.keys(dd).sort().map(function (k) { var x = dd[k]; return { disc: x.disc, alunos: Object.keys(x.a).length, feitos: x.n, media: x.nn ? eb_round1_(x.s / x.nn / 10) : null, conc: x.conc, pts: Math.round(x.pts) }; }),
+    atividades: Object.keys(at).map(function (k) { return at[k]; }).sort(function (a, b) { return b.a - a.a; }).slice(0, 150).map(function (x) { return { disc: x.disc, cod: x.cod, atividade: x.atividade, alunos: x.a, media: x.nn ? eb_round1_(x.s / x.nn / 10) : null, pctConc: x.a ? Math.round(100 * x.conc / x.a) : 0, lt6: x.lt6, m68: x.m68, ge8: x.ge8 }; }),
+    alunos: alunos.slice(0, 700)
+  };
+  try { var js = JSON.stringify(out); if (js.length < 95000) cache.put(ck, js, 60); } catch (e) { }
+  return out;
+}
+function eb_desbloquearCore_(login) {
+  return eb_lock_(function () {
+    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
+    if (row) sh.getRange(row, 6, 1, 2).setValues([[0, '']]);
+    eb_limpaFalhas_(login); eb_limpaFalhasBanco_(login);
+    eb_log_(login, 'desbloquear', 'bloqueio removido pelo professor');
+    return { ok: 1, msg: login + ': desbloqueado.' };
+  });
+}
+function eb_zerarCore_(login) {
+  return eb_lock_(function () {
+    var sh = eb_aba_('Carteiras'), row = eb_carteiraRow_(sh, login, false);
+    if (!row) return { ok: 1, msg: login + ': não tem carteira.' };
+    var z = {}; EB_MOEDAS.forEach(function (m) { z[m] = 0; });
+    eb_gravaSaldos_(sh, row, z);
+    eb_log_(login, 'zerar', 'carteira zerada pelo professor');
+    return { ok: 1, msg: login + ': carteira zerada.' };
+  });
 }
 
 // ---------- nuvem ----------
@@ -922,8 +1161,11 @@ function eb_boletimDe_(login) {
   if (n >= 2) sh.getRange(2, 1, n - 1, 14).getValues().forEach(function (r, i) {
     if (String(r[1]) !== login) return;
     var key = r[4] + '|' + (r[5] || r[6] || ('#' + i)), ts = new Date(r[0]).getTime() || 0, o = m[key];
-    if (!o) { o = m[key] = { disc: String(r[4]), ts: -1, tri: 1, pct: null, conc: 0 }; }
-    if (ts >= o.ts) { o.ts = ts; o.tri = Number(r[3]) || 1; o.pct = (r[9] === '' || r[9] == null) ? null : Number(r[9]); }
+    if (!o) { o = m[key] = { disc: String(r[4]), ts: -1, tri: 1, pct: null, conc: 0, cod: '', atividade: '', melhor: null, tent: 0 }; }
+    var pc = (r[9] === '' || r[9] == null) ? null : Number(r[9]);
+    o.tent++;
+    if (pc !== null && isFinite(pc) && (o.melhor === null || pc > o.melhor)) o.melhor = pc;
+    if (ts >= o.ts) { o.ts = ts; o.tri = Number(r[3]) || 1; o.pct = (r[9] === '' || r[9] == null) ? null : Number(r[9]); o.cod = String(r[5] || ''); o.atividade = String(r[6] || r[5] || ''); }
     if (Number(r[10]) === 1) o.conc = 1;
     lista.push({ i: i, ts: ts, atividade: String(r[6] || r[5]), disc: String(r[4]), pct: r[9] === '' ? null : Number(r[9]), concluido: Number(r[10]) === 1 ? 1 : 0 });
   });
@@ -945,9 +1187,60 @@ function eb_boletimDe_(login) {
   var tg = Number(cfg.total_geral) || 0;
   var g = fim(geral, { total: tg, pctConc: tg > 0 ? Math.min(100, Math.round(100 * geral.conc / tg)) : null, porTri: { 1: fim(gt[1]), 2: fim(gt[2]), 3: fim(gt[3]) } });
   lista.sort(function (a, b) { return (b.ts - a.ts) || (b.i - a.i); });
-  return { ok: 1, porDisc: porDisc, totais: totais, geral: g, ultimas: lista.slice(0, 12) };
+  var conteudos = Object.keys(m).map(function (k) {
+    var o = m[k];
+    return { cod: o.cod, atividade: o.atividade, disc: o.disc, tri: o.tri, melhor: o.melhor === null ? null : eb_round1_(o.melhor / 10), ultima: o.pct === null ? null : eb_round1_(o.pct / 10), tent: o.tent, ts: o.ts, concluido: o.conc ? 1 : 0 };
+  }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 200);
+  return { ok: 1, porDisc: porDisc, totais: totais, geral: g, ultimas: lista.slice(0, 12), conteudos: conteudos };
 }
 function eb_boletimResp_(login) { return eb_boletimDe_(login); }
+
+// ---------- moedas (ganhas por atividade; troca por R$ no cliente) ----------
+// Ganhas = soma, por atividade distinta, do MELHOR 'pontos' já obtido (se pontos = 0/ausente, usa acertos). Refazer só rende a diferença para cima.
+function eb_moedasGanhas_(login) {
+  var sh = eb_aba_('Resultados'), n = sh.getLastRow(), best = {}, tot = 0;
+  if (n >= 2) sh.getRange(2, 1, n - 1, 12).getValues().forEach(function (r, i) {
+    if (String(r[1]) !== login || Number(r[10]) !== 1) return;   // só atividades CONCLUÍDAS rendem moedas
+    var key = r[4] + '|' + (r[5] || r[6] || ('#' + i)), v = Number(r[11]);
+    if (!isFinite(v) || v <= 0) v = Number(r[7]);
+    if (!isFinite(v) || v < 0) v = 0;
+    if (best[key] === undefined || v > best[key]) best[key] = v;
+  });
+  Object.keys(best).forEach(function (k) { tot += Math.floor(best[k]); });
+  return tot;
+}
+function eb_moedasTrocadas_(login) {
+  var sh = eb_aba_('Moedas'), n = sh.getLastRow(), t = 0;
+  if (n >= 2) sh.getRange(2, 1, n - 1, 6).getValues().forEach(function (r) { if (String(r[1]) === login && String(r[3]) === 'troca') t += Number(r[4]) || 0; });
+  return t;
+}
+function eb_moedaCent_() { var c = Number(eb_cfg_().moeda_centavos); return (isFinite(c) && c >= 1 && Math.floor(c) === c && c <= 100000) ? c : 100; }
+function eb_moedasResp_(login) {
+  var g = eb_moedasGanhas_(login), t = eb_moedasTrocadas_(login);
+  return { ok: 1, ganhas: g, trocadas: t, saldo: Math.max(0, g - t), centavosPorMoeda: eb_moedaCent_() };
+}
+function eb_trocarMoedas_(p, login) {
+  var q = eb_int_(p.q, 1, 100000), id = String(p.id || '');
+  if (isNaN(q)) return eb_erro_('Quantidade de moedas inválida.');
+  if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
+  return eb_lock_(function () {
+    var sh = eb_aba_('Moedas'), n = sh.getLastRow(), cpm = eb_moedaCent_(), g = eb_moedasGanhas_(login), t = 0;
+    if (n >= 2) {
+      var v = sh.getRange(2, 1, n - 1, 6).getValues();
+      for (var i = 0; i < v.length; i++) {
+        if (String(v[i][1]) !== login || String(v[i][3]) !== 'troca') continue;
+        t += Number(v[i][4]) || 0;
+        if (String(v[i][2]) === id) return { ok: 1, dup: 1, q: Number(v[i][4]), centavos: Number(v[i][5]), saldo: Math.max(0, g - t) };
+      }
+    }
+    var saldo = Math.max(0, g - t);
+    if (q > saldo) return eb_erro_('Você não tem moedas suficientes.', { saldo: saldo });
+    var cent = q * cpm;
+    sh.appendRow([new Date(), login, id, 'troca', q, cent]);
+    eb_log_(login, 'moedas', 'troca ' + q + ' moedas centavos=' + cent + ' id=' + id);
+    return { ok: 1, q: q, centavos: cent, saldo: saldo - q };
+  });
+}
 
 // Classificação da turma do aluno (só a turma dele; sem nomes: "Aluno nº N").
 function eb_classifResp_(login) {
