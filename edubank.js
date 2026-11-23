@@ -122,6 +122,7 @@ function api(p){
   var q=Object.keys(p).filter(function(k){return p[k]!==undefined&&p[k]!==null}).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(p[k])}).join('&');
   return fetch(base+(base.indexOf('?')>-1?'&':'?')+q).then(function(r){return r.json()}).then(function(j){
     if(!j)throw new Error('Resposta inválida do servidor.');
+    if(j.relogin&&root){recPara();setTimeout(function(){if(root)semSessao('Sua sessão expirou. Entre de novo.')},0);throw new Error('Sessão expirada.')}
     if(!j.ok&&/sess|token|login/i.test(j.erro||'')&&/inv|expir|entre/i.test(j.erro||''))j.sessao=1;
     return j;
   },function(){throw new Error('Sem conexão com o banco. Tente de novo.')});
@@ -227,13 +228,30 @@ function getCash(){try{return Math.round(Number(O.getCash())||0)}catch(e){return
 function saldoDe(c){return Math.round(Number(DADOS&&DADOS.saldos&&DADOS.saldos[c])||0)}
 function opcoes(sel,soComSaldo){return MOEDAS.filter(function(m){return !soComSaldo||saldoDe(m.c)>0}).map(function(m){return '<option value="'+m.c+'"'+(m.c===sel?' selected':'')+'>'+m.c+' · '+esc(m.n)+'</option>'}).join('')}
 
-function semSessao(){
-  aba='';var c=shell('EduBank',false,true);
-  c.innerHTML='<div class="eb-card"><h2>Entre para usar o EduBank</h2><p class="eb-muted">Você precisa entrar com seu login e sua senha antes de abrir o banco.</p><button class="eb-btn" id="eb-ent">Entrar</button></div>';
-  $('#eb-ent').onclick=function(){
-    var ok=false;try{if(window.EDU_AUTH&&EDU_AUTH.exigir){EDU_AUTH.exigir();ok=true}}catch(e){}
-    if(!ok)setErr(c.firstChild,'Volte à tela inicial da atividade e entre com seu login e senha.');
-    else fechar();
+function semSessao(msg){
+  aba='';DADOS=null;TEMSENHA=null;var c=shell('EduBank',false,true);
+  var pre='';try{pre=String((window.EDU_AUTH&&EDU_AUTH.login&&EDU_AUTH.login())||lget('edu_login','')||'')}catch(e){}
+  c.innerHTML='<div class="eb-card"><div class="eb-gh">'+I('key',34)+'<div><h2 style="margin:0">Entrar no EduBank</h2><div class="eb-muted">Use o mesmo login e senha do site.</div></div></div>'+
+   '<form id="eb-lf" autocomplete="on" novalidate><label for="eb-lu">Login</label><input id="eb-lu" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: 12cla6b" value="'+esc(RE.test(pre)?pre:'')+'">'+
+   '<label for="eb-lp">Senha</label><div style="position:relative"><input id="eb-lp" type="password" autocomplete="current-password" style="padding-right:84px"><button type="button" id="eb-lv" aria-label="Mostrar senha" style="position:absolute;right:6px;top:5px;min-height:40px;border:0;background:var(--chip);color:var(--pri);font-weight:800;border-radius:10px;padding:0 12px;cursor:pointer">Mostrar</button></div>'+
+   '<button class="eb-btn" id="eb-ent" type="submit">Entrar</button></form></div>';
+  var box=c.firstChild;if(msg)setErr(box,msg);
+  $('#eb-lv').onclick=function(){var p=$('#eb-lp'),h=p.type==='password';p.type=h?'text':'password';this.textContent=h?'Ocultar':'Mostrar'};
+  setTimeout(function(){var e=$('#eb-lu');if(e)(e.value?$('#eb-lp'):e).focus()},50);
+  $('#eb-lf').onsubmit=function(ev){
+    ev.preventDefault();var u=$('#eb-lu').value.trim().toLowerCase().replace(/\s+/g,''),p=$('#eb-lp').value,b=$('#eb-ent');
+    if(!RE.test(u))return setErr(box,'Login inválido. Use o formato do RCO, ex.: 12cla6b.');
+    if(!p)return setErr(box,'Digite a senha.');
+    if(!(window.EDU_AUTH&&EDU_AUTH.entrar))return setErr(box,'Entrada indisponível nesta página. Volte à tela inicial da atividade.');
+    b.disabled=true;b.textContent='Entrando…';setErr(box,'');
+    EDU_AUTH.entrar(u,p).then(function(j){
+      if(!root)return;
+      if(!j||!j.ok){b.disabled=false;b.textContent='Entrar';return setErr(box,((j&&j.erro)||'Não foi possível entrar.')+(j&&j.net?' Verifique a internet e tente de novo.':''))}
+      if(!sessao()){b.disabled=false;b.textContent='Entrar';return setErr(box,'Esta conta não tem EduBank. Entre com login e senha de aluno.')}
+      DADOS=null;TEMSENHA=null;
+      if(!ep()){var c2=shell('EduBank',false,true);c2.innerHTML='<div class="eb-card">'+vazio('alert','Banco indisponível','O EduBank não está configurado nesta página.')+'</div>';return}
+      telaInicio();recIniciar();
+    }).catch(function(e){b.disabled=false;b.textContent='Entrar';setErr(box,e&&e.message||'Não foi possível entrar.')});
   };
 }
 function carregar(){
@@ -267,7 +285,7 @@ function telaInicio(){
     '<h3>Moedas estrangeiras</h3><div class="eb-moedas">'+MOEDAS.filter(function(m){return !m.x}).map(cartao).join('')+'</div>'+
     '<h3>Criptomoedas</h3><div class="eb-moedas">'+MOEDAS.filter(function(m){return m.x}).map(cartao).join('')+'</div>'+
     '<div class="eb-nota">'+I('alert',16)+'<span>Cotações do dia, atualizadas às '+esc(horaTaxa('USD'))+'. Toque numa moeda para ver o gráfico de velas. Compra e venda têm spread de 2%.</span></div>'+
-    '<button class="eb-btn sec" data-a="trocasenha">'+I('key',20)+'Trocar senha do EduBank</button><div class="eb-card eb-muted" style="margin-top:14px">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
+    '<button class="eb-btn sec" data-a="trocasenha">'+I('key',20)+'Trocar senha do EduBank</button><button class="eb-btn sec" data-a="sair" style="min-height:44px;margin-top:8px;border-color:var(--bd);color:var(--tx2);font-weight:600">Sair da conta</button><div class="eb-card eb-muted" style="margin-top:14px">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
     moedasCard();
 },'EduBank');
 }
@@ -645,6 +663,7 @@ function aoClicar(e){
   else if(a==='copiar')copiar();
   else if(a==='trocamoedas')telaTrocaMoedas();
   else if(a==='trocasenha')statSenha().then(function(t){telaSenha(t,function(){irAba('inicio')})},function(e){toast(e.message)});
+  else if(a==='sair'){try{if(window.EDU_AUTH&&EDU_AUTH.sair){EDU_AUTH.sair();return}}catch(e){}toast('Não foi possível sair agora.')}
   else if(a==='aba')irAba(b.getAttribute('data-k'));
   else if(a==='moeda'){var c=b.getAttribute('data-c');if(saldoDe(c)>0)telaTransferir(c);else telaCambio(c)}
   else if(a==='grafico'){telaGrafico(b.getAttribute('data-c'))}
@@ -690,5 +709,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:9,versao:'9'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:10,versao:'10'};
 })();
