@@ -466,8 +466,19 @@ function eb_lock_(fn) {
 }
 function eb_aba_(nome) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(nome);
-  if (sh) return sh;
   var d = EB_ABAS[nome];
+  if (sh) {
+    if (d && /^(Posicoes|Aplicacoes|Ordens|Cotacoes|Fundos)$/.test(nome)) {
+      try {
+        if (sh.getLastRow() === 0 || String(sh.getRange(1, 1).getValue()) !== d.cab[0]) {
+          sh.insertRowBefore(1);
+          sh.getRange(1, 1, 1, d.cab.length).setValues([d.cab]).setFontWeight('bold').setBackground(d.cor).setFontColor('#ffffff');
+          sh.setFrozenRows(1);
+        }
+      } catch (e) { }
+    }
+    return sh;
+  }
   sh = ss.insertSheet(nome);
   sh.getRange(1, 1, 1, d.cab.length).setValues([d.cab]).setFontWeight('bold').setBackground(d.cor).setFontColor('#ffffff');
   sh.setFrozenRows(1);
