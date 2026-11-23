@@ -30,6 +30,11 @@ h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:900;margin:14px 0 6px;letter-spa
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:99px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:.9rem}
 .chip.on{background:linear-gradient(90deg,#6366f1,#a855f7);color:#fff;border-color:transparent}
+.lud-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:6px 0 14px}.lud-row .lud{margin:0}
+.cod{display:flex;flex-direction:column;gap:6px;flex:1;min-width:260px;max-width:460px}.cod label{font-weight:800;font-size:.95rem}
+.cod .cr{display:flex;gap:10px}.cod input{flex:1;min-width:0;font:900 clamp(1.6rem,6vw,2.2rem) system-ui;letter-spacing:.35em;text-align:center;padding:8px 10px;border:3px solid #fbbf24;border-radius:14px;background:#fff;color:#16213a}
+.cod input::placeholder{color:#b6bdd0}.cod button{font:900 1.1rem system-ui;padding:0 20px;border:0;border-radius:14px;background:#16a34a;color:#fff;cursor:pointer}
+.cod .err{display:none;color:#fca5a5;font-weight:700;font-size:.9rem}
 .lud{position:relative;display:flex;align-items:center;gap:16px;width:max-content;max-width:100%;margin:6px 0 14px;padding:12px 22px 12px 14px;text-decoration:none;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.18);transition:transform .15s}
 .lud:hover,.lud:focus-visible{transform:translateY(-2px);background:var(--card-h);outline:none}
 .lud svg{width:96px;height:auto;flex:none}
@@ -192,7 +197,8 @@ a.card .ic{width:38px;height:38px;font-size:1.3rem;border-radius:11px}
 <script src="edu-aviso-ia.js?v=1"></script></head>
 <body>
 <div class="wrap">
-<a class="lud" id="lud" href="https://hodhreego.github.io/edu/" target="_blank" rel="noopener" aria-label="Abrir a Ludopédia"><span id="lud-ic"></span><span class="lt"><span class="ln">Ludopédia</span><span class="ld">Jogos e desafios da turma.</span><span class="lo">Abrir →</span></span><span class="kb" id="lud-kb"></span></a>
+<div class="lud-row"><a class="lud" id="lud" href="https://hodhreego.github.io/edu/" target="_blank" rel="noopener" aria-label="Abrir a Ludopédia"><span id="lud-ic"></span><span class="lt"><span class="ln">Ludopédia</span><span class="ld">Jogos e desafios da turma.</span><span class="lo">Abrir →</span></span><span class="kb" id="lud-kb"></span></a>
+<form class="cod" id="cod" autocomplete="off"><label for="codv">🔑 Tem um código da atividade?</label><div class="cr"><input id="codv" inputmode="numeric" maxlength="7" placeholder="0000" aria-label="Código da atividade"><button type="submit">Entrar ▶</button></div><div class="err" id="coderr">Digite o código de 4 números.</div></form></div>
 <header>
   <a class="tag" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" title="Abrir o painel do professor">Atalhos 2026 · Prof. Rodrigo · Colégio Schuster</a>
   <h1 class="lk-hero" id="lkTxt">bit.ly/xus28</h1>
@@ -563,6 +569,7 @@ render();
  document.getElementById('lud-ic').innerHTML='<svg viewBox="0 0 170 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dois dados">'+
   die(4,26,1,2,3,'#ffffff','#e5e7eb','#cbd5e1','#1e293b','#475569')+die(86,10,4,5,6,'#fb7185','#e11d48','#be123c','#ffffff','#7f1d1d')+'</svg>';
  document.getElementById('lud-kb').textContent=keyOf({t:'Ludopédia'});
+ document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=String(document.getElementById('codv').value||'').trim(),er=document.getElementById('coderr');if(!v){er.style.display='block';return}er.style.display='none';location.href='index.html?cod='+encodeURIComponent(v)};
  // teclado: digite o numero do cartao (2 digitos para os acima de 9)
  var buf='',tm=0;
  function abre(k){var a=document.querySelector('a.card[data-k="'+k+'"]');if(!a&&k===String(keyOf({t:'Ludopédia'})))a=document.getElementById('lud');if(a){a.click();return true}return false}

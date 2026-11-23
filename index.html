@@ -138,5 +138,6 @@ document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=doc
 var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a.play');if(a&&!EDU_LOGIN()){e.preventDefault();EDU_EXIGE_LOGIN(function(){location.href=a.href})}},true);document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();
 </script>
+<script>(function(){var c=new URLSearchParams(location.search).get('cod');if(!c)return;var i=document.getElementById('codv'),f=document.getElementById('cod');if(!i||!f)return;i.value=String(c).slice(0,7);setTimeout(function(){f.dispatchEvent(new Event('submit',{cancelable:true}))},400)})();</script>
 </body>
 </html>
