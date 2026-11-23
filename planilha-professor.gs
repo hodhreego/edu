@@ -412,7 +412,7 @@ function rbxLoad_(p) {
 
 // ================= EduBank (spec v2): contas, sessões, nuvem, câmbio, transferências, boletim =================
 // Resposta sempre JSON: {ok:1,...} ou {ok:0,erro:'texto'}. Ação pelo parâmetro "acao" (GET ou POST JSON).
-var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, profentrar: 1, profturmas: 1, profturma: 1, profaluno: 1, profconteudos: 1, profconteudo: 1, profdesbloquear: 1, profzerar: 1, profdash: 1, profenviar: 1, profenviarturma: 1, receber: 1, receberack: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1, classificacao: 1, moedas: 1, trocarmoedas: 1, receberack: 1 };
+var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, profentrar: 1, profturmas: 1, profturma: 1, profaluno: 1, profconteudos: 1, profconteudo: 1, profdesbloquear: 1, profzerar: 1, profdash: 1, profenviar: 1, profenviarturma: 1, receber: 1, receberack: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1, classificacao: 1, moedas: 1, trocarmoedas: 1, receberack: 1, ativos: 1, historico: 1, serie: 1, rfprodutos: 1, tdtitulos: 1, fundos: 1, invcarteira: 1, rfaplicar: 1, rfresgatar: 1, invcomprar: 1, invvender: 1 };
 var EB_ALUNO = /^\d{1,3}[a-z]{3}\d[a-z]$/;
 var EB_ESPECIAL = /^(mestre|teste|mainara)$/;
 var EB_FIAT = ['USD', 'EUR', 'GBP', 'JPY', 'ARS', 'CNY'];
