@@ -231,11 +231,12 @@ function opcoes(sel,soComSaldo){return MOEDAS.filter(function(m){return !soComSa
 function semSessao(msg){
   aba='';DADOS=null;TEMSENHA=null;var c=shell('EduBank',false,true);
   var pre='';try{pre=String((window.EDU_AUTH&&EDU_AUTH.login&&EDU_AUTH.login())||lget('edu_login','')||'')}catch(e){}
-  c.innerHTML='<div class="eb-card"><div class="eb-gh">'+I('key',34)+'<div><h2 style="margin:0">Entrar no EduBank</h2><div class="eb-muted">Use o mesmo login e senha do site.</div></div></div>'+
+  var prof=null;try{var ss=(window.EDU_AUTH&&EDU_AUTH.sessao&&EDU_AUTH.sessao())||lget('edu_sess',null);if(ss&&ss.login&&(ss.mestre||ss.local||!ss.t))prof=ss}catch(e){}
+  c.innerHTML=(prof?'<div class="eb-card"><h2>Você está como professor</h2><p class="eb-muted" style="margin:0 0 10px">O EduBank é para alunos — entre com um login de aluno abaixo.</p><a href="professor.html" target="_blank" rel="noopener" class="eb-btn sec" style="text-decoration:none;margin-top:6px;min-height:46px">Painel do professor</a></div>':'')+'<div class="eb-card"><div class="eb-gh">'+I('key',34)+'<div><h2 style="margin:0">Entrar no EduBank</h2><div class="eb-muted">Use o mesmo login e senha do site.</div></div></div>'+
    '<form id="eb-lf" autocomplete="on" novalidate><label for="eb-lu">Login</label><input id="eb-lu" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: 12cla6b" value="'+esc(RE.test(pre)?pre:'')+'">'+
    '<label for="eb-lp">Senha</label><div style="position:relative"><input id="eb-lp" type="password" autocomplete="current-password" style="padding-right:84px"><button type="button" id="eb-lv" aria-label="Mostrar senha" style="position:absolute;right:6px;top:5px;min-height:40px;border:0;background:var(--chip);color:var(--pri);font-weight:800;border-radius:10px;padding:0 12px;cursor:pointer">Mostrar</button></div>'+
    '<button class="eb-btn" id="eb-ent" type="submit">Entrar</button></form></div>';
-  var box=c.firstChild;if(msg)setErr(box,msg);
+  var box=c.lastChild;if(msg)setErr(box,msg);
   $('#eb-lv').onclick=function(){var p=$('#eb-lp'),h=p.type==='password';p.type=h?'text':'password';this.textContent=h?'Ocultar':'Mostrar'};
   setTimeout(function(){var e=$('#eb-lu');if(e)(e.value?$('#eb-lp'):e).focus()},50);
   $('#eb-lf').onsubmit=function(ev){
@@ -244,14 +245,15 @@ function semSessao(msg){
     if(!p)return setErr(box,'Digite a senha.');
     if(!(window.EDU_AUTH&&EDU_AUTH.entrar))return setErr(box,'Entrada indisponível nesta página. Volte à tela inicial da atividade.');
     b.disabled=true;b.textContent='Entrando…';setErr(box,'');
-    EDU_AUTH.entrar(u,p).then(function(j){
+    (function tenta(n){EDU_AUTH.entrar(u,p).then(function(j){
       if(!root)return;
-      if(!j||!j.ok){b.disabled=false;b.textContent='Entrar';return setErr(box,((j&&j.erro)||'Não foi possível entrar.')+(j&&j.net?' Verifique a internet e tente de novo.':''))}
+      if(j&&!j.ok&&(j.net||/servidor|conex/i.test(j.erro||''))&&n<3){setErr(box,'Servidor acordando… tentando de novo ('+(n+1)+'/3)');return setTimeout(function(){if(root)tenta(n+1)},2500)}
+      if(!j||!j.ok){b.disabled=false;b.textContent='Entrar';var er=(j&&j.erro)||'';if(!er)er='Não foi possível entrar.';else if(/senha/i.test(er)&&!/digite/i.test(er)&&!/incorret/i.test(er))er='Senha incorreta. '+er;return setErr(box,er+(j&&j.net?' Verifique a internet e tente de novo.':''))}
       if(!sessao()){b.disabled=false;b.textContent='Entrar';return setErr(box,'Esta conta não tem EduBank. Entre com login e senha de aluno.')}
       DADOS=null;TEMSENHA=null;
       if(!ep()){var c2=shell('EduBank',false,true);c2.innerHTML='<div class="eb-card">'+vazio('alert','Banco indisponível','O EduBank não está configurado nesta página.')+'</div>';return}
       telaInicio();recIniciar();
-    }).catch(function(e){b.disabled=false;b.textContent='Entrar';setErr(box,e&&e.message||'Não foi possível entrar.')});
+    }).catch(function(e){b.disabled=false;b.textContent='Entrar';setErr(box,e&&e.message||'Não foi possível entrar.')})})(0);
   };
 }
 function carregar(){
@@ -709,5 +711,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:10,versao:'10'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:11,versao:'11'};
 })();
