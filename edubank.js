@@ -11,8 +11,8 @@ var MOEDAS=[
  {c:'XRP',f:'✕',s:'✕',n:'XRP',e:1e8,x:1},{c:'DOGE',f:'Ð',s:'Ð',n:'Dogecoin',e:1e8,x:1},{c:'USDT',f:'₮',s:'₮',n:'Tether',e:1e8,x:1}];
 var MAP={};MOEDAS.forEach(function(m){MAP[m.c]=m});
 /* abas: para a futura aba "Investir" basta acrescentar {k:'investir',n:'Investir',i:'📈',fn:telaInvestir} */
-var TABS=[{k:'inicio',n:'Início',i:'🏠',fn:function(){telaInicio()}},{k:'cambio',n:'Câmbio',i:'💱',fn:function(){telaCambio()}},
- {k:'transferir',n:'Transferir',i:'💸',fn:function(){telaTransferir()}},{k:'extrato',n:'Extrato',i:'🧾',fn:function(){telaExtrato()}}];
+var TABS=[{k:'inicio',n:'Início',i:'home',fn:function(){telaInicio()}},{k:'cambio',n:'Câmbio',i:'swap',fn:function(){telaCambio()}},
+ {k:'transferir',n:'Transferir',i:'send',fn:function(){telaTransferir()}},{k:'extrato',n:'Extrato',i:'receipt',fn:function(){telaExtrato()}}];
 var root=null,O=null,LOGIN='',TOKEN='',DADOS=null,aba='inicio',pend={},icn=0,pos=null;
 
 function ep(){return window.EDU_ENDPOINT||window.RBX_ENDPOINT||''}
@@ -46,6 +46,37 @@ function escalaDe(c){var t=DADOS&&DADOS.taxas&&DADOS.taxas[c];return (t&&typeof 
 /* valor estimado em centavos de R$ (só exibição; o servidor é quem manda) */
 function estim(c,v,op){var k=taxaDe(c)*(1+(op==='vender'?-0.02:0.02))*v/escalaDe(c)*100;return op==='vender'?Math.floor(k):Math.ceil(k-1e-9)}
 function fmtTaxa(c){var t=taxaDe(c);if(!t)return '—';return 'R$ '+t.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:t<1?4:2})}
+
+/* ---------- ícones SVG, bandeiras e moedas ---------- */
+var IC={home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',swap:'<path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',
+ receipt:'<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2zM8 8h8M8 12h8"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+ down:'<path d="M12 5v14M5 12l7 7 7-7"/>',up:'<path d="M12 19V5M5 12l7-7 7 7"/>',coin:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.7-1 1.4-2.5 1.8-2.5.8-2.5 1.8 1 1.7 2.5 1.7 2.5-.5 2.5-1.5"/>',
+ key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>',check:'<path d="M5 13l4 4L19 7"/>',alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/>',
+ inbox:'<path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5"/>',back:'<path d="M15 5l-7 7 7 7"/>',close:'<path d="M6 6l12 12M18 6L6 18"/>',chart:'<path d="M4 20V4M4 20h16M8 15l4-5 3 3 5-7"/>',
+ plane:'<path d="M3 11l18-8-8 18-2-8z"/>'};
+function I(n,s){s=s||22;return '<svg class="eb-i" viewBox="0 0 24 24" width="'+s+'" height="'+s+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>'}
+var CRI={BTC:['#f7931a','₿'],ETH:['#627eea','Ξ'],SOL:['#7b3fe4','◎'],XRP:['#23292f','✕'],DOGE:['#c2a633','Ð'],USDT:['#26a17b','₮']};
+var FLG={
+ USD:'<rect width="24" height="24" fill="#fff"/><g fill="#c8102e"><rect y="0" width="24" height="3.4"/><rect y="6.9" width="24" height="3.4"/><rect y="13.7" width="24" height="3.4"/><rect y="20.6" width="24" height="3.4"/></g><rect width="12" height="13.7" fill="#1f3a8a"/><g fill="#fff"><circle cx="3" cy="3" r="1"/><circle cx="7" cy="3" r="1"/><circle cx="3" cy="7" r="1"/><circle cx="7" cy="7" r="1"/><circle cx="5" cy="5" r="1"/><circle cx="5" cy="9.5" r="1"/><circle cx="9.5" cy="5" r="1"/><circle cx="9.5" cy="9.5" r="1"/></g>',
+ EUR:'<rect width="24" height="24" fill="#1d4ea1"/><g fill="#ffcc00">'+(function(){var s='';for(var i=0;i<12;i++){var a=i*Math.PI/6;s+='<circle cx="'+(12+7*Math.cos(a)).toFixed(2)+'" cy="'+(12+7*Math.sin(a)).toFixed(2)+'" r="1.25"/>'}return s})()+'</g>',
+ GBP:'<rect width="24" height="24" fill="#1f3a8a"/><path d="M0 0L24 24M24 0L0 24" stroke="#fff" stroke-width="5"/><path d="M0 0L24 24M24 0L0 24" stroke="#c8102e" stroke-width="2"/><path d="M12 0V24M0 12H24" stroke="#fff" stroke-width="8"/><path d="M12 0V24M0 12H24" stroke="#c8102e" stroke-width="4.5"/>',
+ JPY:'<rect width="24" height="24" fill="#fff"/><circle cx="12" cy="12" r="6" fill="#bc002d"/>',
+ ARS:'<rect width="24" height="24" fill="#74acdf"/><rect y="8" width="24" height="8" fill="#fff"/><circle cx="12" cy="12" r="2.2" fill="#f6b40e"/>',
+ CNY:'<rect width="24" height="24" fill="#de2910"/><text x="6" y="11.5" font-size="10" text-anchor="middle" fill="#ffde00" font-family="Arial,sans-serif">★</text><g fill="#ffde00"><circle cx="12" cy="3.5" r=".9"/><circle cx="14.5" cy="6" r=".9"/><circle cx="14.5" cy="9.5" r=".9"/><circle cx="12" cy="12" r=".9"/></g>'};
+var __fid=0;
+function flag(c,s){
+  s=s||36;var u='ef'+(++__fid),cr=CRI[c],b;
+  if(cr)b='<rect width="24" height="24" fill="'+cr[0]+'"/><text x="12" y="17.2" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" font-family="Arial,Segoe UI Symbol,sans-serif">'+cr[1]+'</text>';
+  else b=FLG[c]||'<rect width="24" height="24" fill="#8a8dac"/>';
+  return '<svg class="eb-fl" viewBox="0 0 24 24" width="'+s+'" height="'+s+'" aria-hidden="true"><defs><clipPath id="'+u+'"><circle cx="12" cy="12" r="12"/></clipPath></defs><g clip-path="url(#'+u+')">'+b+'</g><circle cx="12" cy="12" r="11.6" fill="none" stroke="rgba(0,0,0,.18)" stroke-width=".8"/></svg>';
+}
+function hhmm(ts){try{return new Date(Number(ts)).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+function horaTaxa(c){var t=DADOS&&DADOS.taxas&&DADOS.taxas[c];var ts=(t&&typeof t==='object'&&(t.ts||t.hora||t.at))||(DADOS&&(DADOS.ts||DADOS.hora))||(DADOS&&DADOS._em)||Date.now();if(Number(ts)>0&&Number(ts)<1e12)ts=Number(ts)*1000;return hhmm(ts)}
+function varTaxa(c){var t=DADOS&&DADOS.taxas&&DADOS.taxas[c];if(!t||typeof t!=='object')return null;var v=t.v!=null?t.v:(t.var!=null?t.var:(t.pct!=null?t.pct:null));v=Number(v);return isFinite(v)&&v!==0?v:null}
+function skel(n){var s='';for(var i=0;i<(n||3);i++)s+='<div class="eb-sk"><div class="eb-skc"></div><div style="flex:1"><div class="eb-skl" style="width:55%"></div><div class="eb-skl" style="width:35%;margin-top:7px"></div></div></div>';return '<div class="eb-card" aria-busy="true" aria-label="Carregando">'+s+'</div>'}
+function vazio(ic,t,sub){return '<div class="eb-vz"><div class="eb-vzi">'+I(ic,34)+'</div><b>'+esc(t)+'</b>'+(sub?'<span>'+esc(sub)+'</span>':'')+'</div>'}
+function dia(ts){var d=new Date(Number(ts)||ts),h=new Date(),y=new Date(Date.now()-864e5);function k(x){return x.getFullYear()+'-'+x.getMonth()+'-'+x.getDate()}
+  if(k(d)===k(h))return 'Hoje';if(k(d)===k(y))return 'Ontem';return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})}
 
 /* ---------- ícone ---------- */
 function icone(tam){
@@ -111,61 +142,90 @@ function msgErro(j){return (j&&j.erro)||'Não foi possível concluir.'}
 function novoId(){return ('e'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)).slice(0,40)}
 
 /* ---------- estilo ---------- */
+function EBCSS(){return [
+'#edubank{--bg:#f2f3fa;--card:#fff;--tx:#14142b;--tx2:#4b4d6e;--bd:#e2e4f1;--pri:#3b2bb0;--pri2:#2b4aa8;--up:#0b7a3b;--dn:#c0261b;--upbg:#e2f5e9;--dnbg:#fde8e6;--chip:#eef0fb;--sh:0 2px 10px rgba(30,25,90,.09),0 1px 2px rgba(30,25,90,.06)}',
+'@media(prefers-color-scheme:dark){#edubank{--bg:#0d0f1f;--card:#171a31;--tx:#f2f3fc;--tx2:#b9bcdb;--bd:#2a2d4c;--pri:#a99cff;--pri2:#8fa6ff;--up:#4ade80;--dn:#ff8f86;--upbg:#12301f;--dnbg:#3a1a1a;--chip:#222544;--sh:0 2px 10px rgba(0,0,0,.4)}}',
+'#edubank{position:fixed;z-index:2147483000;background:var(--bg);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--tx);display:flex;flex-direction:column;overflow:hidden}',
+'#edubank.full{inset:0}#edubank *{box-sizing:border-box}#edubank button,#edubank input,#edubank select{font-family:inherit}',
+'#edubank .eb-i{display:block;flex:none}#edubank .eb-fl{flex:none;display:block}',
+'#edubank .eb-top{background:linear-gradient(135deg,#0f7a8a,#2b4aa8 55%,#5a1fa8);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:10px;flex:none;min-height:56px}',
+'#edubank .eb-top>svg{flex:none;border-radius:22%}#edubank .eb-top b{font-size:1.1em;flex:1;letter-spacing:.2px}',
+'#edubank .eb-x,#edubank .eb-back{background:rgba(255,255,255,.2);border:0;color:#fff;border-radius:12px;min-width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center}',
+'#edubank .eb-body{flex:1;overflow:auto;padding:14px 14px 22px;-webkit-overflow-scrolling:touch}#edubank .eb-w{max-width:560px;margin:0 auto}',
+'#edubank .eb-nav{flex:none;display:flex;background:var(--card);border-top:1px solid var(--bd)}',
+'#edubank .eb-nav button{flex:1;border:0;background:none;padding:8px 2px 7px;min-height:56px;font-size:.78em;font-weight:700;color:var(--tx2);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}',
+'#edubank .eb-nav button.on{color:var(--pri)}#edubank .eb-nav button.on:before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--pri)}',
+'#edubank .eb-card{background:var(--card);border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:var(--sh)}',
+'#edubank h2{margin:0 0 6px;font-size:1.12em;color:var(--tx)}#edubank h3{margin:18px 2px 10px;font-size:.82em;letter-spacing:.06em;text-transform:uppercase;color:var(--tx2)}',
+'#edubank .eb-muted{color:var(--tx2);font-size:.9em}',
+'#edubank .eb-hero{background:linear-gradient(135deg,#0f7a8a,#2b4aa8 55%,#5a1fa8);color:#fff;border-radius:22px;padding:18px 18px 16px;margin-bottom:14px;box-shadow:0 8px 22px rgba(43,40,150,.35)}',
+'#edubank .eb-hero small{display:block;opacity:.92;font-size:.85em}#edubank .eb-hero .lb{margin-top:10px}#edubank .eb-hero .v{font-size:2.15em;font-weight:800;line-height:1.1;letter-spacing:-.5px;overflow-wrap:anywhere}',
+'#edubank .eb-chave{display:flex;align-items:center;gap:8px;margin-top:14px;background:rgba(255,255,255,.16);border-radius:14px;padding:6px 6px 6px 12px;font-size:.9em}',
+'#edubank .eb-chave span{opacity:.92}#edubank .eb-chave code{flex:1;font-weight:800;word-break:break-all;font-size:1.05em}',
+'#edubank .eb-chave button{background:#fff;color:#2b3a99;border:0;border-radius:10px;min-height:44px;padding:0 14px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px}',
+'#edubank .eb-acts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}',
+'#edubank .eb-act{background:var(--card);border:0;border-radius:18px;padding:12px 4px;box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;gap:7px;font-weight:700;font-size:.85em;color:var(--tx);cursor:pointer;min-height:76px}',
+'#edubank .eb-act i{width:40px;height:40px;border-radius:50%;background:var(--chip);color:var(--pri);display:flex;align-items:center;justify-content:center}',
+'#edubank .eb-moedas{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}',
+'@media(min-width:520px){#edubank .eb-moedas{display:grid;grid-template-columns:1fr 1fr}}',
+'#edubank .eb-m{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:var(--sh);border:0;text-align:left;cursor:pointer;min-width:0;display:flex;align-items:center;gap:12px;color:var(--tx);min-height:64px}',
+'#edubank .eb-m .mi{flex:1;min-width:0}#edubank .eb-m .mc{display:block;font-weight:800}#edubank .eb-m .mn{display:block;color:var(--tx2);font-size:.82em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+'#edubank .eb-m .mr{text-align:right;min-width:0;max-width:52%}#edubank .eb-m .mr b{display:block;overflow-wrap:anywhere;font-size:.98em}#edubank .eb-m .mr em{display:block;font-style:normal;color:var(--tx2);font-size:.78em}',
+'#edubank .eb-m.zero .mr b{color:var(--tx2);font-weight:600}#edubank .eb-var{font-weight:800;font-size:.8em}#edubank .eb-var.p{color:var(--up)}#edubank .eb-var.n{color:var(--dn)}',
+'#edubank .eb-nota{font-size:.8em;color:var(--tx2);margin:6px 4px 14px;display:flex;gap:6px;align-items:flex-start}',
+'#edubank label{display:block;font-weight:700;margin:14px 0 6px;color:var(--tx)}',
+'#edubank input,#edubank select{width:100%;min-height:50px;font-size:1.05em;padding:11px 13px;border:2px solid var(--bd);border-radius:14px;background:var(--card);color:var(--tx)}',
+'#edubank input::placeholder{color:var(--tx2);opacity:.75}#edubank input:focus,#edubank select:focus{outline:none;border-color:var(--pri)}',
+'#edubank .eb-btn{width:100%;margin-top:16px;min-height:52px;background:linear-gradient(135deg,#2b4aa8,#5a1fa8);color:#fff;border:0;border-radius:16px;padding:13px;font-size:1.05em;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(59,43,176,.3)}',
+'#edubank .eb-btn[disabled]{opacity:.55;box-shadow:none}#edubank .eb-btn.sec{background:transparent;color:var(--pri);border:2px solid var(--pri);box-shadow:none}',
+'#edubank .eb-seg{display:flex;gap:4px;margin:10px 0 6px;background:var(--chip);padding:4px;border-radius:16px}',
+'#edubank .eb-seg button{flex:1;min-height:46px;border-radius:12px;border:0;background:transparent;font-weight:800;color:var(--tx2);cursor:pointer;font-size:1em}#edubank .eb-seg button.on{background:var(--card);color:var(--pri);box-shadow:var(--sh)}',
+'#edubank .eb-err,#edubank .eb-ok{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:12px 14px;margin-top:14px;font-weight:600}#edubank .eb-err{color:var(--dn);background:var(--dnbg)}#edubank .eb-ok{color:var(--up);background:var(--upbg)}',
+'#edubank .eb-est{margin-top:14px;background:var(--chip);border-radius:16px;padding:12px 14px}#edubank .eb-est .t{font-weight:700;color:var(--tx2)}',
+'#edubank .eb-est .r{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:.92em;color:var(--tx2)}#edubank .eb-est .r b{color:var(--tx);text-align:right;overflow-wrap:anywhere}',
+'#edubank .eb-est .big{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px dashed var(--bd);margin-top:6px;padding-top:9px;font-weight:700;color:var(--tx)}#edubank .eb-est .big b{font-size:1.25em;color:var(--pri);text-align:right}',
+'#edubank .eb-disp{display:inline-flex;gap:6px;margin-top:8px;padding:5px 11px;border-radius:99px;background:var(--chip);color:var(--tx);font-weight:700;font-size:.9em}',
+'#edubank .eb-dg{font-weight:800;font-size:.8em;letter-spacing:.06em;text-transform:uppercase;color:var(--tx2);margin:16px 2px 4px}',
+'#edubank .eb-it{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)}#edubank .eb-it:last-child{border:0}',
+'#edubank .eb-it .ib{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}#edubank .eb-it .ib.p{background:var(--upbg);color:var(--up)}#edubank .eb-it .ib.n{background:var(--dnbg);color:var(--dn)}',
+'#edubank .eb-it div{flex:1;min-width:0}#edubank .eb-it small{color:var(--tx2);display:block;overflow-wrap:anywhere}',
+'#edubank .eb-it .p{color:var(--up);font-weight:800;text-align:right}#edubank .eb-it .n{color:var(--dn);font-weight:800;text-align:right}#edubank .eb-it span.q{max-width:42%;overflow-wrap:anywhere}',
+'#edubank .eb-rc{padding:0;overflow:hidden}#edubank .eb-rc .rh{padding:20px 16px 14px;text-align:center;border-bottom:2px dashed var(--bd)}',
+'#edubank .eb-rc .ok{width:56px;height:56px;border-radius:50%;background:var(--upbg);color:var(--up);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}',
+'#edubank .eb-rc .am{font-size:1.7em;font-weight:800;color:var(--pri);overflow-wrap:anywhere}#edubank .eb-rc dl{margin:0;padding:6px 16px 14px}',
+'#edubank .eb-rc .rw{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--bd)}#edubank .eb-rc .rw:last-child{border:0}',
+'#edubank .eb-rc dt{color:var(--tx2);font-size:.88em}#edubank .eb-rc dd{margin:0;font-weight:700;text-align:right;overflow-wrap:anywhere;min-width:0}',
+'#edubank .eb-sk{display:flex;gap:12px;align-items:center;padding:10px 0}#edubank .eb-skc{width:42px;height:42px;border-radius:50%}#edubank .eb-skl{height:12px;border-radius:6px}',
+'#edubank .eb-skc,#edubank .eb-skl{background:linear-gradient(90deg,var(--chip) 25%,var(--bd) 50%,var(--chip) 75%);background-size:200% 100%;animation:ebsh 1.3s infinite linear}@keyframes ebsh{to{background-position:-200% 0}}',
+'#edubank .eb-vz{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:26px 10px;color:var(--tx2)}#edubank .eb-vz b{color:var(--tx)}',
+'#edubank .eb-vzi{width:64px;height:64px;border-radius:50%;background:var(--chip);color:var(--pri);display:flex;align-items:center;justify-content:center;margin-bottom:4px}',
+'#edubank .eb-gh{display:flex;align-items:center;gap:12px}#edubank .eb-gh .gp{font-size:1.7em;font-weight:800;line-height:1.1}',
+'#edubank .eb-pills{display:flex;gap:8px;margin:14px 0 10px}#edubank .eb-pills button{flex:1;min-height:42px;padding:6px 4px;border-radius:99px;border:2px solid var(--bd);background:var(--card);color:var(--tx2);font-weight:800;font-size:.85em;cursor:pointer}',
+'#edubank .eb-pills button.on{background:var(--pri);border-color:var(--pri);color:#fff}@media(prefers-color-scheme:dark){#edubank .eb-pills button.on{color:#14142b}}',
+'#edubank .eb-tip{background:var(--chip);border-radius:12px;padding:8px 12px;font-size:.82em;color:var(--tx2);min-height:50px;display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center}#edubank .eb-tip b{color:var(--tx)}#edubank .eb-tip .d{flex-basis:100%;font-weight:700;color:var(--tx)}',
+'#edubank canvas{width:100%;display:block;margin:8px 0;touch-action:pan-y;border-radius:12px;background:var(--card)}',
+'#edubank .eb-gacts{display:grid;grid-template-columns:1fr 1fr;gap:10px}#edubank .eb-gacts .eb-btn{margin-top:8px}',
+'#edubank .eb-toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);background:#14142b;color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;max-width:90%;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.35)}',
+'@media(min-width:700px){#edubank.full{font-size:17px}}'].join('')}
 function css(){
   if(document.getElementById('edubank-css'))return;
   var s=document.createElement('style');s.id='edubank-css';
-  s.textContent='#edubank{position:fixed;z-index:2147483000;background:#eef0fa;font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17163a;display:flex;flex-direction:column;overflow:hidden}'+
-  '#edubank.full{inset:0}'+
-  '#edubank *{box-sizing:border-box}#edubank button,#edubank input,#edubank select{font-family:inherit}'+
-  '#edubank .eb-top{background:linear-gradient(135deg,#0f7a8a,#2b4aa8 55%,#5a1fa8);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:10px;flex:none;box-shadow:0 2px 10px #1a0a4055}'+
-  '#edubank .eb-top svg{flex:none;border-radius:22%}#edubank .eb-top b{font-size:1.1em;flex:1;letter-spacing:.2px}'+
-  '#edubank .eb-x,#edubank .eb-back{background:rgba(255,255,255,.18);border:0;color:#fff;font-size:1.05em;border-radius:10px;min-width:38px;height:38px;cursor:pointer}'+
-  '#edubank .eb-body{flex:1;overflow:auto;padding:14px;-webkit-overflow-scrolling:touch}'+
-  '#edubank .eb-w{max-width:560px;margin:0 auto}'+
-  '#edubank .eb-nav{flex:none;display:flex;background:#fff;border-top:1px solid #d9dcf0}'+
-  '#edubank .eb-nav button{flex:1;border:0;background:none;padding:7px 2px 6px;font-size:.78em;font-weight:700;color:#6a6c92;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}'+
-  '#edubank .eb-nav button i{font-style:normal;font-size:1.55em}#edubank .eb-nav button.on{color:#3b2bb0;box-shadow:inset 0 3px 0 #3b2bb0}'+
-  '#edubank .eb-card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 6px rgba(40,30,110,.12)}'+
-  '#edubank .eb-saldo{background:linear-gradient(135deg,#0f7a8a,#2b4aa8 55%,#5a1fa8);color:#fff}'+
-  '#edubank .eb-saldo small{opacity:.85;display:block}#edubank .eb-saldo .v{font-size:1.9em;font-weight:800}'+
-  '#edubank .eb-chave{display:flex;align-items:center;gap:8px;margin-top:10px;background:rgba(255,255,255,.18);border-radius:10px;padding:7px 10px;font-size:.92em}'+
-  '#edubank .eb-chave code{flex:1;font-weight:700;word-break:break-all}'+
-  '#edubank .eb-chave button{background:#fff;color:#2b4aa8;border:0;border-radius:8px;padding:7px 11px;font-weight:700;cursor:pointer}'+
-  '#edubank .eb-moedas{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-bottom:12px}'+
-  '#edubank .eb-m{background:#fff;border-radius:14px;padding:10px 11px;box-shadow:0 1px 5px rgba(40,30,110,.1);border:2px solid transparent;text-align:left;cursor:pointer;min-width:0}'+
-  '#edubank .eb-m .f{font-size:1.5em;line-height:1}#edubank .eb-m small{display:block;color:#6a6c92;font-weight:700;margin-top:3px}#edubank .eb-m b{display:block;overflow-wrap:anywhere;font-size:.98em}#edubank .eb-m em{font-style:normal;color:#6a6c92;font-size:.78em}'+
-  '#edubank .eb-m.zero b{color:#9a9cb8}#edubank .eb-m.cr{background:linear-gradient(160deg,#fff,#fff7e0)}'+
-  '#edubank label{display:block;font-weight:700;margin:11px 0 4px}'+
-  '#edubank input,#edubank select{width:100%;font-size:1.05em;padding:11px;border:2px solid #c3c8ee;border-radius:12px;background:#fff;color:#17163a}'+
-  '#edubank input:focus,#edubank select:focus{outline:none;border-color:#3b2bb0}'+
-  '#edubank .eb-btn{width:100%;margin-top:14px;background:linear-gradient(135deg,#2b4aa8,#5a1fa8);color:#fff;border:0;border-radius:14px;padding:13px;font-size:1.05em;font-weight:800;cursor:pointer}'+
-  '#edubank .eb-btn[disabled]{opacity:.55}#edubank .eb-btn.sec{background:#fff;color:#3b2bb0;border:2px solid #3b2bb0}'+
-  '#edubank .eb-seg{display:flex;gap:6px;margin-bottom:6px}#edubank .eb-seg button{flex:1;padding:10px;border-radius:12px;border:2px solid #c3c8ee;background:#fff;font-weight:800;color:#3b2bb0;cursor:pointer}#edubank .eb-seg button.on{background:#3b2bb0;color:#fff;border-color:#3b2bb0}'+
-  '#edubank .eb-err{color:#b3261e;background:#fdeceb;border-radius:10px;padding:10px 12px;margin-top:12px;font-weight:600}'+
-  '#edubank .eb-ok{color:#14632b;background:#e6f6ea;border-radius:10px;padding:10px 12px;margin-top:12px;font-weight:600}'+
-  '#edubank .eb-est{margin-top:10px;background:#f1f2fc;border-radius:10px;padding:9px 12px;font-weight:600}'+
-  '#edubank .eb-it{display:flex;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid #eceefa}#edubank .eb-it:last-child{border:0}'+
-  '#edubank .eb-it div{flex:1;min-width:0}#edubank .eb-it small{color:#6a6c92;display:block;overflow-wrap:anywhere}'+
-  '#edubank .eb-it .p{color:#14632b;font-weight:800;text-align:right}#edubank .eb-it .n{color:#b3261e;font-weight:800;text-align:right}#edubank .eb-it span.q{max-width:42%;overflow-wrap:anywhere}'+
-  '#edubank .eb-comp{text-align:center}#edubank .eb-comp .ic{font-size:3em}#edubank .eb-comp dl{text-align:left;margin:10px 0 0}#edubank .eb-comp dt{color:#6a6c92;font-size:.82em;margin-top:7px}#edubank .eb-comp dd{margin:0;font-weight:700;overflow-wrap:anywhere}'+
-  '#edubank .eb-muted{color:#6a6c92;font-size:.9em}#edubank h2{margin:0 0 6px;font-size:1.15em}'+
-  '#edubank .eb-toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:#17163a;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;max-width:90%;text-align:center}'+
-  '@media(min-width:700px){#edubank.full{font-size:17px}}';
+  s.textContent=EBCSS();
   document.head.appendChild(s);
 }
 
 /* ---------- estrutura ---------- */
 function shell(titulo,voltar,semNav){
-  root.innerHTML='<div class="eb-top">'+(voltar?'<button class="eb-back" aria-label="Voltar" data-a="voltar">←</button>':marca(32))+'<b>'+esc(titulo)+'</b><button class="eb-x" aria-label="Fechar" data-a="fechar">✕</button></div><div class="eb-body"><div class="eb-w" id="eb-c"></div></div>'+
-   (semNav?'':'<nav class="eb-nav">'+TABS.map(function(t){return '<button data-a="aba" data-k="'+t.k+'" class="'+(t.k===aba?'on':'')+'"><i>'+t.i+'</i>'+esc(t.n)+'</button>'}).join('')+'</nav>');
+  root.innerHTML='<div class="eb-top">'+(voltar?'<button class="eb-back" aria-label="Voltar" data-a="voltar">'+I('back',22)+'</button>':marca(32))+'<b>'+esc(titulo)+'</b><button class="eb-x" aria-label="Fechar" data-a="fechar">'+I('close',22)+'</button></div><div class="eb-body"><div class="eb-w" id="eb-c"></div></div>'+
+   (semNav?'':'<nav class="eb-nav">'+TABS.map(function(t){return '<button data-a="aba" data-k="'+t.k+'" class="'+(t.k===aba?'on':'')+'"><i>'+I(t.i,24)+'</i>'+esc(t.n)+'</button>'}).join('')+'</nav>');
   return root.querySelector('#eb-c');
 }
 function $(s){return root.querySelector(s)}
 function toast(t){var d=document.createElement('div');d.className='eb-toast';d.textContent=t;root.appendChild(d);setTimeout(function(){d.remove()},2300)}
-function setErr(el,t,ok){var e=el.querySelector('.eb-err,.eb-ok');if(e)e.remove();if(!t)return;var d=document.createElement('div');d.className=ok?'eb-ok':'eb-err';d.setAttribute('role','alert');d.textContent=t;el.appendChild(d)}
+function setErr(el,t,ok){var e=el.querySelector('.eb-err,.eb-ok');if(e)e.remove();if(!t)return;var d=document.createElement('div');d.className=ok?'eb-ok':'eb-err';d.setAttribute('role','alert');d.innerHTML=I(ok?'check':'alert',20)+'<span>'+esc(t)+'</span>';el.appendChild(d)}
 function getCash(){try{return Math.round(Number(O.getCash())||0)}catch(e){return 0}}
 function saldoDe(c){return Math.round(Number(DADOS&&DADOS.saldos&&DADOS.saldos[c])||0)}
-function opcoes(sel,soComSaldo){return MOEDAS.filter(function(m){return !soComSaldo||saldoDe(m.c)>0}).map(function(m){return '<option value="'+m.c+'"'+(m.c===sel?' selected':'')+'>'+m.f+' '+m.c+' · '+esc(m.n)+'</option>'}).join('')}
+function opcoes(sel,soComSaldo){return MOEDAS.filter(function(m){return !soComSaldo||saldoDe(m.c)>0}).map(function(m){return '<option value="'+m.c+'"'+(m.c===sel?' selected':'')+'>'+m.c+' · '+esc(m.n)+'</option>'}).join('')}
 
 function semSessao(){
   aba='';var c=shell('EduBank',false,true);
@@ -179,16 +239,16 @@ function semSessao(){
 function carregar(){
   return api({acao:'carteira'}).then(function(j){
     if(!j.ok){if(j.sessao)throw new Error('Sua sessão expirou. Entre de novo pelo início da atividade.');throw new Error(msgErro(j))}
-    DADOS=j;return j;
+    DADOS=j;DADOS._em=Date.now();return j;
   });
 }
 function comDados(fn,titulo,voltar){
   var c=shell(titulo,voltar);
   if(DADOS){fn(c);return}
-  c.innerHTML='<div class="eb-card eb-muted">Conectando ao banco…</div>';
+  c.innerHTML=skel(3);
   carregar().then(function(){if(root)fn(shell(titulo,voltar))},function(e){
     if(!root)return;var c2=shell(titulo,voltar);
-    c2.innerHTML='<div class="eb-card"><h2>Não deu para abrir</h2><div class="eb-err">'+esc(e.message)+'</div><button class="eb-btn" id="eb-re">Tentar de novo</button></div>';
+    c2.innerHTML='<div class="eb-card">'+vazio('alert','Não deu para abrir',e.message)+'<button class="eb-btn" id="eb-re">Tentar de novo</button></div>';
     $('#eb-re').onclick=function(){irAba(aba)};
   });
 }
@@ -200,12 +260,14 @@ function irAba(k){
 function telaInicio(){
   aba='inicio';
   comDados(function(c){
-    c.innerHTML='<div class="eb-card eb-saldo"><small>'+esc(aluno(LOGIN))+'</small><small>Saldo em reais</small><div class="v" id="eb-sal">'+rs(getCash())+'</div>'+
-    '<div class="eb-chave">Chave Pix: <code>'+esc(LOGIN)+'</code><button data-a="copiar">Copiar</button></div></div>'+
-    '<div class="eb-card" id="eb-moe"><h2>🪙 Moedas</h2><p class="eb-muted">Carregando…</p></div>'+
-    '<h2>Moedas estrangeiras</h2><div class="eb-moedas">'+MOEDAS.filter(function(m){return !m.x}).map(cartao).join('')+'</div>'+
-    '<h2>Criptomoedas</h2><div class="eb-moedas">'+MOEDAS.filter(function(m){return m.x}).map(cartao).join('')+'</div>'+
-    '<button class="eb-btn sec" data-a="trocasenha">🔑 Trocar senha do EduBank</button><div class="eb-card eb-muted" style="margin-top:12px">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
+    c.innerHTML='<div class="eb-hero"><small>'+esc(aluno(LOGIN))+'</small><small class="lb">Saldo em reais</small><div class="v" id="eb-sal">'+rs(getCash())+'</div>'+
+    '<div class="eb-chave"><span>Chave Pix</span><code>'+esc(LOGIN)+'</code><button data-a="copiar" aria-label="Copiar chave Pix">'+I('copy',18)+'Copiar</button></div></div>'+
+    '<div class="eb-acts"><button class="eb-act" data-a="aba" data-k="cambio"><i>'+I('swap',22)+'</i>Câmbio</button><button class="eb-act" data-a="aba" data-k="transferir"><i>'+I('send',22)+'</i>Transferir</button><button class="eb-act" data-a="aba" data-k="extrato"><i>'+I('receipt',22)+'</i>Extrato</button></div>'+
+    '<div class="eb-card" id="eb-moe"><h2>Moedas</h2>'+skel(1).replace('eb-card','eb-sk0')+'</div>'+
+    '<h3>Moedas estrangeiras</h3><div class="eb-moedas">'+MOEDAS.filter(function(m){return !m.x}).map(cartao).join('')+'</div>'+
+    '<h3>Criptomoedas</h3><div class="eb-moedas">'+MOEDAS.filter(function(m){return m.x}).map(cartao).join('')+'</div>'+
+    '<div class="eb-nota">'+I('alert',16)+'<span>Cotações do dia, atualizadas às '+esc(horaTaxa('USD'))+'. Toque numa moeda para ver o gráfico de velas. Compra e venda têm spread de 2%.</span></div>'+
+    '<button class="eb-btn sec" data-a="trocasenha">'+I('key',20)+'Trocar senha do EduBank</button><div class="eb-card eb-muted" style="margin-top:14px">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
     moedasCard();
 },'EduBank');
 }
@@ -214,14 +276,14 @@ function moedasCard(){
   var el=$('#eb-moe');if(!el)return;
   api({acao:'moedas'}).then(function(j){
     el=$('#eb-moe');if(!el)return;
-    if(!j||!j.ok){el.innerHTML='<h2>🪙 Moedas</h2><p class="eb-muted">Faça atividades e melhore suas notas para ganhar moedas.</p>';return}
+    if(!j||!j.ok){el.innerHTML='<h2>Moedas</h2><p class="eb-muted">Faça atividades e melhore suas notas para ganhar moedas.</p>';return}
     var s=Math.max(0,Math.floor(Number(j.saldo)||0)),cm=Number(j.centavosPorMoeda)||0;
     DADOS.moedas={saldo:s,cpm:cm};
-    el.innerHTML='<h2>🪙 Moedas</h2><div class="v" style="font-size:1.7em;font-weight:800">'+s+' moeda'+(s===1?'':'s')+'</div>'+
+    el.innerHTML='<div class="eb-gh">'+I('coin',36)+'<div><h2 style="margin:0">Moedas</h2><div class="gp">'+s+' moeda'+(s===1?'':'s')+'</div></div></div>'+
       '<p class="eb-muted">Cada moeda vale '+rs(cm)+'. Ganhe mais refazendo atividades para melhorar sua nota.</p>'+
       '<button class="eb-btn" data-a="trocamoedas"'+(s>0?'':' disabled')+'>Trocar por reais</button>'+
       '<p class="eb-muted" style="margin-top:8px">Depois de trocar, o dinheiro cai no seu saldo em reais e você pode comprar moedas estrangeiras e criptomoedas no Câmbio.</p>';
-  }).catch(function(){el=$('#eb-moe');if(el)el.innerHTML='<h2>🪙 Moedas</h2><p class="eb-muted">Não foi possível carregar agora.</p>'});
+  }).catch(function(){el=$('#eb-moe');if(el)el.innerHTML='<h2>Moedas</h2><p class="eb-muted">Não foi possível carregar agora.</p>'});
 }
 function idMoeda(q){
   var k='eb_trocamoedas_'+LOGIN+'_'+q;
@@ -231,7 +293,7 @@ function limpaIdMoeda(q){try{localStorage.removeItem('eb_trocamoedas_'+LOGIN+'_'
 function telaTrocaMoedas(){
   var c=shell('Trocar moedas',true);
   var M=(DADOS&&DADOS.moedas)||{saldo:0,cpm:0};
-  c.innerHTML='<div class="eb-card"><h2>🪙 Trocar moedas por reais</h2><p class="eb-muted">Você tem <b>'+M.saldo+'</b> moeda'+(M.saldo===1?'':'s')+' · 1 moeda = <b>'+rs(M.cpm)+'</b></p>'+
+  c.innerHTML='<div class="eb-card"><h2>Trocar moedas por reais</h2><p class="eb-muted">Você tem <b>'+M.saldo+'</b> moeda'+(M.saldo===1?'':'s')+' · 1 moeda = <b>'+rs(M.cpm)+'</b></p>'+
     '<label for="eb-mq">Quantas moedas quer trocar?</label><input id="eb-mq" inputmode="numeric" autocomplete="off" placeholder="0">'+
     '<div class="eb-est" id="eb-me">Digite a quantidade</div><button class="eb-btn" id="eb-mgo">Trocar</button>'+
     '<p class="eb-muted" style="margin-top:10px">O valor entra no seu saldo em reais. Depois você pode trocar esse dinheiro por moedas estrangeiras ou criptomoedas no Câmbio.</p></div>';
@@ -256,8 +318,9 @@ function telaTrocaMoedas(){
   };
 }
 function cartao(m){
-  var v=saldoDe(m.c);
-  return '<button class="eb-m'+(v?'':' zero')+(m.x?' cr':'')+'" data-a="grafico" data-c="'+m.c+'"><span class="f">'+m.f+'</span><small>'+m.c+' · '+esc(m.n)+'</small><b>'+qtd(m,v)+'</b><em>1 = '+fmtTaxa(m.c)+'</em></button>';
+  var v=saldoDe(m.c),vr=varTaxa(m.c);
+  return '<button class="eb-m'+(v?'':' zero')+'" data-a="grafico" data-c="'+m.c+'" aria-label="'+esc(m.n)+', gráfico">'+flag(m.c,40)+'<span class="mi"><span class="mc">'+m.c+'</span><span class="mn">'+esc(m.n)+'</span></span>'+
+   '<span class="mr"><b>'+qtd(m,v)+'</b><em>1 = '+fmtTaxa(m.c)+(vr!=null?' <span class="eb-var '+(vr>0?'p':'n')+'">'+(vr>0?'▲ +':'▼ ')+vr.toFixed(2).replace('.',',')+'%</span>':'')+'</em></span></button>';
 }
 
 /* ---------- gráfico de velas ---------- */
@@ -293,80 +356,99 @@ function grafSerie(c,tf){
       return a.map(function(x){var cl=Number(x.bid),vb=Number(x.varBid)||0;return {t:Number(x.timestamp)*1000,o:cl-vb,h:Number(x.high),l:Number(x.low),c:cl}});
     });
 }
-function grafDesenha(cv,serie,tf){
-  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pl=12,pr=92,pt=14,pb=26;
-  ctx.clearRect(0,0,W,H);
+function cv_(n){return getComputedStyle(root).getPropertyValue(n).trim()}
+function fmtP(v){var d=v>=1000?0:v>=10?2:v>=1?3:4;return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function grafDesenha(cv,serie,tf,sel){
+  var dpr=window.devicePixelRatio||1,W=Math.max(240,cv.clientWidth||320),H=Math.round(Math.max(210,Math.min(320,W*.7)));
+  cv.style.height=H+'px';cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  var ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
   if(!serie||!serie.length)return;
+  var up=cv_('--up')||'#0b7a3b',dn=cv_('--dn')||'#c0261b',tx2=cv_('--tx2')||'#4b4d6e',bd=cv_('--bd')||'#e2e4f1',tx=cv_('--tx')||'#14142b',card=cv_('--card')||'#fff';
+  var pl=8,pr=64,pt=12,pb=26;
   var lo=Math.min.apply(null,serie.map(function(k){return k.l})),hi=Math.max.apply(null,serie.map(function(k){return k.h}));
   var mg=(hi-lo)*.06||hi*.001;lo-=mg;hi+=mg;
-  var faixa=(hi-lo)||1,n=serie.length,cw=(W-pl-pr)/n,bw=Math.max(2,Math.min(12,cw*.66));
+  var faixa=(hi-lo)||1,n=serie.length,cw=(W-pl-pr)/n,bw=Math.max(2,Math.min(11,cw*.66));
   function Y(v){return pt+(hi-v)/faixa*(H-pt-pb)}
-  function fmtP(v){var d=v>=1000?0:v>=10?2:v>=1?3:4;return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})}
-  ctx.font='11px system-ui';ctx.lineWidth=1;
-  for(var g=0;g<=4;g++){var y=pt+(H-pt-pb)*g/4;ctx.strokeStyle='rgba(255,255,255,.08)';ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(W-pr,y);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.6)';ctx.fillText(fmtP(hi-faixa*g/4),W-pr+8,y+4)}
-  var passo=Math.max(1,Math.round(n/6));
+  cv._L={pl:pl,pr:pr,cw:cw,n:n};
+  ctx.font='11px system-ui,sans-serif';ctx.lineWidth=1;
+  for(var g=0;g<=4;g++){var y=pt+(H-pt-pb)*g/4;ctx.strokeStyle=bd;ctx.beginPath();ctx.moveTo(pl,y+.5);ctx.lineTo(W-pr,y+.5);ctx.stroke();
+    ctx.fillStyle=tx2;ctx.textAlign='left';ctx.fillText(fmtP(hi-faixa*g/4),W-pr+6,y+4)}
+  var passo=Math.max(1,Math.round(n/4));
   serie.forEach(function(k,i){
-    var x=pl+i*cw+cw/2,sobe=k.c>=k.o,cor=sobe?'#22c55e':'#ef4444';
+    var x=pl+i*cw+cw/2,sobe=k.c>=k.o,cor=sobe?up:dn;
     ctx.strokeStyle=cor;ctx.fillStyle=cor;ctx.lineWidth=1.2;
     ctx.beginPath();ctx.moveTo(x,Y(k.h));ctx.lineTo(x,Y(k.l));ctx.stroke();
     var y1=Y(Math.max(k.o,k.c)),y2=Y(Math.min(k.o,k.c));
     ctx.fillRect(x-bw/2,y1,bw,Math.max(1.5,y2-y1));
-    if(i%passo===0){var d=new Date(k.t),tx=(tf==='1d'||!tf)?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillText(tx,Math.max(pl,x-14),H-8)}
+    if(i%passo===0){var d=new Date(k.t),t=(tf==='1d'||!tf)?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      ctx.fillStyle=tx2;ctx.textAlign='center';ctx.fillText(t,Math.min(W-pr-14,Math.max(pl+14,x)),H-8)}
   });
-  var ult=serie[serie.length-1],yu=Y(ult.c),cu=ult.c>=ult.o?'#22c55e':'#ef4444';
+  ctx.textAlign='left';
+  var ult=serie[serie.length-1],yu=Y(ult.c),cu=ult.c>=ult.o?up:dn;
   ctx.setLineDash([4,4]);ctx.strokeStyle=cu;ctx.beginPath();ctx.moveTo(pl,yu);ctx.lineTo(W-pr,yu);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle=cu;ctx.fillRect(W-pr+2,yu-9,pr-4,18);ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.fillText(fmtP(ult.c),W-pr+8,yu+4);
+  ctx.fillStyle=cu;ctx.fillRect(W-pr+2,yu-9,pr-3,18);ctx.fillStyle=card;ctx.font='bold 11px system-ui,sans-serif';ctx.fillText(fmtP(ult.c),W-pr+6,yu+4);
+  if(sel!=null&&serie[sel]){var xs=pl+sel*cw+cw/2;ctx.strokeStyle=tx;ctx.globalAlpha=.55;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xs,pt);ctx.lineTo(xs,H-pb);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1}
 }
 function telaGrafico(c){
   aba='inicio';
   comDados(function(cx){
-    var m=MAP[c];
-    cx.innerHTML='<div class="eb-card eb-graf"><h2>'+m.f+' '+esc(m.n)+'</h2>'+
-      '<p class="eb-muted">Saldo: <b>'+qtd(m,saldoDe(c))+'</b> · 1 '+esc(m.c)+' = <b>'+fmtTaxa(c)+'</b></p>'+
-      '<div class="eb-tf" id="eb-tf" style="display:flex;gap:6px;margin:10px 0 6px">'+GRAF_TF.map(function(t,i){return '<button type="button" data-tf="'+t[0]+'" class="'+(i===GRAF_TF.length-1?'on':'')+'" style="flex:1;padding:8px 4px;border-radius:9px;border:1px solid '+(i===GRAF_TF.length-1?'#2563eb':'rgba(255,255,255,.25)')+';background:'+(i===GRAF_TF.length-1?'#2563eb':'rgba(255,255,255,.08)')+';color:#fff;font-weight:800;font-size:.78rem">'+t[1]+'</button>'}).join('')+'</div>'+
-      '<canvas id="eb-cv" width="680" height="300" style="width:100%;height:auto;display:block;background:#0b1220;border-radius:12px;margin:6px 0"></canvas><div class="eb-muted" id="eb-gmsg"></div>'+
-      '<div class="eb-gacts"><button class="eb-btn" data-a="aba" data-k="cambio">Comprar/Vender</button>'+
-      '<button class="eb-btn sec" data-a="traf" data-c="'+c+'">Transferir</button></div></div>';
-    var cv=cx.querySelector('#eb-cv'),msg=cx.querySelector('#eb-gmsg'),tf='1d';
+    var m=MAP[c],vr=varTaxa(c);
+    cx.innerHTML='<div class="eb-card eb-graf"><div class="eb-gh">'+flag(c,44)+'<div><h2 style="margin:0">'+esc(m.n)+'</h2><div class="gp">'+fmtTaxa(c)+'</div></div></div>'+
+      '<p class="eb-muted" style="margin:8px 0 0">Seu saldo: <b style="color:var(--tx)">'+qtd(m,saldoDe(c))+'</b> · cotação às '+esc(horaTaxa(c))+'</p>'+
+      '<div class="eb-pills" id="eb-tf">'+GRAF_TF.map(function(t,i){return '<button type="button" data-tf="'+t[0]+'" class="'+(i===GRAF_TF.length-1?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>'+
+      '<div class="eb-tip" id="eb-tip">Toque ou arraste no gráfico para ver os valores.</div>'+
+      '<canvas id="eb-cv" role="img" aria-label="Gráfico de velas de '+esc(m.n)+'"></canvas><div class="eb-muted" id="eb-gmsg"></div>'+
+      '<div class="eb-gacts"><button class="eb-btn" data-a="aba" data-k="cambio">'+I('swap',20)+'Comprar/Vender</button>'+
+      '<button class="eb-btn sec" data-a="traf" data-c="'+c+'">'+I('send',20)+'Transferir</button></div></div>';
+    var cv=cx.querySelector('#eb-cv'),msg=cx.querySelector('#eb-gmsg'),tip=cx.querySelector('#eb-tip'),tf='1d',SER=null,SEL=null;
+    function tipo(i){
+      var k=SER[i];if(!k)return;SEL=i;grafDesenha(cv,SER,tf,i);
+      var d=new Date(k.t),dd=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})+((tf==='1d')?'':' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+      var cor=k.c>=k.o?'var(--up)':'var(--dn)';
+      tip.innerHTML='<span class="d">'+esc(dd)+'</span><span>Abertura <b>'+fmtP(k.o)+'</b></span><span>Máx. <b>'+fmtP(k.h)+'</b></span><span>Mín. <b>'+fmtP(k.l)+'</b></span><span>Fech. <b style="color:'+cor+'">'+fmtP(k.c)+'</b></span>';
+    }
+    function pos(e){var L=cv._L;if(!L||!SER)return;var r=cv.getBoundingClientRect(),x=e.clientX-r.left,i=Math.floor((x-L.pl)/L.cw);tipo(Math.max(0,Math.min(L.n-1,i)))}
+    cv.addEventListener('pointerdown',pos);cv.addEventListener('pointermove',function(e){if(e.buttons||e.pointerType==='mouse')pos(e)});
     function carrega(){
-      msg.textContent='Carregando velas…';
-      grafSerie(c,tf).then(function(s){grafDesenha(cv,s,tf);var u=s[s.length-1],p0=s[0].o,v=((u.c-p0)/p0*100);
-        msg.innerHTML='Fonte: '+grafFonte(c)+' · '+s.length+' velas · variação no período: <b style="color:'+(v>=0?'#22c55e':'#ef4444')+'">'+(v>=0?'+':'')+v.toFixed(2).replace('.',',')+'%</b>';})
+      msg.textContent='Carregando velas…';SER=null;SEL=null;
+      grafSerie(c,tf).then(function(s){SER=s;grafDesenha(cv,s,tf);tipo(s.length-1);var u=s[s.length-1],p0=s[0].o,v=((u.c-p0)/p0*100);
+        msg.innerHTML='Fonte: '+grafFonte(c)+' · '+s.length+' velas · variação no período: <b style="color:'+(v>=0?'var(--up)':'var(--dn)')+'">'+(v>=0?'+':'')+v.toFixed(2).replace('.',',')+'%</b>';})
         .catch(function(e){msg.textContent='Não consegui carregar o gráfico agora ('+e.message+'). Tente outro período.'});
     }
     cx.querySelector('#eb-tf').onclick=function(e){
       var b=e.target.closest('[data-tf]');if(!b)return;
       tf=b.getAttribute('data-tf');
-      [].forEach.call(this.querySelectorAll('[data-tf]'),function(x){
-        var on=x===b;x.classList.toggle('on',on);
-        x.style.background=on?'#2563eb':'rgba(255,255,255,.08)';
-        x.style.borderColor=on?'#2563eb':'rgba(255,255,255,.25)';
-      });
+      [].forEach.call(this.querySelectorAll('[data-tf]'),function(x){x.classList.toggle('on',x===b)});
       if(grafSoDiario(c)&&tf!=='1d'){msg.textContent='Para esta moeda só há velas diárias (últimos 60 dias).';return}
       carrega();
     };
     carrega();
-  },'Gráfico');
+  },'Gráfico',true);
 }
 
 /* ---------- câmbio ---------- */
+function estimaUI(m,v,op){
+  var el=$('#eb-es');if(!el)return;
+  if(!(v>0)){el.innerHTML='<div class="t">Digite a quantidade'+(m.x?' (até 8 casas, ex.: 0,001523)':'')+' para ver a estimativa.</div><div class="r"><span>Taxa de referência</span><b>1 '+m.c+' = '+fmtTaxa(m.c)+'</b></div><div class="r"><span>Cotação das</span><b>'+esc(horaTaxa(m.c))+'</b></div>';return}
+  var base=Math.round(taxaDe(m.c)*v/escalaDe(m.c)*100),tot=estim(m.c,v,op),spr=Math.abs(tot-base);
+  el.innerHTML='<div class="r"><span>Taxa de referência</span><b>1 '+m.c+' = '+fmtTaxa(m.c)+'</b></div><div class="r"><span>Valor sem taxa</span><b>'+rs(base)+'</b></div><div class="r"><span>Spread de 2%</span><b>'+(op==='comprar'?'+ ':'− ')+rs(spr)+'</b></div><div class="r"><span>Cotação das</span><b>'+esc(horaTaxa(m.c))+'</b></div>'+
+   '<div class="big"><span>'+(op==='comprar'?'Você paga cerca de':'Você recebe cerca de')+'</span><b>'+rs(tot)+'</b></div>';
+}
 function telaCambio(pre){
   aba='cambio';
   comDados(function(c){
     var op='comprar',moeda=(pre&&MAP[pre])?pre:'USD';
-    c.innerHTML='<div class="eb-card"><h2>Câmbio</h2><p class="eb-muted">Seu saldo: <b id="eb-sr">'+rs(getCash())+'</b> · taxa do dia, com spread de 2%.</p>'+
+    c.innerHTML='<div class="eb-card"><h2>Câmbio</h2><p class="eb-muted">Seu saldo em reais: <b id="eb-sr" style="color:var(--tx)">'+rs(getCash())+'</b></p>'+
     '<div class="eb-seg"><button data-op="comprar" class="on">Comprar</button><button data-op="vender">Vender</button></div>'+
-    '<label for="eb-mo">Moeda</label><select id="eb-mo">'+opcoes(moeda)+'</select><div class="eb-muted" id="eb-tx"></div>'+
+    '<label for="eb-mo">Moeda</label><select id="eb-mo">'+opcoes(moeda)+'</select><div class="eb-disp" id="eb-tx"></div>'+
     '<label for="eb-q" id="eb-ql">Quantidade que quero comprar</label><input id="eb-q" inputmode="decimal" autocomplete="off" placeholder="0,00">'+
-    '<div class="eb-est" id="eb-es">—</div><button class="eb-btn" id="eb-go">Comprar</button></div>';
+    '<div class="eb-est" id="eb-es"></div><button class="eb-btn" id="eb-go">Comprar</button></div>';
     var box=c.firstChild;
     function atual(){
       moeda=$('#eb-mo').value;var m=MAP[moeda];
-      $('#eb-tx').innerHTML='Taxa: 1 '+m.c+' = <b>'+fmtTaxa(moeda)+'</b> · você tem '+qtd(m,saldoDe(moeda));
+      $('#eb-tx').innerHTML=flag(m.c,20)+'<span>Você tem '+qtd(m,saldoDe(moeda))+'</span>';
       var v=parseQ(m,$('#eb-q').value);
-      $('#eb-es').textContent=(v>0)?((op==='comprar'?'Você paga cerca de ':'Você recebe cerca de ')+rs(estim(moeda,v,op))):'Digite a quantidade'+(m.x?' (até 8 casas, ex.: 0,001523)':'');
+      estimaUI(m,v,op);
       $('#eb-ql').textContent='Quantidade que quero '+(op==='comprar'?'comprar':'vender');
       $('#eb-go').textContent=op==='comprar'?'Comprar '+m.c:'Vender '+m.c;
     }
@@ -398,7 +480,7 @@ function telaCambio(pre){
 function telaTransferir(pre){
   aba='transferir';
   comDados(function(c){
-    c.innerHTML='<div class="eb-card eb-muted">Verificando sua senha do EduBank…</div>';
+    c.innerHTML=''+skel(2)+'';
     statSenha().then(function(tem){
       if(!root)return;
       if(!tem)return telaSenha(false,function(){telaTransferir(pre)});
@@ -409,16 +491,16 @@ function telaTransferir(pre){
 function formTransferir(c,pre){
   {
     var tem=MOEDAS.filter(function(m){return saldoDe(m.c)>0});
-    if(!tem.length){c.innerHTML='<div class="eb-card"><h2>Transferir</h2><p>Você ainda não tem moeda estrangeira nem criptomoeda para transferir.</p><p class="eb-muted">Compre no Câmbio com seus reais.</p><button class="eb-btn" data-a="aba" data-k="cambio">Ir para o Câmbio</button></div>';return}
+    if(!tem.length){c.innerHTML='<div class="eb-card">'+vazio('send','Nada para transferir ainda','Compre moeda estrangeira ou criptomoeda no Câmbio com seus reais.')+'<button class="eb-btn" data-a="aba" data-k="cambio">Ir para o Câmbio</button></div>';return}
     var sel=(pre&&saldoDe(pre)>0)?pre:tem[0].c;
     c.innerHTML='<div class="eb-card"><h2>Transferir</h2><p class="eb-muted">Só para alunos da turma '+esc(turma(LOGIN))+', em moedas estrangeiras e criptomoedas.</p>'+
     '<label for="eb-pa">Chave Pix do colega</label><input id="eb-pa" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ex.: 7'+esc(turma(LOGIN))+'">'+
     '<label for="eb-mo">Moeda</label><select id="eb-mo">'+opcoes(sel,true)+'</select><div class="eb-muted" id="eb-sd"></div>'+
-    '<label for="eb-v">Valor</label><input id="eb-v" inputmode="decimal" autocomplete="off" placeholder="0,00"><div class="eb-muted" id="eb-rs" style="font-size:1.02rem;font-weight:700;color:#e5e7eb;margin-top:4px"></div>'+
+    '<label for="eb-v">Valor</label><input id="eb-v" inputmode="decimal" autocomplete="off" placeholder="0,00"><div class="eb-muted" id="eb-rs" style="margin-top:6px"></div>'+
     '<label for="eb-n">Mensagem (opcional)</label><input id="eb-n" maxlength="40" autocomplete="off">'+
-    '<button class="eb-btn" id="eb-rev">Revisar transferência</button></div>';
+    '<button class="eb-btn" id="eb-rev">'+I('send',20)+'Revisar transferência</button></div>';
     var box=c.firstChild;
-    function sd(){var m=MAP[$('#eb-mo').value];$('#eb-sd').innerHTML='<span style="display:inline-block;font-size:1.05rem;font-weight:800;color:#e5e7eb;margin:4px 0 2px">Disponível: '+qtd(m,saldoDe(m.c))+'</span>'}
+    function sd(){var m=MAP[$('#eb-mo').value];$('#eb-sd').innerHTML='<span class="eb-disp">'+flag(m.c,20)+'Disponível: '+qtd(m,saldoDe(m.c))+'</span>'}
     $('#eb-mo').onchange=sd;sd();
     var vin=$('#eb-v');
     function rsPrev(){
@@ -437,7 +519,7 @@ function formTransferir(c,pre){
       if(v>saldoDe(m.c))return setErr(box,'Saldo insuficiente. Você tem '+qtd(m,saldoDe(m.c))+'.');
       telaConfirmar({id:novoId(),para:para,moeda:m.c,v:v,nota:nota});
     };
-    var tr=document.createElement('button');tr.className='eb-btn sec';tr.textContent='🔑 Trocar senha do EduBank';tr.onclick=function(){telaSenha(true,function(){telaTransferir(pre)})};c.appendChild(tr);
+    var tr=document.createElement('button');tr.className='eb-btn sec';tr.innerHTML=I('key',20)+'Trocar senha do EduBank';tr.onclick=function(){telaSenha(true,function(){telaTransferir(pre)})};c.appendChild(tr);
   }
 }
 function pwIn(id,lab,ac){return '<label for="'+id+'">'+lab+'</label><input id="'+id+'" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="4 números" autocomplete="'+ac+'">'}
@@ -468,10 +550,10 @@ function telaSenha(troca,ok){
 }
 function telaConfirmar(p){
   var m=MAP[p.moeda],c=shell('Confirmar',true);
-  c.innerHTML='<div class="eb-card eb-comp"><h2>Confirme a transferência</h2><div style="font-size:1.7em;font-weight:800;color:#3b2bb0;overflow-wrap:anywhere">'+esc(qtd(m,p.v))+'</div>'+
-  '<dl><dt>Para</dt><dd>'+esc(aluno(p.para))+'</dd><dt>Chave</dt><dd>'+esc(p.para)+'</dd>'+(p.nota?'<dt>Mensagem</dt><dd>'+esc(p.nota)+'</dd>':'')+'</dl>'+
-  '<label for="eb-pw">Senha do EduBank</label><input id="eb-pw" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 números (dia e mês)">'+
-  '<button class="eb-btn" id="eb-ok">Confirmar e transferir</button><button class="eb-btn sec" id="eb-no">Voltar</button></div>';
+  c.innerHTML='<div class="eb-card eb-rc"><div class="rh"><div class="eb-muted">Você vai enviar</div><div class="am">'+esc(qtd(m,p.v))+'</div></div>'+
+  '<dl><div class="rw"><dt>Para</dt><dd>'+esc(aluno(p.para))+'</dd></div><div class="rw"><dt>Chave</dt><dd>'+esc(p.para)+'</dd></div>'+(p.nota?'<div class="rw"><dt>Mensagem</dt><dd>'+esc(p.nota)+'</dd></div>':'')+'</dl>'+
+  '<div style="padding:0 16px 16px"><label for="eb-pw">Senha do EduBank</label><input id="eb-pw" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 números (dia e mês)">'+
+  '<button class="eb-btn" id="eb-ok">'+I('check',20)+'Confirmar e transferir</button><button class="eb-btn sec" id="eb-no">Voltar</button></div></div>';
   var box=c.firstChild;
   $('#eb-no').onclick=function(){telaTransferir(p.moeda)};
   $('#eb-ok').onclick=function(){
@@ -488,27 +570,28 @@ function telaConfirmar(p){
 }
 function telaComprovante(r){
   var m=MAP[r.moeda],c=shell('Comprovante',false);
-  c.innerHTML='<div class="eb-card eb-comp"><div class="ic">✅</div><h2>Transferência feita!</h2><div style="font-size:1.6em;font-weight:800;color:#3b2bb0;overflow-wrap:anywhere">'+esc(qtd(m,r.v))+'</div>'+
-  '<dl><dt>Para</dt><dd>'+esc(aluno(r.para))+'</dd><dt>Chave</dt><dd>'+esc(r.para)+'</dd><dt>De</dt><dd>'+esc(aluno(LOGIN))+'</dd>'+(r.nota?'<dt>Mensagem</dt><dd>'+esc(r.nota)+'</dd>':'')+
-  '<dt>Data</dt><dd>'+esc(dt(r.ts))+'</dd><dt>Protocolo</dt><dd>'+esc(r.id)+'</dd></dl></div><button class="eb-btn" data-a="aba" data-k="inicio">Voltar ao início</button>';
+  c.innerHTML='<div class="eb-card eb-rc"><div class="rh"><div class="ok">'+I('check',30)+'</div><h2>Transferência feita!</h2><div class="am">'+esc(qtd(m,r.v))+'</div></div>'+
+  '<dl><div class="rw"><dt>Para</dt><dd>'+esc(aluno(r.para))+'</dd></div><div class="rw"><dt>Chave</dt><dd>'+esc(r.para)+'</dd></div><div class="rw"><dt>De</dt><dd>'+esc(aluno(LOGIN))+'</dd></div>'+(r.nota?'<div class="rw"><dt>Mensagem</dt><dd>'+esc(r.nota)+'</dd></div>':'')+
+  '<div class="rw"><dt>Data</dt><dd>'+esc(dt(r.ts))+'</dd></div><div class="rw"><dt>Protocolo</dt><dd>'+esc(r.id)+'</dd></div></dl></div><button class="eb-btn" data-a="aba" data-k="inicio">Voltar ao início</button>';
 }
 
 /* ---------- extrato ---------- */
-var TIPO={env:['📤','Enviado para '],rec:['📥','Recebido de '],compra:['🛒','Compra de '],venda:['💰','Venda de ']};
+var TIPO={env:['','Enviado para '],rec:['','Recebido de '],compra:['','Compra de '],venda:['','Venda de ']};
 function telaExtrato(){
   aba='extrato';
   var c=shell('Extrato',false);
-  c.innerHTML='<div class="eb-card"><h2>Extrato</h2><div id="eb-lista" class="eb-muted">Carregando…</div></div>';
+  c.innerHTML='<h2 style="margin:0 2px 8px">Extrato</h2><div class="eb-card" id="eb-lista">'+skel(4).replace('eb-card','eb-sk0')+'</div>';
   api({acao:'extrato'}).then(function(j){
     var l=$('#eb-lista');if(!l)return;
-    if(!j.ok)return l.innerHTML='<div class="eb-err">'+esc(msgErro(j))+'</div>';
+    if(!j.ok)return l.innerHTML=vazio('alert','Não deu para carregar o extrato',msgErro(j));
     var it=(j.itens||j.extrato||[]).slice().sort(function(a,b){return (Number(b.ts)||0)-(Number(a.ts)||0)});
-    if(!it.length)return l.textContent='Nenhuma movimentação ainda.';
+    if(!it.length)return l.innerHTML=vazio('inbox','Nenhuma movimentação ainda','Compre moedas no Câmbio e elas aparecem aqui.');
+    var ult='';
     l.innerHTML=it.map(function(x){
       var m=MAP[x.moeda]||{c:x.moeda,s:'',e:100,f:'💱'},t=TIPO[x.tipo]||['💱',''],pos=(x.tipo==='rec'||x.tipo==='compra'),brl=x.moeda==='BRL';
       var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+aluno(x.outro):t[1]+m.c;
-      var Q=function(v){return brl?rs(v):qtd(m,v)};
-      return '<div class="eb-it"><span style="font-size:1.4em">'+t[0]+'</span><div><b>'+esc(tit)+'</b><small>'+esc(dt(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="q '+(pos?'p':'n')+'">'+(pos?'+':'-')+esc(Q(x.v))+'</span></div>';
+      var Q=function(v){return brl?rs(v):qtd(m,v)},g=dia(x.ts),h=(g!==ult)?'<div class="eb-dg">'+esc(g)+'</div>':'';ult=g;
+      return h+'<div class="eb-it"><span class="ib '+(pos?'p':'n')+'">'+I(pos?'down':'up',20)+'</span><div><b>'+esc(tit)+'</b><small>'+esc(hhmm(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="q '+(pos?'p':'n')+'">'+(pos?'+':'−')+esc(Q(x.v))+'</span></div>';
     }).join('');
   }).catch(function(e){var l=$('#eb-lista');if(l)l.innerHTML='<div class="eb-err">'+esc(e.message)+'</div>'});
 }
@@ -607,5 +690,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:5,versao:'5'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:7,versao:'7'};
 })();
