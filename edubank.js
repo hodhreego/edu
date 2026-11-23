@@ -214,41 +214,66 @@ function cartao(m){
 
 /* ---------- gráfico de velas ---------- */
 var GRAF_TF=[['5m','5 min'],['30m','30 min'],['1h','1 hora'],['1d','1 dia']];
+/* Velas REAIS em R$: Binance (pares em BRL) para cripto e dólar; euro e peso argentino compostos com o dólar;
+   demais moedas: fechamento diário real da AwesomeAPI (abertura = fechamento − variação do dia). */
+function bnKl(sym,tf,lim){
+  return fetch('https://api.binance.com/api/v3/klines?symbol='+sym+'&interval='+tf+'&limit='+lim)
+    .then(function(r){if(!r.ok)throw new Error('cotação indisponível');return r.json()})
+    .then(function(a){if(!Array.isArray(a)||!a.length)throw new Error('sem dados');return a.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]}})});
+}
+function compoe(a,b,div){ /* a = moeda em USDT (ou USDT em ARS), b = USDT em BRL; combina por horário */
+  var mb={};b.forEach(function(k){mb[k.t]=k});var out=[];
+  a.forEach(function(k){var u=mb[k.t];if(!u)return;
+    var o,c,h,l;
+    if(div){o=u.o/k.o;c=u.c/k.c;h=Math.max(o,c,u.h/k.l);l=Math.min(o,c,u.l/k.h)}
+    else{o=k.o*u.o;c=k.c*u.c;h=Math.max(o,c,k.h*u.c,k.c*u.h);l=Math.min(o,c,k.l*u.c,k.c*u.l)}
+    out.push({t:k.t,o:o,h:h,l:l,c:c})});
+  if(!out.length)throw new Error('sem dados');return out;
+}
+function grafFonte(c){
+  if(MAP[c].x||c==='USD')return 'Binance (ao vivo, em R$)';
+  if(c==='EUR'||c==='ARS')return 'Binance (composto com o dólar, em R$)';
+  return 'AwesomeAPI (fechamento diário, em R$)';
+}
+function grafSoDiario(c){return !(MAP[c].x||c==='USD'||c==='EUR'||c==='ARS')}
 function grafSerie(c,tf){
   var m=MAP[c];
-  if(m.x){
-    return fetch('https://api.binance.com/api/v3/klines?symbol='+c+'USDT&interval='+tf+'&limit=120')
-      .then(function(r){if(!r.ok)throw new Error('cotação indisponível');return r.json()})
-      .then(function(a){return a.map(function(k){return {t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4]}})});
-  }
-  return fetch('https://economia.awesomeapi.com.br/json/daily/'+c+'-BRL/7')
+  if(m.x)return bnKl(c+'BRL',tf,120);
+  if(c==='USD')return bnKl('USDTBRL',tf,120);
+  if(c==='EUR')return Promise.all([bnKl('EURUSDT',tf,120),bnKl('USDTBRL',tf,120)]).then(function(r){return compoe(r[0],r[1],false)});
+  if(c==='ARS')return Promise.all([bnKl('USDTARS',tf,120),bnKl('USDTBRL',tf,120)]).then(function(r){return compoe(r[0],r[1],true)});
+  return fetch('https://economia.awesomeapi.com.br/json/daily/'+c+'-BRL/60')
     .then(function(r){if(!r.ok)throw new Error('cotação indisponível');return r.json()})
     .then(function(a){
-      a=a.slice().reverse();var out=[],prev=null;
-      a.forEach(function(x){
-        var cl=Number(x.bid),hi=Number(x.high),lo=Number(x.low),op=prev==null?cl:prev;
-        out.push({t:Number(x.timestamp)*1000,o:op,h:hi,l:lo,c:cl});prev=cl;
-      });
-      return out;
+      a=a.slice().reverse();
+      return a.map(function(x){var cl=Number(x.bid),vb=Number(x.varBid)||0;return {t:Number(x.timestamp)*1000,o:cl-vb,h:Number(x.high),l:Number(x.low),c:cl}});
     });
 }
-function grafDesenha(cv,serie){
-  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pad=10;
+function grafDesenha(cv,serie,tf){
+  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height,pl=12,pr=92,pt=14,pb=26;
   ctx.clearRect(0,0,W,H);
   if(!serie||!serie.length)return;
   var lo=Math.min.apply(null,serie.map(function(k){return k.l})),hi=Math.max.apply(null,serie.map(function(k){return k.h}));
-  var faixa=(hi-lo)||1,n=serie.length,cw=(W-pad*2)/n,bw=Math.max(2,Math.min(10,cw*.62));
-  function Y(v){return pad+(hi-v)/faixa*(H-pad*2)}
-  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='10px system-ui';ctx.lineWidth=1;
-  for(var g=0;g<=4;g++){var y=pad+(H-pad*2)*g/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();
-    ctx.fillText((hi-faixa*g/4).toLocaleString('pt-BR',{maximumFractionDigits:4}),W-86,y-3)}
+  var mg=(hi-lo)*.06||hi*.001;lo-=mg;hi+=mg;
+  var faixa=(hi-lo)||1,n=serie.length,cw=(W-pl-pr)/n,bw=Math.max(2,Math.min(12,cw*.66));
+  function Y(v){return pt+(hi-v)/faixa*(H-pt-pb)}
+  function fmtP(v){var d=v>=1000?0:v>=10?2:v>=1?3:4;return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})}
+  ctx.font='11px system-ui';ctx.lineWidth=1;
+  for(var g=0;g<=4;g++){var y=pt+(H-pt-pb)*g/4;ctx.strokeStyle='rgba(255,255,255,.08)';ctx.beginPath();ctx.moveTo(pl,y);ctx.lineTo(W-pr,y);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.6)';ctx.fillText(fmtP(hi-faixa*g/4),W-pr+8,y+4)}
+  var passo=Math.max(1,Math.round(n/6));
   serie.forEach(function(k,i){
-    var x=pad+i*cw+cw/2,sobe=k.c>=k.o;
-    ctx.strokeStyle=sobe?'#22c55e':'#ef4444';ctx.fillStyle=ctx.strokeStyle;
+    var x=pl+i*cw+cw/2,sobe=k.c>=k.o,cor=sobe?'#22c55e':'#ef4444';
+    ctx.strokeStyle=cor;ctx.fillStyle=cor;ctx.lineWidth=1.2;
     ctx.beginPath();ctx.moveTo(x,Y(k.h));ctx.lineTo(x,Y(k.l));ctx.stroke();
     var y1=Y(Math.max(k.o,k.c)),y2=Y(Math.min(k.o,k.c));
-    ctx.fillRect(x-bw/2,y1,bw,Math.max(1,y2-y1));
+    ctx.fillRect(x-bw/2,y1,bw,Math.max(1.5,y2-y1));
+    if(i%passo===0){var d=new Date(k.t),tx=(tf==='1d'||!tf)?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}):d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      ctx.fillStyle='rgba(255,255,255,.55)';ctx.fillText(tx,Math.max(pl,x-14),H-8)}
   });
+  var ult=serie[serie.length-1],yu=Y(ult.c),cu=ult.c>=ult.o?'#22c55e':'#ef4444';
+  ctx.setLineDash([4,4]);ctx.strokeStyle=cu;ctx.beginPath();ctx.moveTo(pl,yu);ctx.lineTo(W-pr,yu);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=cu;ctx.fillRect(W-pr+2,yu-9,pr-4,18);ctx.fillStyle='#fff';ctx.font='bold 11px system-ui';ctx.fillText(fmtP(ult.c),W-pr+8,yu+4);
 }
 function telaGrafico(c){
   aba='inicio';
@@ -263,7 +288,8 @@ function telaGrafico(c){
     var cv=cx.querySelector('#eb-cv'),msg=cx.querySelector('#eb-gmsg'),tf='1d';
     function carrega(){
       msg.textContent='Carregando velas…';
-      grafSerie(c,tf).then(function(s){grafDesenha(cv,s);msg.textContent=(m.x?'Fonte: Binance (ao vivo)':'Fonte: AwesomeAPI (fechamento diário)')+' · '+s.length+' velas';})
+      grafSerie(c,tf).then(function(s){grafDesenha(cv,s,tf);var u=s[s.length-1],p0=s[0].o,v=((u.c-p0)/p0*100);
+        msg.innerHTML='Fonte: '+grafFonte(c)+' · '+s.length+' velas · variação no período: <b style="color:'+(v>=0?'#22c55e':'#ef4444')+'">'+(v>=0?'+':'')+v.toFixed(2).replace('.',',')+'%</b>';})
         .catch(function(e){msg.textContent='Não consegui carregar o gráfico agora ('+e.message+'). Tente outro período.'});
     }
     cx.querySelector('#eb-tf').onclick=function(e){
@@ -274,7 +300,7 @@ function telaGrafico(c){
         x.style.background=on?'#2563eb':'rgba(255,255,255,.08)';
         x.style.borderColor=on?'#2563eb':'rgba(255,255,255,.25)';
       });
-      if(!m.x&&tf!=='1d'){msg.textContent='Para moedas estrangeiras só temos o fechamento diário (7 dias).';return}
+      if(grafSoDiario(c)&&tf!=='1d'){msg.textContent='Para esta moeda só há velas diárias (últimos 60 dias).';return}
       carrega();
     };
     carrega();
