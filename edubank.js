@@ -418,7 +418,7 @@ function telaGrafico(c){
       '<div class="eb-pills" id="eb-tf">'+GRAF_TF.map(function(t,i){return '<button type="button" data-tf="'+t[0]+'" class="'+(i===GRAF_TF.length-1?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>'+
       '<div class="eb-tip" id="eb-tip">Toque ou arraste no gráfico para ver os valores.</div>'+
       '<canvas id="eb-cv" role="img" aria-label="Gráfico de velas de '+esc(m.n)+'"></canvas><div class="eb-muted" id="eb-gmsg"></div>'+
-      '<div class="eb-gacts"><button class="eb-btn" data-a="aba" data-k="cambio">'+I('swap',20)+'Comprar/Vender</button>'+
+      '<div class="eb-gacts"><button class="eb-btn" data-a="aba" data-k="cambio">'+I('swap',20)+'Câmbio</button>'+
       '<button class="eb-btn sec" data-a="traf" data-c="'+c+'">'+I('send',20)+'Transferir</button></div></div>';
     var cv=cx.querySelector('#eb-cv'),msg=cx.querySelector('#eb-gmsg'),tip=cx.querySelector('#eb-tip'),tf='1d',SER=null,SEL=null;
     function tipo(i){
@@ -609,7 +609,7 @@ function telaExtrato(){
     var ult='';
     l.innerHTML=it.map(function(x){
       var m=MAP[x.moeda]||{c:x.moeda,s:'',e:100,f:'💱'},t=TIPO[x.tipo]||['💱',''],pos=(x.tipo==='rec'||x.tipo==='compra'),brl=x.moeda==='BRL';
-      var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+aluno(x.outro):t[1]+m.c;
+      var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+(RE.test(String(x.outro||''))?aluno(x.outro):(x.outro||'')):t[1]+m.c;
       var Q=function(v){return brl?rs(v):qtd(m,v)},g=dia(x.ts),h=(g!==ult)?'<div class="eb-dg">'+esc(g)+'</div>':'';ult=g;
       return h+'<div class="eb-it"><span class="eb-ib '+(pos?'eb-pos':'eb-neg')+'">'+I(pos?'down':'up',20)+'</span><div><b>'+esc(tit)+'</b><small>'+esc(hhmm(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="eb-q '+(pos?'eb-pos':'eb-neg')+'">'+(pos?'+':'−')+esc(Q(x.v))+'</span></div>';
     }).join('');
@@ -711,5 +711,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:11,versao:'11'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:12,versao:'12'};
 })();
