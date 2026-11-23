@@ -417,6 +417,7 @@ var EB_ALUNO = /^\d{1,3}[a-z]{3}\d[a-z]$/;
 var EB_ESPECIAL = /^(mestre|teste|mainara)$/;
 var EB_FIAT = ['USD', 'EUR', 'GBP', 'JPY', 'ARS', 'CNY'];
 var EB_CRIPTO = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'USDT'];
+var EB_MESTRE = '4599699444';
 var EB_MOEDAS = EB_FIAT.concat(EB_CRIPTO);
 var EB_RESERVA = { USD: 5.4, EUR: 6.3, GBP: 7.25, JPY: 0.036, ARS: 0.0055, CNY: 0.75, BTC: 350000, ETH: 18000, SOL: 800, XRP: 12, DOGE: 1, USDT: 5.4 };
 var EB_URL_FIAT = 'https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,JPY-BRL,ARS-BRL,CNY-BRL';
@@ -429,6 +430,7 @@ var EB_ABAS = {
   Carteiras: { cab: ['login'].concat(EB_MOEDAS, ['atualizado']), cor: '#6a2fd6', w: [110], txt: [1] },
   Extratos: { cab: ['ts', 'login', 'tipo', 'moeda', 'v', 'brl', 'outro', 'nota', 'saldo_apos', 'id'], cor: '#b45309', w: [150, 110, 70, 70, 110, 100, 110, 220, 110, 200], txt: [2, 7, 8, 10] },
   Logs: { cab: ['ts', 'login', 'evento', 'detalhe'], cor: '#334155', w: [150, 110, 110, 520], txt: [2, 4] },
+  Mestre: { cab: ['ts', 'aluno', 'operacao', 'moeda', 'spread_brl', 'conta_mestre'], cor: '#7c3aed', w: [150, 110, 80, 80, 110, 130], txt: [2, 4, 6] },
   Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160], txt: [2, 3, 5, 6, 7, 14, 15] }
 };
 
@@ -512,7 +514,7 @@ function eb_trimestre_(d) {
   return 3;
 }
 function eb_spread_(cfg, m) {
-  var k = EB_CRIPTO.indexOf(m) >= 0 ? 'spread_cripto_pct' : 'spread_pct', d = EB_CRIPTO.indexOf(m) >= 0 ? 1 : 0.6, s = Number(cfg[k]);
+  var k = EB_CRIPTO.indexOf(m) >= 0 ? 'spread_cripto_pct' : 'spread_pct', d = 2, s = Number(cfg[k]);
   if (!isFinite(s) || s < 0 || s > 20) s = d;
   return s / 100;
 }
@@ -578,6 +580,7 @@ function eb_dispatch_(p) {
   if (a === 'extrato') return eb_extratoResp_(l);
   if (a === 'resultado') return eb_resultado_(p, l);
   if (a === 'boletim') return eb_boletimResp_(l);
+  if (a === 'classificacao') return eb_classifResp_(l);
   return eb_erro_('Ação desconhecida.');
 }
 
@@ -835,6 +838,7 @@ function eb_cambio_(p, login) {
       s[moeda] += v; eb_gravaSaldos_(sh, row, s);
       eb_aba_('Extratos').appendRow([new Date(), login, 'compra', moeda, v, custo, '', '', s[moeda], id]);
       eb_log_(login, 'cambio', 'compra ' + moeda + ' ' + v + ' custo_centavos=' + custo + ' taxa=' + tx.t + ' id=' + id);
+      try { eb_aba_('Mestre').appendRow([new Date(), login, 'compra', moeda, (custo - Math.ceil(eb_r6_(v / esc * tx.t * 100))) / 100, EB_MESTRE]); } catch (e) { }
       return { ok: 1, custo: custo, taxa: tx.t, saldos: s };
     }
     if (s[moeda] < v) return eb_erro_('Saldo insuficiente nessa moeda.');
@@ -843,6 +847,7 @@ function eb_cambio_(p, login) {
     s[moeda] -= v; eb_gravaSaldos_(sh, row, s);
     eb_aba_('Extratos').appendRow([new Date(), login, 'venda', moeda, v, rec, '', '', s[moeda], id]);
     eb_log_(login, 'cambio', 'venda ' + moeda + ' ' + v + ' recebe_centavos=' + rec + ' taxa=' + tx.t + ' id=' + id);
+    try { eb_aba_('Mestre').appendRow([new Date(), login, 'venda', moeda, (Math.floor(eb_r6_(v / esc * tx.t * 100)) - rec) / 100, EB_MESTRE]); } catch (e) { }
     return { ok: 1, recebe: rec, taxa: tx.t, saldos: s };
   });
 }
@@ -943,6 +948,30 @@ function eb_boletimDe_(login) {
   return { ok: 1, porDisc: porDisc, totais: totais, geral: g, ultimas: lista.slice(0, 12) };
 }
 function eb_boletimResp_(login) { return eb_boletimDe_(login); }
+
+// Classificação da turma do aluno (só a turma dele; sem nomes: "Aluno nº N").
+function eb_classifResp_(login) {
+  var turma = eb_turma_(login), sh = eb_aba_('Resultados'), n = sh.getLastRow(), por = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 14).getValues().forEach(function (r, i) {
+    var lg = String(r[1]); if (eb_turma_(lg) !== turma) return;
+    var key = r[4] + '|' + (r[5] || r[6] || ('#' + i)), o = por[lg] || (por[lg] = {}), c = o[key] || (o[key] = { pct: null, conc: 0 });
+    var pct = (r[9] === '' || r[9] == null) ? null : Number(r[9]);
+    if (pct !== null) c.pct = pct;
+    if (Number(r[10]) === 1) c.conc = 1;
+  });
+  if (!por[login]) por[login] = {};
+  var lista = Object.keys(por).map(function (lg) {
+    var o = por[lg], s = 0, nn = 0, conc = 0, na = 0;
+    Object.keys(o).forEach(function (k) { na++; if (o[k].pct !== null) { s += o[k].pct; nn++; } conc += o[k].conc; });
+    return { login: lg, n: na, media: nn ? eb_round1_(s / nn / 10) : null, conc: conc };
+  });
+  lista.sort(function (a, b) { return ((b.media === null ? -1 : b.media) - (a.media === null ? -1 : a.media)) || (b.n - a.n); });
+  var out = lista.slice(0, 60).map(function (x, i) {
+    return { pos: i + 1, nome: 'Aluno nº ' + parseInt(x.login, 10), media: x.media, n: x.n, conc: x.conc, eu: x.login === login };
+  });
+  var eu = 0; lista.forEach(function (x, i) { if (x.login === login) eu = i + 1; });
+  return { ok: 1, turma: turma, total: lista.length, minha: eu, lista: out };
+}
 
 // ---------- professor: menu 🔑 EduBank ----------
 function eb_ui_() { try { return SpreadsheetApp.getUi(); } catch (e) { return null; } }

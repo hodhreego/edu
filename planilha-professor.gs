@@ -580,6 +580,7 @@ function eb_dispatch_(p) {
   if (a === 'extrato') return eb_extratoResp_(l);
   if (a === 'resultado') return eb_resultado_(p, l);
   if (a === 'boletim') return eb_boletimResp_(l);
+  if (a === 'classificacao') return eb_classifResp_(l);
   return eb_erro_('Ação desconhecida.');
 }
 
@@ -947,6 +948,30 @@ function eb_boletimDe_(login) {
   return { ok: 1, porDisc: porDisc, totais: totais, geral: g, ultimas: lista.slice(0, 12) };
 }
 function eb_boletimResp_(login) { return eb_boletimDe_(login); }
+
+// Classificação da turma do aluno (só a turma dele; sem nomes: "Aluno nº N").
+function eb_classifResp_(login) {
+  var turma = eb_turma_(login), sh = eb_aba_('Resultados'), n = sh.getLastRow(), por = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 14).getValues().forEach(function (r, i) {
+    var lg = String(r[1]); if (eb_turma_(lg) !== turma) return;
+    var key = r[4] + '|' + (r[5] || r[6] || ('#' + i)), o = por[lg] || (por[lg] = {}), c = o[key] || (o[key] = { pct: null, conc: 0 });
+    var pct = (r[9] === '' || r[9] == null) ? null : Number(r[9]);
+    if (pct !== null) c.pct = pct;
+    if (Number(r[10]) === 1) c.conc = 1;
+  });
+  if (!por[login]) por[login] = {};
+  var lista = Object.keys(por).map(function (lg) {
+    var o = por[lg], s = 0, nn = 0, conc = 0, na = 0;
+    Object.keys(o).forEach(function (k) { na++; if (o[k].pct !== null) { s += o[k].pct; nn++; } conc += o[k].conc; });
+    return { login: lg, n: na, media: nn ? eb_round1_(s / nn / 10) : null, conc: conc };
+  });
+  lista.sort(function (a, b) { return ((b.media === null ? -1 : b.media) - (a.media === null ? -1 : a.media)) || (b.n - a.n); });
+  var out = lista.slice(0, 60).map(function (x, i) {
+    return { pos: i + 1, nome: 'Aluno nº ' + parseInt(x.login, 10), media: x.media, n: x.n, conc: x.conc, eu: x.login === login };
+  });
+  var eu = 0; lista.forEach(function (x, i) { if (x.login === login) eu = i + 1; });
+  return { ok: 1, turma: turma, total: lista.length, minha: eu, lista: out };
+}
 
 // ---------- professor: menu 🔑 EduBank ----------
 function eb_ui_() { try { return SpreadsheetApp.getUi(); } catch (e) { return null; } }
