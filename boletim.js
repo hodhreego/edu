@@ -62,6 +62,7 @@
     '#' + ID + ' .bl-cn{background:#fff;border-radius:14px;padding:11px 13px;margin-bottom:9px;box-shadow:0 1px 4px rgba(16,36,58,.08)}#' + ID + ' .bl-cn .t{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}#' + ID + ' .bl-cn .t span{min-width:0;overflow-wrap:anywhere;font-weight:700}#' + ID + ' .bl-cn .t b{font-size:22px;font-weight:800;white-space:nowrap}';
 
 
+  function fv(x) { return typeof x === 'function' ? x() : x; }
   function getSess() {
     var s = null;
     try { s = JSON.parse(localStorage.getItem('edu_sess') || 'null'); } catch (e) {}
@@ -71,8 +72,8 @@
     var s = getSess() || {};
     return {
       ep: o.endpoint || W.EDU_ENDPOINT || '',
-      login: o.login || W.EDU_LOGIN || s.login || '',
-      t: o.token || W.EDU_TOKEN || s.t || ''
+      login: o.login || fv(W.EDU_LOGIN) || s.login || '',
+      t: o.token || fv(W.EDU_TOKEN) || s.t || ''
     };
   }
   function api(c, acao, extra) {
@@ -160,6 +161,22 @@
     return 1;
   }
 
+  /* login dentro do app: carrega edu-login-ui.js sob demanda */
+  function precisaLogin(c, j) { return !c.ep || !c.login || !c.t || (j && (j.relogin || /Sess.{1,2}o inv.{1,2}lida/i.test(j.erro || ''))); }
+  function loginDentro(body, o, msg, depois) {
+    function go() {
+      W.EDU_LOGIN_UI.mostrar(body, { titulo: o.titulo, erro: msg, cor: o.cor, onOk: function () { o.opts.login = ''; o.opts.token = ''; depois(); } });
+    }
+    if (W.EDU_LOGIN_UI) return go();
+    var s = D.createElement('script'); s.src = 'edu-login-ui.js?v=1'; s.onload = go;
+    s.onerror = function () { body.innerHTML = '<p style="text-align:center;padding:30px 14px">Não foi possível abrir o login. Verifique a internet.</p>'; };
+    D.head.appendChild(s);
+  }
+  function msgLogin(s) {
+    if (s && (s.mestre || s.local || (s.login && !s.t))) return 'Esta sessão é de teste/professor e não vale aqui. Entre com um login de aluno (ex.: 12cla6b).';
+    return 'Sua sessão expirou ou foi aberta em outro aparelho. Entre de novo.';
+  }
+
   function close() {
     var el = D.getElementById(ID); if (el) el.remove();
     if (close._cb) { var f = close._cb; close._cb = null; try { f(); } catch (e) {} }
@@ -178,14 +195,19 @@
     ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
     ov.querySelector('.bl-x').onclick = close;
     var body = ov.querySelector('.bl-body'), top = ov.querySelector('.bl-top');
-    var c = creds(opts);
+    var c;
+    function pedeLogin(msg) {
+      top.querySelector('.bl-hero').innerHTML = '';
+      loginDentro(body, { opts: opts, titulo: 'Entre para ver seu boletim', cor: '#0a8fb0' }, msg, carregar);
+    }
     function carregar() {
+      c = creds(opts);
       body.innerHTML = '<div class="bl-vz"><p>Carregando…</p></div>';
-      if (!c.ep || !c.login || !c.t) {
-        body.innerHTML = '<div class="bl-vz">' + icone(72) + '<p>Entre com seu login para ver o boletim.</p></div>'; return;
-      }
+      var s0 = getSess();
+      if (!c.ep || !c.login || !c.t) { pedeLogin(msgLogin(s0)); return; }
       Promise.all([api(c, 'boletim'), api(c, 'extrato').catch(function () { return null; }), api(c, 'moedas').catch(function () { return null; })]).then(function (r) {
         var b = r[0], ext = r[1], moe = r[2];
+        if (precisaLogin(c, b)) { pedeLogin(msgLogin(getSess())); return; }
         if (!b || !b.ok) { body.innerHTML = '<div class="bl-vz"><p>' + esc((b && b.erro) || 'Não foi possível carregar o boletim.') + '</p><button class="bl-btn">Tentar de novo</button></div>'; body.querySelector('button').onclick = carregar; return; }
         render(body, top, b, ext, {}, moe);
       }).catch(function () {

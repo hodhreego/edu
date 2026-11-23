@@ -46,6 +46,22 @@
     var url = c.ep + (c.ep.indexOf('?') < 0 ? '?' : '&') + 'acao=' + encodeURIComponent(acao) + '&login=' + encodeURIComponent(c.login) + '&t=' + encodeURIComponent(c.t);
     return fetch(url).then(function (r) { return r.json(); });
   }
+  /* login dentro do app: carrega edu-login-ui.js sob demanda */
+  function precisaLogin(c, j) { return !c.ep || !c.login || !c.t || (j && (j.relogin || /Sess.{1,2}o inv.{1,2}lida/i.test(j.erro || ''))); }
+  function loginDentro(body, o, msg, depois) {
+    function go() {
+      W.EDU_LOGIN_UI.mostrar(body, { titulo: o.titulo, erro: msg, cor: o.cor, onOk: function () { o.opts.login = ''; o.opts.token = ''; depois(); } });
+    }
+    if (W.EDU_LOGIN_UI) return go();
+    var s = D.createElement('script'); s.src = 'edu-login-ui.js?v=1'; s.onload = go;
+    s.onerror = function () { body.innerHTML = '<p style="text-align:center;padding:30px 14px">Não foi possível abrir o login. Verifique a internet.</p>'; };
+    D.head.appendChild(s);
+  }
+  function msgLogin(s) {
+    if (s && (s.mestre || s.local || (s.login && !s.t))) return 'Esta sessão é de teste/professor e não vale aqui. Entre com um login de aluno (ex.: 12cla6b).';
+    return 'Sua sessão expirou ou foi aberta em outro aparelho. Entre de novo.';
+  }
+
   function close() {
     var el = D.getElementById(ID); if (el) el.remove();
     W.removeEventListener('resize', encaixa);
@@ -82,11 +98,17 @@
     ov.innerHTML = '<div class="rk-top">' + icone(34) + '<b>Classificação da turma</b><button class="rk-x" aria-label="Fechar">✕</button></div><div class="rk-sub" id="rk-sub"></div><div class="rk-body" id="rk-body"></div>';
     ((host && host.parentNode) || D.body).appendChild(ov); encaixa(); W.addEventListener('resize', encaixa);
     ov.querySelector('.rk-x').onclick = close;
-    var body = ov.querySelector('#rk-body'), sub = ov.querySelector('#rk-sub'), c = creds(opts);
+    var body = ov.querySelector('#rk-body'), sub = ov.querySelector('#rk-sub'), c;
+    function pedeLogin(msg) {
+      sub.innerHTML = '';
+      loginDentro(body, { opts: opts, titulo: 'Entre para ver a classificação', cor: '#e0245e' }, msg, carregar);
+    }
     function carregar() {
+      c = creds(opts);
       body.innerHTML = '<div class="rk-vz"><p>Carregando…</p></div>';
-      if (!c.ep || !c.login || !c.t) { body.innerHTML = '<div class="rk-vz">' + icone(72) + '<p>Entre com seu login para ver a classificação.</p></div>'; return; }
+      if (!c.ep || !c.login || !c.t) { pedeLogin(msgLogin(getSess())); return; }
       api(c, 'classificacao').then(function (d) {
+        if (precisaLogin(c, d)) { pedeLogin(msgLogin(getSess())); return; }
         if (!d || !d.ok) { body.innerHTML = '<div class="rk-vz"><p>' + esc((d && d.erro) || 'Não foi possível carregar a classificação.') + '</p><button class="rk-btn">Tentar de novo</button></div>'; body.querySelector('button').onclick = carregar; return; }
         render(body, sub, d);
       }).catch(function () {
