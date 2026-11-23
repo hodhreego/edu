@@ -23,6 +23,9 @@
  function resultado(fim){var T=window.EDU_TOKEN?EDU_TOKEN():'',L=window.EDU_LOGIN?EDU_LOGIN():'',u=window.EDU_ENDPOINT;if(!T||!L||!u||!cur)return;
   var c=concl(),d0=dados(),ac=+d0.certas||0,er2=+d0.erradas||0;if(!c&&!fim)return;if(!c&&max<=0&&ac+er2===0)return;if(rsent===2||(rsent===1&&!c))return;rsent=c?2:1;
   var d={sid:sid,cod:cur.cod||'',atividade:cur.titulo||file,disc:disc(),serie:cur.serie||'',acertos:ac,erros:er2,pontos:max,pct:(ac+er2)>0?Math.round(100*ac/(ac+er2)):null,concluido:c,dur:Math.round((Date.now()-t0)/1000)};
+  var ex={};try{ex=window.EDU_EXTRA?(EDU_EXTRA()||{}):{}}catch(e){}
+  var pg=Number(ex.progresso);if(isFinite(pg)&&ex.progresso!==''&&ex.progresso!=null)d.progresso=Math.max(0,Math.min(100,Math.round(pg)));else if(c)d.progresso=100;
+  var dn=ex.ganhoCent!=null?Number(ex.ganhoCent):(ex.dinheiro!=null?Math.round(Number(ex.dinheiro)*100):NaN);if(isFinite(dn)&&dn>=0)d.dinheiro=Math.round(dn);
   var b={acao:'resultado',login:L,t:T,d:d};for(var k in d)b[k]=d[k];
   try{fetch(u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b),keepalive:true})}catch(e){}}
  function enviar(fim){

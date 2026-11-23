@@ -43,6 +43,8 @@ th{background:#eef2fc}tr.cl{cursor:pointer}tr.cl:hover td{background:#f3f7ff}
 .seg{display:flex;height:7px;border-radius:4px;overflow:hidden;margin-top:3px}.seg i{display:block;height:100%}
 #login{max-width:380px;margin:40px auto;background:#fff;border:2px solid var(--line);border-radius:16px;padding:22px;text-align:center}
 #login input{font:600 18px Arial;padding:12px;width:100%;border:2px solid var(--line);border-radius:12px;margin:12px 0}
+.pgb{background:#e9eef9;border-radius:5px;height:8px;width:80px;overflow:hidden}.pgb i{display:block;height:100%;background:var(--brand)}.reltab td{font-size:13px}
+@media print{body.prrel *{visibility:hidden}body.prrel #relat,body.prrel #relat *{visibility:visible}body.prrel #relat{position:absolute;left:0;top:0;width:100%}body.prrel .noprint{display:none!important}body.prrel .wrap{overflow:visible;border:0}body.prrel table{min-width:0}body.prrel th,body.prrel td{padding:3px 4px;font-size:10px}body.prrel #relcab{visibility:visible;font-size:13px;color:#000}@page{size:A4 landscape;margin:10mm}}
 @media(max-width:560px){body{padding:8px}.br{grid-template-columns:1fr 70px}.br .tr{grid-column:1/3;order:3}.br .vl{order:2}button.big{min-width:0;padding:14px 10px;font-size:16px}}
 </style><script src="edu-aviso-ia.js?v=1"></script></head><body>
 <div id="login"><h2 style="margin-top:0">🔐 Senha do professor</h2><p class="sub">Digite uma vez; fica guardada só nesta aba até você sair.</p><input id="sp" type="password" autocomplete="current-password" placeholder="senha"><br><button class="big on" id="go" style="width:100%">Entrar</button><div id="lm"></div></div>
@@ -111,7 +113,7 @@ function rAlunos(){var a=CUR.alunos.slice(),s=CUR.sort;
  h+='<div class="box" id="env">'+envHtml()+'</div>';
  put(CUR.my,h)}
 /* ---------- ficha ---------- */
-async function vFicha(my,login){var j=await api({acao:'profaluno',login:login});if(!j.ok)return err(my,j);envReset('aluno',login);FI=j;FA={disc:''};FI.my=my;rFicha('')}
+async function vFicha(my,login){var j=await api({acao:'profaluno',login:login});if(!j.ok)return err(my,j);envReset('aluno',login);FI=j;FA={disc:'',sit:'',nota:'',sort:'ts'};FI.my=my;rFicha('')}
 function acoesHtml(conf){
  if(conf){var t={reset:'Apagar a senha do EduBank deste aluno?',desb:'Remover o bloqueio deste aluno?',zerar:'Zerar a carteira (moedas estrangeiras/cripto) deste aluno?'}[conf];return'<div class="msg er">'+t+'</div><button class="perigo" data-a="faz" data-k="'+conf+'">✔ Sim, confirmar</button><button data-a="cancela">✖ Cancelar</button>'}
  return'<button class="warn" data-a="conf" data-k="reset">🔑 Resetar senha do EduBank</button><button class="warn" data-a="conf" data-k="desb">🔓 Desbloquear</button><button class="warn" data-a="conf" data-k="zerar">🧹 Zerar carteira</button>'}
@@ -124,13 +126,40 @@ function rFicha(msg){var f=FI,b=f.boletim,c=f.conta,h='';
  h+='<h3>Boletim por disciplina e trimestre</h3><div class="wrap"><table><tr><th>Disciplina</th><th>1º tri</th><th>2º tri</th><th>3º tri</th><th>Geral</th></tr>';
  h+=ds.map(function(d){var p=b.porDisc[d],t=b.totais[d];return'<tr><td><b>'+esc(d)+'</b></td>'+[1,2,3].map(function(i){return'<td>'+(p[i].n?pill(p[i].media)+' <small>('+p[i].n+')</small>':'–')+'</td>'}).join('')+'<td>'+pill(t.media)+' <small>('+t.n+')</small></td></tr>'}).join('')||'<tr><td colspan="5">Sem atividades ainda.</td></tr>';
  h+='<tr style="background:#f4f7fc"><td><b>GERAL</b></td>'+[1,2,3].map(function(i){var x=b.geral.porTri[i];return'<td>'+(x.n?pill(x.media)+' <small>('+x.n+')</small>':'–')+'</td>'}).join('')+'<td>'+pill(b.geral.media)+' <small>('+b.geral.n+')</small></td></tr></table></div>';
- h+='<h3>Meus conteúdos</h3><div class="row"><button data-a="fd" data-i="-1" class="'+(FA.disc===''?'on':'')+'" style="padding:6px 12px">Todos</button>'+ds.map(function(d,i){return'<button data-a="fd" data-i="'+i+'" class="'+(FA.disc===d?'on':'')+'" style="padding:6px 12px">'+esc(d)+'</button>'}).join('')+'</div>';
- var cs=b.conteudos.filter(function(x){return!FA.disc||x.disc===FA.disc});
+ h+=relatHtml(ds);
  h+='<div class="wrap"><table><tr><th>Disciplina</th><th>Conteúdo</th><th>Tri</th><th>Nota (melhor)</th><th>Última</th><th>Tentativas</th></tr>'+(cs.map(function(x){return'<tr><td>'+esc(x.disc)+'</td><td>'+esc(x.atividade)+(x.concluido?' ✔':'')+'</td><td>'+x.tri+'º</td><td>'+pill(x.melhor)+'</td><td>'+pill(x.ultima)+'</td><td>'+x.tent+'</td></tr>'}).join('')||'<tr><td colspan="6">Nenhum conteúdo.</td></tr>')+'</table></div>';
  var cart=Object.keys(f.carteira);
  h+='<h3>Moedas e carteira</h3><div class="box"><div class="kv"><div>Ganhas<b>'+f.moedas.ganhas+'</b></div><div>Trocadas<b>'+f.moedas.trocadas+'</b></div><div>Saldo<b>'+f.moedas.saldo+'</b></div></div>'+(cart.length?'<p style="margin:10px 0 0"><b>Carteira EduBank:</b> '+cart.map(function(m){return'<span class="chip">'+m+' '+String(f.carteira[m])+'</span>'}).join(' ')+'</p>':'<p class="sub" style="margin:10px 0 0">Carteira EduBank vazia.</p>')+(f.trocas.length?'<p style="margin:10px 0 0"><b>Últimas trocas de moedas:</b> '+f.trocas.map(function(t){return'<span class="chip g">'+dt(t.ts)+' · '+t.q+' moedas = '+brl(t.centavos/100)+'</span>'}).join(' ')+'</p>':'')+'</div>';
  h+='<h3>Últimas transações</h3><div class="wrap"><table><tr><th>Quando</th><th>Tipo</th><th>Moeda</th><th>Valor</th><th>Detalhe</th></tr>'+(f.extrato.map(function(x){var tp={env:'Enviou',rec:'Recebeu',compra:'Comprou',venda:'Vendeu'}[x.tipo]||x.tipo;return'<tr><td>'+dt(x.ts)+'</td><td>'+tp+'</td><td>'+esc(x.moeda)+'</td><td>'+String(x.v)+(x.brl!=null?' ('+brl(x.brl)+')':'')+'</td><td>'+esc((x.outro?x.outro+' ':'')+(x.nota||''))+'</td></tr>'}).join('')||'<tr><td colspan="5">Sem transações.</td></tr>')+'</table></div>';
  put(f.my,h)}
+/* ---------- relatório detalhado do aluno (só atividades abertas) ---------- */
+function relCat(n){return n==null?'sn':n<6?'lt6':n<8?'m68':'ge8'}
+function relLista(){var f=FI,a=(f.detalhe||[]).filter(function(x){
+  return(!FA.disc||x.disc===FA.disc)&&(!FA.sit||(FA.sit==='c'?x.concluido:!x.concluido))&&(!FA.nota||relCat(x.nota)===FA.nota)});
+ var s=FA.sort||'ts';
+ a.sort(s==='nota'?function(x,y){return(y.nota==null?-1:y.nota)-(x.nota==null?-1:x.nota)}:s==='nome'?function(x,y){return String(x.atividade).localeCompare(String(y.atividade),'pt-BR')}:s==='disc'?function(x,y){return String(x.disc).localeCompare(String(y.disc),'pt-BR')||y.ts-x.ts}:s==='prog'?function(x,y){return y.progresso-x.progresso}:function(x,y){return y.ts-x.ts});
+ return a}
+function relResumo(a){var n=a.length,sn=0,nn=0,c=0,pt=0,mo=0,din=0,temD=false;
+ a.forEach(function(x){if(x.nota!=null){sn+=x.nota;nn++}if(x.concluido)c++;pt+=x.pontos||0;mo+=x.moedas||0;if(x.dinheiro!=null){din+=x.dinheiro;temD=true}});
+ return{n:n,media:nn?Math.round(sn/nn*10)/10:null,pctConc:n?Math.round(100*c/n):0,conc:c,pontos:Math.round(pt),moedas:mo,din:temD?din:null}}
+function relDd(x){return x.dinheiro!=null?brl(x.dinheiro/100)+(x.moedas?' <small>🪙 '+x.moedas+'</small>':''):'<small>'+Math.round(x.pontos)+' pts · 🪙 '+x.moedas+'</small>'}
+function relatHtml(ds){var f=FI,all=f.detalhe||[],a=relLista(),r=relResumo(a),sorts=[['ts','Mais recentes'],['nota','Nota'],['nome','Nome'],['disc','Disciplina'],['prog','% concluída']];
+ var h='<h3>Relatório detalhado das atividades</h3><div id="relat"><div class="kv"><div>Atividades abertas<b>'+r.n+'</b></div><div>Média das notas<b>'+pill(r.media)+'</b></div><div>% concluídas<b>'+r.pctConc+'%</b> <small>('+r.conc+' de '+r.n+')</small></div><div>Pontos<b>'+r.pontos+'</b></div><div>Moedas<b>🪙 '+r.moedas+'</b></div>'+(r.din!=null?'<div>Dinheiro do jogo<b>'+brl(r.din/100)+'</b></div>':'')+'</div>';
+ h+='<div class="row noprint"><span class="t">Disciplina:</span><button data-a="fd" data-i="-1" class="'+(FA.disc===''?'on':'')+'" style="padding:6px 12px">Todas</button>'+ds.map(function(d,i){return'<button data-a="fd" data-i="'+i+'" class="'+(FA.disc===d?'on':'')+'" style="padding:6px 12px">'+esc(d)+'</button>'}).join('')+'</div>';
+ h+='<div class="row noprint"><span class="t">Situação:</span>'+[['','Todas'],['c','Concluídas'],['a','Em andamento']].map(function(o){return'<button data-a="fs" data-k="'+o[0]+'" class="'+(FA.sit===o[0]?'on':'')+'" style="padding:6px 12px">'+o[1]+'</button>'}).join('')+'<span class="t" style="margin-left:10px">Nota:</span>'+[['','Todas'],['lt6','< 6'],['m68','6 a 8'],['ge8','≥ 8']].map(function(o){return'<button data-a="fn" data-k="'+o[0]+'" class="'+(FA.nota===o[0]?'on':'')+'" style="padding:6px 12px">'+o[1]+'</button>'}).join('')+'</div>';
+ h+='<div class="row noprint"><span class="t">Ordenar:</span>'+sorts.map(function(o){return'<button data-a="fo" data-k="'+o[0]+'" class="'+((FA.sort||'ts')===o[0]?'on':'')+'" style="padding:6px 12px">'+o[1]+'</button>'}).join('')+'<span style="flex:1"></span><button data-a="fpdf" style="padding:6px 12px">🖨️ Imprimir / Salvar PDF</button><button data-a="fcsv" style="padding:6px 12px">⬇️ Baixar CSV</button></div>';
+ h+='<p class="sub" style="display:none" id="relcab">Aluno nº '+f.num+' · '+esc(f.login)+' · '+esc(tle(f.turma))+' · '+new Date().toLocaleDateString('pt-BR')+'</p>';
+ h+='<div class="wrap"><table class="reltab"><tr><th>Atividade</th><th>Disc.</th><th>Tri</th><th>Tent.</th><th>Última</th><th>Acertos</th><th>Erros</th><th>% acertos</th><th>Nota</th><th>Pontos</th><th>R$ / moedas</th><th>% concluída</th><th>Situação</th><th>Melhor / Última</th></tr>';
+ h+=a.map(function(x){var pg=Math.round(x.progresso||0),m=x.melhor?x.melhor.nota:null,u=x.ultima?x.ultima.nota:null;
+  return'<tr><td><b>'+esc(x.atividade||x.cod)+'</b></td><td>'+esc(x.disc)+'</td><td>'+x.tri+'º</td><td>'+x.tent+'</td><td>'+dt(x.ts)+'</td><td>'+x.acertos+'</td><td>'+x.erros+'</td><td>'+(x.pct==null?'–':x.pct+'%')+'</td><td>'+pill(x.nota)+'</td><td>'+Math.round(x.pontos)+'</td><td>'+relDd(x)+'</td><td><div class="pgb"><i style="width:'+pg+'%"></i></div>'+pg+'%'+(x.progEst?'*':'')+'</td><td>'+(x.concluido?'<span class="chip g">✔ concluída</span>':'<span class="chip y">em andamento</span>')+'</td><td>'+pill(m)+' / '+pill(u)+'</td></tr>'}).join('')||'<tr><td colspan="14">'+(all.length?'Nenhuma atividade neste filtro.':'O aluno ainda não abriu nenhuma atividade.')+'</td></tr>';
+ h+='</table></div><p class="sub">* % estimada (a atividade não informou o andamento). Nota = melhor tentativa (0 a 10).</p></div>';
+ return h}
+function relCsv(){var a=relLista(),q=function(v){v=v==null?'':String(v);return'"'+v.replace(/"/g,'""')+'"'},vg=function(v){return v==null?'':String(v).replace('.',',')},L=[['atividade','disciplina','trimestre','tentativas','ultima_data','acertos','erros','pct_acertos','nota','pontos','dinheiro_reais','moedas','pct_concluida','situacao','melhor_nota','ultima_nota']];
+ a.forEach(function(x){L.push([x.atividade||x.cod,x.disc,x.tri,x.tent,x.ts?new Date(x.ts).toLocaleString('pt-BR'):'',x.acertos,x.erros,x.pct==null?'':x.pct,vg(x.nota),Math.round(x.pontos),x.dinheiro==null?'':vg(x.dinheiro/100),x.moedas,Math.round(x.progresso||0),x.concluido?'concluida':'em andamento',vg(x.melhor&&x.melhor.nota),vg(x.ultima&&x.ultima.nota)])});
+ var txt='﻿'+L.map(function(r){return r.map(q).join(';')}).join('\r\n'),b=new Blob([txt],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),el=document.createElement('a');
+ el.href=u;el.download='relatorio-'+FI.login+'.csv';document.body.appendChild(el);el.click();setTimeout(function(){URL.revokeObjectURL(u);el.remove()},500)}
+function relPdf(){document.body.classList.add('prrel');var c=$('relcab');if(c)c.style.display='block';
+ var fim=function(){document.body.classList.remove('prrel');if(c)c.style.display='none';removeEventListener('afterprint',fim)};addEventListener('afterprint',fim);window.print()}
 async function faz(k){var f=FI,acao={reset:'profreset',desb:'profdesbloquear',zerar:'profzerar'}[k],b={acao:acao};
  if(k==='reset')b.alvo=f.login;else b.login=f.login;
  var my=f.my;$('acoes').innerHTML='<span class="load">Executando…</span>';
@@ -248,6 +277,11 @@ document.addEventListener('click',function(ev){var el=ev.target.closest('[data-a
  else if(a==='conf'){$('acoes').innerHTML=acoesHtml(g('k'))}
  else if(a==='cancela'){$('acoes').innerHTML=acoesHtml('')}
  else if(a==='faz')faz(g('k'));
+ else if(a==='fs'){FA.sit=g('k');rFicha('')}
+ else if(a==='fn'){FA.nota=g('k');rFicha('')}
+ else if(a==='fo'){FA.sort=g('k');rFicha('')}
+ else if(a==='fpdf')relPdf();
+ else if(a==='fcsv')relCsv();
  else if(a==='fd'){var q=+g('i');FA.disc=q<0?'':Object.keys(FI.boletim.porDisc).sort()[q];rFicha('')}
  else if(a==='disc'){var di=+g('i');go(CT.discs[di].disc,function(my){return vConts(my,di)})}
  else if(a==='cont'){var d=CT.discs[+g('d')],c=d.conteudos[+g('i')],tu=CT.turma;go(c.atividade||c.cod,function(my){return vConteudo(my,tu,d.disc,c.cod)})}

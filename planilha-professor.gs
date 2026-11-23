@@ -433,7 +433,7 @@ var EB_ABAS = {
   Mestre: { cab: ['ts', 'aluno', 'operacao', 'moeda', 'spread_brl', 'conta_mestre'], cor: '#7c3aed', w: [150, 110, 80, 80, 110, 130], txt: [2, 4, 6] },
   Moedas: { cab: ['ts', 'login', 'id', 'tipo', 'qtd', 'centavos'], cor: '#ca8a04', w: [150, 110, 200, 80, 80, 90], txt: [2, 3, 4] },
   Creditos: { cab: ['ts', 'login', 'id', 'centavos', 'nota', 'status'], cor: '#0e7490', w: [150, 110, 220, 100, 220, 90], txt: [2, 3, 5, 6] },
-  Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160], txt: [2, 3, 5, 6, 7, 14, 15] }
+  Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid', 'progresso', 'dinheiro'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160, 80, 80], txt: [2, 3, 5, 6, 7, 14, 15] }
 };
 
 // ---------- utilitários ----------
@@ -881,6 +881,36 @@ function eb_profTurma_(p) {
   });
   return { ok: 1, turma: turma, alunos: alunos };
 }
+// Relatório detalhado por atividade que o aluno abriu: [{cod,atividade,disc,tri,tent,ts,acertos,erros,pct,nota,pontos,dinheiro,moedas,progresso,progEst,concluido,melhor:{...},ultima:{...}}]
+// Campos do nível superior = MELHOR tentativa (maior pct; empate: mais pontos); progresso = maior entre as tentativas; concluido = alguma tentativa concluída; ts = data da última tentativa.
+// dinheiro em CENTAVOS (null se o cliente nunca enviou); progresso 0-100 (vazio: 100 se concluída, senão estimado por acertos+erros, máx. 99, progEst=1).
+function eb_detalheDe_(login) {
+  var sh = eb_aba_('Resultados'), n = sh.getLastRow(), m = {};
+  if (n < 2) return [];
+  var nc = Math.max(15, Math.min(17, sh.getLastColumn()));
+  sh.getRange(2, 1, n - 1, nc).getValues().forEach(function (r, i) {
+    if (String(r[1]) !== login) return;
+    var key = r[4] + '|' + (r[5] || r[6] || ('#' + i)), ts = new Date(r[0]).getTime() || 0;
+    var pc = (r[9] === '' || r[9] == null) ? null : Number(r[9]); if (pc !== null && !isFinite(pc)) pc = null;
+    var ac = Number(r[7]) || 0, er = Number(r[8]) || 0, conc = Number(r[10]) === 1 ? 1 : 0, pt = Number(r[11]); if (!isFinite(pt) || pt < 0) pt = 0;
+    var pg = (r.length > 15 && r[15] !== '' && r[15] != null && isFinite(Number(r[15]))) ? Math.max(0, Math.min(100, Number(r[15]))) : null;
+    var dn = (r.length > 16 && r[16] !== '' && r[16] != null && isFinite(Number(r[16]))) ? Math.max(0, Number(r[16])) : null;
+    var est = 0;
+    if (pg === null) { if (conc) pg = 100; else { pg = (ac + er) > 0 ? Math.min(99, ac + er) : 0; est = 1; } }
+    var t = { ts: ts, tri: Number(r[3]) || 1, acertos: ac, erros: er, pct: pc, nota: pc === null ? null : eb_round1_(pc / 10), pontos: pt, dinheiro: dn, progresso: pg, progEst: est, concluido: conc };
+    var o = m[key];
+    if (!o) o = m[key] = { cod: String(r[5] || ''), atividade: String(r[6] || r[5] || ''), disc: String(r[4]), tent: 0, ts: -1, tri: 1, melhor: null, ultima: null, prog: 0, progEst: 1, conc: 0, moedas: 0 };
+    o.tent++;
+    if (ts >= o.ts) { o.ts = ts; o.tri = t.tri; o.ultima = t; o.atividade = String(r[6] || r[5] || o.atividade); o.cod = String(r[5] || o.cod); }
+    if (!o.melhor || (t.pct === null ? -1 : t.pct) > (o.melhor.pct === null ? -1 : o.melhor.pct) || ((t.pct === o.melhor.pct) && t.pontos > o.melhor.pontos)) o.melhor = t;
+    if (t.progresso > o.prog || (t.progresso === o.prog && !t.progEst)) { o.prog = t.progresso; o.progEst = t.progEst; }
+    if (conc) { o.conc = 1; var v = pt > 0 ? pt : ac; if (v > o.moedas) o.moedas = v; }
+  });
+  return Object.keys(m).map(function (k) {
+    var o = m[k], b = o.melhor || o.ultima;
+    return { cod: o.cod, atividade: o.atividade, disc: o.disc, tri: o.tri, tent: o.tent, ts: o.ts, acertos: b.acertos, erros: b.erros, pct: b.pct, nota: b.nota, pontos: b.pontos, dinheiro: b.dinheiro, moedas: Math.floor(o.moedas), progresso: o.conc ? 100 : o.prog, progEst: o.conc ? 0 : o.progEst, concluido: o.conc, melhor: o.melhor, ultima: o.ultima };
+  }).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 300);
+}
 // ficha: {ok,login,num,turma,conta:{ativada,banco,bloq,ultimo},boletim,moedas:{ganhas,trocadas,saldo},carteira:{USD:1.5,...},extrato:[...],trocas:[...]}
 function eb_profAluno_(p) {
   var login = eb_loginOk_(p.login); if (!login) return eb_erro_('Login inválido.');
@@ -900,7 +930,7 @@ function eb_profAluno_(p) {
     var vm = sm.getRange(2, 1, nm - 1, 6).getValues();
     for (var j = vm.length - 1; j >= 0 && tr.length < 10; j--) if (String(vm[j][1]) === login && String(vm[j][3]) === 'troca') tr.push({ ts: new Date(vm[j][0]).getTime(), q: Number(vm[j][4]) || 0, centavos: Number(vm[j][5]) || 0 });
   }
-  return { ok: 1, login: login, num: eb_numLogin_(login), turma: eb_turma_(login), conta: { ativada: ct ? 1 : 0, banco: ct ? ct.banco : 0, bloq: (ct && ct.bloq) || eb_profBloqCache_(login) ? 1 : 0, ultimo: ct ? ct.ultimo : 0 }, boletim: b, moedas: { ganhas: g, trocadas: t, saldo: Math.max(0, g - t) }, carteira: cart, extrato: ex, trocas: tr };
+  return { ok: 1, login: login, detalhe: eb_detalheDe_(login), num: eb_numLogin_(login), turma: eb_turma_(login), conta: { ativada: ct ? 1 : 0, banco: ct ? ct.banco : 0, bloq: (ct && ct.bloq) || eb_profBloqCache_(login) ? 1 : 0, ultimo: ct ? ct.ultimo : 0 }, boletim: b, moedas: { ganhas: g, trocadas: t, saldo: Math.max(0, g - t) }, carteira: cart, extrato: ex, trocas: tr };
 }
 // {ok,turma,discs:[{disc,conteudos:[{cod,atividade,feitos}]}],total}  (total = alunos da turma)
 function eb_profConteudos_(p) {
@@ -1259,11 +1289,14 @@ function eb_resultado_(p, login) {
   var pts = Number(r.pontos); if (!isFinite(pts) || pts < 0) pts = 0; pts = Math.min(pts, 1e7);
   var dur = Number(r.dur); if (!isFinite(dur) || dur < 0) dur = 0; dur = Math.min(Math.round(dur), 86400);
   var conc = (r.concluido === 1 || r.concluido === true || r.concluido === '1' || r.concluido === 'true') ? 1 : 0;
+  var prog = Number(r.progresso); prog = (r.progresso === '' || r.progresso == null || !isFinite(prog)) ? '' : Math.max(0, Math.min(100, Math.round(prog)));
+  var din = Number(r.dinheiro); din = (r.dinheiro === '' || r.dinheiro == null || !isFinite(din)) ? '' : Math.max(0, Math.min(1e9, Math.round(din)));   // centavos de R$ ganhos na atividade
   var agora = new Date(), tri = eb_trimestre_(agora);
   return eb_lock_(function () {
-    var sh = eb_aba_('Resultados'), lin = [agora, login, eb_turma_(login), tri, eb_txt_(disc), eb_txt_(cod), eb_txt_(ativ), ac, er, pct, conc, pts, dur, eb_txt_(serie), eb_txt_(sid)], row = 0, nn = sh.getLastRow();
+    var sh = eb_aba_('Resultados'), lin = [agora, login, eb_turma_(login), tri, eb_txt_(disc), eb_txt_(cod), eb_txt_(ativ), ac, er, pct, conc, pts, dur, eb_txt_(serie), eb_txt_(sid), prog, din], row = 0, nn = sh.getLastRow();
+    if (sh.getLastColumn() < 17) { sh.getRange(1, 16, 1, 2).setValues([['progresso', 'dinheiro']]).setFontWeight('bold').setBackground('#15803d').setFontColor('#ffffff'); }   // planilha antiga: acrescenta as colunas novas
     if (sid && nn >= 2) { var ids = sh.getRange(2, 1, nn - 1, 15).getValues(); for (var i = ids.length - 1; i >= 0; i--) if (String(ids[i][14]) === sid && String(ids[i][1]) === login) { row = i + 2; break; } }
-    if (row) sh.getRange(row, 1, 1, 15).setValues([lin]); else sh.appendRow(lin);
+    if (row) sh.getRange(row, 1, 1, 17).setValues([lin]); else sh.appendRow(lin);
     eb_log_(login, 'resultado', disc + ' ' + (cod || ativ) + ' ' + (pct === '' ? '-' : pct + '%'));
     return { ok: 1, trimestre: tri, atualizado: row ? 1 : 0 };
   });
