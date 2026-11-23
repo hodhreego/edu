@@ -71,7 +71,11 @@ function brl(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',cur
 function dt(ms){return ms?new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'nunca'}
 function ago(ms){if(!ms)return'';var m=Math.round((Date.now()-ms)/60000);return m<1?'agora':m<60?'há '+m+' min':m<1440?'há '+Math.round(m/60)+' h':'há '+Math.round(m/1440)+' d'}
 async function sha(s){var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[].map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2)}).join('')}
-function api(b){b.hp=HP;return fetch(EP,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b)}).then(function(r){return r.json()}).then(function(j){if(j&&!j.ok&&/Senha do professor incorreta|Defina a senha|Informe a senha|Bloqueado|Muitas tentativas/.test(j.erro||''))sair(j.erro);return j}).catch(function(){return{ok:0,erro:'Erro de conexão.'}})}
+function api(b){b.hp=HP;var ac=window.AbortController?new AbortController():null,tm=ac?setTimeout(function(){ac.abort()},25000):0;return fetch(EP,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b),signal:ac?ac.signal:undefined}).then(function(r){return r.json()}).then(function(j){clearTimeout(tm);if(j&&!j.ok&&/Senha do professor incorreta|Defina a senha|Informe a senha|Bloqueado|Muitas tentativas/.test(j.erro||''))sair(j.erro);return j}).catch(function(){clearTimeout(tm);return{ok:0,erro:'Erro de conexão.',rede:1}})}
+var CK='edu_prof_hp';
+function hpSalva(h){try{sessionStorage.setItem(CK,h)}catch(e){}try{document.cookie=CK+'='+h+'; path=/edu/; SameSite=Strict; Secure'}catch(e){}}
+function hpApaga(){try{sessionStorage.removeItem(CK)}catch(e){}try{document.cookie=CK+'=; path=/edu/; SameSite=Strict; Secure; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT'}catch(e){}}
+function hpLe(){var h=null;try{h=sessionStorage.getItem(CK)}catch(e){}if(!h||!/^[0-9a-f]{64}$/.test(h)){h=null;try{var m=document.cookie.match(new RegExp('(?:^|; )'+CK+'=([0-9a-f]{64})(?:;|$)'));if(m)h=m[1]}catch(e){}}return h}
 function err(my,j){put(my,'<div class="msg er">⛔ '+esc((j&&j.erro)||'Falhou')+'</div>')}
 function put(my,h){if(my===SEQ)$('v').innerHTML=h}
 /* ---------- sessão ---------- */
@@ -79,10 +83,14 @@ async function entrar(){var sp=$('sp').value;if(!sp){$('lm').innerHTML='<div cla
  $('lm').innerHTML='<p class="load">Conferindo…</p>';
  try{HP=await sha('prof:'+sp)}catch(e){$('lm').innerHTML='<div class="msg er">Navegador sem suporte (use https).</div>';return}
  $('sp').value='';var j=await api({acao:'profturmas'});
- if(j.ok){try{sessionStorage.setItem('edu_prof_hp',HP)}catch(e){}ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});abre()}else{HP=null;$('lm').innerHTML='<div class="msg er">⛔ '+esc(j.erro||'Falhou')+'</div>'}}
-function sair(m){HP=null;ESC=[];ESCN={};DDC={};DD=null;CUR={};CT=null;CN=null;FI=null;path=[];SEQ++;try{sessionStorage.removeItem('edu_prof_hp')}catch(e){}$('app').innerHTML='';$('login').style.display='block';$('lm').innerHTML=m?'<div class="msg er">⛔ '+esc(m)+'</div>':''}
+ if(j.ok){hpSalva(HP);ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});abre()}else{HP=null;$('lm').innerHTML='<div class="msg er">⛔ '+esc(j.erro||'Falhou')+'</div>'}}
+function sair(m){HP=null;ESC=[];ESCN={};DDC={};DD=null;CUR={};CT=null;CN=null;FI=null;path=[];SEQ++;hpApaga();$('app').innerHTML='';$('login').style.display='block';$('lm').innerHTML=m?'<div class="msg er">⛔ '+esc(m)+'</div>':''}
 function abre(){$('login').style.display='none';$('app').appendChild($('tpl').content.cloneNode(true));tab('alu')}
-async function retoma(h){HP=h;var j=await api({acao:'profturmas'});if(j.ok){ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});abre()}else sair(j.erro)}
+async function retoma(h){HP=h;$('login').style.display='none';$('app').innerHTML='<p class="load" id="ent">Entrando…</p>';var esp=[1500,3000,5000,5000],j;
+ for(var i=0;;i++){j=await api({acao:'profturmas'});if(!(j&&!j.ok&&j.rede)||i>=esp.length)break;await new Promise(function(r){setTimeout(r,esp[i])})}
+ if(j.ok){hpSalva(h);ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});$('app').innerHTML='';abre()}
+ else if(j.rede){HP=null;$('app').innerHTML='';$('login').style.display='block';$('lm').innerHTML='<div class="msg er">Sem conexão com o servidor. Tente de novo ou digite a senha.</div>'}
+ else sair(j.erro)}
 /* ---------- navegação ---------- */
 function go(t,f){path.push({t:t,f:f});draw()}
 function draw(){var c=path[path.length-1],my=++SEQ,h='';
@@ -299,6 +307,6 @@ document.addEventListener('click',function(ev){var el=ev.target.closest('[data-a
  else if(a==='pickt'){var tt=g('t'),at=DD.atividades[+g('i')];DS.turma=tt;DS.escola=tt.slice(0,3);go(at.atividade||at.cod,function(my){return vConteudo(my,tt,at.disc,at.cod)})}
 });
 $('go').onclick=entrar;$('sp').addEventListener('keydown',function(e){if(e.key==='Enter')entrar()});
-try{var h0=sessionStorage.getItem('edu_prof_hp');if(h0&&/^[0-9a-f]{64}$/.test(h0))retoma(h0)}catch(e){}
+try{var h0=hpLe();if(h0)retoma(h0)}catch(e){}
 </script>
 </body></html>
