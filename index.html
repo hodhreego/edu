@@ -84,7 +84,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <div class="empty" id="empty">Nada por aqui ainda.</div>
 </main>
 <footer>Ludopédia — uma marca da Loja de Matemática · Prof. Rodrigo · Novos jogos entram aqui a cada atualização.</footer>
-<script src="config.js?v=7"></script><script src="catalogo.js?v=10"></script><script src="imprimir.js?v=12"></script><script src="edu-login.js?v=2"></script>
+<script src="config.js?v=7"></script><script src="catalogo.js?v=10"></script><script src="imprimir.js?v=12"></script><script src="edu-login.js?v=2"></script><script>/* porteiro: ?l=<login> (QR) ou sessao valida => carrega edu-auth.js para entrar direto */(function(){try{var ql=/[?&]l=[^&]+/.test(location.search),s=null;try{s=JSON.parse(localStorage.getItem('edu_sess')||'null')}catch(e){}var ok=s&&s.login&&s.exp>Date.now();if(window.EDU_AUTH_ON===true&&(ql||ok)&&!window.EDU_AUTH){window.EDU_QR_ESPERA=ql;var sc=document.createElement('script');sc.src='edu-auth.js?v=2';document.head.appendChild(sc)}}catch(e){}})()</script>
 <script>
 function thFb(i){var m=i.src.match(/^(.*)-(\dano|\dem)\.jpg$/);if(m&&!i.dataset.f){i.dataset.f=1;i.src=m[1]+'.jpg'}else i.remove()}
 
@@ -138,6 +138,6 @@ document.getElementById('cod').onsubmit=function(e){e.preventDefault();var v=doc
 var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[])[1];if(q)entrar(q);
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a.play');if(a&&!EDU_LOGIN()){e.preventDefault();EDU_EXIGE_LOGIN(function(){location.href=a.href})}},true);document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();
 </script>
-<script>(function(){var c=new URLSearchParams(location.search).get('cod');if(!c)return;var i=document.getElementById('codv'),f=document.getElementById('cod');if(!i||!f)return;i.value=String(c).slice(0,7);setTimeout(function(){f.dispatchEvent(new Event('submit',{cancelable:true}))},400)})();</script>
+<script>(function(){var c=new URLSearchParams(location.search).get('cod');if(!c)return;var i=document.getElementById('codv'),f=document.getElementById('cod');if(!i||!f)return;i.value=String(c).slice(0,7);function go(){f.dispatchEvent(new Event('submit',{cancelable:true}))}if(window.EDU_QR_ESPERA){var d=0,once=function(){if(d)return;d=1;setTimeout(go,200)};window.addEventListener('edu-auth-ready',once);setTimeout(once,9000)}else setTimeout(go,400)})();</script>
 </body>
 </html>

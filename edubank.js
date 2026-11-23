@@ -202,10 +202,58 @@ function telaInicio(){
   comDados(function(c){
     c.innerHTML='<div class="eb-card eb-saldo"><small>'+esc(aluno(LOGIN))+'</small><small>Saldo em reais</small><div class="v" id="eb-sal">'+rs(getCash())+'</div>'+
     '<div class="eb-chave">Chave Pix: <code>'+esc(LOGIN)+'</code><button data-a="copiar">Copiar</button></div></div>'+
+    '<div class="eb-card" id="eb-moe"><h2>🪙 Moedas</h2><p class="eb-muted">Carregando…</p></div>'+
     '<h2>Moedas estrangeiras</h2><div class="eb-moedas">'+MOEDAS.filter(function(m){return !m.x}).map(cartao).join('')+'</div>'+
     '<h2>Criptomoedas</h2><div class="eb-moedas">'+MOEDAS.filter(function(m){return m.x}).map(cartao).join('')+'</div>'+
     '<button class="eb-btn sec" data-a="trocasenha">🔑 Trocar senha do EduBank</button><div class="eb-card eb-muted" style="margin-top:12px">Transferências só entre alunos da mesma turma ('+esc(turma(LOGIN))+') e só em moedas estrangeiras e criptomoedas. Para ter moeda, compre no Câmbio.</div>';
-  },'EduBank');
+    moedasCard();
+},'EduBank');
+}
+/* ---------- moedas (ganhas em atividades) ---------- */
+function moedasCard(){
+  var el=$('#eb-moe');if(!el)return;
+  api({acao:'moedas'}).then(function(j){
+    el=$('#eb-moe');if(!el)return;
+    if(!j||!j.ok){el.innerHTML='<h2>🪙 Moedas</h2><p class="eb-muted">Faça atividades e melhore suas notas para ganhar moedas.</p>';return}
+    var s=Math.max(0,Math.floor(Number(j.saldo)||0)),cm=Number(j.centavosPorMoeda)||0;
+    DADOS.moedas={saldo:s,cpm:cm};
+    el.innerHTML='<h2>🪙 Moedas</h2><div class="v" style="font-size:1.7em;font-weight:800">'+s+' moeda'+(s===1?'':'s')+'</div>'+
+      '<p class="eb-muted">Cada moeda vale '+rs(cm)+'. Ganhe mais refazendo atividades para melhorar sua nota.</p>'+
+      '<button class="eb-btn" data-a="trocamoedas"'+(s>0?'':' disabled')+'>Trocar por reais</button>'+
+      '<p class="eb-muted" style="margin-top:8px">Depois de trocar, o dinheiro cai no seu saldo em reais e você pode comprar moedas estrangeiras e criptomoedas no Câmbio.</p>';
+  }).catch(function(){el=$('#eb-moe');if(el)el.innerHTML='<h2>🪙 Moedas</h2><p class="eb-muted">Não foi possível carregar agora.</p>'});
+}
+function idMoeda(q){
+  var k='eb_trocamoedas_'+LOGIN+'_'+q;
+  try{var v=localStorage.getItem(k);if(v)return v;v=novoId();localStorage.setItem(k,v);return v}catch(e){return novoId()}
+}
+function limpaIdMoeda(q){try{localStorage.removeItem('eb_trocamoedas_'+LOGIN+'_'+q)}catch(e){}}
+function telaTrocaMoedas(){
+  var c=shell('Trocar moedas',true);
+  var M=(DADOS&&DADOS.moedas)||{saldo:0,cpm:0};
+  c.innerHTML='<div class="eb-card"><h2>🪙 Trocar moedas por reais</h2><p class="eb-muted">Você tem <b>'+M.saldo+'</b> moeda'+(M.saldo===1?'':'s')+' · 1 moeda = <b>'+rs(M.cpm)+'</b></p>'+
+    '<label for="eb-mq">Quantas moedas quer trocar?</label><input id="eb-mq" inputmode="numeric" autocomplete="off" placeholder="0">'+
+    '<div class="eb-est" id="eb-me">Digite a quantidade</div><button class="eb-btn" id="eb-mgo">Trocar</button>'+
+    '<p class="eb-muted" style="margin-top:10px">O valor entra no seu saldo em reais. Depois você pode trocar esse dinheiro por moedas estrangeiras ou criptomoedas no Câmbio.</p></div>';
+  var box=c.firstChild;
+  function q(){var n=parseInt(String($('#eb-mq').value).replace(/\D/g,''),10);return n>0?n:0}
+  $('#eb-mq').oninput=function(){var n=q();$('#eb-me').textContent=n>0?('Você recebe '+rs(n*M.cpm)):'Digite a quantidade'};
+  $('#eb-mgo').onclick=function(){
+    var n=q();
+    if(!(n>=1))return setErr(box,'Digite uma quantidade válida.');
+    if(n>M.saldo)return setErr(box,'Você só tem '+M.saldo+' moeda'+(M.saldo===1?'':'s')+'.');
+    var btn=this;btn.disabled=true;setErr(box,'');
+    api({acao:'trocarmoedas',q:n,id:idMoeda(n)}).then(function(j){
+      btn.disabled=false;
+      if(!j.ok)return setErr(box,msgErro(j));
+      limpaIdMoeda(n);
+      if(!j.dup){try{O.addCash(Math.round(j.centavos),'EduBank: troca de '+n+' moeda'+(n===1?'':'s'))}catch(e){}}
+      if(j.saldo!=null)M.saldo=Math.max(0,Math.floor(Number(j.saldo)||0));else M.saldo-=n;
+      DADOS.moedas=M;
+      $('#eb-mq').value='';$('#eb-me').textContent='Digite a quantidade';
+      setErr(box,j.dup?'Essa troca já tinha sido feita. Nada foi cobrado de novo.':('Você trocou '+n+' moeda'+(n===1?'':'s')+' por '+rs(j.centavos)+'. Agora você tem '+rs(getCash())+'.'),true);
+    }).catch(function(e){btn.disabled=false;setErr(box,e.message+' Se tentar de novo, a troca não será duplicada.')});
+  };
 }
 function cartao(m){
   var v=saldoDe(m.c);
@@ -487,6 +535,7 @@ function aoClicar(e){
   if(a==='fechar')fechar();
   else if(a==='voltar')irAba(aba||'inicio');
   else if(a==='copiar')copiar();
+  else if(a==='trocamoedas')telaTrocaMoedas();
   else if(a==='trocasenha')statSenha().then(function(t){telaSenha(t,function(){irAba('inicio')})},function(e){toast(e.message)});
   else if(a==='aba')irAba(b.getAttribute('data-k'));
   else if(a==='moeda'){var c=b.getAttribute('data-c');if(saldoDe(c)>0)telaTransferir(c);else telaCambio(c)}
