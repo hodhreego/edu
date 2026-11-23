@@ -495,8 +495,8 @@ function eb_cfgGarante_() {
     sh.getRange(1, 4, 1, 3).setValues([['chave', 'valor', 'observação']]).setFontWeight('bold');
     sh.getRange(2, 5, 6, 1).setNumberFormat('@');
     sh.getRange(2, 4, 5, 3).setValues([
-      ['spread_pct', '0.6', 'Spread do câmbio em % para moedas (compra e venda)'],
-      ['spread_cripto_pct', '1', 'Spread do câmbio em % para criptomoedas'],
+      ['spread_pct', '2', 'Spread do câmbio em % para moedas (compra e venda)'],
+      ['spread_cripto_pct', '2', 'Spread do câmbio em % para criptomoedas'],
       ['tri1_fim', '31/05', 'Último dia do 1º trimestre (dd/mm)'],
       ['tri2_fim', '31/08', 'Último dia do 2º trimestre (dd/mm)'],
       ['total_geral', '0', 'Total de atividades do catálogo (0 = desconhecido). Opcional: linhas total_<disciplina>, ex. total_matematica']]);
