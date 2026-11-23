@@ -113,6 +113,7 @@ function campo(c, v) { return '<label for="ebs-' + c[0] + '">' + c[1] + '</label
 function tela() {
   var d = SIMS[SIM], V = VAL[SIM] = VAL[SIM] || {};
   d.campos.forEach(function (c) { if (V[c[0]] == null) V[c[0]] = c[2]; });
+  if (SIM === 'tempo' && !V.ativo) V.ativo = 'IBOV';
   var extra = '';
   if (SIM === 'tempo') extra = '<label for="ebs-ativo">Em qual ativo?</label><select id="ebs-ativo" data-k="ativo">' + ATIVOS_T.map(function (a) { return '<option value="' + a[0] + '"' + (V.ativo === a[0] ? ' selected' : '') + '>' + a[1] + '</option>'; }).join('') + '</select>';
   if (SIM === 'juros') extra = '<div class="ebs-mut" id="ebs-pre" style="margin-top:6px">Carregando taxas atuais…</div>';
