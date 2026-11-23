@@ -53,3 +53,13 @@ Autenticação: `entrar` devolve `token` (24 caracteres aleatórios, validade 30
 - `boletim.js`: `window.BOLETIM.open(opts)` + `BOLETIM.icone(tam)`; mostra média geral, % concluídas, por disciplina com abas 1º/2º/3º trimestre, barras e cores (≥8 azul, 6–7,9 verde-amarelo, <6 vermelho; mesmo padrão da planilha).
 - Integração: `banco.js` (launcher do celular simulado: apps “EduBank” e “Meu Boletim”) e perfil do `robiox.html` (botões 🏦 EduBank e 📊 Meu Boletim).
 - Textos em português; valores `R$ 1.234,56` e `US$ 12,34`; layout responsivo (celular 375 px, tablet, desktop); nunca mostrar nomes de alunos.
+
+## Envio de R$ do professor (crédito pendente) — 22/11/2026
+O R$ do aluno vive no aparelho (`ST.cash` / `robiox_v2_<login>`, centavos) e só o cliente o altera (`O.addCash`). Por isso o servidor guarda **créditos pendentes** (mesmo mecanismo `receber`/`receberack` do EDUBANK-INVEST-SPEC.md) e o cliente os credita.
+- Aba **Creditos** (ts, login, id, centavos, nota, status `novo`|`creditado`). Cada envio também grava uma linha `rec` em **Extratos** (moeda `BRL`, `v` em centavos, `outro` = `Professor`, `saldo_apos` vazio) e em **Logs** (`profenviar`/`profenviarturma`/`receber`), sem expor segredo.
+- Professor (POST text/plain, `hp` = SHA-256 de `'prof:'+senha`, mesma checagem/bloqueio do `profreset`; **sem limite de turma, não debita ninguém**):
+  - `profenviar {hp,login,centavos,nota,id}` → `{ok:1,msg}`; `centavos` inteiro 1..100000000; `login` = chave Pix do aluno (regex de aluno); `nota` ≤ 40 sem `<>`; `id` `[A-Za-z0-9]{1,40}` idempotente (repetir devolve `{ok:1,dup:1}`).
+  - `profenviarturma {hp,turma,centavos,nota,id}` → `{ok:1,n,dup,msg}`; cada aluno da turma (Contas ∪ Resultados) recebe; `id` até 20 caracteres, id por aluno = `id`+login.
+- Aluno (`login`+`t`): `receber` → `{ok:1,itens:[{id,centavos,nota,ts}]}` (só `novo`, até 50); `receberack&ids=id1,id2` marca `creditado` → `{ok:1,n}`.
+- Cliente `edubank.js` (v5; `?v=5` em `banco.js` e `robiox.html`): ao abrir o EduBank e a cada 30 s chama `receber`, credita cada item com `O.addCash(centavos,'Recebido do professor')`, guarda os ids em `localStorage` `eb_cred_<login>` (idempotência: nunca credita duas vezes mesmo se o ack falhar), depois `receberack`; mostra o aviso "Você recebeu R$ X do professor" e a linha "Recebido do professor" no extrato. O crédito só ocorre com o EduBank aberto (o R$ é do aparelho).
+- `professor.html`: na ficha do aluno e na lista da turma há o bloco "Enviar R$" (botões R$ 5, 10, 20, 50, 100 e "Outro valor", mensagem opcional, **confirmação por clique**: Enviar → "Sim, enviar"); a turma tem "para a turma toda"; a aba **💸 Enviar R$** aceita digitar a Chave Pix (login) de qualquer aluno.

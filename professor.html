@@ -51,7 +51,7 @@ th{background:#eef2fc}tr.cl{cursor:pointer}tr.cl:hover td{background:#f3f7ff}
 <p class="links"><a href="painel.html" style="background:#2a52d6">📈 Painel ao vivo (ranking e progresso)</a><a href="atalhos.html" style="background:#6a2fd6">🔗 Atalhos</a></p>
 <h1>🏛️ Painel do Professor</h1>
 <p class="sub">Tudo por clique: escola → turma → aluno, notas por conteúdo e dashboards.</p>
-<div id="top"><button class="big on" data-a="tab" data-k="alu">👥 Turmas e alunos</button><button class="big" data-a="tab" data-k="cont">📚 Por conteúdo</button><button class="big" data-a="tab" data-k="dash">📊 Dashboards</button><button class="big" data-a="sair" style="margin-left:auto">🚪 Sair</button></div>
+<div id="top"><button class="big on" data-a="tab" data-k="alu">👥 Turmas e alunos</button><button class="big" data-a="tab" data-k="cont">📚 Por conteúdo</button><button class="big" data-a="tab" data-k="dash">📊 Dashboards</button><button class="big" data-a="tab" data-k="env">💸 Enviar R$</button><button class="big" data-a="sair" style="margin-left:auto">🚪 Sair</button></div>
 <div id="bc"></div><div id="v"></div>
 </template>
 <script src="config.js"></script>
@@ -93,6 +93,7 @@ function tab(k){
  path=[];
  if(k==='alu')go('Turmas e alunos',function(my){return vEscolas(my,'alu')});
  else if(k==='cont')go('Por conteúdo',function(my){return vEscolas(my,'cont')});
+ else if(k==='env'){envReset('chave','');go('Enviar R$',function(my){put(my,'<h2>💸 Enviar dinheiro (R$)</h2><p class="sub">Vale para qualquer aluno, de qualquer turma. Não sai de nenhum saldo: é crédito do professor.</p><div class="box" id="env">'+envHtml()+'</div>')})}
  else go('Dashboards',vDash)}
 async function carregaEsc(my){if(ESC.length)return true;var j=await api({acao:'profturmas'});if(!j.ok){err(my,j);return false}ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});return true}
 /* ---------- escola -> turma ---------- */
@@ -102,20 +103,22 @@ async function vEscolas(my,mode){if(!await carregaEsc(my))return;
 function vTurmas(my,mode,i){var e=ESC[i];
  put(my,'<h2>'+esc(e.nome)+': escolha a turma</h2><div class="grid">'+e.turmas.map(function(t){return'<button class="big" data-a="turma" data-m="'+mode+'" data-t="'+t.turma+'">'+esc(tl(t.turma))+'<small>'+t.alunos+' alunos</small></button>'}).join('')+'</div>')}
 /* ---------- lista de alunos ---------- */
-async function vAlunos(my,turma){var j=await api({acao:'profturma',turma:turma});if(!j.ok)return err(my,j);CUR={turma:turma,alunos:j.alunos,sort:'num',my:my};rAlunos()}
+async function vAlunos(my,turma){var j=await api({acao:'profturma',turma:turma});if(!j.ok)return err(my,j);envReset('turma',turma);CUR={turma:turma,alunos:j.alunos,sort:'num',my:my};rAlunos()}
 function rAlunos(){var a=CUR.alunos.slice(),s=CUR.sort;
  a.sort(s==='media'?function(x,y){return(y.media==null?-1:y.media)-(x.media==null?-1:x.media)||x.num-y.num}:s==='n'?function(x,y){return y.n-x.n||x.num-y.num}:function(x,y){return x.num-y.num});
  var h='<h2>'+esc(tle(CUR.turma))+' · '+a.length+' alunos</h2><div class="row"><span class="t">Ordenar por:</span>'+[['num','Nº do aluno'],['media','Média'],['n','Atividades feitas']].map(function(o){return'<button data-a="ord" data-k="'+o[0]+'" class="'+(s===o[0]?'on':'')+'" style="padding:8px 12px">'+o[1]+'</button>'}).join('')+'</div><div class="cards">';
  h+=a.map(function(x){return'<button class="card" data-a="aluno" data-l="'+x.login+'"><b>Aluno nº '+x.num+' · '+x.login+'</b><div class="l">'+(x.conta?'':'<span class="chip y">sem acesso ainda</span> ')+(x.bloq?'<span class="chip r">bloqueado</span> ':'')+(x.conta&&!x.banco?'<span class="chip">sem senha EduBank</span>':'')+'</div><div class="r"><span>Média '+pill(x.media)+'</span><span class="chip">'+x.n+' atividades</span><span class="chip g">🪙 '+x.saldo+' (ganhas '+x.ganhas+')</span></div></button>'}).join('')+'</div>';
+ h+='<div class="box" id="env">'+envHtml()+'</div>';
  put(CUR.my,h)}
 /* ---------- ficha ---------- */
-async function vFicha(my,login){var j=await api({acao:'profaluno',login:login});if(!j.ok)return err(my,j);FI=j;FA={disc:''};FI.my=my;rFicha('')}
+async function vFicha(my,login){var j=await api({acao:'profaluno',login:login});if(!j.ok)return err(my,j);envReset('aluno',login);FI=j;FA={disc:''};FI.my=my;rFicha('')}
 function acoesHtml(conf){
  if(conf){var t={reset:'Apagar a senha do EduBank deste aluno?',desb:'Remover o bloqueio deste aluno?',zerar:'Zerar a carteira (moedas estrangeiras/cripto) deste aluno?'}[conf];return'<div class="msg er">'+t+'</div><button class="perigo" data-a="faz" data-k="'+conf+'">✔ Sim, confirmar</button><button data-a="cancela">✖ Cancelar</button>'}
  return'<button class="warn" data-a="conf" data-k="reset">🔑 Resetar senha do EduBank</button><button class="warn" data-a="conf" data-k="desb">🔓 Desbloquear</button><button class="warn" data-a="conf" data-k="zerar">🧹 Zerar carteira</button>'}
 function rFicha(msg){var f=FI,b=f.boletim,c=f.conta,h='';
  h+='<h2>Aluno nº '+f.num+' · '+esc(f.login)+'</h2><p class="sub">'+esc(tle(f.turma))+'</p>';
  h+='<div class="box"><div class="kv"><div>Média geral<b>'+pill(b.geral.media)+'</b></div><div>Atividades<b>'+b.geral.n+'</b></div><div>Concluídas<b>'+b.geral.conc+'</b></div><div>Moedas (saldo)<b>🪙 '+f.moedas.saldo+'</b></div><div>Acesso<b style="font-size:14px">'+(c.ativada?'ativo · '+ago(c.ultimo):'sem acesso')+'</b></div><div>Senha EduBank<b style="font-size:14px">'+(c.banco?'criada':'não criada')+'</b></div>'+(c.bloq?'<div style="background:#ffe6e6;color:var(--vm)">Situação<b style="font-size:14px">🔒 bloqueado</b></div>':'')+'</div></div>';
+ h+='<div class="box" id="env">'+envHtml()+'</div>';
  h+='<div class="box"><b>Ações</b><div id="acoes" style="margin-top:8px">'+acoesHtml('')+'</div><div id="am">'+(msg||'')+'</div></div>';
  var ds=Object.keys(b.porDisc).sort();
  h+='<h3>Boletim por disciplina e trimestre</h3><div class="wrap"><table><tr><th>Disciplina</th><th>1º tri</th><th>2º tri</th><th>3º tri</th><th>Geral</th></tr>';
@@ -198,9 +201,43 @@ function barClick(i){var x=ROWS[i];if(!x)return;
  else if(x.k==='ativ'){var a=DD.atividades[x.id];
   if(DS.turma)go(a.atividade||a.cod,function(my){return vConteudo(my,DS.turma,a.disc,a.cod)});
   else{var tf=[];DD.turmas.forEach(function(t){tf.push('<button data-a="pickt" data-t="'+t.turma+'" data-i="'+x.id+'" style="padding:7px 12px">'+esc(tle(t.turma))+'</button>')});$('pick').innerHTML='<div class="box"><b>Escolha a turma para abrir “'+esc(a.atividade||a.cod)+'”:</b><div style="margin-top:8px">'+tf.join('')+'</div></div>'}}}
+/* ---------- enviar dinheiro (R$) do professor ---------- */
+var ENV={tipo:'aluno',alvo:'',cent:0,outro:false,nota:'',val:'',chave:'',conf:false,id:'',msg:'',busy:false};
+function envReset(tipo,alvo){ENV={tipo:tipo,alvo:alvo,cent:0,outro:false,nota:'',val:'',chave:'',conf:false,id:'',msg:'',busy:false}}
+function envId(n){var s='p'+Date.now().toString(36),a='abcdefghijklmnopqrstuvwxyz0123456789';while(s.length<n)s+=a.charAt(Math.floor(Math.random()*a.length));return s.slice(0,n)}
+function envQuem(){return ENV.tipo==='turma'?'toda a turma '+tle(ENV.alvo):ENV.tipo==='chave'?(ENV.chave||'(informe a chave)'):'o aluno '+ENV.alvo}
+function envHtml(){var h='<b>'+(ENV.tipo==='turma'?'💸 Enviar R$ para a turma toda':'💸 Enviar R$ ao aluno')+'</b><p class="sub" style="margin:4px 0 8px">Crédito do professor: não sai do saldo de ninguém. O aluno recebe ao abrir o EduBank.</p>';
+ if(ENV.tipo==='chave')h+='<div class="row"><span class="t">Chave Pix (login):</span><input id="envlogin" value="'+esc(ENV.chave)+'" placeholder="ex.: 12cla6b" maxlength="12" style="font:600 16px Arial;padding:8px;border:2px solid var(--line);border-radius:10px;width:170px"></div>';
+ h+='<div class="row">'+[5,10,20,50,100].map(function(v){return'<button data-a="ev" data-v="'+v*100+'" class="'+(!ENV.outro&&ENV.cent===v*100?'on':'')+'" style="padding:8px 14px">R$ '+v+'</button>'}).join('')+'<button data-a="evo" class="'+(ENV.outro?'on':'')+'" style="padding:8px 14px">Outro valor</button></div>';
+ if(ENV.outro)h+='<div class="row"><span class="t">Valor em R$:</span><input id="envval" type="number" inputmode="decimal" min="0.01" step="0.01" value="'+esc(ENV.val)+'" style="font:600 16px Arial;padding:8px;border:2px solid var(--line);border-radius:10px;width:130px"></div>';
+ h+='<div class="row"><span class="t">Mensagem (opcional):</span><input id="envnota" value="'+esc(ENV.nota)+'" maxlength="40" placeholder="ex.: Bônus da atividade" style="font:600 15px Arial;padding:8px;border:2px solid var(--line);border-radius:10px;width:230px;max-width:100%"></div>';
+ if(ENV.conf)h+='<div class="msg er">Confirma enviar '+esc(brl(ENV.cent/100))+' para '+esc(envQuem())+'?</div><button class="perigo" data-a="evf"'+(ENV.busy?' disabled':'')+'>✅ Sim, enviar</button><button data-a="evx">Cancelar</button>';
+ else h+='<button class="ok" data-a="evc">Enviar</button>';
+ return h+'<div id="envm">'+(ENV.msg||'')+'</div>'}
+function envLe(){var a=$('envlogin'),v=$('envval'),n=$('envnota');if(a)ENV.chave=a.value.trim().toLowerCase();if(v){ENV.val=v.value;var x=Math.round(parseFloat(String(v.value).replace(',','.'))*100);ENV.cent=isFinite(x)?x:0}if(n)ENV.nota=n.value}
+function envDraw(){var e=$('env');if(e)e.innerHTML=envHtml()}
+function envErr(m){ENV.msg='<div class="msg er">⛔ '+esc(m)+'</div>';ENV.conf=false;envDraw()}
+function envConfirma(){envLe();
+ if(ENV.tipo==='chave'&&!/^\d{1,3}[a-z]{3}\d[a-z]$/.test(ENV.chave))return envErr('Chave Pix inválida. Use o login do aluno, como 12cla6b.');
+ if(!(ENV.cent>=1&&ENV.cent<=100000000&&Math.floor(ENV.cent)===ENV.cent))return envErr('Escolha um valor (de R$ 0,01 a R$ 1.000.000,00).');
+ if(/[<>]/.test(ENV.nota))return envErr('A mensagem não pode ter < ou >.');
+ ENV.msg='';ENV.conf=true;ENV.id=envId(ENV.tipo==='turma'?16:30);envDraw()}
+async function envEnvia(){if(ENV.busy)return;ENV.busy=true;envDraw();
+ var b=ENV.tipo==='turma'?{acao:'profenviarturma',turma:ENV.alvo}:{acao:'profenviar',login:ENV.tipo==='chave'?ENV.chave:ENV.alvo};
+ b.centavos=ENV.cent;b.nota=ENV.nota;b.id=ENV.id;
+ var j;try{j=await api(b)}catch(e){j={ok:0,erro:'Sem conexão. Tente de novo.'}}
+ ENV.busy=false;ENV.conf=false;
+ if(j&&j.ok){ENV.msg='<div class="msg ok">✅ '+esc(j.msg||'Enviado')+(j.dup?' (repetido, não enviado de novo)':'')+'</div>';ENV.cent=0;ENV.outro=false;ENV.val='';ENV.id=''}
+ else ENV.msg='<div class="msg er">⛔ '+esc((j&&j.erro)||'Falhou')+'</div>';
+ envDraw()}
 /* ---------- cliques ---------- */
 document.addEventListener('click',function(ev){var el=ev.target.closest('[data-a]');if(!el)return;var a=el.getAttribute('data-a'),g=function(n){return el.getAttribute('data-'+n)};
  if(a==='tab')tab(g('k'));
+ else if(a==='ev'){envLe();ENV.outro=false;ENV.cent=+g('v');ENV.conf=false;ENV.msg='';envDraw()}
+ else if(a==='evo'){envLe();ENV.outro=true;ENV.cent=0;ENV.conf=false;ENV.msg='';envDraw()}
+ else if(a==='evc')envConfirma();
+ else if(a==='evx'){ENV.conf=false;envDraw()}
+ else if(a==='evf')envEnvia();
  else if(a==='sair')sair('');
  else if(a==='volta'){path.pop();draw()}
  else if(a==='crumb'){path.length=+g('i')+1;draw()}

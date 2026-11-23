@@ -412,7 +412,7 @@ function rbxLoad_(p) {
 
 // ================= EduBank (spec v2): contas, sessões, nuvem, câmbio, transferências, boletim =================
 // Resposta sempre JSON: {ok:1,...} ou {ok:0,erro:'texto'}. Ação pelo parâmetro "acao" (GET ou POST JSON).
-var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, profentrar: 1, profturmas: 1, profturma: 1, profaluno: 1, profconteudos: 1, profconteudo: 1, profdesbloquear: 1, profzerar: 1, profdash: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1 };
+var EB_ACOES = { entrar: 1, senha: 1, bancostat: 1, bancosenha: 1, profreset: 1, profentrar: 1, profturmas: 1, profturma: 1, profaluno: 1, profconteudos: 1, profconteudo: 1, profdesbloquear: 1, profzerar: 1, profdash: 1, profenviar: 1, profenviarturma: 1, receber: 1, receberack: 1, quem: 1, nuvemsalvar: 1, nuvemcarregar: 1, carteira: 1, taxas: 1, cambio: 1, transferir: 1, extrato: 1, resultado: 1, boletim: 1 };
 var EB_ALUNO = /^\d{1,3}[a-z]{3}\d[a-z]$/;
 var EB_ESPECIAL = /^(mestre|teste|mainara)$/;
 var EB_FIAT = ['USD', 'EUR', 'GBP', 'JPY', 'ARS', 'CNY'];
@@ -432,6 +432,7 @@ var EB_ABAS = {
   Logs: { cab: ['ts', 'login', 'evento', 'detalhe'], cor: '#334155', w: [150, 110, 110, 520], txt: [2, 4] },
   Mestre: { cab: ['ts', 'aluno', 'operacao', 'moeda', 'spread_brl', 'conta_mestre'], cor: '#7c3aed', w: [150, 110, 80, 80, 110, 130], txt: [2, 4, 6] },
   Moedas: { cab: ['ts', 'login', 'id', 'tipo', 'qtd', 'centavos'], cor: '#ca8a04', w: [150, 110, 200, 80, 80, 90], txt: [2, 3, 4] },
+  Creditos: { cab: ['ts', 'login', 'id', 'centavos', 'nota', 'status'], cor: '#0e7490', w: [150, 110, 220, 100, 220, 90], txt: [2, 3, 5, 6] },
   Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160], txt: [2, 3, 5, 6, 7, 14, 15] }
 };
 
@@ -585,6 +586,8 @@ function eb_dispatch_(p) {
   if (a === 'moedas') return eb_moedasResp_(l);
   if (a === 'trocarmoedas') return eb_trocarMoedas_(p, l);
   if (a === 'classificacao') return eb_classifResp_(l);
+  if (a === 'receber') return eb_receber_(l);
+  if (a === 'receberack') return eb_receberAck_(p, l);
   return eb_erro_('Ação desconhecida.');
 }
 
@@ -810,6 +813,8 @@ function eb_profAcao_(p) {
   if (a === 'profdash') return eb_profDash_(p);
   if (a === 'profdesbloquear') { var l1 = eb_loginOk_(p.login); return l1 ? eb_desbloquearCore_(l1) : eb_erro_('Login inválido.'); }
   if (a === 'profzerar') { var l2 = eb_loginOk_(p.login); return l2 ? eb_zerarCore_(l2) : eb_erro_('Login inválido.'); }
+  if (a === 'profenviar') return eb_profEnviar_(p);
+  if (a === 'profenviarturma') return eb_profEnviarTurma_(p);
   return eb_erro_('Ação desconhecida.');
 }
 // {ok,escolas:[{cod,nome,turmas:[{turma,ano,letra,alunos,ativos}]}]}
@@ -1049,7 +1054,7 @@ function eb_extratoResp_(login) {
     var ini = Math.max(2, n - 2999), v = sh.getRange(ini, 1, n - ini + 1, 10).getValues();
     for (var i = v.length - 1; i >= 0 && itens.length < 60; i--) {
       var r = v[i]; if (String(r[1]) !== login) continue;
-      itens.push({ ts: new Date(r[0]).getTime(), tipo: String(r[2]), moeda: String(r[3]), v: Number(r[4]), brl: r[5] === '' ? null : Number(r[5]), outro: eb_anon_(String(r[6])), nota: String(r[7]), saldo_apos: Number(r[8]) });
+      itens.push({ ts: new Date(r[0]).getTime(), tipo: String(r[2]), moeda: String(r[3]), v: Number(r[4]), brl: r[5] === '' ? null : Number(r[5]), outro: String(r[6]) === 'Professor' ? 'Professor' : eb_anon_(String(r[6])), nota: String(r[7]), saldo_apos: r[8] === '' ? null : Number(r[8]) });
     }
   }
   return { ok: 1, itens: itens };
@@ -1127,6 +1132,80 @@ function eb_transferir_(p, de) {
     ex.appendRow([agora, para, 'rec', moeda, v, '', de, nt, np[moeda], id]);
     eb_log_(de, 'transferir', 'origem=' + de + ' destino=' + para + ' ' + moeda + ' ' + v + ' id=' + id);
     return { ok: 1, saldos: nd, para: eb_anon_(para) };
+  });
+}
+
+// ---------- créditos pendentes em R$ (professor -> aluno; o R$ vive no aparelho, o cliente credita via receber/receberack) ----------
+function eb_credIds_() {   // {id:1} dos ids já gravados em Creditos
+  var sh = eb_aba_('Creditos'), n = sh.getLastRow(), o = {};
+  if (n >= 2) sh.getRange(2, 3, n - 1, 1).getValues().forEach(function (r) { o[String(r[0])] = 1; });
+  return o;
+}
+// chamar dentro de lock; devolve 1 se gravou, 0 se id repetido
+function eb_credAdd_(login, id, cent, nota, ids) {
+  if (ids[id]) return 0;
+  var agora = new Date(), nt = eb_txt_(nota);
+  eb_aba_('Creditos').appendRow([agora, login, id, cent, nt, 'novo']);
+  eb_aba_('Extratos').appendRow([agora, login, 'rec', 'BRL', cent, '', 'Professor', nt, '', id]);
+  eb_log_(login, 'profenviar', 'professor enviou ' + cent + ' centavos a ' + login + ' id=' + id);
+  ids[id] = 1;
+  return 1;
+}
+function eb_credValida_(p) {
+  var cent = eb_int_(p.centavos, 1, 100000000);
+  if (isNaN(cent)) return eb_erro_('Valor inválido (R$ 0,01 a R$ 1.000.000,00).');
+  var nota = String(p.nota == null ? '' : p.nota), id = String(p.id || '');
+  if (nota.length > 40 || /[<>]/.test(nota)) return eb_erro_('Mensagem inválida (até 40 caracteres, sem < ou >).');
+  if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
+  return { cent: cent, nota: nota, id: id };
+}
+// {acao:'profenviar',hp,login,centavos,nota,id}
+function eb_profEnviar_(p) {
+  var login = eb_loginOk_(p.login); if (!login) return eb_erro_('Chave Pix (login) inválida.');
+  var v = eb_credValida_(p); if (!v.ok && v.erro) return v;
+  return eb_lock_(function () {
+    var g = eb_credAdd_(login, v.id, v.cent, v.nota, eb_credIds_());
+    return g ? { ok: 1, msg: 'Enviado R$ ' + (v.cent / 100).toFixed(2).replace('.', ',') + ' para ' + login + '.' } : { ok: 1, dup: 1, msg: 'Este envio já tinha sido feito.' };
+  });
+}
+// {acao:'profenviarturma',hp,turma,centavos,nota,id} -> id derivado = id(20) + login
+function eb_profEnviarTurma_(p) {
+  var turma = eb_turmaOk_(p.turma); if (!turma) return eb_erro_('Turma inválida.');
+  var v = eb_credValida_(p); if (!v.ok && v.erro) return v;
+  if (v.id.length > 20) return eb_erro_('Identificador inválido (até 20 caracteres para a turma).');
+  var logins = eb_profLogins_(turma, eb_profContas_(), eb_profResultados_());
+  if (!logins.length) return eb_erro_('Nenhum aluno nessa turma.');
+  return eb_lock_(function () {
+    var ids = eb_credIds_(), n = 0, dup = 0;
+    logins.forEach(function (l) { if (eb_credAdd_(l, v.id + l, v.cent, v.nota, ids)) n++; else dup++; });
+    eb_log_('', 'profenviarturma', 'turma ' + turma + ' ' + v.cent + ' centavos para ' + n + ' aluno(s) id=' + v.id);
+    return { ok: 1, n: n, dup: dup, msg: 'Enviado para ' + n + ' aluno(s) de ' + turma + '.' };
+  });
+}
+// aluno: lista créditos 'novo'
+function eb_receber_(login) {
+  var sh = eb_aba_('Creditos'), n = sh.getLastRow(), itens = [];
+  if (n >= 2) {
+    var ini = Math.max(2, n - 4999), v = sh.getRange(ini, 1, n - ini + 1, 6).getValues();
+    for (var i = 0; i < v.length && itens.length < 50; i++) {
+      var r = v[i]; if (String(r[1]) !== login || String(r[5]) !== 'novo') continue;
+      itens.push({ id: String(r[2]), centavos: Number(r[3]), nota: String(r[4]), ts: new Date(r[0]).getTime() });
+    }
+  }
+  return { ok: 1, itens: itens };
+}
+function eb_receberAck_(p, login) {
+  var ids = String(p.ids || '').split(',').filter(function (x) { return /^[A-Za-z0-9]{1,40}$/.test(x); }).slice(0, 50), set = {};
+  ids.forEach(function (x) { set[x] = 1; });
+  if (!ids.length) return { ok: 1, n: 0 };
+  return eb_lock_(function () {
+    var sh = eb_aba_('Creditos'), n = sh.getLastRow(), c = 0;
+    if (n >= 2) {
+      var v = sh.getRange(2, 1, n - 1, 6).getValues();
+      for (var i = 0; i < v.length; i++) if (String(v[i][1]) === login && String(v[i][5]) === 'novo' && set[String(v[i][2])]) { sh.getRange(i + 2, 6).setValue('creditado'); c++; }
+    }
+    if (c) eb_log_(login, 'receber', c + ' crédito(s) do professor confirmado(s)');
+    return { ok: 1, n: c };
   });
 }
 

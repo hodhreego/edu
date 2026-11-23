@@ -509,12 +509,40 @@ function telaExtrato(){
     var it=(j.itens||j.extrato||[]).slice().sort(function(a,b){return (Number(b.ts)||0)-(Number(a.ts)||0)});
     if(!it.length)return l.textContent='Nenhuma movimentação ainda.';
     l.innerHTML=it.map(function(x){
-      var m=MAP[x.moeda]||{c:x.moeda,s:'',e:100,f:'💱'},t=TIPO[x.tipo]||['💱',''],pos=(x.tipo==='rec'||x.tipo==='compra');
-      var tit=(x.tipo==='env'||x.tipo==='rec')?t[1]+aluno(x.outro):t[1]+m.c;
-      return '<div class="eb-it"><span style="font-size:1.4em">'+t[0]+'</span><div><b>'+esc(tit)+'</b><small>'+esc(dt(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(qtd(m,x.saldo_apos)):'')+'</small></div><span class="q '+(pos?'p':'n')+'">'+(pos?'+':'-')+esc(qtd(m,x.v))+'</span></div>';
+      var m=MAP[x.moeda]||{c:x.moeda,s:'',e:100,f:'💱'},t=TIPO[x.tipo]||['💱',''],pos=(x.tipo==='rec'||x.tipo==='compra'),brl=x.moeda==='BRL';
+      var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+aluno(x.outro):t[1]+m.c;
+      var Q=function(v){return brl?rs(v):qtd(m,v)};
+      return '<div class="eb-it"><span style="font-size:1.4em">'+t[0]+'</span><div><b>'+esc(tit)+'</b><small>'+esc(dt(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="q '+(pos?'p':'n')+'">'+(pos?'+':'-')+esc(Q(x.v))+'</span></div>';
     }).join('');
   }).catch(function(e){var l=$('#eb-lista');if(l)l.innerHTML='<div class="eb-err">'+esc(e.message)+'</div>'});
 }
+
+/* ---------- créditos do professor (servidor guarda pendente; o R$ vive no aparelho) ---------- */
+var recTimer=0,recBusy=false;
+function credFeitos(){return lget('eb_cred_'+LOGIN,[])}
+function receber(){
+  if(recBusy||!root||!O||!sessao()||!ep())return;
+  recBusy=true;
+  api({acao:'receber'}).then(function(j){
+    if(!j||!j.ok){recBusy=false;return}
+    var feitos=credFeitos(),tot=0,ids=[],nota='';
+    (j.itens||[]).forEach(function(x){
+      var id=String(x.id||''),c=Math.round(Number(x.centavos)||0);
+      if(!/^[A-Za-z0-9]{1,40}$/.test(id)||c<1)return;
+      if(feitos.indexOf(id)<0&&O){
+        try{O.addCash(c,'Recebido do professor');feitos.push(id);tot+=c;if(x.nota)nota=x.nota}catch(e){return}
+      }
+      ids.push(id);
+    });
+    if(feitos.length>300)feitos=feitos.slice(-300);
+    lset('eb_cred_'+LOGIN,feitos);
+    if(tot>0&&root){if(aba==='inicio'||aba==='extrato')irAba(aba);toast('Você recebeu '+rs(tot)+' do professor'+(nota?': '+nota:''))}
+    if(!ids.length){recBusy=false;return}
+    return api({acao:'receberack',ids:ids.join(',')}).then(function(){recBusy=false},function(){recBusy=false});
+  }).catch(function(){recBusy=false});
+}
+function recIniciar(){recPara();receber();recTimer=setInterval(receber,30000)}
+function recPara(){if(recTimer){clearInterval(recTimer);recTimer=0}recBusy=false}
 
 /* ---------- controle ---------- */
 function copiar(){
@@ -524,6 +552,7 @@ function copiar(){
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,fb);else fb();
 }
 function fechar(){
+  recPara();
   window.removeEventListener('resize',encaixa);
   if(root){root.remove();root=null}
   var cb=O&&O.onClose;O=null;DADOS=null;TEMSENHA=null;
@@ -564,7 +593,7 @@ function open(opts){
   ((O.host&&O.host.parentNode)||document.body).appendChild(root);encaixa();window.addEventListener('resize',encaixa);
   if(!sessao())semSessao();
   else if(!ep()){var c=shell('EduBank',false,true);c.innerHTML='<div class="eb-card"><h2>Banco indisponível</h2><div class="eb-err">O EduBank ainda não está configurado nesta página (servidor não encontrado). Avise o professor.</div></div>'}
-  else telaInicio();
+  else{telaInicio();recIniciar()}
   return {close:fechar};
 }
 
@@ -582,5 +611,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:2,versao:'2'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:5,versao:'5'};
 })();
