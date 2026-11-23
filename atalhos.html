@@ -193,12 +193,13 @@ a.card .art{display:block;width:calc(100% + 32px);max-width:none;height:138px;ob
 a.card:hover .art{transform:scale(1.05)}
 a.card .num{z-index:2;background:rgba(10,15,40,.72);color:#fff}
 a.card .ic{width:38px;height:38px;font-size:1.3rem;border-radius:11px}
+.lgf{display:flex;flex-direction:column;gap:5px;min-width:200px;max-width:240px;flex:0 1 230px}.lgf[hidden]{display:none}.lgf label{font-weight:800;font-size:.85rem}.lgf input{width:100%;min-width:0;font:700 1rem system-ui;padding:7px 10px;border:2px solid #94a3b8;border-radius:10px;background:#fff;color:#16213a}.lgf button{font:900 .95rem system-ui;padding:8px;border:0;border-radius:10px;background:#1e40af;color:#fff;cursor:pointer}.lgf .lerr{color:#ef4444;font-weight:800;font-size:.85rem;min-height:1.1em}.lgf.lok{font-weight:800;font-size:.9rem}.lgf.lok button{margin-top:4px;background:#475569;width:100%}
 </style>
 <script src="edu-aviso-ia.js?v=1"></script></head>
 <body>
 <div class="wrap">
 <div class="lud-row"><a class="lud" id="lud" href="https://hodhreego.github.io/edu/" target="_blank" rel="noopener" aria-label="Abrir a Ludopédia"><span id="lud-ic"></span><span class="lt"><span class="ln">Ludopédia</span><span class="ld">Jogos e desafios da turma.</span><span class="lo">Abrir →</span></span><span class="kb" id="lud-kb"></span></a>
-<form class="cod" id="cod" autocomplete="off"><label for="codv">🔑 Tem um código da atividade?</label><div class="cr"><input id="codv" inputmode="numeric" maxlength="7" placeholder="0000" aria-label="Código da atividade"><button type="submit">Entrar ▶</button></div><div class="err" id="coderr">Digite o código de 4 números.</div></form></div>
+<form class="cod" id="cod" autocomplete="off"><label for="codv">🔑 Tem um código da atividade?</label><div class="cr"><input id="codv" inputmode="numeric" maxlength="7" placeholder="0000" aria-label="Código da atividade"><button type="submit">Entrar ▶</button></div><div class="err" id="coderr">Digite o código de 4 números.</div></form><form class="lgf" id="lgf" autocomplete="off"><label for="lgu">👤 Login</label><input id="lgu" autocapitalize="none" autocomplete="off" placeholder="ex.: 7cla6b" aria-label="Login do aluno"><label for="lgp">🔒 Senha</label><input id="lgp" type="password" autocomplete="off" aria-label="Senha"><button type="submit">Entrar</button><div class="lerr" id="lerr"></div></form><div class="lgf lok" id="lok" hidden></div></div>
 <header>
   <a class="tag" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" title="Abrir o painel do professor">Atalhos 2026 · Prof. Rodrigo · Colégio Schuster</a>
   <h1 class="lk-hero" id="lkTxt">bit.ly/xus28</h1>
@@ -523,6 +524,11 @@ render();
   aplicaCfg();loadLive();
 })();
 </script>
+<script>(function(){var RE=/^\d{1,3}[a-z]{3}\d[a-z]$/,SENHA='2026.2026',f=document.getElementById('lgf'),ok=document.getElementById('lok');
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||'';if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return ''}}
+function mostra(){var l=ls('edu_login');if(l){f.hidden=true;ok.hidden=false;ok.innerHTML='✅ Logado: <b></b><button type="button">Sair</button>';ok.querySelector('b').textContent=l;ok.querySelector('button').onclick=function(){ls('edu_login',null);try{sessionStorage.removeItem('rbx_login');sessionStorage.removeItem('rbx_ok')}catch(e){}mostra()}}else{f.hidden=false;ok.hidden=true}}
+f.addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('lgu').value.trim().toLowerCase().replace(/\s+/g,''),p=document.getElementById('lgp').value,er=document.getElementById('lerr');
+if(!RE.test(u))return er.textContent='Login inválido. Ex.: 7cla6b';if(p!==SENHA)return er.textContent='Senha incorreta.';er.textContent='';ls('edu_login',u);try{sessionStorage.setItem('rbx_login',u)}catch(x){}document.getElementById('lgp').value='';mostra()});mostra()})()</script>
 <script src="logins-widget.js?v=1"></script>
 <script>
 (function(){
