@@ -279,17 +279,13 @@ function compoe(a,b,div){ /* a = moeda em USDT (ou USDT em ARS), b = USDT em BRL
   if(!out.length)throw new Error('sem dados');return out;
 }
 function grafFonte(c){
-  if(MAP[c].x||c==='USD')return 'Binance (ao vivo, em R$)';
-  if(c==='EUR'||c==='ARS')return 'Binance (composto com o dólar, em R$)';
+  if(MAP[c].x)return 'Binance (ao vivo, em R$)';
   return 'AwesomeAPI (fechamento diário, em R$)';
 }
-function grafSoDiario(c){return !(MAP[c].x||c==='USD'||c==='EUR'||c==='ARS')}
+function grafSoDiario(c){return !MAP[c].x}
 function grafSerie(c,tf){
   var m=MAP[c];
   if(m.x)return bnKl(c+'BRL',tf,120);
-  if(c==='USD')return bnKl('USDTBRL',tf,120);
-  if(c==='EUR')return Promise.all([bnKl('EURUSDT',tf,120),bnKl('USDTBRL',tf,120)]).then(function(r){return compoe(r[0],r[1],false)});
-  if(c==='ARS')return Promise.all([bnKl('USDTARS',tf,120),bnKl('USDTBRL',tf,120)]).then(function(r){return compoe(r[0],r[1],true)});
   return fetch('https://economia.awesomeapi.com.br/json/daily/'+c+'-BRL/60')
     .then(function(r){if(!r.ok)throw new Error('cotação indisponível');return r.json()})
     .then(function(a){
