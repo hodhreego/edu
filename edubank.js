@@ -159,7 +159,7 @@ function EBCSS(){return [
 '#edubank h2{margin:0 0 6px;font-size:1.12em;color:var(--tx)}#edubank h3{margin:18px 2px 10px;font-size:.82em;letter-spacing:.06em;text-transform:uppercase;color:var(--tx2)}',
 '#edubank .eb-muted{color:var(--tx2);font-size:.9em}',
 '#edubank .eb-hero{background:linear-gradient(135deg,#0f7a8a,#2b4aa8 55%,#5a1fa8);color:#fff;border-radius:22px;padding:18px 18px 16px;margin-bottom:14px;box-shadow:0 8px 22px rgba(43,40,150,.35)}',
-'#edubank .eb-hero small{display:block;opacity:.92;font-size:.85em}#edubank .eb-hero .lb{margin-top:10px}#edubank .eb-hero .v{font-size:2.15em;font-weight:800;line-height:1.1;letter-spacing:-.5px;overflow-wrap:anywhere}',
+'#edubank .eb-hero small{display:block;opacity:.92;font-size:.85em}#edubank .eb-hero .eb-lb{margin-top:10px}#edubank .eb-hero .eb-v{font-size:2.15em;font-weight:800;line-height:1.1;letter-spacing:-.5px;overflow-wrap:anywhere}',
 '#edubank .eb-chave{display:flex;align-items:center;gap:8px;margin-top:14px;background:rgba(255,255,255,.16);border-radius:14px;padding:6px 6px 6px 12px;font-size:.9em}',
 '#edubank .eb-chave span{opacity:.92}#edubank .eb-chave code{flex:1;font-weight:800;word-break:break-all;font-size:1.05em}',
 '#edubank .eb-chave button{background:#fff;color:#2b3a99;border:0;border-radius:10px;min-height:44px;padding:0 14px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px}',
@@ -169,9 +169,9 @@ function EBCSS(){return [
 '#edubank .eb-moedas{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}',
 '#edubank{container-type:inline-size}@container (min-width:520px){#edubank .eb-moedas{display:grid;grid-template-columns:1fr 1fr}}',
 '#edubank .eb-m{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:var(--sh);border:0;text-align:left;cursor:pointer;min-width:0;display:flex;align-items:center;gap:12px;color:var(--tx);min-height:64px}',
-'#edubank .eb-m .mi{flex:1;min-width:0}#edubank .eb-m .mc{display:block;font-weight:800}#edubank .eb-m .mn{display:block;color:var(--tx2);font-size:.82em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-'#edubank .eb-m .mr{text-align:right;min-width:0;max-width:52%}#edubank .eb-m .mr b{display:block;overflow-wrap:anywhere;font-size:.98em}#edubank .eb-m .mr em{display:block;font-style:normal;color:var(--tx2);font-size:.78em}',
-'#edubank .eb-m.zero .mr b{color:var(--tx2);font-weight:600}#edubank .eb-var{font-weight:800;font-size:.8em}#edubank .eb-var.p{color:var(--up)}#edubank .eb-var.n{color:var(--dn)}',
+'#edubank .eb-m .eb-mi{flex:1;min-width:0}#edubank .eb-m .eb-mc{display:block;font-weight:800}#edubank .eb-m .eb-mn{display:block;color:var(--tx2);font-size:.82em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+'#edubank .eb-m .eb-mr{text-align:right;min-width:0;max-width:52%}#edubank .eb-m .eb-mr b{display:block;overflow-wrap:anywhere;font-size:.98em}#edubank .eb-m .eb-mr em{display:block;font-style:normal;color:var(--tx2);font-size:.78em}',
+'#edubank .eb-m.zero .mr b{color:var(--tx2);font-weight:600}#edubank .eb-var{font-weight:800;font-size:.8em}#edubank .eb-var.eb-pos{color:var(--up)}#edubank .eb-var.eb-neg{color:var(--dn)}',
 '#edubank .eb-nota{font-size:.8em;color:var(--tx2);margin:6px 4px 14px;display:flex;gap:6px;align-items:flex-start}',
 '#edubank label{display:block;font-weight:700;margin:14px 0 6px;color:var(--tx)}',
 '#edubank input,#edubank select{width:100%;min-height:50px;font-size:1.05em;padding:11px 13px;border:2px solid var(--bd);border-radius:14px;background:var(--card);color:var(--tx)}',
@@ -181,19 +181,19 @@ function EBCSS(){return [
 '#edubank .eb-seg{display:flex;gap:4px;margin:10px 0 6px;background:var(--chip);padding:4px;border-radius:16px}',
 '#edubank .eb-seg button{flex:1;min-height:46px;border-radius:12px;border:0;background:transparent;font-weight:800;color:var(--tx2);cursor:pointer;font-size:1em}#edubank .eb-seg button.on{background:var(--card);color:var(--pri);box-shadow:var(--sh)}',
 '#edubank .eb-err,#edubank .eb-ok{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:12px 14px;margin-top:14px;font-weight:600}#edubank .eb-err{color:var(--dn);background:var(--dnbg)}#edubank .eb-ok{color:var(--up);background:var(--upbg)}',
-'#edubank .eb-est{margin-top:14px;background:var(--chip);border-radius:16px;padding:12px 14px}#edubank .eb-est .t{font-weight:700;color:var(--tx2)}',
-'#edubank .eb-est .r{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:.92em;color:var(--tx2)}#edubank .eb-est .r b{color:var(--tx);text-align:right;overflow-wrap:anywhere}',
-'#edubank .eb-est .big{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px dashed var(--bd);margin-top:6px;padding-top:9px;font-weight:700;color:var(--tx)}#edubank .eb-est .big b{font-size:1.25em;color:var(--pri);text-align:right}',
+'#edubank .eb-est{margin-top:14px;background:var(--chip);border-radius:16px;padding:12px 14px}#edubank .eb-est .eb-t{font-weight:700;color:var(--tx2)}',
+'#edubank .eb-est .eb-r{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:.92em;color:var(--tx2)}#edubank .eb-est .eb-r b{color:var(--tx);text-align:right;overflow-wrap:anywhere}',
+'#edubank .eb-est .eb-big{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px dashed var(--bd);margin-top:6px;padding-top:9px;font-weight:700;color:var(--tx)}#edubank .eb-est .eb-big b{font-size:1.25em;color:var(--pri);text-align:right}',
 '#edubank .eb-disp{display:inline-flex;gap:6px;margin-top:8px;padding:5px 11px;border-radius:99px;background:var(--chip);color:var(--tx);font-weight:700;font-size:.9em}',
 '#edubank .eb-dg{font-weight:800;font-size:.8em;letter-spacing:.06em;text-transform:uppercase;color:var(--tx2);margin:16px 2px 4px}',
 '#edubank .eb-it{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)}#edubank .eb-it:last-child{border:0}',
-'#edubank .eb-it .ib{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}#edubank .eb-it .ib.p{background:var(--upbg);color:var(--up)}#edubank .eb-it .ib.n{background:var(--dnbg);color:var(--dn)}',
+'#edubank .eb-it .eb-ib{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}#edubank .eb-it .eb-ib.eb-pos{background:var(--upbg);color:var(--up)}#edubank .eb-it .eb-ib.eb-neg{background:var(--dnbg);color:var(--dn)}',
 '#edubank .eb-it div{flex:1;min-width:0}#edubank .eb-it small{color:var(--tx2);display:block;overflow-wrap:anywhere}',
-'#edubank .eb-it .p{color:var(--up);font-weight:800;text-align:right}#edubank .eb-it .n{color:var(--dn);font-weight:800;text-align:right}#edubank .eb-it span.q{max-width:42%;overflow-wrap:anywhere}',
-'#edubank .eb-rc{padding:0;overflow:hidden}#edubank .eb-rc .rh{padding:20px 16px 14px;text-align:center;border-bottom:2px dashed var(--bd)}',
-'#edubank .eb-rc .ok{width:56px;height:56px;border-radius:50%;background:var(--upbg);color:var(--up);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}',
-'#edubank .eb-rc .am{font-size:1.7em;font-weight:800;color:var(--pri);overflow-wrap:anywhere}#edubank .eb-rc dl{margin:0;padding:6px 16px 14px}',
-'#edubank .eb-rc .rw{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--bd)}#edubank .eb-rc .rw:last-child{border:0}',
+'#edubank .eb-it .eb-pos{color:var(--up);font-weight:800;text-align:right}#edubank .eb-it .eb-neg{color:var(--dn);font-weight:800;text-align:right}#edubank .eb-it span.eb-q{max-width:42%;overflow-wrap:anywhere}',
+'#edubank .eb-rc{padding:0;overflow:hidden}#edubank .eb-rc .eb-rh{padding:20px 16px 14px;text-align:center;border-bottom:2px dashed var(--bd)}',
+'#edubank .eb-rc .eb-okc{width:56px;height:56px;border-radius:50%;background:var(--upbg);color:var(--up);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}',
+'#edubank .eb-rc .eb-am{font-size:1.7em;font-weight:800;color:var(--pri);overflow-wrap:anywhere}#edubank .eb-rc dl{margin:0;padding:6px 16px 14px}',
+'#edubank .eb-rc .eb-rw{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--bd)}#edubank .eb-rc .eb-rw:last-child{border:0}',
 '#edubank .eb-rc dt{color:var(--tx2);font-size:.88em}#edubank .eb-rc dd{margin:0;font-weight:700;text-align:right;overflow-wrap:anywhere;min-width:0}',
 '#edubank .eb-sk{display:flex;gap:12px;align-items:center;padding:10px 0}#edubank .eb-skc{width:42px;height:42px;border-radius:50%}#edubank .eb-skl{height:12px;border-radius:6px}',
 '#edubank .eb-skc,#edubank .eb-skl{background:linear-gradient(90deg,var(--chip) 25%,var(--bd) 50%,var(--chip) 75%);background-size:200% 100%;animation:ebsh 1.3s infinite linear}@keyframes ebsh{to{background-position:-200% 0}}',
@@ -202,9 +202,9 @@ function EBCSS(){return [
 '#edubank .eb-gh{display:flex;align-items:center;gap:12px}#edubank .eb-gh .eb-gp{font-size:1.7em;font-weight:800;line-height:1.1}',
 '#edubank .eb-pills{display:flex;gap:8px;margin:14px 0 10px}#edubank .eb-pills button{flex:1;min-height:42px;padding:6px 4px;border-radius:99px;border:2px solid var(--bd);background:var(--card);color:var(--tx2);font-weight:800;font-size:.85em;cursor:pointer}',
 '#edubank .eb-pills button.on{background:var(--pri);border-color:var(--pri);color:#fff}@media(prefers-color-scheme:dark){#edubank .eb-pills button.on{color:#14142b}}',
-'#edubank .eb-tip{background:var(--chip);border-radius:12px;padding:8px 12px;font-size:.82em;color:var(--tx2);min-height:50px;display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center}#edubank .eb-tip b{color:var(--tx)}#edubank .eb-tip .d{flex-basis:100%;font-weight:700;color:var(--tx)}',
+'#edubank .eb-tip{background:var(--chip);border-radius:12px;padding:8px 12px;font-size:.82em;color:var(--tx2);min-height:50px;display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center}#edubank .eb-tip b{color:var(--tx)}#edubank .eb-tip .eb-d{flex-basis:100%;font-weight:700;color:var(--tx)}',
 '#edubank canvas{width:100%;display:block;margin:8px 0;touch-action:pan-y;border-radius:12px;background:var(--card)}',
-'#edubank .eb-gacts{display:grid;grid-template-columns:1fr 1fr;gap:10px}#edubank .eb-gacts .eb-btn{margin-top:8px}',
+'#edubank .eb-gacts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}#edubank .eb-gacts .eb-btn{margin-top:8px;padding:10px 6px;font-size:.95em;min-width:0}',
 '#edubank .eb-toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);background:#14142b;color:#fff;padding:12px 18px;border-radius:14px;font-weight:700;max-width:90%;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.35)}',
 '@media(min-width:700px){#edubank.full{font-size:17px}}'].join('')}
 function css(){
@@ -260,7 +260,7 @@ function irAba(k){
 function telaInicio(){
   aba='inicio';
   comDados(function(c){
-    c.innerHTML='<div class="eb-hero"><small>'+esc(aluno(LOGIN))+'</small><small class="lb">Saldo em reais</small><div class="v" id="eb-sal">'+rs(getCash())+'</div>'+
+    c.innerHTML='<div class="eb-hero"><small>'+esc(aluno(LOGIN))+'</small><small class="eb-lb">Saldo em reais</small><div class="eb-v" id="eb-sal">'+rs(getCash())+'</div>'+
     '<div class="eb-chave"><span>Chave Pix</span><code>'+esc(LOGIN)+'</code><button data-a="copiar" aria-label="Copiar chave Pix">'+I('copy',18)+'Copiar</button></div></div>'+
     '<div class="eb-acts"><button class="eb-act" data-a="aba" data-k="cambio"><i>'+I('swap',22)+'</i>Câmbio</button><button class="eb-act" data-a="aba" data-k="transferir"><i>'+I('send',22)+'</i>Transferir</button><button class="eb-act" data-a="aba" data-k="extrato"><i>'+I('receipt',22)+'</i>Extrato</button></div>'+
     '<div class="eb-card" id="eb-moe"><h2>Moedas</h2>'+skel(1).replace('eb-card','eb-sk0')+'</div>'+
@@ -319,8 +319,8 @@ function telaTrocaMoedas(){
 }
 function cartao(m){
   var v=saldoDe(m.c),vr=varTaxa(m.c);
-  return '<button class="eb-m'+(v?'':' zero')+'" data-a="grafico" data-c="'+m.c+'" aria-label="'+esc(m.n)+', gráfico">'+flag(m.c,40)+'<span class="mi"><span class="mc">'+m.c+'</span><span class="mn">'+esc(m.n)+'</span></span>'+
-   '<span class="mr"><b>'+qtd(m,v)+'</b><em>1 = '+fmtTaxa(m.c)+(vr!=null?' <span class="eb-var '+(vr>0?'p':'n')+'">'+(vr>0?'▲ +':'▼ ')+vr.toFixed(2).replace('.',',')+'%</span>':'')+'</em></span></button>';
+  return '<button class="eb-m'+(v?'':' zero')+'" data-a="grafico" data-c="'+m.c+'" aria-label="'+esc(m.n)+', gráfico">'+flag(m.c,40)+'<span class="eb-mi"><span class="eb-mc">'+m.c+'</span><span class="eb-mn">'+esc(m.n)+'</span></span>'+
+   '<span class="eb-mr"><b>'+qtd(m,v)+'</b><em>1 = '+fmtTaxa(m.c)+(vr!=null?' <span class="eb-var '+(vr>0?'eb-pos':'eb-neg')+'">'+(vr>0?'▲ +':'▼ ')+vr.toFixed(2).replace('.',',')+'%</span>':'')+'</em></span></button>';
 }
 
 /* ---------- gráfico de velas ---------- */
@@ -405,7 +405,7 @@ function telaGrafico(c){
       var k=SER[i];if(!k)return;SEL=i;grafDesenha(cv,SER,tf,i);
       var d=new Date(k.t),dd=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})+((tf==='1d')?'':' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
       var cor=k.c>=k.o?'var(--up)':'var(--dn)';
-      tip.innerHTML='<span class="d">'+esc(dd)+'</span><span>Abertura <b>'+fmtP(k.o)+'</b></span><span>Máx. <b>'+fmtP(k.h)+'</b></span><span>Mín. <b>'+fmtP(k.l)+'</b></span><span>Fech. <b style="color:'+cor+'">'+fmtP(k.c)+'</b></span>';
+      tip.innerHTML='<span class="eb-d">'+esc(dd)+'</span><span>Abertura <b>'+fmtP(k.o)+'</b></span><span>Máx. <b>'+fmtP(k.h)+'</b></span><span>Mín. <b>'+fmtP(k.l)+'</b></span><span>Fech. <b style="color:'+cor+'">'+fmtP(k.c)+'</b></span>';
     }
     function pos(e){var L=cv._L;if(!L||!SER)return;var r=cv.getBoundingClientRect(),x=e.clientX-r.left,i=Math.floor((x-L.pl)/L.cw);tipo(Math.max(0,Math.min(L.n-1,i)))}
     cv.addEventListener('pointerdown',pos);cv.addEventListener('pointermove',function(e){if(e.buttons||e.pointerType==='mouse')pos(e)});
@@ -429,10 +429,10 @@ function telaGrafico(c){
 /* ---------- câmbio ---------- */
 function estimaUI(m,v,op){
   var el=$('#eb-es');if(!el)return;
-  if(!(v>0)){el.innerHTML='<div class="t">Digite a quantidade'+(m.x?' (até 8 casas, ex.: 0,001523)':'')+' para ver a estimativa.</div><div class="r"><span>Taxa de referência</span><b>1 '+m.c+' = '+fmtTaxa(m.c)+'</b></div><div class="r"><span>Cotação das</span><b>'+esc(horaTaxa(m.c))+'</b></div>';return}
+  if(!(v>0)){el.innerHTML='<div class="eb-t">Digite a quantidade'+(m.x?' (até 8 casas, ex.: 0,001523)':'')+' para ver a estimativa.</div><div class="eb-r"><span>Taxa de referência</span><b>1 '+m.c+' = '+fmtTaxa(m.c)+'</b></div><div class="eb-r"><span>Cotação das</span><b>'+esc(horaTaxa(m.c))+'</b></div>';return}
   var base=Math.round(taxaDe(m.c)*v/escalaDe(m.c)*100),tot=estim(m.c,v,op),spr=Math.abs(tot-base);
-  el.innerHTML='<div class="r"><span>Taxa de referência</span><b>1 '+m.c+' = '+fmtTaxa(m.c)+'</b></div><div class="r"><span>Valor sem taxa</span><b>'+rs(base)+'</b></div><div class="r"><span>Spread de 2%</span><b>'+(op==='comprar'?'+ ':'− ')+rs(spr)+'</b></div><div class="r"><span>Cotação das</span><b>'+esc(horaTaxa(m.c))+'</b></div>'+
-   '<div class="big"><span>'+(op==='comprar'?'Você paga cerca de':'Você recebe cerca de')+'</span><b>'+rs(tot)+'</b></div>';
+  el.innerHTML='<div class="eb-r"><span>Taxa de referência</span><b>1 '+m.c+' = '+fmtTaxa(m.c)+'</b></div><div class="eb-r"><span>Valor sem taxa</span><b>'+rs(base)+'</b></div><div class="eb-r"><span>Spread de 2%</span><b>'+(op==='comprar'?'+ ':'− ')+rs(spr)+'</b></div><div class="eb-r"><span>Cotação das</span><b>'+esc(horaTaxa(m.c))+'</b></div>'+
+   '<div class="eb-big"><span>'+(op==='comprar'?'Você paga cerca de':'Você recebe cerca de')+'</span><b>'+rs(tot)+'</b></div>';
 }
 function telaCambio(pre){
   aba='cambio';
@@ -550,8 +550,8 @@ function telaSenha(troca,ok){
 }
 function telaConfirmar(p){
   var m=MAP[p.moeda],c=shell('Confirmar',true);
-  c.innerHTML='<div class="eb-card eb-rc"><div class="rh"><div class="eb-muted">Você vai enviar</div><div class="am">'+esc(qtd(m,p.v))+'</div></div>'+
-  '<dl><div class="rw"><dt>Para</dt><dd>'+esc(aluno(p.para))+'</dd></div><div class="rw"><dt>Chave</dt><dd>'+esc(p.para)+'</dd></div>'+(p.nota?'<div class="rw"><dt>Mensagem</dt><dd>'+esc(p.nota)+'</dd></div>':'')+'</dl>'+
+  c.innerHTML='<div class="eb-card eb-rc"><div class="eb-rh"><div class="eb-muted">Você vai enviar</div><div class="eb-am">'+esc(qtd(m,p.v))+'</div></div>'+
+  '<dl><div class="eb-rw"><dt>Para</dt><dd>'+esc(aluno(p.para))+'</dd></div><div class="eb-rw"><dt>Chave</dt><dd>'+esc(p.para)+'</dd></div>'+(p.nota?'<div class="eb-rw"><dt>Mensagem</dt><dd>'+esc(p.nota)+'</dd></div>':'')+'</dl>'+
   '<div style="padding:0 16px 16px"><label for="eb-pw">Senha do EduBank</label><input id="eb-pw" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password" placeholder="4 números (dia e mês)">'+
   '<button class="eb-btn" id="eb-ok">'+I('check',20)+'Confirmar e transferir</button><button class="eb-btn sec" id="eb-no">Voltar</button></div></div>';
   var box=c.firstChild;
@@ -570,9 +570,9 @@ function telaConfirmar(p){
 }
 function telaComprovante(r){
   var m=MAP[r.moeda],c=shell('Comprovante',false);
-  c.innerHTML='<div class="eb-card eb-rc"><div class="rh"><div class="ok">'+I('check',30)+'</div><h2>Transferência feita!</h2><div class="am">'+esc(qtd(m,r.v))+'</div></div>'+
-  '<dl><div class="rw"><dt>Para</dt><dd>'+esc(aluno(r.para))+'</dd></div><div class="rw"><dt>Chave</dt><dd>'+esc(r.para)+'</dd></div><div class="rw"><dt>De</dt><dd>'+esc(aluno(LOGIN))+'</dd></div>'+(r.nota?'<div class="rw"><dt>Mensagem</dt><dd>'+esc(r.nota)+'</dd></div>':'')+
-  '<div class="rw"><dt>Data</dt><dd>'+esc(dt(r.ts))+'</dd></div><div class="rw"><dt>Protocolo</dt><dd>'+esc(r.id)+'</dd></div></dl></div><button class="eb-btn" data-a="aba" data-k="inicio">Voltar ao início</button>';
+  c.innerHTML='<div class="eb-card eb-rc"><div class="eb-rh"><div class="eb-okc">'+I('check',30)+'</div><h2>Transferência feita!</h2><div class="eb-am">'+esc(qtd(m,r.v))+'</div></div>'+
+  '<dl><div class="eb-rw"><dt>Para</dt><dd>'+esc(aluno(r.para))+'</dd></div><div class="eb-rw"><dt>Chave</dt><dd>'+esc(r.para)+'</dd></div><div class="eb-rw"><dt>De</dt><dd>'+esc(aluno(LOGIN))+'</dd></div>'+(r.nota?'<div class="eb-rw"><dt>Mensagem</dt><dd>'+esc(r.nota)+'</dd></div>':'')+
+  '<div class="eb-rw"><dt>Data</dt><dd>'+esc(dt(r.ts))+'</dd></div><div class="eb-rw"><dt>Protocolo</dt><dd>'+esc(r.id)+'</dd></div></dl></div><button class="eb-btn" data-a="aba" data-k="inicio">Voltar ao início</button>';
 }
 
 /* ---------- extrato ---------- */
@@ -591,7 +591,7 @@ function telaExtrato(){
       var m=MAP[x.moeda]||{c:x.moeda,s:'',e:100,f:'💱'},t=TIPO[x.tipo]||['💱',''],pos=(x.tipo==='rec'||x.tipo==='compra'),brl=x.moeda==='BRL';
       var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+aluno(x.outro):t[1]+m.c;
       var Q=function(v){return brl?rs(v):qtd(m,v)},g=dia(x.ts),h=(g!==ult)?'<div class="eb-dg">'+esc(g)+'</div>':'';ult=g;
-      return h+'<div class="eb-it"><span class="ib '+(pos?'p':'n')+'">'+I(pos?'down':'up',20)+'</span><div><b>'+esc(tit)+'</b><small>'+esc(hhmm(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="q '+(pos?'p':'n')+'">'+(pos?'+':'−')+esc(Q(x.v))+'</span></div>';
+      return h+'<div class="eb-it"><span class="eb-ib '+(pos?'eb-pos':'eb-neg')+'">'+I(pos?'down':'up',20)+'</span><div><b>'+esc(tit)+'</b><small>'+esc(hhmm(x.ts))+(x.nota?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="eb-q '+(pos?'eb-pos':'eb-neg')+'">'+(pos?'+':'−')+esc(Q(x.v))+'</span></div>';
     }).join('');
   }).catch(function(e){var l=$('#eb-lista');if(l)l.innerHTML='<div class="eb-err">'+esc(e.message)+'</div>'});
 }
@@ -690,5 +690,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:7,versao:'7'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:9,versao:'9'};
 })();
