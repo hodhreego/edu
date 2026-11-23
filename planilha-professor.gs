@@ -557,6 +557,20 @@ function eb_buscaCoinGecko_(lista) {
   } catch (e) { }
   return { tx: tx, n: n };
 }
+function eb_buscaCoinbase_(lista) {
+  var tx = {}, n = 0;
+  try {
+    var brl = eb_buscaOpenEr_(['USD']).tx.USD;
+    if (!brl) return { tx: tx, n: 0 };
+    lista.forEach(function (m) {
+      try {
+        var r = UrlFetchApp.fetch('https://api.coinbase.com/v2/prices/' + m + '-USD/spot', { muteHttpExceptions: true });
+        if (r.getResponseCode() === 200) { var p = Number(JSON.parse(r.getContentText()).data.amount); if (isFinite(p) && p > 0) { tx[m] = Math.round(p * brl * 1e8) / 1e8; n++; } }
+      } catch (e) { }
+    });
+  } catch (e) { }
+  return { tx: tx, n: n };
+}
 function eb_buscaOpenEr_(lista) {
   var tx = {}, n = 0;
   try {
@@ -594,7 +608,7 @@ function eb_grupo_(chave, buscas, lista, ttl) {
 }
 // {taxas:{USD:{t:5.42,e:100},BTC:{t:350000,e:100000000}},ts,fonte}
 function eb_taxas_() {
-  var f = eb_grupo_('eb_tx_f', [['AwesomeAPI', function (l) { return eb_busca_(EB_URL_FIAT, l); }], ['open.er-api', eb_buscaOpenEr_]], EB_FIAT, 600), c = eb_grupo_('eb_tx_c', [['AwesomeAPI', function (l) { return eb_busca_(EB_URL_CRIPTO, l); }], ['Binance', eb_buscaBinance_], ['CoinGecko', eb_buscaCoinGecko_]], EB_CRIPTO, 60), out = {};
+  var f = eb_grupo_('eb_tx_f', [['AwesomeAPI', function (l) { return eb_busca_(EB_URL_FIAT, l); }], ['open.er-api', eb_buscaOpenEr_]], EB_FIAT, 600), c = eb_grupo_('eb_tx_c', [['AwesomeAPI', function (l) { return eb_busca_(EB_URL_CRIPTO, l); }], ['Coinbase', eb_buscaCoinbase_], ['CoinGecko', eb_buscaCoinGecko_], ['Binance', eb_buscaBinance_]], EB_CRIPTO, 60), out = {};
   EB_FIAT.forEach(function (m) { out[m] = { t: f.taxas[m] || null, e: 100 }; });
   EB_CRIPTO.forEach(function (m) { out[m] = { t: c.taxas[m] || null, e: 100000000 }; });
   return { taxas: out, ts: Math.min(f.ts, c.ts), fonte: f.fonte === c.fonte ? f.fonte : (f.fonte + '/' + c.fonte), fontes: Object.assign({}, f.fontes, c.fontes) };
