@@ -654,7 +654,7 @@ function telaExtrato(){
     var ult='';
     l.innerHTML=it.map(function(x){
       var m=MAP[x.moeda]||{c:x.moeda,s:'',e:100,f:'💱'},t=TIPO[x.tipo]||['💱',''],pos=(x.tipo==='rec'||x.tipo==='compra'),brl=x.moeda==='BRL';
-      var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+(RE.test(String(x.outro||''))?aluno(x.outro):(x.outro||'')):x.tipo==='inv'?t[1]+(x.outro||x.nota||'investimento'):t[1]+m.c;
+      var tit=brl&&x.outro==='Professor'?'Recebido do professor':(x.tipo==='env'||x.tipo==='rec')?t[1]+(RE.test(String(x.outro||''))?aluno(x.outro):(x.outro||'')):x.tipo==='inv'?(x.outro||x.nota||'Aplicação'):t[1]+m.c;
       var Q=function(v){v=Math.abs(Number(v)||0);return brl?rs(v):qtd(m,v)},g=dia(x.ts),h=(g!==ult)?'<div class="eb-dg">'+esc(g)+'</div>':'';ult=g;
       return h+'<div class="eb-it"><span class="eb-ib '+(pos?'eb-pos':'eb-neg')+'">'+I(x.tipo==='inv'?'trend':pos?'down':'up',20)+'</span><div><b>'+esc(tit)+'</b><small>'+esc(hhmm(x.ts))+(x.nota&&x.tipo!=='inv'?' · '+esc(x.nota):'')+(x.saldo_apos!=null?' · saldo '+esc(Q(x.saldo_apos)):'')+'</small></div><span class="eb-q '+(pos?'eb-pos':'eb-neg')+'">'+(pos?'+':'−')+esc(Q(x.v))+'</span></div>';
     }).join('');
@@ -756,5 +756,5 @@ function adaptadorLocal(login){
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:14,versao:'14'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:15,versao:'15'};
 })();
