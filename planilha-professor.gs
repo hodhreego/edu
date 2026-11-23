@@ -521,7 +521,8 @@ function eb_spread_(cfg, m) {
   return s / 100;
 }
 
-// ---------- câmbio (AwesomeAPI; cache 1 h fiduciárias / 5 min cripto; reserva) ----------
+// ---------- câmbio: fiduciárias = AwesomeAPI (reserva open.er-api.com); cripto = Binance data-api (reserva AwesomeAPI) ----------
+// Sem tabela inventada: se nenhuma fonte responder, usa a última cotação boa (até 24 h); depois disso fonte='indisponivel'.
 function eb_busca_(url, lista) {
   var tx = {}, n = 0;
   try {
@@ -533,27 +534,60 @@ function eb_busca_(url, lista) {
   } catch (e) { }
   return { tx: tx, n: n };
 }
-function eb_grupo_(chave, url, lista, ttl) {
+function eb_buscaBinance_(lista) {
+  var tx = {}, n = 0;
+  try {
+    var syms = lista.map(function (m) { return m + 'BRL'; });
+    var r = UrlFetchApp.fetch('https://data-api.binance.vision/api/v3/ticker/price?symbols=' + encodeURIComponent(JSON.stringify(syms)), { muteHttpExceptions: true });
+    if (r.getResponseCode() === 200) {
+      JSON.parse(r.getContentText()).forEach(function (o) { var m = String(o.symbol).replace(/BRL$/, ''), b = Number(o.price); if (lista.indexOf(m) >= 0 && isFinite(b) && b > 0) { tx[m] = Math.round(b * 1e8) / 1e8; n++; } });
+    }
+  } catch (e) { }
+  return { tx: tx, n: n };
+}
+function eb_buscaOpenEr_(lista) {
+  var tx = {}, n = 0;
+  try {
+    var r = UrlFetchApp.fetch('https://open.er-api.com/v6/latest/USD', { muteHttpExceptions: true });
+    if (r.getResponseCode() === 200) {
+      var j = JSON.parse(r.getContentText()), R = j.rates || {}, brl = Number(R.BRL);
+      lista.forEach(function (m) { var x = m === 'USD' ? 1 : Number(R[m]), v = (isFinite(brl) && brl > 0 && isFinite(x) && x > 0) ? brl / x : NaN; if (isFinite(v) && v > 0) { tx[m] = Math.round(v * 1e8) / 1e8; n++; } });
+    }
+  } catch (e) { }
+  return { tx: tx, n: n };
+}
+// buscas: lista de [nome, função(lista)] em ordem de preferência; completa com a seguinte o que faltar.
+function eb_grupo_(chave, buscas, lista, ttl) {
   var c = CacheService.getScriptCache(), s = c.get(chave);
   if (s) { try { return JSON.parse(s); } catch (e) { } }
-  var b = eb_busca_(url, lista), p = PropertiesService.getScriptProperties(), res = { taxas: {}, ts: Date.now(), fonte: 'reserva' };
+  var p = PropertiesService.getScriptProperties(), res = { taxas: {}, ts: Date.now(), fonte: 'indisponivel', fontes: {} };
+  var falta = lista.slice(), usadas = [];
+  buscas.forEach(function (bf) {
+    if (!falta.length) return;
+    var b = bf[1](falta), antes = falta.length;
+    falta = falta.filter(function (m) { if (b.tx[m]) { res.taxas[m] = b.tx[m]; res.fontes[m] = bf[0]; return false; } return true; });
+    if (falta.length < antes) usadas.push(bf[0]);
+  });
   var ult = null; try { ult = JSON.parse(p.getProperty(chave + '_ok') || 'null'); } catch (e) { }
-  if (ult && Date.now() - ult.ts > 7 * 86400000) ult = null;
-  lista.forEach(function (m) { res.taxas[m] = b.tx[m] || (ult && ult.taxas[m]) || EB_RESERVA[m]; });
-  if (b.n === lista.length) { res.fonte = 'api'; try { p.setProperty(chave + '_ok', JSON.stringify(res)); } catch (e) { } }
-  else if (b.n > 0) res.fonte = 'parcial';
-  else if (ult) res.fonte = 'anterior';
-  try { c.put(chave, JSON.stringify(res), res.fonte === 'api' ? ttl : 300); } catch (e) { }
+  if (ult && Date.now() - ult.ts > 24 * 3600000) ult = null;
+  if (!falta.length) {
+    res.fonte = usadas.join('+');
+    try { p.setProperty(chave + '_ok', JSON.stringify(res)); } catch (e) { }
+  } else if (ult) {
+    falta.forEach(function (m) { if (ult.taxas && ult.taxas[m]) { res.taxas[m] = ult.taxas[m]; res.fontes[m] = 'anterior'; res.ts = Math.min(res.ts, ult.ts); } });
+    res.fonte = Object.keys(res.taxas).length === lista.length ? (usadas.length ? usadas.join('+') + '/anterior' : 'anterior') : 'indisponivel';
+  }
+  try { c.put(chave, JSON.stringify(res), res.fonte === 'indisponivel' ? 60 : ttl); } catch (e) { }
   return res;
 }
 // {taxas:{USD:{t:5.42,e:100},BTC:{t:350000,e:100000000}},ts,fonte}
 function eb_taxas_() {
-  var f = eb_grupo_('eb_tx_f', EB_URL_FIAT, EB_FIAT, 3600), c = eb_grupo_('eb_tx_c', EB_URL_CRIPTO, EB_CRIPTO, 300), out = {};
-  EB_FIAT.forEach(function (m) { out[m] = { t: f.taxas[m], e: 100 }; });
-  EB_CRIPTO.forEach(function (m) { out[m] = { t: c.taxas[m], e: 100000000 }; });
-  return { taxas: out, ts: Math.min(f.ts, c.ts), fonte: f.fonte === c.fonte ? f.fonte : (f.fonte + '/' + c.fonte) };
+  var f = eb_grupo_('eb_tx_f', [['AwesomeAPI', function (l) { return eb_busca_(EB_URL_FIAT, l); }], ['open.er-api', eb_buscaOpenEr_]], EB_FIAT, 600), c = eb_grupo_('eb_tx_c', [['Binance', eb_buscaBinance_], ['AwesomeAPI', function (l) { return eb_busca_(EB_URL_CRIPTO, l); }]], EB_CRIPTO, 60), out = {};
+  EB_FIAT.forEach(function (m) { out[m] = { t: f.taxas[m] || null, e: 100 }; });
+  EB_CRIPTO.forEach(function (m) { out[m] = { t: c.taxas[m] || null, e: 100000000 }; });
+  return { taxas: out, ts: Math.min(f.ts, c.ts), fonte: f.fonte === c.fonte ? f.fonte : (f.fonte + '/' + c.fonte), fontes: Object.assign({}, f.fontes, c.fontes) };
 }
-function eb_taxasResp_() { var t = eb_taxas_(); return { ok: 1, taxas: t.taxas, ts: t.ts, fonte: t.fonte, escala: { fiduciaria: 100, cripto: 100000000 } }; }
+function eb_taxasResp_() { var t = eb_taxas_(); return { ok: 1, taxas: t.taxas, ts: t.ts, fonte: t.fonte, fontes: t.fontes, escala: { fiduciaria: 100, cripto: 100000000 } }; }
 
 // ---------- entrada ----------
 function eb_(p) {
@@ -1071,6 +1105,7 @@ function eb_cambio_(p, login) {
   var cash = 0;
   if (op === 'comprar') { cash = eb_int_(p.cash, 0, 1e13); if (isNaN(cash)) return eb_erro_('Informe seu saldo em reais.'); }
   var tx = eb_taxas_().taxas[moeda], esc = eb_escala_(moeda);
+  if (!tx || !tx.t) return eb_erro_('Cotação indisponível agora. Tente de novo em alguns minutos.');
   return eb_lock_(function () {
     var cfg = eb_cfg_(), sp = eb_spread_(cfg, moeda), uso = eb_idUso_(id, login);
     if (uso && uso.t === 'meu') { var d = uso.r; return d[2] === 'compra' ? { ok: 1, dup: 1, custo: Number(d[5]), saldos: eb_saldosLogin_(login) } : { ok: 1, dup: 1, recebe: Number(d[5]), saldos: eb_saldosLogin_(login) }; }
@@ -1452,7 +1487,7 @@ function zerarCarteira(login, hp) {
 }
 function atualizarCambio() {
   var c = CacheService.getScriptCache(); c.remove('eb_tx_f'); c.remove('eb_tx_c');
-  var t = eb_taxas_(); return eb_aviso_('Câmbio atualizado (' + t.fonte + '). USD = R$ ' + t.taxas.USD.t + ' · BTC = R$ ' + t.taxas.BTC.t);
+  var t = eb_taxas_(); return eb_aviso_('Câmbio atualizado (' + t.fonte + '). USD = R$ ' + (t.taxas.USD.t || 'indisponível') + ' · BTC = R$ ' + (t.taxas.BTC.t || 'indisponível'));
 }
 function prepararEduBank() { Object.keys(EB_ABAS).forEach(function (n) { eb_aba_(n); }); eb_cfgGarante_(); return eb_aviso_('Abas do EduBank prontas.'); }
 // Preenche a aba "Aluno" com a visão do professor sobre um login (sem hash/senha/token).
