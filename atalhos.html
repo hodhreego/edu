@@ -30,6 +30,16 @@ h1{font-size:clamp(2rem,6vw,3.4rem);font-weight:900;margin:14px 0 6px;letter-spa
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:99px;padding:8px 14px;font-weight:700;cursor:pointer;font-size:.9rem}
 .chip.on{background:linear-gradient(90deg,#6366f1,#a855f7);color:#fff;border-color:transparent}
+.lud{position:relative;display:flex;align-items:center;gap:16px;width:max-content;max-width:100%;margin:6px 0 14px;padding:12px 22px 12px 14px;text-decoration:none;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.18);transition:transform .15s}
+.lud:hover,.lud:focus-visible{transform:translateY(-2px);background:var(--card-h);outline:none}
+.lud svg{width:96px;height:auto;flex:none}
+.lud .lt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lud .ln{font-size:clamp(1.9rem,6vw,2.6rem);font-weight:900;line-height:1.05}
+.lud .ld{font-size:.95rem;color:var(--dim)}
+.lud .lo{font-weight:800;color:#818cf8;margin-top:2px}
+.lud .kb{position:absolute;top:8px;right:10px;font-weight:900;font-size:.8rem;color:#fff;background:#6366f1;border-radius:6px;padding:1px 8px}
+a.card .kb{position:absolute;top:10px;right:12px;z-index:3;font-weight:900;font-size:.8rem;color:#fff;background:#6366f1;border-radius:6px;padding:1px 8px}
+@media (hover:none){.kb{display:none!important}}
 section{margin-top:26px}
 section h2{display:flex;align-items:center;gap:10px;font-size:1.3rem;margin:0 0 12px}
 section h2 small{font-size:.8rem;color:var(--dim);font-weight:500}
@@ -182,6 +192,7 @@ a.card .ic{width:38px;height:38px;font-size:1.3rem;border-radius:11px}
 <script src="edu-aviso-ia.js?v=1"></script></head>
 <body>
 <div class="wrap">
+<a class="lud" id="lud" href="https://hodhreego.github.io/edu/" target="_blank" rel="noopener" aria-label="Abrir a Ludopédia"><span id="lud-ic"></span><span class="lt"><span class="ln">Ludopédia</span><span class="ld">Jogos e desafios da turma.</span><span class="lo">Abrir →</span></span><span class="kb" id="lud-kb"></span></a>
 <header>
   <a class="tag" href="https://hodhreego.github.io/edu/painel.html" target="_blank" rel="noopener" title="Abrir o painel do professor">Atalhos 2026 · Prof. Rodrigo · Colégio Schuster</a>
   <h1 class="lk-hero" id="lkTxt">bit.ly/xus28</h1>
@@ -271,7 +282,6 @@ var SEC=[
  ]},
  {id:'jogos',im:'jogos',t:'🎮 Jogos e treino',c:'#f472b6',d:'Para jogar e praticar',it:[
   {i:'🎮',t:'RobIox',d:'Jogo de matemática. Entre com o seu login do RCO.',u:'https://hodhreego.github.io/edu/robiox.html'},
-  {i:'🎲',t:'Ludopédia',d:'Jogos e desafios da turma.',u:'https://hodhreego.github.io/edu/'},
   {i:'🔢',t:'Numbers',d:'Jogo de números em inglês.',u:'https://hodhreego.github.io/clientes/numbers-ingles-jogo.html'},
   {n:'0',i:'🧮',t:'Matific · Recomposição PR',d:'Atividades de recomposição de matemática.',u:'https://www.matific.com/bra/pt-br/login-page/',b:['No tablet use o Firefox Focus']},
   {n:'3',i:'🎯',t:'Quizizz · Wayground',d:'Quizzes e revisões.',u:'https://quizizz.com/join/dashboard'},
@@ -310,7 +320,14 @@ var SEC=[
 var main=document.getElementById('main'),chips=document.getElementById('chips'),qi=document.getElementById('q'),cur='todos';
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function slugT(t){return String(t).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
-function card(it,c){return '<a class="card" style="--c:'+c+'" href="'+esc(it.u)+'" target="_blank" rel="noopener"><img class="art" src="atalhos-img/cards/'+slugT(it.t)+'.webp?v=3" alt="" loading="lazy" onerror="this.remove()"><div class="top"><div class="ic">'+it.i+'</div><div class="nm">'+esc(it.t)+'</div></div>'+(it.n?'<span class="num">'+esc(it.n)+'</span>':'')+'<div class="ds">'+esc(it.d||'')+'</div><div class="bd">'+(it.b||[]).map(function(b){return '<span class="b">'+esc(b)+'</span>'}).join('')+'<span class="go">Abrir ➜</span></div></a>'}
+var KEYMAP=null;
+function keyOf(it){
+  if(!KEYMAP){KEYMAP={};var n=0,first=['Login · Inglês Paraná Teens','Ludopédia','Numbers'];
+    first.forEach(function(t){KEYMAP[t]=++n});
+    SEC.forEach(function(s){if(s.prof)return;s.it.forEach(function(x){if(!KEYMAP[x.t])KEYMAP[x.t]=++n})});}
+  return KEYMAP[it.t]||'';
+}
+function card(it,c){var k=keyOf(it);return '<a class="card" data-k="'+k+'" style="--c:'+c+'" href="'+esc(it.u)+'" target="_blank" rel="noopener"><img class="art" src="atalhos-img/cards/'+slugT(it.t)+'.webp?v=3" alt="" loading="lazy" onerror="this.remove()"><div class="top"><div class="ic">'+it.i+'</div><div class="nm">'+esc(it.t)+'</div></div>'+(k?'<span class="kb" title="Tecla de atalho">'+k+'</span>':'')+'<div class="ds">'+esc(it.d||'')+'</div><div class="bd">'+(it.b||[]).map(function(b){return '<span class="b">'+esc(b)+'</span>'}).join('')+'<span class="go">Abrir ➜</span></div></a>'}
 function render(){
   var q=qi.value.trim().toLowerCase(),html='',shown=0;
   SEC.forEach(function(s){
@@ -532,6 +549,31 @@ render();
     if(!/^[0-9]$/.test(e.key))return;
     buf+=e.key;clearTimeout(tm);tm=setTimeout(go,550);
   });
+})();
+</script>
+<script>
+(function(){
+ var P={1:[[.5,.5]],2:[[.27,.27],[.73,.73]],3:[[.27,.27],[.5,.5],[.73,.73]],4:[[.27,.27],[.73,.27],[.27,.73],[.73,.73]],5:[[.27,.27],[.73,.27],[.5,.5],[.27,.73],[.73,.73]],6:[[.27,.25],[.73,.25],[.27,.5],[.73,.5],[.27,.75],[.73,.75]]};
+ function pips(n,m,c){return '<g transform="matrix('+m+')" fill="'+c+'">'+P[n].map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r=".085"/>'}).join('')+'</g>'}
+ function die(x,y,t,L,R,f,fl,fr,pc,st){
+  return '<g transform="translate('+x+','+y+')" stroke="'+st+'" stroke-width="1.6" stroke-linejoin="round"><polygon points="40,0 80,20 40,40 0,20" fill="'+f+'"/><polygon points="0,20 40,40 40,86 0,66" fill="'+fl+'"/><polygon points="40,40 80,20 80,66 40,86" fill="'+fr+'"/></g>'+
+   '<g transform="translate('+x+','+y+')">'+pips(t,'40,20,-40,20,40,0',pc)+pips(L,'40,20,0,46,0,20',pc)+pips(R,'40,-20,0,46,40,40',pc)+'</g>';
+ }
+ document.getElementById('lud-ic').innerHTML='<svg viewBox="0 0 170 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dois dados">'+
+  die(4,26,1,2,3,'#ffffff','#e5e7eb','#cbd5e1','#1e293b','#475569')+die(86,10,4,5,6,'#fb7185','#e11d48','#be123c','#ffffff','#7f1d1d')+'</svg>';
+ document.getElementById('lud-kb').textContent=keyOf({t:'Ludopédia'});
+ // teclado: digite o numero do cartao (2 digitos para os acima de 9)
+ var buf='',tm=0;
+ function abre(k){var a=document.querySelector('a.card[data-k="'+k+'"]');if(!a&&k===String(keyOf({t:'Ludopédia'})))a=document.getElementById('lud');if(a){a.click();return true}return false}
+ function maxK(){var m=0;for(var t in KEYMAP)if(KEYMAP[t]>m)m=KEYMAP[t];return m}
+ document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey)return;var tg=e.target,tn=(tg&&tg.tagName||'').toLowerCase();
+  if(tn==='input'||tn==='textarea'||tn==='select'||(tg&&tg.isContentEditable))return;
+  if(!/^[0-9]$/.test(e.key))return;
+  clearTimeout(tm);buf+=e.key;var n=+buf;
+  if(buf.length>=2||n*10>maxK()){var ok=abre(String(n));buf='';if(ok)e.preventDefault();return}
+  tm=setTimeout(function(){abre(String(+buf));buf=''},650);
+ });
 })();
 </script>
 </body>
