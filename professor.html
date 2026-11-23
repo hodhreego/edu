@@ -9,7 +9,7 @@ html[data-theme=dark]{--bg:#0d1324;--card:#151d34;--ink:#e8edfb;--muted:#9aa8c9;
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Arial,sans-serif;font-size:15px}
 body.demo{padding-top:34px;--bn:34px}
 #demoBn{display:none;position:fixed;top:0;left:0;right:0;height:34px;z-index:100;background:repeating-linear-gradient(135deg,#f59e0b 0 14px,#dc2626 14px 28px);color:#fff;font:800 13px/34px Arial;text-align:center;letter-spacing:.4px;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-body.demo #demoBn{display:block}
+body.demo #demoBn{display:block;white-space:nowrap;overflow:hidden}
 h1{margin:6px 0 2px;font-size:24px}h2{margin:0 0 10px;font-size:20px}h3{margin:18px 0 8px;font-size:16px}
 .sub{color:var(--muted);margin:0 0 10px;font-size:14px}small{color:var(--muted)}
 .wrapx{max-width:1180px;margin:0 auto;padding:14px 14px 40px}
@@ -72,7 +72,7 @@ th{background:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing
 tr.cl{cursor:pointer}tr.cl:hover td{background:var(--soft)}tbody tr:last-child td{border-bottom:0}
 .reltab td:first-child,.reltab th:first-child{position:sticky;left:0;background:var(--card);z-index:1}.reltab th:first-child{background:var(--soft)}
 .kv{display:flex;flex-wrap:wrap;gap:8px}.kv>div{background:var(--soft);border-radius:12px;padding:9px 13px;font-size:13px;color:var(--muted);min-width:110px}.kv b{display:block;font-size:20px;color:var(--ink)}
-.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.kpis.k4{grid-template-columns:repeat(4,minmax(0,1fr))}.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
 .kpi{padding:14px 15px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;animation:up .5s ease both;animation-delay:calc(var(--i,0)*60ms)}
 .kpi .kic{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:var(--soft)}
 .kpi .kl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding-right:46px}
@@ -80,7 +80,7 @@ tr.cl{cursor:pointer}tr.cl:hover td{background:var(--soft)}tbody tr:last-child t
 .kpi::after{content:"";position:absolute;left:0;bottom:0;height:4px;width:100%;background:var(--kc,var(--brand))}
 .dl{display:inline-block;padding:1px 8px;border-radius:99px;font-weight:800;font-size:11px;margin-right:4px}.dl.up{background:rgba(22,163,74,.15);color:var(--vd)}.dl.dn{background:rgba(220,38,38,.14);color:var(--vm)}.dl.eq{background:var(--soft)}
 .two{align-items:start;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px}
-@media(max-width:860px){.two{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:860px){.two{grid-template-columns:1fr}.kpis,.kpis.k4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .aviso{background:rgba(245,158,11,.14);border:1.5px solid var(--am);border-radius:12px;padding:9px 13px;margin:8px 0;font-size:13px}
 .msg{padding:9px 13px;border-radius:12px;margin:8px 0;font-weight:700;font-size:14px}.msg.ok{background:rgba(22,163,74,.14);color:var(--vd)}.msg.er{background:rgba(220,38,38,.13);color:var(--vm)}
 .load{color:var(--muted);padding:26px;text-align:center}.spin{display:inline-block;width:16px;height:16px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:rot .8s linear infinite;vertical-align:-3px;margin-right:8px}
@@ -124,6 +124,7 @@ tr.cl{cursor:pointer}tr.cl:hover td{background:var(--soft)}tbody tr:last-child t
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{body.prrel *{visibility:hidden}body.prrel #relat,body.prrel #relat *{visibility:visible}body.prrel #relat{position:absolute;left:0;top:0;width:100%}body.prrel .noprint{display:none!important}body.prrel .wrap{overflow:visible;border:0;box-shadow:none}body.prrel table{min-width:0}body.prrel th,body.prrel td{padding:3px 4px;font-size:10px}body.prrel #relcab{visibility:visible;font-size:13px;color:#000}body.prrel .reltab td:first-child{position:static}@page{size:A4 landscape;margin:10mm}}
 @media(max-width:640px){
+ #demoBn .dx{display:none}#demoBn{font-size:12px}.brand .logo{display:none}.brand b{font-size:15px}.hact{gap:4px}.hact a,.hact button{padding:7px 9px}#top{justify-content:space-between;gap:0}#top .tabb{padding:8px 7px;font-size:11.5px}
  .wrapx{padding:10px 10px 40px}.hin{padding:7px 10px 0}.hact a span,.hact .sair span{display:none}.brand small{display:none}
  #top{padding:6px 6px 0}#top .tabb{padding:8px 11px;font-size:13px;flex-direction:column;gap:1px}#top .tabb .ic{font-size:18px}
  #bcw{padding:6px 10px}.br{grid-template-columns:1fr 70px}.br .tr{grid-column:1/3;order:3}.br .vl{order:2}
@@ -132,7 +133,7 @@ tr.cl{cursor:pointer}tr.cl:hover td{background:var(--soft)}tbody tr:last-child t
  .rk{grid-template-columns:28px 34px 1fr auto;gap:7px}.dn{width:160px;height:160px}
 }
 </style><script src="edu-aviso-ia.js?v=1"></script></head><body>
-<div id="demoBn">⚠️ MODO DEMONSTRAÇÃO — dados fictícios (nada é real, nada é enviado ao servidor)</div>
+<div id="demoBn">⚠️ MODO DEMONSTRAÇÃO — dados fictícios<span class="dx"> (nada é real, nada é enviado ao servidor)</span></div>
 <div id="login"><div class="lc"><div class="logo">🏛️</div><h2>Painel do Professor</h2><p class="sub">Digite a senha uma vez; ela fica guardada só nesta aba até você sair.</p><input id="sp" type="password" autocomplete="current-password" placeholder="senha"><button class="on" id="go">Entrar</button><div id="lm"></div></div></div>
 <div id="app"></div>
 <div id="tip"></div>
@@ -234,7 +235,7 @@ function acoesHtml(conf){
 function kpi(i,ic,lb,val,ck,cv,dl,cor){return'<div class="card kpi" style="--i:'+i+';--kc:'+cor+'"><div class="kic">'+ic+'</div><div class="kl">'+lb+'</div><div class="kv2" '+(cv!=null?'data-cv="'+cv+'" data-ck="'+ck+'"':'')+'>'+val+'</div><div class="kd">'+dl+'</div></div>'}
 function rFicha(msg){var f=FI,b=f.boletim,c=f.conta,h='',g=b.geral,pc=g.n?Math.round(100*g.conc/g.n):0;
  h+='<div class="hero">'+av(f.login,'big')+'<div><h2>Aluno nº '+f.num+'</h2><div class="chips"><span class="chip">'+esc(tle(f.turma))+'</span><span class="chip">'+esc(f.login)+'</span><span class="chip">'+(c.ativada?'🟢 acesso '+ago(c.ultimo):'⚪ sem acesso')+'</span><span class="chip">'+(c.banco?'🔑 senha EduBank criada':'sem senha EduBank')+'</span>'+(c.bloq?'<span class="chip" style="background:var(--vm)">🔒 bloqueado</span>':'')+'</div></div></div>';
- h+='<div class="kpis">'+kpi(0,'🎓','Média geral',g.media==null?'–':f1(g.media),'f1',g.media,g.media==null?'sem notas':(g.media>=6?'<span class="dl up">▲ '+f1(g.media-6)+'</span>acima da meta 6,0':'<span class="dl dn">▼ '+f1(6-g.media)+'</span>abaixo da meta 6,0'),'var(--'+nc(g.media).replace('cz','brand')+')')
+ h+='<div class="kpis k4">'+kpi(0,'🎓','Média geral',g.media==null?'–':f1(g.media),'f1',g.media,g.media==null?'sem notas':(g.media>=6?'<span class="dl up">▲ '+f1(g.media-6)+'</span>acima da meta 6,0':'<span class="dl dn">▼ '+f1(6-g.media)+'</span>abaixo da meta 6,0'),'var(--'+nc(g.media).replace('cz','brand')+')')
   +kpi(1,'📝','Atividades',String(g.n),'n',g.n,'abertas pelo aluno','var(--brand)')+kpi(2,'✅','Concluídas',String(g.conc),'n',g.conc,pc+'% das atividades','var(--vd)')+kpi(3,'🪙','Moedas (saldo)',String(f.moedas.saldo),'n',f.moedas.saldo,'ganhas '+f.moedas.ganhas+' · trocadas '+f.moedas.trocadas,'var(--am)')+'</div>';
  h+='<div class="box" id="env">'+envHtml()+'</div>';
  h+='<div class="box"><b>⚙️ Ações</b><div id="acoes" style="margin-top:8px">'+acoesHtml('')+'</div><div id="am">'+(msg||'')+'</div></div>';
