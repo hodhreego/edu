@@ -468,7 +468,7 @@ function eb_aba_(nome) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(nome);
   var d = EB_ABAS[nome];
   if (sh) {
-    if (d && /^(Posicoes|Aplicacoes|Ordens|Cotacoes|Fundos)$/.test(nome)) {
+    if (d && /^(Posicoes|Aplicacoes|Ordens)$/.test(nome)) {
       try {
         if (sh.getLastRow() === 0 || String(sh.getRange(1, 1).getValue()) !== d.cab[0]) {
           sh.insertRowBefore(1);
