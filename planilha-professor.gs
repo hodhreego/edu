@@ -433,6 +433,11 @@ var EB_ABAS = {
   Mestre: { cab: ['ts', 'aluno', 'operacao', 'moeda', 'spread_brl', 'conta_mestre'], cor: '#7c3aed', w: [150, 110, 80, 80, 110, 130], txt: [2, 4, 6] },
   Moedas: { cab: ['ts', 'login', 'id', 'tipo', 'qtd', 'centavos'], cor: '#ca8a04', w: [150, 110, 200, 80, 80, 90], txt: [2, 3, 4] },
   Creditos: { cab: ['ts', 'login', 'id', 'centavos', 'nota', 'status'], cor: '#0e7490', w: [150, 110, 220, 100, 220, 90], txt: [2, 3, 5, 6] },
+  Posicoes: { cab: ['login', 'ativo', 'qtd', 'preco_medio', 'ts', 'moeda', 'custo_brl'], cor: '#0369a1', w: [110, 80, 80, 100, 140, 70, 100], txt: [1, 2, 6] },
+  Aplicacoes: { cab: ['login', 'id', 'prod', 'valor', 'ts', 'taxa', 'status', 'extra', 'fx', 'resg_ts', 'liquido'], cor: '#047857', w: [110, 200, 130, 90, 140, 80, 80, 90, 80, 140, 90], txt: [1, 2, 3, 7] },
+  Ordens: { cab: ['ts', 'login', 'id', 'tipo', 'ativo', 'qtd', 'preco', 'centavos', 'moeda'], cor: '#9333ea', w: [140, 110, 200, 50, 80, 70, 90, 90, 60], txt: [2, 3, 4, 5, 9] },
+  Cotacoes: { cab: ['cod', 'preco', 'ant', 'ts', 'moeda'], cor: '#be123c', w: [80, 90, 90, 140, 70], txt: [1, 5] },
+  Fundos: { cab: ['cnpj', 'dt', 'cota'], cor: '#4d7c0f', w: [150, 90, 110], txt: [1] },
   Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid', 'progresso', 'dinheiro'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160, 80, 80], txt: [2, 3, 5, 6, 7, 14, 15] }
 };
 
@@ -648,6 +653,17 @@ function eb_dispatch_(p) {
   if (a === 'classificacao') return eb_classifResp_(l);
   if (a === 'receber') return eb_receber_(l);
   if (a === 'receberack') return eb_receberAck_(p, l);
+  if (a === 'ativos') return eb_i_ativosResp_();
+  if (a === 'historico') return eb_i_historico_(p);
+  if (a === 'serie') return eb_i_serie_(p);
+  if (a === 'rfprodutos') return eb_i_rfProdutosResp_();
+  if (a === 'tdtitulos') return eb_i_tdResp_();
+  if (a === 'fundos') return eb_i_fundosResp_();
+  if (a === 'rfaplicar') return eb_i_aplicar_(p, l);
+  if (a === 'rfresgatar') return eb_i_resgatar_(p, l);
+  if (a === 'invcomprar') return eb_i_comprar_(p, l);
+  if (a === 'invvender') return eb_i_vender_(p, l);
+  if (a === 'invcarteira') return eb_i_carteira_(l);
   return eb_erro_('Ação desconhecida.');
 }
 
@@ -1745,4 +1761,551 @@ function rbxLive_(p) {
   try { cache.put(key, JSON.stringify(m), 120); } catch (err) {}
   if (got) lock.releaseLock();
   return ContentService.createTextOutput(JSON.stringify({ now: now, players: m })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// =====================================================================================================
+// INVESTIR (EduBank etapa 2) — cotações, renda fixa, Tesouro Direto, ações/FIIs/ETFs, fundos (CVM), carteira.
+// R$ vive no aparelho do aluno (centavos): compras/aplicações o cliente DEBITA (confere saldo e manda `cash`);
+// vendas/resgates/proventos voltam por CRÉDITO PENDENTE (aba Creditos; ações receber/receberack).
+// Ações: ativos, historico, serie, rfprodutos, tdtitulos, fundos, rfaplicar, rfresgatar, invcomprar, invvender, invcarteira.
+// Fontes (grátis, sem chave): Yahoo Finance chart v8 (reserva brapi.dev e última cotação gravada na aba Cotacoes),
+// BCB SGS 11/12/226/432/433, FRED (DGS3MO/DGS10), Tesouro Transparente (CSV preço e taxa), CVM Informe Diário (aba Fundos).
+// Nunca inventa preço: sem fonte, devolve fonte 'anterior' (com a hora da última boa) ou omite o item.
+// Gatilho diário: ebiAtualizarFundos() (baixa 1 mês do Informe Diário por execução). Simulação educacional.
+// =====================================================================================================
+var EBI_UA = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36' };
+var EBI_ATIVOS = (function () {
+  var L = [];
+  function add(m, tipo, arr, suf, moeda, comp) { arr.forEach(function (x) { L.push({ cod: x[0], nome: x[1], tipo: tipo, mercado: m, y: x[2] || (x[0] + suf), moeda: moeda, comp: comp }); }); }
+  add('br', 'indice', [['IBOV', 'Ibovespa', '^BVSP']], '', 'BRL', 0);
+  add('br', 'acao', [['PETR4', 'Petrobras PN'], ['VALE3', 'Vale ON'], ['ITUB4', 'Itaú Unibanco PN'], ['BBDC4', 'Bradesco PN'], ['BBAS3', 'Banco do Brasil ON'], ['WEGE3', 'WEG ON'], ['ABEV3', 'Ambev ON'], ['MGLU3', 'Magazine Luiza ON'], ['LREN3', 'Lojas Renner ON'], ['RENT3', 'Localiza ON'], ['SUZB3', 'Suzano ON'], ['B3SA3', 'B3 ON'], ['ELET3', 'Eletrobras ON'], ['RDOR3', "Rede D'Or ON"], ['RADL3', 'RaiaDrogasil ON'], ['EQTL3', 'Equatorial ON'], ['PRIO3', 'PRIO ON'], ['JBSS3', 'JBS ON'], ['GGBR4', 'Gerdau PN'], ['CSNA3', 'CSN ON'], ['CMIG4', 'Cemig PN'], ['SBSP3', 'Sabesp ON'], ['VIVT3', 'Vivo ON'], ['TIMS3', 'TIM ON'], ['RAIL3', 'Rumo ON'], ['EMBR3', 'Embraer ON'], ['HAPV3', 'Hapvida ON'], ['CPLE6', 'Copel PNB'], ['UGPA3', 'Ultrapar ON'], ['BBSE3', 'BB Seguridade ON'], ['ITSA4', 'Itaúsa PN'], ['KLBN11', 'Klabin UNT'], ['TAEE11', 'Taesa UNT'], ['ASAI3', 'Assaí ON']], '.SA', 'BRL', 1);
+  add('br', 'bdr', [['AAPL34', 'Apple (BDR)'], ['MSFT34', 'Microsoft (BDR)'], ['AMZO34', 'Amazon (BDR)'], ['GOGL34', 'Alphabet (BDR)'], ['NFLX34', 'Netflix (BDR)'], ['TSLA34', 'Tesla (BDR)'], ['NVDC34', 'Nvidia (BDR)'], ['DISB34', 'Disney (BDR)'], ['COCA34', 'Coca-Cola (BDR)'], ['MELI34', 'Mercado Livre (BDR)']], '.SA', 'BRL', 1);
+  add('br', 'fii', [['HGLG11', 'CSHG Logística'], ['KNRI11', 'Kinea Renda Imobiliária'], ['MXRF11', 'Maxi Renda'], ['XPLG11', 'XP Log'], ['VISC11', 'Vinci Shopping Centers'], ['XPML11', 'XP Malls'], ['BTLG11', 'BTG Logística'], ['KNCR11', 'Kinea Rendimentos (papel)'], ['HGRU11', 'CSHG Renda Urbana'], ['BCFF11', 'BTG Fundo de Fundos']], '.SA', 'BRL', 1);
+  add('br', 'fiagro', [['KNCA11', 'Kinea Crédito Agro'], ['RZAG11', 'Riza Terrax Agro'], ['VGIA11', 'Valora CRA Agro']], '.SA', 'BRL', 1);
+  add('br', 'etf', [['BOVA11', 'iShares Ibovespa'], ['IVVB11', 'iShares S&P 500'], ['SMAL11', 'iShares Small Caps'], ['DIVO11', 'It Now Dividendos'], ['NASD11', 'Trend Nasdaq 100'], ['SPXI11', 'It Now S&P 500'], ['GOLD11', 'Trend Ouro'], ['HASH11', 'Hashdex Cripto']], '.SA', 'BRL', 1);
+  add('int', 'indice', [['SPX', 'S&P 500', '^GSPC'], ['IXIC', 'Nasdaq Composite', '^IXIC'], ['DJI', 'Dow Jones', '^DJI'], ['DAX', 'DAX (Alemanha)', '^GDAXI'], ['FTSE', 'FTSE 100 (Reino Unido)', '^FTSE'], ['N225', 'Nikkei 225 (Japão)', '^N225']], '', 'USD', 0);
+  add('int', 'etf', [['SPY', 'SPDR S&P 500'], ['VOO', 'Vanguard S&P 500'], ['QQQ', 'Invesco Nasdaq 100'], ['VT', 'Vanguard Mundo'], ['EEM', 'iShares Emergentes'], ['IVV', 'iShares S&P 500']], '', 'USD', 1);
+  add('int', 'acao', [['AAPL', 'Apple'], ['MSFT', 'Microsoft'], ['AMZN', 'Amazon'], ['GOOGL', 'Alphabet (Google)'], ['NVDA', 'Nvidia'], ['TSLA', 'Tesla'], ['META', 'Meta'], ['KO', 'Coca-Cola'], ['DIS', 'Disney'], ['JPM', 'JPMorgan']], '', 'USD', 1);
+  add('int', 'cripto', [['BTC', 'Bitcoin', 'BTC-USD'], ['ETH', 'Ethereum', 'ETH-USD'], ['SOL', 'Solana', 'SOL-USD'], ['XRP', 'XRP', 'XRP-USD'], ['DOGE', 'Dogecoin', 'DOGE-USD']], '', 'USD', 0);
+  return L;
+})();
+var EBI_BY = {}; EBI_ATIVOS.forEach(function (a) { EBI_BY[a.cod] = a; });
+
+function eb_i_yh_(sym, range, intv, ev) {
+  return { url: 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + range + '&interval=' + intv + (ev ? '&events=div' : ''), headers: EBI_UA, muteHttpExceptions: true };
+}
+function eb_i_parse_(txt) {
+  try {
+    var r = JSON.parse(txt).chart.result[0], m = r.meta, q = r.indicators.quote[0], ts = r.timestamp || [], cl = [], i;
+    for (i = 0; i < ts.length; i++) { var c = q.close[i]; if (c != null && isFinite(c)) cl.push(c); }
+    var p = Number(m.regularMarketPrice); if (!isFinite(p) || p <= 0) return null;
+    var prev = cl.length >= 2 ? (Math.abs(cl[cl.length - 1] - p) <= p * 0.0005 ? cl[cl.length - 2] : cl[cl.length - 1]) : Number(m.chartPreviousClose);
+    var tp = m.currentTradingPeriod && m.currentTradingPeriod.regular, agora = Date.now() / 1000;
+    var ab = /CRYPTO|CURRENCY/.test(String(m.instrumentType)) ? true : !!(tp && agora >= tp.start && agora <= tp.end);
+    return { p: p, ant: isFinite(prev) && prev > 0 ? prev : null, ts: (Number(m.regularMarketTime) || 0) * 1000, aberto: ab, sp: cl.slice(-22).map(function (x) { return Math.round(x * 10000) / 10000; }), moeda: String(m.currency || '') };
+  } catch (e) { return null; }
+}
+function eb_i_brapi_(cod) {
+  try {
+    var tok = PropertiesService.getScriptProperties().getProperty('brapi_token');
+    var r = UrlFetchApp.fetch('https://brapi.dev/api/quote/' + encodeURIComponent(cod) + (tok ? '?token=' + tok : ''), { muteHttpExceptions: true });
+    if (r.getResponseCode() !== 200) return null;
+    var o = JSON.parse(r.getContentText()).results[0], p = Number(o.regularMarketPrice), ch = Number(o.regularMarketChange);
+    if (!isFinite(p) || p <= 0) return null;
+    return { p: p, ant: isFinite(ch) ? p - ch : null, ts: Date.parse(o.regularMarketTime) || Date.now(), aberto: false, sp: [], moeda: 'BRL' };
+  } catch (e) { return null; }
+}
+function eb_i_cotLer_() {
+  var sh = eb_aba_('Cotacoes'), n = sh.getLastRow(), o = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 5).getValues().forEach(function (r) { o[String(r[0])] = { p: Number(r[1]), ant: r[2] === '' ? null : Number(r[2]), ts: Number(r[3]), moeda: String(r[4]) }; });
+  return o;
+}
+function eb_i_ativos_() {
+  var c = CacheService.getScriptCache(), s = c.get('ebi_at'); if (s) { try { return JSON.parse(s); } catch (e) { } }
+  var got = {}, i, j, nOk = 0;
+  for (i = 0; i < EBI_ATIVOS.length; i += 25) {
+    var lote = EBI_ATIVOS.slice(i, i + 25), res = [];
+    try { res = UrlFetchApp.fetchAll(lote.map(function (a) { return eb_i_yh_(a.y, '1mo', '1d'); })); } catch (e) { res = []; }
+    for (j = 0; j < lote.length; j++) { var q = res[j] && res[j].getResponseCode() === 200 ? eb_i_parse_(res[j].getContentText()) : null; if (q) { q.fonte = 'Yahoo Finance'; got[lote[j].cod] = q; nOk++; } }
+  }
+  EBI_ATIVOS.forEach(function (a) { if (!got[a.cod] && a.mercado === 'br' && a.comp) { var q = eb_i_brapi_(a.cod); if (q) { q.fonte = 'brapi.dev'; got[a.cod] = q; } } });
+  var old = {}; try { old = eb_i_cotLer_(); } catch (e) { }
+  var itens = [], linhas = [];
+  EBI_ATIVOS.forEach(function (a) {
+    var q = got[a.cod], fonte;
+    if (q) fonte = q.fonte; else if (old[a.cod] && old[a.cod].p > 0) { q = old[a.cod]; q.aberto = false; q.sp = []; fonte = 'anterior'; } else return;
+    itens.push({ cod: a.cod, nome: a.nome, tipo: a.tipo, mercado: a.mercado, moeda: a.moeda, comp: a.comp, preco: q.p, ant: q.ant, 'var': q.ant ? Math.round((q.p / q.ant - 1) * 10000) / 100 : null, ts: q.ts, aberto: !!q.aberto, fonte: fonte, sp: q.sp || [] });
+    if (fonte !== 'anterior') linhas.push([a.cod, q.p, q.ant == null ? '' : q.ant, q.ts, a.moeda]);
+  });
+  if (nOk >= 5) {   // grava reserva (última cotação boa de cada ativo)
+    try {
+      var merged = {}; Object.keys(old).forEach(function (k) { merged[k] = [k, old[k].p, old[k].ant == null ? '' : old[k].ant, old[k].ts, old[k].moeda]; }); linhas.forEach(function (l) { merged[l[0]] = l; });
+      var arr = Object.keys(merged).map(function (k) { return merged[k]; }), sh = eb_aba_('Cotacoes');
+      if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 5).clearContent();
+      sh.getRange(2, 1, arr.length, 5).setValues(arr);
+    } catch (e) { }
+  }
+  var out = { ts: Date.now(), fonte: nOk ? 'Yahoo Finance' : 'indisponivel', itens: itens };
+  try { c.put('ebi_at', JSON.stringify(out), nOk ? 600 : 60); } catch (e) { }
+  return out;
+}
+function eb_i_cot_(cod) { var l = eb_i_ativos_().itens; for (var i = 0; i < l.length; i++) if (l[i].cod === cod) return l[i]; return null; }
+function eb_i_ativosResp_() { var o = eb_i_ativos_(); return { ok: 1, itens: o.itens, ts: o.ts, fonte: o.fonte }; }
+// {ok,pts:[[ts,o,h,l,c]...]}
+function eb_i_historico_(p) {
+  var cod = String(p.cod || '').toUpperCase(), a = EBI_BY[cod], pp = String(p.p || '1m');
+  if (!a) return eb_erro_('Ativo inválido.');
+  var M = { '1m': ['1mo', '1d'], '6m': ['6mo', '1d'], '1a': ['1y', '1d'], '5a': ['5y', '1wk'] }, m = M[pp]; if (!m) return eb_erro_('Período inválido.');
+  var c = CacheService.getScriptCache(), k = 'ebi_h_' + cod + pp, s = c.get(k), r0;
+  if (s) { try { return JSON.parse(s); } catch (e) { } }
+  try { r0 = UrlFetchApp.fetch(eb_i_yh_(a.y, m[0], m[1]).url, { headers: EBI_UA, muteHttpExceptions: true }); } catch (e) { return eb_erro_('Histórico indisponível agora.'); }
+  if (r0.getResponseCode() !== 200) return eb_erro_('Histórico indisponível agora.');
+  try {
+    var r = JSON.parse(r0.getContentText()).chart.result[0], q = r.indicators.quote[0], pts = [], i, f = function (x) { return Math.round(x * 10000) / 10000; };
+    for (i = 0; i < r.timestamp.length; i++) if (q.close[i] != null && q.open[i] != null) pts.push([r.timestamp[i], f(q.open[i]), f(q.high[i]), f(q.low[i]), f(q.close[i])]);
+    var out = { ok: 1, cod: cod, moeda: a.moeda, pts: pts, fonte: 'Yahoo Finance', ts: Date.now() };
+    try { c.put(k, JSON.stringify(out), 21600); } catch (e) { }
+    return out;
+  } catch (e) { return eb_erro_('Histórico indisponível agora.'); }
+}
+// proventos: [[ts_s, valor]] (cache 6 h)
+function eb_i_divs_(cod) {
+  var a = EBI_BY[cod], c = CacheService.getScriptCache(), k = 'ebi_d_' + cod, s = c.get(k);
+  if (s) { try { return JSON.parse(s); } catch (e) { } }
+  var out = [];
+  try {
+    var r0 = UrlFetchApp.fetch(eb_i_yh_(a.y, '2y', '1mo', 1).url, { headers: EBI_UA, muteHttpExceptions: true });
+    if (r0.getResponseCode() === 200) {
+      var d = JSON.parse(r0.getContentText()).chart.result[0].events; d = d && d.dividends ? d.dividends : {};
+      Object.keys(d).forEach(function (t) { var x = d[t]; if (x && x.amount > 0) out.push([Number(x.date), Number(x.amount)]); });
+      out.sort(function (a1, b1) { return a1[0] - b1[0]; });
+      try { c.put(k, JSON.stringify(out), 21600); } catch (e) { }
+    }
+  } catch (e) { }
+  return out;
+}
+
+// ---------- BCB / FRED ----------
+function eb_i_ymd_(ms) { return Number(Utilities.formatDate(new Date(ms), TZ, 'yyyyMMdd')); }
+function eb_i_fetchJson_(url) {
+  try { var r = UrlFetchApp.fetch(url, { muteHttpExceptions: true }); if (r.getResponseCode() === 200) return JSON.parse(r.getContentText()); } catch (e) { }
+  return null;
+}
+// série diária [[ymd,valor]] dos últimos ~2 anos (cache 6 h; reserva em Script Property compacta)
+function eb_i_sgs_(serie) {
+  var c = CacheService.getScriptCache(), k = 'ebi_sgs' + serie, s = c.get(k); if (s) { try { return JSON.parse(s); } catch (e) { } }
+  var ini = Utilities.formatDate(new Date(Date.now() - 740 * 86400000), TZ, 'dd/MM/yyyy');
+  var j = eb_i_fetchJson_('https://api.bcb.gov.br/dados/serie/bcdata.sgs.' + serie + '/dados?formato=json&dataInicial=' + ini), p = PropertiesService.getScriptProperties(), out = [];
+  if (j && j.length) {
+    j.forEach(function (o) { var d = String(o.data).split('/'), v = Number(o.valor); if (d.length === 3 && isFinite(v)) out.push([Number(d[2] + d[1] + d[0]), v]); });
+    try { p.setProperty('ebi_bk' + serie, out.slice(-330).map(function (r) { return r[0] + ':' + r[1]; }).join(';')); } catch (e) { }
+    try { c.put(k, JSON.stringify(out), 21600); } catch (e) { }
+  } else {
+    var b = p.getProperty('ebi_bk' + serie); if (b) b.split(';').forEach(function (x) { var q = x.split(':'); out.push([Number(q[0]), Number(q[1])]); });
+  }
+  return out;
+}
+function eb_i_bcbTaxas_() {
+  var c = CacheService.getScriptCache(), s = c.get('ebi_bcb'); if (s) { try { return JSON.parse(s); } catch (e) { } }
+  var p = PropertiesService.getScriptProperties(), o = { ts: Date.now(), fonte: 'BCB (SGS 12, 226, 432, 433)' };
+  var cdi = eb_i_sgs_(12), l = cdi.length ? cdi[cdi.length - 1] : null;
+  var se = eb_i_fetchJson_('https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/1?formato=json');
+  var ip = eb_i_fetchJson_('https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/12?formato=json');
+  var tr = eb_i_fetchJson_('https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados/ultimos/1?formato=json');
+  if (l) { o.cdi_d = l[1]; o.cdi_data = l[0]; o.cdi_aa = (Math.pow(1 + l[1] / 100, 252) - 1) * 100; }
+  if (se && se.length) o.selic_aa = Number(se[0].valor);
+  if (ip && ip.length) { var f = 1; ip.forEach(function (x) { f *= 1 + Number(x.valor) / 100; }); o.ipca_12m = (f - 1) * 100; o.ipca_ult = Number(ip[ip.length - 1].valor); o.ipca_ref = ip[ip.length - 1].data; o.ipca_n = ip.length; }
+  if (tr && tr.length) o.tr_m = Number(tr[0].valor);
+  var ok = o.cdi_aa && o.selic_aa && o.ipca_12m != null && o.tr_m != null;
+  if (ok) { try { p.setProperty('ebi_bcb_ok', JSON.stringify(o)); } catch (e) { } }
+  else { try { var b = JSON.parse(p.getProperty('ebi_bcb_ok') || 'null'); if (b) { Object.keys(b).forEach(function (k) { if (o[k] == null) o[k] = b[k]; }); o.fonte = 'BCB (última leitura salva)'; o.ts = b.ts; } } catch (e) { } }
+  try { c.put('ebi_bcb', JSON.stringify(o), ok ? 21600 : 120); } catch (e) { }
+  return o;
+}
+function eb_i_usa_() {
+  var c = CacheService.getScriptCache(), s = c.get('ebi_usa'); if (s) { try { return JSON.parse(s); } catch (e) { } }
+  var p = PropertiesService.getScriptProperties(), o = null;
+  try {
+    var r = UrlFetchApp.fetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS3MO,DGS10', { muteHttpExceptions: true });
+    if (r.getResponseCode() === 200) {
+      var ls = r.getContentText().split('\n'), a = null, b = null, da = '', db = '';
+      for (var i = ls.length - 1; i > 0 && (a == null || b == null); i--) { var q = ls[i].trim().split(','); if (q.length < 3) continue; if (a == null && isFinite(parseFloat(q[1]))) { a = parseFloat(q[1]); da = q[0]; } if (b == null && isFinite(parseFloat(q[2]))) { b = parseFloat(q[2]); db = q[0]; } }
+      if (a != null && b != null) o = { y3m: a, y10: b, d3m: da, d10: db, fonte: 'FRED (Federal Reserve)', ts: Date.now() };
+    }
+  } catch (e) { }
+  if (o) { try { p.setProperty('ebi_usa_ok', JSON.stringify(o)); c.put('ebi_usa', JSON.stringify(o), 21600); } catch (e) { } }
+  else { try { o = JSON.parse(p.getProperty('ebi_usa_ok') || 'null'); if (o) o.fonte += ' (anterior)'; } catch (e) { } }
+  return o || { y3m: null, y10: null, fonte: 'indisponivel', ts: Date.now() };
+}
+// {s:'cdi'|'ipca'|'selic', anos:1..10} -> meses [[yyyymm, % no mês]]
+function eb_i_serie_(p) {
+  var s = String(p.s || ''), anos = eb_int_(p.anos == null ? 5 : p.anos, 1, 10), cod = { cdi: 12, ipca: 433, selic: 11 }[s];
+  if (!cod || isNaN(anos)) return eb_erro_('Série inválida.');
+  var c = CacheService.getScriptCache(), k = 'ebi_m_' + s + anos, ca = c.get(k); if (ca) { try { return JSON.parse(ca); } catch (e) { } }
+  var ini = Utilities.formatDate(new Date(Date.now() - (anos * 365 + 20) * 86400000), TZ, 'dd/MM/yyyy');
+  var j = eb_i_fetchJson_('https://api.bcb.gov.br/dados/serie/bcdata.sgs.' + cod + '/dados?formato=json&dataInicial=' + ini);
+  if (!j || !j.length) return eb_erro_('Série indisponível agora.');
+  var m = {}, ord = [];
+  j.forEach(function (o) { var d = String(o.data).split('/'), v = Number(o.valor), ym = d[2] + d[1]; if (!isFinite(v)) return; if (!(ym in m)) { m[ym] = 1; ord.push(ym); } m[ym] *= (1 + v / 100); });
+  var out = { ok: 1, s: s, meses: ord.map(function (ym) { return [Number(ym), Math.round((m[ym] - 1) * 1e6) / 1e4]; }), fonte: 'BCB SGS ' + cod, ts: Date.now() };
+  try { c.put(k, JSON.stringify(out), 43200); } catch (e) { }
+  return out;
+}
+
+// ---------- produtos de renda fixa ----------
+var EBI_RF = [
+  { id: 'poup', nome: 'Poupança', grupo: 'rf', tipo: 'poup', car: 0, liq: 'D+0 (rende no aniversário mensal)', risco: 'baixo', ir: 'isento', iof: 0, desc: 'Rende 0,5% ao mês + TR (ou 70% da Selic se a Selic ≤ 8,5% a.a.). Sem IR.' },
+  { id: 'cdb100', nome: 'CDB liquidez diária 100% do CDI', grupo: 'rf', tipo: 'pos', pct: 1, car: 0, liq: 'D+0', risco: 'baixo', ir: 'reg', iof: 1, desc: 'O banco toma seu dinheiro emprestado. Protegido pelo FGC até R$ 250 mil. IR regressivo.' },
+  { id: 'cdb115', nome: 'CDB 115% do CDI (90 dias)', grupo: 'rf', tipo: 'pos', pct: 1.15, car: 90, liq: 'No vencimento (90 dias)', risco: 'baixo', ir: 'reg', iof: 1, desc: 'Paga mais por prender o dinheiro 90 dias. FGC até R$ 250 mil.' },
+  { id: 'lci90', nome: 'LCI/LCA 90% do CDI (90 dias)', grupo: 'rf', tipo: 'pos', pct: 0.9, car: 90, liq: 'No vencimento (90 dias)', risco: 'baixo', ir: 'isento', iof: 0, desc: 'Isenta de IR para pessoa física. Rende menos que o CDB, mas sem imposto.' },
+  { id: 'cri', nome: 'CRI/CRA (referência: CDI + 2,0% a.a.)', grupo: 'rf', tipo: 'pos', pct: 1, spr: 0.02, car: 180, liq: 'No vencimento (carência 180 dias)', risco: 'medio', ir: 'isento', iof: 0, ref: 1, desc: 'Título lastreado em recebíveis imobiliários/do agro. Isento de IR, sem FGC. TAXA DE REFERÊNCIA DIDÁTICA (não é oferta real).' },
+  { id: 'deb', nome: 'Debênture incentivada (referência: IPCA + 7,0% a.a.)', grupo: 'rf', tipo: 'pre', spr: 0.07, car: 180, liq: 'No vencimento (carência 180 dias)', risco: 'medio', ir: 'isento', iof: 0, ref: 1, desc: 'Empresa de infraestrutura toma seu dinheiro; isenta de IR; sem FGC. TAXA DE REFERÊNCIA DIDÁTICA: IPCA de 12 meses + 7% fixados na aplicação.' },
+  { id: 'prev', nome: 'Previdência VGBL (referência: 90% do CDI)', grupo: 'rf', tipo: 'pos', pct: 0.9, car: 0, liq: 'D+0 simulado (na vida real D+1 a D+60)', risco: 'medio', ir: 'prev', iof: 0, ref: 1, desc: 'Tabela regressiva de IR: 35% (até 2 anos) até 10% (acima de 10 anos). Quanto mais tempo, menos imposto. REFERÊNCIA DIDÁTICA (cotas de previdência não têm API aberta).' },
+  { id: 'usd3m', nome: 'Tesouro dos EUA 3 meses (T-Bill)', grupo: 'int', tipo: 'usd', car: 90, liq: 'No vencimento (90 dias)', risco: 'baixo', ir: 'g15', iof: 0, moeda: 'USD', desc: 'Rende em dólar a taxa do T-Bill de 3 meses. Você aplica em R$, vira US$ (com spread) e volta em R$. IR 15% sobre o ganho em R$ (inclui variação do dólar).' },
+  { id: 'usd10y', nome: 'Tesouro dos EUA 10 anos (T-Note)', grupo: 'int', tipo: 'usd', car: 0, liq: 'D+0 simulado (o preço real varia com os juros)', risco: 'medio', ir: 'g15', iof: 0, moeda: 'USD', desc: 'Rende em dólar a taxa de 10 anos fixada na aplicação. Na vida real o preço sobe e desce com os juros; aqui o rendimento é linear (simplificação).' }
+];
+var EBI_RFBY = {}; EBI_RF.forEach(function (d) { EBI_RFBY[d.id] = d; });
+var EBI_IOF = [96, 93, 90, 86, 83, 80, 76, 73, 70, 66, 63, 60, 56, 53, 50, 46, 43, 40, 36, 33, 30, 26, 23, 20, 16, 13, 10, 6, 3];
+function eb_i_iof_(d) { return d >= 30 ? 0 : EBI_IOF[Math.max(d, 1) - 1] / 100; }
+function eb_i_irAliq_(t, d) {
+  if (t === 'isento') return 0; if (t === 'g15' || t === 'acoes') return 0.15;
+  if (t === 'prev') return d <= 730 ? 0.35 : d <= 1460 ? 0.30 : d <= 2190 ? 0.25 : d <= 2920 ? 0.20 : d <= 3650 ? 0.15 : 0.10;
+  if (t === 'cp') return d <= 180 ? 0.225 : 0.20;
+  return d <= 180 ? 0.225 : d <= 360 ? 0.20 : d <= 720 ? 0.175 : 0.15;
+}
+function eb_i_aaProd_(d, bc, us) {   // % a.a. estimada hoje
+  if (d.tipo === 'pos') { var cd = bc.cdi_d; return cd == null ? null : (Math.pow(1 + cd / 100 * d.pct, 252) * (1 + (d.spr || 0)) - 1) * 100; }
+  if (d.tipo === 'poup') { if (bc.selic_aa == null) return null; var rm = bc.selic_aa > 8.5 ? 0.005 + (bc.tr_m || 0) / 100 : 0.7 * (Math.pow(1 + bc.selic_aa / 100, 1 / 12) - 1) + (bc.tr_m || 0) / 100; return (Math.pow(1 + rm, 12) - 1) * 100; }
+  if (d.id === 'deb') return bc.ipca_12m == null ? null : ((1 + bc.ipca_12m / 100) * (1 + d.spr) - 1) * 100;
+  if (d.id === 'usd3m') return us.y3m; if (d.id === 'usd10y') return us.y10;
+  return null;
+}
+function eb_i_rfProdutosResp_() {
+  var bc = eb_i_bcbTaxas_(), us = eb_i_usa_(), tx = eb_taxas_().taxas.USD;
+  var prods = EBI_RF.map(function (d) { return { id: d.id, nome: d.nome, grupo: d.grupo, tipo: d.tipo, pct: d.pct || null, car: d.car, liq: d.liq, risco: d.risco, ir: d.ir, iof: d.iof, ref: d.ref || 0, moeda: d.moeda || 'BRL', desc: d.desc, aa: eb_i_aaProd_(d, bc, us), min: 100 }; });
+  return { ok: 1, taxas: bc, usa: us, usd: tx && tx.t ? tx.t : null, spread_usd: eb_spread_(eb_cfg_(), 'USD'), prods: prods, ts: Date.now() };
+}
+
+// ---------- Tesouro Direto (CSV oficial do Tesouro Transparente) ----------
+var EBI_TD_URL = 'https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv';
+var EBI_TD_TIPOS = { 'Tesouro Selic': ['selic', 'Tesouro Selic (LFT)', 'baixo', 'pos'], 'Tesouro Prefixado': ['pre', 'Tesouro Prefixado (LTN)', 'medio', 'pre'], 'Tesouro Prefixado com Juros Semestrais': ['prejs', 'Tesouro Prefixado c/ juros semestrais (NTN-F)', 'medio', 'pre'], 'Tesouro IPCA+': ['ipca', 'Tesouro IPCA+ (NTN-B Principal)', 'medio', 'ipca'], 'Tesouro IPCA+ com Juros Semestrais': ['ipcajs', 'Tesouro IPCA+ c/ juros semestrais (NTN-B)', 'medio', 'ipca'] };
+function eb_i_num_(x) { return Number(String(x).replace(/\./g, '').replace(',', '.')); }
+function eb_i_td_() {
+  var c = CacheService.getScriptCache(), s = c.get('ebi_td'), p = PropertiesService.getScriptProperties(); if (s) { try { return JSON.parse(s); } catch (e) { } }
+  var out = null;
+  try {
+    var r = UrlFetchApp.fetch(EBI_TD_URL, { headers: EBI_UA, muteHttpExceptions: true });
+    if (r.getResponseCode() === 200) {
+      var ls = r.getContentText().split('\n'), base = '', itens = [];
+      for (var i = 1; i < ls.length; i++) {
+        var f = ls[i].replace(/\r/, '').split(';'); if (f.length < 8) continue;
+        if (!base) base = f[2]; if (f[2] !== base) break;
+        var t = EBI_TD_TIPOS[f[0]]; if (!t) continue;
+        var v = f[1].split('/'), pc = eb_i_num_(f[5]), pv = eb_i_num_(f[6]);
+        if (!isFinite(pc) || !isFinite(pv) || pc <= 0 || pv <= 0) continue;
+        itens.push({ id: t[0] + '_' + v[2] + v[1] + v[0], slug: t[0], nome: t[1], venc: v[2] + '-' + v[1] + '-' + v[0], taxaC: eb_i_num_(f[3]), taxaV: eb_i_num_(f[4]), puC: pc, puV: pv, risco: t[2], idx: t[3], cupom: /semestrais/.test(f[0]) ? 1 : 0 });
+      }
+      var b = base.split('/'); if (itens.length) out = { ok: 1, base: b[2] + '-' + b[1] + '-' + b[0], itens: itens, fonte: 'Tesouro Transparente (preço e taxa dos títulos)', ts: Date.now() };
+    }
+  } catch (e) { }
+  if (out) { try { p.setProperty('ebi_td_ok', JSON.stringify(out)); } catch (e) { } try { c.put('ebi_td', JSON.stringify(out), 21600); } catch (e) { } }
+  else { try { out = JSON.parse(p.getProperty('ebi_td_ok') || 'null'); if (out) out.fonte += ' (última leitura salva)'; } catch (e) { } }
+  return out || { ok: 0, itens: [], base: '', fonte: 'indisponivel', ts: Date.now() };
+}
+function eb_i_tdResp_() {
+  var o = eb_i_td_(); if (!o.itens.length) return eb_erro_('Dados do Tesouro Direto indisponíveis agora.');
+  var bc = eb_i_bcbTaxas_(); o.selic_aa = bc.selic_aa == null ? null : bc.selic_aa; o.ipca_12m = bc.ipca_12m == null ? null : bc.ipca_12m; o.cdi_aa = bc.cdi_aa == null ? null : bc.cdi_aa;
+  o.custodia = 0.2; o.minimo = 3000; o.ok = 1; return o;
+}
+function eb_i_tdFind_(id) { var l = eb_i_td_().itens; for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; }
+
+// ---------- Fundos (CVM Informe Diário; aba Fundos guarda a cota; atualização por gatilho) ----------
+var EBI_FUNDOS = [
+  ['09.215.250/0001-13', 'BTG Pactual Tesouro Selic', 'renda fixa', 'cp', 'baixo', 'D+0', 'Só Selic e títulos públicos.'],
+  ['01.608.573/0001-65', 'BB Top Renda Fixa Curto Prazo', 'renda fixa', 'cp', 'baixo', 'D+0', 'Curto prazo; come-cotas em maio e novembro.'],
+  ['01.630.558/0001-13', 'Santander Renda Fixa Referenciado DI', 'DI', 'cp', 'baixo', 'D+0', 'Acompanha o CDI.'],
+  ['03.737.206/0001-97', 'Caixa Brasil Referenciado DI', 'DI', 'cp', 'baixo', 'D+0', 'Acompanha o CDI.'],
+  ['06.175.696/0001-73', 'Itaú Soberano Renda Fixa Simples', 'renda fixa', 'cp', 'baixo', 'D+0', 'Títulos públicos federais.'],
+  ['27.717.359/0001-30', 'BTG Pactual CDB Plus', 'renda fixa', 'lp', 'medio', 'D+1', 'Crédito bancário; risco de crédito maior que o Tesouro.'],
+  ['06.015.368/0001-00', 'BB Multimercado Juros e Moedas', 'multimercado', 'lp', 'medio', 'D+1', 'Aposta em juros e câmbio.'],
+  ['10.320.188/0001-09', 'AZ Quest Low Vol', 'multimercado', 'lp', 'medio', 'D+30', 'Multimercado de baixa volatilidade.'],
+  ['51.662.749/0001-35', 'Itaú Janeiro Multimercado', 'multimercado', 'lp', 'medio', 'D+30', 'Multimercado livre.'],
+  ['07.455.507/0001-89', 'Verde Master Multimercado', 'multimercado', 'lp', 'alto', 'D+30', 'Multimercado macro; oscila bastante.'],
+  ['24.546.223/0001-17', 'Itaú Vértice Ibovespa Equities', 'ações', 'acoes', 'alto', 'D+3', 'Ações brasileiras; IR de 15% só no resgate (sem come-cotas).'],
+  ['36.178.569/0001-99', 'BB Ações Bolsa Americana', 'ações', 'acoes', 'alto', 'D+3', 'Ações dos EUA; a variação do dólar pesa.'],
+  ['29.152.373/0001-60', 'Itaú US Tech', 'ações', 'acoes', 'alto', 'D+3', 'Empresas de tecnologia dos EUA.'],
+  ['17.757.958/0001-24', 'Itaú Estratégia S&P 500', 'ações', 'acoes', 'alto', 'D+3', 'Acompanha o S&P 500.']
+];
+var EBI_FBY = {}; EBI_FUNDOS.forEach(function (f) { EBI_FBY['f_' + f[0].replace(/\D/g, '')] = f; });
+function eb_i_fundosLer_() {   // {cnpj:[[ymd,cota]...ordenado]}
+  var sh = eb_aba_('Fundos'), n = sh.getLastRow(), o = {};
+  if (n >= 2) sh.getRange(2, 1, n - 1, 3).getValues().forEach(function (r) { var k = String(r[0]); (o[k] = o[k] || []).push([Number(r[1]), Number(r[2])]); });
+  Object.keys(o).forEach(function (k) { o[k].sort(function (a, b) { return a[0] - b[0]; }); });
+  return o;
+}
+function eb_i_ymdMs_(y) { var s = String(y); return Date.UTC(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8)); }
+function eb_i_cotaEm_(arr, ymd) { var r = null; for (var i = 0; i < arr.length; i++) { if (arr[i][0] <= ymd) r = arr[i]; else break; } return r; }
+function eb_i_fundosResp_() {
+  var d = eb_i_fundosLer_(), itens = [], ult = 0;
+  EBI_FUNDOS.forEach(function (f) {
+    var a = d[f[0]] || [], l = a.length ? a[a.length - 1] : null, o = { cnpj: f[0], id: 'f_' + f[0].replace(/\D/g, ''), nome: f[1], cat: f[2], ir: f[3], risco: f[4], resg: f[5], desc: f[6], adm: 'ver lâmina do fundo (CVM)', min: 100, cota: l ? l[1] : null, dt: l ? l[0] : null, r1m: null, r6m: null, r12m: null, sp: a.slice(-30).map(function (x) { return x[1]; }) };
+    if (l) {
+      ult = Math.max(ult, l[0]);
+      [['r1m', 30], ['r6m', 182], ['r12m', 365]].forEach(function (k) {
+        var alvo = eb_i_ymd_(eb_i_ymdMs_(l[0]) - k[1] * 86400000), b = eb_i_cotaEm_(a, alvo);
+        if (b && a[0][0] <= alvo && eb_i_ymdMs_(alvo) - eb_i_ymdMs_(b[0]) <= 7 * 86400000) o[k[0]] = Math.round((l[1] / b[1] - 1) * 10000) / 100;
+      });
+    }
+    itens.push(o);
+  });
+  return { ok: 1, itens: itens, dt: ult, fonte: 'CVM — Informe Diário de Fundos (dados abertos)', ts: Date.now(), nota: 'Rentabilidade passada não garante rentabilidade futura. Taxa de administração: confira a lâmina; o prazo de resgate mostrado é o típico da categoria.' };
+}
+// 1 mês do Informe Diário por execução (pesado). Gatilho diário ou execução manual; mês atual primeiro, depois retroativo (13 meses).
+function ebiAtualizarFundos() {
+  var p = PropertiesService.getScriptProperties(), est = {}; try { est = JSON.parse(p.getProperty('ebi_fnd') || '{}'); } catch (e) { }
+  var agora = new Date(), alvo = null, hoje = eb_i_ymd_(agora.getTime()), atual = Utilities.formatDate(agora, TZ, 'yyyyMM');
+  for (var k = 0; k <= 13 && !alvo; k++) { var d = new Date(agora.getFullYear(), agora.getMonth() - k, 1), ym = Utilities.formatDate(d, TZ, 'yyyyMM'); if (k === 0 ? (!est[ym] || est[ym] < hoje) : !est[ym]) alvo = ym; }
+  if (!alvo) return 'Fundos já atualizados.';
+  var r = UrlFetchApp.fetch('https://dados.cvm.gov.br/dados/FI/DOC/INF_DIARIO/DADOS/inf_diario_fi_' + alvo + '.zip', { headers: EBI_UA, muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) return 'CVM indisponível (' + r.getResponseCode() + ').';
+  var txt = Utilities.unzip(r.getBlob().setContentType('application/zip'))[0].getDataAsString('UTF-8'), set = {};
+  EBI_FUNDOS.forEach(function (f) { set[f[0]] = 1; });
+  var linhas = txt.split('\n'), achou = [], i;
+  for (i = 1; i < linhas.length; i++) {
+    var ln = linhas[i], a = ln.indexOf(';'); if (a < 0) continue;
+    var cn = ln.substring(a + 1, a + 19); if (!set[cn]) continue;
+    var f = ln.split(';'); if (f[2]) continue;
+    var q = Number(f[5]); if (isFinite(q) && q > 0) achou.push([cn, Number(f[3].replace(/-/g, '')), q]);
+  }
+  return eb_lock_(function () {
+    var sh = eb_aba_('Fundos'), n = sh.getLastRow(), have = {};
+    if (n >= 2) sh.getRange(2, 1, n - 1, 2).getValues().forEach(function (x) { have[x[0] + '|' + x[1]] = 1; });
+    var novo = achou.filter(function (x) { return !have[x[0] + '|' + x[1]]; });
+    if (novo.length) sh.getRange(sh.getLastRow() + 1, 1, novo.length, 3).setValues(novo);
+    est[alvo] = alvo === atual ? hoje : 1; p.setProperty('ebi_fnd', JSON.stringify(est));
+    eb_log_('', 'fundos', alvo + ': +' + novo.length + ' cotas');
+    return alvo + ': +' + novo.length + ' cotas';
+  });
+}
+
+// ---------- cálculo do valor de uma aplicação ----------
+function eb_i_cx_() { return { agora: Date.now(), bc: null, cdi: null, usd: null, sp: null, td: null, fund: null }; }
+function eb_i_valorAp_(ap, cx) {   // ap: {prod,valor,ts,taxa,extra} -> {bruto,rend,cust,iof,ir,liq,dias,car} | {erro}
+  var d = Math.max(0, Math.floor((cx.agora - ap.ts) / 86400000)), v = ap.valor, bruto = v, cust = 0, irT = 'reg', iofOn = 0, i, def, car = 0;
+  if (ap.prod.indexOf('td_') === 0) {
+    var t = (cx.td = cx.td || eb_i_td_()).itens.filter(function (x) { return 'td_' + x.id === ap.prod; })[0];
+    if (!t) return { erro: 'Título fora do mercado agora (vencido ou sem dados).' };
+    bruto = Math.floor(ap.extra * t.puV * 100); irT = 'reg'; iofOn = 1;
+    cust = (t.slug === 'selic' && bruto <= 1000000) ? 0 : Math.round(bruto * 0.002 * d / 365);
+  } else if (ap.prod.indexOf('f_') === 0) {
+    var fd = EBI_FBY[ap.prod]; if (!fd) return { erro: 'Fundo inválido.' };
+    var arr = (cx.fund = cx.fund || eb_i_fundosLer_())[fd[0]] || [], l = arr.length ? arr[arr.length - 1] : null;
+    if (!l) return { erro: 'Cota do fundo indisponível.' };
+    bruto = Math.floor(ap.extra * l[1] * 100); irT = fd[3]; iofOn = 1;
+  } else {
+    def = EBI_RFBY[ap.prod]; if (!def) return { erro: 'Produto inválido.' }; car = def.car; irT = def.ir; iofOn = def.iof;
+    if (def.tipo === 'pos') {
+      cx.cdi = cx.cdi || eb_i_sgs_(12); if (!cx.cdi.length) return { erro: 'Taxa do CDI indisponível agora.' };
+      var f = 1, ini = eb_i_ymd_(ap.ts), fim = eb_i_ymd_(cx.agora), sd = Math.pow(1 + (def.spr || 0), 1 / 252);
+      for (i = 0; i < cx.cdi.length; i++) if (cx.cdi[i][0] > ini && cx.cdi[i][0] <= fim) f *= (1 + cx.cdi[i][1] / 100 * def.pct) * sd;
+      bruto = Math.floor(v * f);
+    } else if (def.tipo === 'pre') bruto = Math.floor(v * Math.pow(1 + ap.taxa / 100, d / 365));
+    else if (def.tipo === 'poup') {
+      cx.bc = cx.bc || eb_i_bcbTaxas_(); if (cx.bc.selic_aa == null) return { erro: 'Selic indisponível agora.' };
+      var a = new Date(ap.ts), b = new Date(cx.agora), meses = (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth() - (b.getDate() < a.getDate() ? 1 : 0), rm = cx.bc.selic_aa > 8.5 ? 0.005 + (cx.bc.tr_m || 0) / 100 : 0.7 * (Math.pow(1 + cx.bc.selic_aa / 100, 1 / 12) - 1) + (cx.bc.tr_m || 0) / 100;
+      bruto = Math.floor(v * Math.pow(1 + rm, Math.max(meses, 0)));
+    } else if (def.tipo === 'usd') {
+      var tx = cx.usd == null ? (cx.usd = (eb_taxas_().taxas.USD || {}).t || 0) : cx.usd; if (!tx) return { erro: 'Dólar indisponível agora.' };
+      cx.sp = cx.sp == null ? eb_spread_(eb_cfg_(), 'USD') : cx.sp;
+      bruto = Math.floor(ap.extra * Math.pow(1 + ap.taxa / 100, d / 365) / 100 * tx * 100 * (1 - cx.sp));
+    }
+  }
+  var rend = bruto - cust - v, iof = 0, ir = 0;
+  if (rend > 0) { if (iofOn) iof = Math.floor(rend * eb_i_iof_(d)); ir = Math.floor((rend - iof) * eb_i_irAliq_(irT, d)); }
+  return { bruto: bruto, rend: rend, cust: cust, iof: iof, ir: ir, liq: bruto - cust - iof - ir, dias: d, car: car, aliq: eb_i_irAliq_(irT, d) };
+}
+function eb_i_apRow_(r) { return { login: String(r[0]), id: String(r[1]), prod: String(r[2]), valor: Number(r[3]), ts: Number(r[4]), taxa: Number(r[5]), status: String(r[6]), extra: Number(r[7]), fx: Number(r[8]) || 0, resg: Number(r[9]) || 0, liquido: r[10] === '' ? null : Number(r[10]) }; }
+function eb_i_apLer_(login) {
+  var sh = eb_aba_('Aplicacoes'), n = sh.getLastRow(), o = [];
+  if (n >= 2) sh.getRange(2, 1, n - 1, 11).getValues().forEach(function (r, i) { if (String(r[0]) === login) { var a = eb_i_apRow_(r); a.row = i + 2; o.push(a); } });
+  return o;
+}
+function eb_i_apId_(id) {   // {login,row} da aplicação com esse id
+  var sh = eb_aba_('Aplicacoes'), n = sh.getLastRow(); if (n < 2) return null;
+  var v = sh.getRange(2, 1, n - 1, 2).getValues();
+  for (var i = 0; i < v.length; i++) if (String(v[i][1]) === id) return { login: String(v[i][0]), row: i + 2 };
+  return null;
+}
+function eb_i_credAdd_(login, id, cent, nota, ids) {   // chamar dentro de lock
+  if (ids[id]) return 0;
+  var agora = new Date(), nt = eb_txt_(nota);
+  eb_aba_('Creditos').appendRow([agora, login, id, cent, nt, 'novo']);
+  eb_aba_('Extratos').appendRow([agora, login, 'rec', 'BRL', cent, '', 'EduBank Investimentos', nt, '', id]);
+  ids[id] = 1; return 1;
+}
+function eb_i_nomeProd_(prod) {
+  if (prod.indexOf('td_') === 0) { var t = eb_i_tdFind_(prod.slice(3)); return t ? t.nome + ' ' + t.venc.slice(0, 4) : 'Tesouro Direto'; }
+  if (prod.indexOf('f_') === 0) return EBI_FBY[prod] ? EBI_FBY[prod][1] : 'Fundo';
+  return EBI_RFBY[prod] ? EBI_RFBY[prod].nome : prod;
+}
+// {acao:'rfaplicar', prod, v (centavos), cash, id}
+function eb_i_aplicar_(p, login) {
+  var prod = String(p.prod || ''), id = String(p.id || ''), v = eb_int_(p.v, 100, 1e9), cash = eb_int_(p.cash, 0, 1e13);
+  if (isNaN(v)) return eb_erro_('Valor inválido (mínimo R$ 1,00).');
+  if (isNaN(cash)) return eb_erro_('Informe seu saldo em reais.');
+  if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
+  if (!/^[a-z0-9_]{2,40}$/.test(prod)) return eb_erro_('Produto inválido.');
+  var taxa = 0, extra = 0, fx = 0, def = null, td = null, fd = null;
+  if (prod.indexOf('td_') === 0) {
+    td = eb_i_tdFind_(prod.slice(3)); if (!td) return eb_erro_('Título indisponível agora.');
+    if (v < 3000) return eb_erro_('Investimento mínimo no Tesouro Direto: R$ 30,00.');
+    extra = Math.floor(v / (td.puC * 100) * 100) / 100; if (extra < 0.01) return eb_erro_('Valor pequeno demais para esse título.');
+    v = Math.ceil(extra * td.puC * 100); taxa = td.puC; fx = td.taxaC;
+  } else if (prod.indexOf('f_') === 0) {
+    fd = EBI_FBY[prod]; if (!fd) return eb_erro_('Fundo inválido.');
+    var arr = eb_i_fundosLer_()[fd[0]]; if (!arr || !arr.length) return eb_erro_('Cota do fundo ainda não disponível. Tente mais tarde.');
+    taxa = arr[arr.length - 1][1]; extra = Math.floor(v / 100 / taxa * 1e6) / 1e6; if (extra <= 0) return eb_erro_('Valor pequeno demais.'); fx = arr[arr.length - 1][0];
+  } else {
+    def = EBI_RFBY[prod]; if (!def) return eb_erro_('Produto inválido.');
+    var bc = eb_i_bcbTaxas_(), us = eb_i_usa_();
+    if (def.tipo === 'pos') { if (bc.cdi_d == null) return eb_erro_('Taxa do CDI indisponível agora.'); taxa = def.pct * 100; }
+    else if (def.id === 'deb') { if (bc.ipca_12m == null) return eb_erro_('IPCA indisponível agora.'); taxa = eb_i_aaProd_(def, bc, us); }
+    else if (def.tipo === 'usd') {
+      taxa = def.id === 'usd3m' ? us.y3m : us.y10; var tx = (eb_taxas_().taxas.USD || {}).t;
+      if (taxa == null || !tx) return eb_erro_('Taxa dos EUA ou dólar indisponível agora.');
+      fx = tx; extra = Math.floor(v / 100 / (tx * (1 + eb_spread_(eb_cfg_(), 'USD'))) * 100);
+    } else if (def.tipo === 'poup') { if (bc.selic_aa == null) return eb_erro_('Selic indisponível agora.'); }
+  }
+  return eb_lock_(function () {
+    var ex = eb_i_apId_(id);
+    if (ex) { if (ex.login !== login) return eb_erro_('Identificador já usado.'); var o = eb_i_apRow_(eb_aba_('Aplicacoes').getRange(ex.row, 1, 1, 11).getValues()[0]); return { ok: 1, dup: 1, custo: o.valor, ap: o }; }
+    if (cash < v) return eb_erro_('Saldo em reais insuficiente.', { custo: v });
+    var ts = Date.now();
+    eb_aba_('Aplicacoes').appendRow([login, id, prod, v, ts, taxa, 'ativa', extra, fx, '', '']);
+    eb_aba_('Extratos').appendRow([new Date(ts), login, 'inv', 'BRL', -v, v, '', eb_txt_('Aplicação: ' + eb_i_nomeProd_(prod)), '', id]);
+    eb_log_(login, 'rfaplicar', prod + ' centavos=' + v + ' id=' + id);
+    return { ok: 1, custo: v, ap: { id: id, prod: prod, valor: v, ts: ts, taxa: taxa, extra: extra, status: 'ativa' } };
+  });
+}
+function eb_i_resgatar_(p, login) {
+  var id = String(p.id || ''); if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
+  return eb_lock_(function () {
+    var ex = eb_i_apId_(id); if (!ex || ex.login !== login) return eb_erro_('Aplicação não encontrada.');
+    var sh = eb_aba_('Aplicacoes'), ap = eb_i_apRow_(sh.getRange(ex.row, 1, 1, 11).getValues()[0]);
+    if (ap.status === 'resgatada') return { ok: 1, dup: 1, liquido: ap.liquido };
+    var r = eb_i_valorAp_(ap, eb_i_cx_()); if (r.erro) return eb_erro_(r.erro);
+    if (r.dias < r.car) return eb_erro_('Este produto só pode ser resgatado após ' + r.car + ' dias (faltam ' + (r.car - r.dias) + ').', { falta: r.car - r.dias });
+    if (r.liq < 1) return eb_erro_('Valor líquido muito pequeno para resgatar.');
+    eb_i_credAdd_(login, ('r' + id).slice(0, 40), r.liq, 'Resgate: ' + eb_i_nomeProd_(ap.prod), eb_credIds_());
+    sh.getRange(ex.row, 7).setValue('resgatada'); sh.getRange(ex.row, 10, 1, 2).setValues([[Date.now(), r.liq]]);
+    eb_log_(login, 'rfresgatar', ap.prod + ' bruto=' + r.bruto + ' ir=' + r.ir + ' iof=' + r.iof + ' liq=' + r.liq + ' id=' + id);
+    return { ok: 1, bruto: r.bruto, rendimento: r.rend, custodia: r.cust, iof: r.iof, ir: r.ir, liquido: r.liq, dias: r.dias, aplicado: ap.valor };
+  });
+}
+
+// ---------- ações / FIIs / ETFs / cripto ----------
+function eb_i_posRow_(sh, login, cod) {
+  var n = sh.getLastRow(); if (n < 2) return 0;
+  var v = sh.getRange(2, 1, n - 1, 2).getValues();
+  for (var i = 0; i < v.length; i++) if (String(v[i][0]) === login && String(v[i][1]) === cod) return i + 2;
+  return 0;
+}
+function eb_i_ordem_(id) {
+  var sh = eb_aba_('Ordens'), n = sh.getLastRow(); if (n < 2) return null;
+  var ini = Math.max(2, n - 2999), v = sh.getRange(ini, 1, n - ini + 1, 9).getValues();
+  for (var i = v.length - 1; i >= 0; i--) if (String(v[i][2]) === id) return v[i];
+  return null;
+}
+function eb_i_precoBrl_(cod) {   // {at,q,fx,sp} ou {erro}
+  var at = EBI_BY[cod]; if (!at || !at.comp) return { erro: 'Ativo não negociável.' };
+  var q = eb_i_cot_(cod); if (!q) return { erro: 'Cotação indisponível agora. Tente de novo em alguns minutos.' };
+  if (Date.now() - q.ts > 7 * 86400000) return { erro: 'Cotação desatualizada (mais de 7 dias). Negociação suspensa.' };
+  var fx = 1, sp = 0;
+  if (at.moeda === 'USD') { fx = (eb_taxas_().taxas.USD || {}).t; if (!fx) return { erro: 'Dólar indisponível agora.' }; sp = eb_spread_(eb_cfg_(), 'USD'); }
+  return { at: at, q: q, fx: fx, sp: sp };
+}
+function eb_i_posObj_(r) { return { cod: String(r[1]), qtd: Number(r[2]), pm: Number(r[3]), ts: Number(r[4]), moeda: String(r[5]), custo: Number(r[6]) }; }
+function eb_i_comprar_(p, login) {
+  var cod = String(p.cod || '').toUpperCase(), id = String(p.id || ''), qtd = eb_int_(p.qtd, 1, 1000000), cash = eb_int_(p.cash, 0, 1e13);
+  if (isNaN(qtd)) return eb_erro_('Quantidade inválida (inteiro, mínimo 1).');
+  if (isNaN(cash)) return eb_erro_('Informe seu saldo em reais.');
+  if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
+  var pr = eb_i_precoBrl_(cod); if (pr.erro) return eb_erro_(pr.erro);
+  var custo = Math.ceil(eb_r6_(qtd * pr.q.preco * pr.fx * 100 * (1 + pr.sp)));
+  if (custo < 100) return eb_erro_('Valor mínimo da ordem: R$ 1,00.');
+  return eb_lock_(function () {
+    var o = eb_i_ordem_(id);
+    if (o) { if (String(o[1]) !== login) return eb_erro_('Identificador já usado.'); return { ok: 1, dup: 1, custo: Number(o[7]) }; }
+    if (cash < custo) return eb_erro_('Saldo em reais insuficiente.', { custo: custo });
+    var sh = eb_aba_('Posicoes'), row = eb_i_posRow_(sh, login, cod), agora = Date.now(), pos;
+    if (row) { var a = eb_i_posObj_(sh.getRange(row, 1, 1, 7).getValues()[0]), nq = a.qtd + qtd; pos = [login, cod, nq, (a.qtd * a.pm + qtd * pr.q.preco) / nq, a.ts, pr.at.moeda, a.custo + custo]; sh.getRange(row, 1, 1, 7).setValues([pos]); }
+    else { pos = [login, cod, qtd, pr.q.preco, agora, pr.at.moeda, custo]; sh.appendRow(pos); }
+    eb_aba_('Ordens').appendRow([agora, login, id, 'c', cod, qtd, pr.q.preco, custo, pr.at.moeda]);
+    eb_aba_('Extratos').appendRow([new Date(agora), login, 'inv', 'BRL', -custo, custo, '', eb_txt_('Compra ' + qtd + ' ' + cod + ' a ' + pr.q.preco + ' ' + pr.at.moeda), '', id]);
+    eb_log_(login, 'invcomprar', cod + ' x' + qtd + ' preco=' + pr.q.preco + ' custo=' + custo + ' id=' + id);
+    return { ok: 1, custo: custo, preco: pr.q.preco, fonte: pr.q.fonte, ts: pr.q.ts, pos: eb_i_posObj_(pos) };
+  });
+}
+function eb_i_vender_(p, login) {
+  var cod = String(p.cod || '').toUpperCase(), id = String(p.id || ''), qtd = eb_int_(p.qtd, 1, 1000000);
+  if (isNaN(qtd)) return eb_erro_('Quantidade inválida.');
+  if (!/^[A-Za-z0-9]{1,40}$/.test(id)) return eb_erro_('Identificador inválido.');
+  var pr = eb_i_precoBrl_(cod); if (pr.erro) return eb_erro_(pr.erro);
+  var rec = Math.floor(eb_r6_(qtd * pr.q.preco * pr.fx * 100 * (1 - pr.sp)));
+  if (rec < 1) return eb_erro_('Valor pequeno demais para vender.');
+  return eb_lock_(function () {
+    var o = eb_i_ordem_(id);
+    if (o) { if (String(o[1]) !== login) return eb_erro_('Identificador já usado.'); return { ok: 1, dup: 1, recebe: Number(o[7]) }; }
+    var sh = eb_aba_('Posicoes'), row = eb_i_posRow_(sh, login, cod); if (!row) return eb_erro_('Você não tem esse ativo.');
+    var a = eb_i_posObj_(sh.getRange(row, 1, 1, 7).getValues()[0]); if (a.qtd < qtd) return eb_erro_('Quantidade maior que a sua posição (' + a.qtd + ').');
+    var custoParte = Math.round(a.custo * qtd / a.qtd), lucro = rec - custoParte, agora = Date.now(), pos = null;
+    if (a.qtd === qtd) sh.deleteRow(row); else { pos = [login, cod, a.qtd - qtd, a.pm, a.ts, a.moeda, a.custo - custoParte]; sh.getRange(row, 1, 1, 7).setValues([pos]); }
+    eb_aba_('Ordens').appendRow([agora, login, id, 'v', cod, qtd, pr.q.preco, rec, pr.at.moeda]);
+    eb_i_credAdd_(login, ('cv' + id).slice(0, 40), rec, 'Venda ' + qtd + ' ' + cod, eb_credIds_());
+    eb_log_(login, 'invvender', cod + ' x' + qtd + ' preco=' + pr.q.preco + ' recebe=' + rec + ' lucro=' + lucro + ' id=' + id);
+    return { ok: 1, recebe: rec, lucro: lucro, preco: pr.q.preco, pos: pos ? eb_i_posObj_(pos) : null, ir_info: 'IR de 15% sobre o lucro em vendas de ações acima de R$ 20 mil no mês (informativo; não cobrado aqui).' };
+  });
+}
+function eb_i_proventos_(login, poss) {   // credita proventos de ações/FIIs BR (idempotente por ativo+data); devolve centavos novos
+  var cand = [], ord = null;
+  poss.forEach(function (a) {
+    var at = EBI_BY[a.cod]; if (!at || at.mercado !== 'br' || at.tipo === 'indice') return;
+    var ds = eb_i_divs_(a.cod); if (!ds.length) return;
+    if (!ord) { var sh = eb_aba_('Ordens'), n = sh.getLastRow(); ord = n >= 2 ? sh.getRange(2, 1, n - 1, 9).getValues().filter(function (r) { return String(r[1]) === login; }) : []; }
+    ds.forEach(function (d) {
+      var exMs = d[0] * 1000; if (exMs > Date.now() || Date.now() - exMs > 400 * 86400000) return;
+      var q = 0; ord.forEach(function (r) { if (String(r[4]) === a.cod && new Date(r[0]).getTime() < exMs - 86400000 + 86399999) q += (r[3] === 'c' ? 1 : -1) * Number(r[5]); });
+      var cent = Math.floor(q * d[1] * 100); if (q > 0 && cent >= 1) cand.push({ id: ('pv' + login + a.cod + eb_i_ymd_(exMs)).slice(0, 40), cent: cent, nota: 'Provento ' + a.cod });
+    });
+  });
+  if (!cand.length) return 0;
+  return eb_lock_(function () { var ids = eb_credIds_(), t = 0; cand.forEach(function (c) { if (eb_i_credAdd_(login, c.id, c.cent, c.nota, ids)) t += c.cent; }); if (t) eb_log_(login, 'proventos', t + ' centavos'); return t; }) || 0;
+}
+function eb_i_provTotal_(login) {
+  var sh = eb_aba_('Creditos'), n = sh.getLastRow(), t = 0, pre = 'pv' + login;
+  if (n >= 2) sh.getRange(2, 1, n - 1, 4).getValues().forEach(function (r) { if (String(r[1]) === login && String(r[2]).indexOf(pre) === 0) t += Number(r[3]); });
+  return t;
+}
+function eb_i_carteira_(login) {
+  var sh = eb_aba_('Posicoes'), n = sh.getLastRow(), poss = [];
+  if (n >= 2) sh.getRange(2, 1, n - 1, 7).getValues().forEach(function (r) { if (String(r[0]) === login) poss.push(eb_i_posObj_(r)); });
+  var novos = poss.length ? eb_i_proventos_(login, poss) : 0;
+  var at = eb_i_ativos_().itens, M = {}; at.forEach(function (x) { M[x.cod] = x; });
+  var usd = (eb_taxas_().taxas.USD || {}).t || 0, totAc = 0;
+  var pos = poss.map(function (a) {
+    var q = M[a.cod], fx = a.moeda === 'USD' ? usd : 1, d = EBI_BY[a.cod] || {};
+    var val = q && fx ? Math.round(a.qtd * q.preco * fx * 100) : null, res = val == null ? null : val - a.custo;
+    if (val != null) totAc += val;
+    return { cod: a.cod, nome: d.nome || a.cod, tipo: d.tipo, mercado: d.mercado, moeda: a.moeda, qtd: a.qtd, pm: a.pm, preco: q ? q.preco : null, 'var': q ? q.var : null, fonte: q ? q.fonte : null, ts: q ? q.ts : null, valor: val, custo: a.custo, res: res, res_pct: res == null || !a.custo ? null : Math.round(res / a.custo * 10000) / 100 };
+  });
+  var cx = eb_i_cx_(), rf = [], totRf = 0;
+  eb_i_apLer_(login).forEach(function (a) {
+    var o = { id: a.id, prod: a.prod, nome: eb_i_nomeProd_(a.prod), valor: a.valor, ts: a.ts, status: a.status, taxa: a.taxa };
+    if (a.status === 'ativa') { var r = eb_i_valorAp_(a, cx); if (r.erro) o.erro = r.erro; else { o.bruto = r.bruto; o.rend = r.rend; o.cust = r.cust; o.iof = r.iof; o.ir = r.ir; o.liq = r.liq; o.dias = r.dias; o.car = r.car; totRf += r.liq; } }
+    else { o.liq = a.liquido; o.resg = a.resg; }
+    rf.push(o);
+  });
+  var cs = eb_carteiraResp_(login), totMo = 0, mo = [];
+  EB_MOEDAS.forEach(function (m) { var s = cs.saldos[m], t = cs.taxas[m]; if (s > 0 && t && t.t) { var v = Math.round(s / eb_escala_(m) * t.t * 100); totMo += v; mo.push({ moeda: m, saldo: s, brl: v }); } });
+  return { ok: 1, pos: pos, rf: rf, moedas: mo, prov_novos: novos, prov_total: eb_i_provTotal_(login), patrimonio: { acoes: totAc, rf: totRf, moedas: totMo, total: totAc + totRf + totMo }, ts: Date.now() };
 }
