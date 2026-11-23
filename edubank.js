@@ -199,7 +199,7 @@ function EBCSS(){return [
 '#edubank .eb-skc,#edubank .eb-skl{background:linear-gradient(90deg,var(--chip) 25%,var(--bd) 50%,var(--chip) 75%);background-size:200% 100%;animation:ebsh 1.3s infinite linear}@keyframes ebsh{to{background-position:-200% 0}}',
 '#edubank .eb-vz{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:26px 10px;color:var(--tx2)}#edubank .eb-vz b{color:var(--tx)}',
 '#edubank .eb-vzi{width:64px;height:64px;border-radius:50%;background:var(--chip);color:var(--pri);display:flex;align-items:center;justify-content:center;margin-bottom:4px}',
-'#edubank .eb-gh{display:flex;align-items:center;gap:12px}#edubank .eb-gh .gp{font-size:1.7em;font-weight:800;line-height:1.1}',
+'#edubank .eb-gh{display:flex;align-items:center;gap:12px}#edubank .eb-gh .eb-gp{font-size:1.7em;font-weight:800;line-height:1.1}',
 '#edubank .eb-pills{display:flex;gap:8px;margin:14px 0 10px}#edubank .eb-pills button{flex:1;min-height:42px;padding:6px 4px;border-radius:99px;border:2px solid var(--bd);background:var(--card);color:var(--tx2);font-weight:800;font-size:.85em;cursor:pointer}',
 '#edubank .eb-pills button.on{background:var(--pri);border-color:var(--pri);color:#fff}@media(prefers-color-scheme:dark){#edubank .eb-pills button.on{color:#14142b}}',
 '#edubank .eb-tip{background:var(--chip);border-radius:12px;padding:8px 12px;font-size:.82em;color:var(--tx2);min-height:50px;display:flex;flex-wrap:wrap;gap:2px 12px;align-items:center}#edubank .eb-tip b{color:var(--tx)}#edubank .eb-tip .d{flex-basis:100%;font-weight:700;color:var(--tx)}',
@@ -279,7 +279,7 @@ function moedasCard(){
     if(!j||!j.ok){el.innerHTML='<h2>Moedas</h2><p class="eb-muted">Faça atividades e melhore suas notas para ganhar moedas.</p>';return}
     var s=Math.max(0,Math.floor(Number(j.saldo)||0)),cm=Number(j.centavosPorMoeda)||0;
     DADOS.moedas={saldo:s,cpm:cm};
-    el.innerHTML='<div class="eb-gh">'+I('coin',36)+'<div><h2 style="margin:0">Moedas</h2><div class="gp">'+s+' moeda'+(s===1?'':'s')+'</div></div></div>'+
+    el.innerHTML='<div class="eb-gh">'+I('coin',36)+'<div><h2 style="margin:0">Moedas</h2><div class="eb-gp">'+s+' moeda'+(s===1?'':'s')+'</div></div></div>'+
       '<p class="eb-muted">Cada moeda vale '+rs(cm)+'. Ganhe mais refazendo atividades para melhorar sua nota.</p>'+
       '<button class="eb-btn" data-a="trocamoedas"'+(s>0?'':' disabled')+'>Trocar por reais</button>'+
       '<p class="eb-muted" style="margin-top:8px">Depois de trocar, o dinheiro cai no seu saldo em reais e você pode comprar moedas estrangeiras e criptomoedas no Câmbio.</p>';
@@ -393,7 +393,7 @@ function telaGrafico(c){
   aba='inicio';
   comDados(function(cx){
     var m=MAP[c],vr=varTaxa(c);
-    cx.innerHTML='<div class="eb-card eb-graf"><div class="eb-gh">'+flag(c,44)+'<div><h2 style="margin:0">'+esc(m.n)+'</h2><div class="gp">'+fmtTaxa(c)+'</div></div></div>'+
+    cx.innerHTML='<div class="eb-card eb-graf"><div class="eb-gh">'+flag(c,44)+'<div><h2 style="margin:0">'+esc(m.n)+'</h2><div class="eb-gp">'+fmtTaxa(c)+'</div></div></div>'+
       '<p class="eb-muted" style="margin:8px 0 0">Seu saldo: <b style="color:var(--tx)">'+qtd(m,saldoDe(c))+'</b> · cotação às '+esc(horaTaxa(c))+'</p>'+
       '<div class="eb-pills" id="eb-tf">'+GRAF_TF.map(function(t,i){return '<button type="button" data-tf="'+t[0]+'" class="'+(i===GRAF_TF.length-1?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>'+
       '<div class="eb-tip" id="eb-tip">Toque ou arraste no gráfico para ver os valores.</div>'+
