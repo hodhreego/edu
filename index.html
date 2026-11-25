@@ -77,7 +77,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 16px 40px}
 <span class="sym" style="left:4%;top:20px">+</span><span class="sym" style="right:6%;top:30px;font-size:120px">÷</span><span class="sym" style="left:46%;bottom:-18px;font-size:110px">×</span><span class="sym" style="right:30%;top:-10px">−</span>
 </div>
 <main>
-<form class="cod" id="cod" autocomplete="off"><b>🔑 Tem um código?</b><input id="codv" inputmode="numeric" maxlength="7" placeholder="0000" aria-label="Código da atividade"><button>Entrar ▶</button><button type="button" id="codp" title="Área do professor: pede a senha e abre a versão para imprimir" style="background:#ffd24d;color:#16213a">🔒 Imprimir (professor)</button><span>O professor informa o código da atividade. Digite aqui e o jogo abre na hora.</span><div class="err" id="coderr">Código não encontrado. Confira os 4 números.</div></form>
+<form class="cod" id="cod" autocomplete="off"><b>🔑 Tem um código?</b><input id="codv" inputmode="numeric" maxlength="7" placeholder="0000" aria-label="Código da atividade"><button>Entrar ▶</button><button type="button" id="codcam" title="Ler o QR code com a câmera" aria-label="Ler QR code" style="background:#0f2a52;color:#fff;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-size:.95rem;white-space:nowrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3.2"></circle></svg><span>QR</span></button><button type="button" id="codp" title="Área do professor: pede a senha e abre a versão para imprimir" style="background:#ffd24d;color:#16213a">🔒 Imprimir (professor)</button><span>O professor informa o código da atividade. Digite aqui e o jogo abre na hora.</span><div class="err" id="coderr">Código não encontrado. Confira os 4 números.</div></form>
 <div class="mats" id="mats"></div>
 <div class="bar" id="bar"></div>
 <div id="out"></div>
@@ -139,5 +139,95 @@ var q=(location.search.match(/[?&]c=(\d+)/)||location.hash.match(/#(\d{4})/)||[]
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a.play');if(a&&!EDU_LOGIN()){e.preventDefault();EDU_EXIGE_LOGIN(function(){location.href=a.href})}},true);document.getElementById('lgo').innerHTML=LOGO('h');drawMats();chips();draw();
 </script>
 <script>(function(){var c=new URLSearchParams(location.search).get('cod');if(!c)return;var i=document.getElementById('codv'),f=document.getElementById('cod');if(!i||!f)return;i.value=String(c).slice(0,7);function go(){f.dispatchEvent(new Event('submit',{cancelable:true}))}if(window.EDU_QR_ESPERA){var d=0,once=function(){if(d)return;d=1;setTimeout(go,200)};window.addEventListener('edu-auth-ready',once);setTimeout(once,9000)}else setTimeout(go,400)})();</script>
+
+<style>
+.camqr{position:fixed;inset:0;background:rgba(9,14,24,.78);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
+.camqr.on{display:flex}
+.camqr-cx{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:14px 14px 10px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.camqr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#16213a;font-size:1rem}
+.camqr-top button{border:0;background:#eef2f8;border-radius:10px;width:34px;height:34px;font-size:1rem;cursor:pointer}
+#camvideo{width:100%;border-radius:12px;background:#000;aspect-ratio:4/3;object-fit:cover}
+.camqr p{margin:8px 0 2px;font-size:.9rem;color:#42566f;text-align:center}
+</style>
+<div class="camqr" id="camqr">
+  <div class="camqr-cx">
+    <div class="camqr-top"><b>Câmera — aponte para o QR code</b><button type="button" id="camfechar" title="Fechar">✕</button></div>
+    <video id="camvideo" playsinline muted autoplay></video>
+    <canvas id="camcanvas" style="display:none"></canvas>
+    <p id="cammsg">Abrindo a câmera…</p>
+  </div>
+</div>
+<script src="jsqr.min.js"></script>
+<script>
+(function(){
+  var btn=document.getElementById('codcam');
+  if(!btn) return;
+  var modal=document.getElementById('camqr');
+  var video=document.getElementById('camvideo');
+  var canvas=document.getElementById('camcanvas');
+  var msg=document.getElementById('cammsg');
+  var stream=null, rodando=false;
+
+  function parar(){
+    rodando=false;
+    if(stream){ stream.getTracks().forEach(function(t){t.stop()}); stream=null; }
+    modal.classList.remove('on');
+  }
+  function codigoDo(texto){
+    var t=String(texto||'').trim();
+    var m=/[?&](?:c|cod)=(\d{3,7})/.exec(t) || /#(\d{3,7})/.exec(t);
+    if(m) return m[1];
+    if(/^\d{3,7}$/.test(t)) return t;
+    var d=t.match(/\d{3,7}/);
+    return d ? d[0] : null;
+  }
+  function achou(texto){
+    var c=codigoDo(texto);
+    if(!c) return false;
+    var i=document.getElementById('codv');
+    i.value=c;
+    if(typeof entrar==='function'){ try{ entrar(c); }catch(e){} }
+    msg.textContent='Código '+c+' lido!';
+    parar();
+    i.scrollIntoView({behavior:'smooth',block:'center'});
+    return true;
+  }
+  function laco(){
+    if(!rodando) return;
+    if(video.readyState===video.HAVE_ENOUGH_DATA){
+      canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+      var ctx=canvas.getContext('2d', {willReadFrequently:true});
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      try{
+        var img=ctx.getImageData(0,0,canvas.width,canvas.height);
+        if(window.jsQR){
+          var r=window.jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
+          if(r && r.data && achou(r.data)) return;
+        }
+      }catch(e){}
+    }
+    requestAnimationFrame(laco);
+  }
+  btn.addEventListener('click', function(){
+    modal.classList.add('on');
+    msg.textContent='Abrindo a câmera…';
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      msg.textContent='Este navegador não permite câmera. Use Chrome no celular ou digite o código.';
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment', width:{ideal:1280}}})
+      .then(function(s){
+        stream=s; video.srcObject=s; video.play();
+        rodando=true; msg.textContent='Procurando o QR…'; requestAnimationFrame(laco);
+      })
+      .catch(function(e){
+        msg.textContent='Não consegui abrir a câmera ('+(e && e.name || 'erro')+'). Autorize o acesso ou digite o código.';
+      });
+  });
+  document.getElementById('camfechar').addEventListener('click', parar);
+  modal.addEventListener('click', function(e){ if(e.target===modal) parar(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') parar(); });
+})();
+</script>
 </body>
 </html>
