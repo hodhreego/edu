@@ -1267,8 +1267,46 @@
         </section>
     </div>
 
-    <script src="config.js"></script>
+    <section class="container" id="ativGeral" style="margin-top:24px">
+    <h2 style="font-size:1.05rem;margin-bottom:10px">Progresso de todas as atividades</h2>
+    <div id="ativLista" style="color:#a9b4d6;font-size:.9rem">Carregando…</div>
+</section>
+<style>#ativLista td,#ativLista th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.08)}#ativLista tbody tr:hover{background:rgba(255,255,255,.04)}</style>
+
+<script src="config.js"></script>
     <script src="robiox-banco.js"></script>
+<script>
+(function () {
+  function fmt(ts) {
+    var d = new Date(ts);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' +
+      d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+  function carrega() {
+    var el = document.getElementById('ativLista');
+    if (!el || !window.EDU_ENDPOINT) return;
+    fetch(window.EDU_ENDPOINT + '?acao=ativdash&k=ludo2026')
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j || !j.alunos || !j.alunos.length) { el.textContent = 'Ainda sem atividades registradas.'; return; }
+        var lista = j.alunos.slice().sort(function (a, b) { return b.ultima - a.ultima; });
+        var linhas = lista.map(function (a) {
+          var u = a.atividades[0] || {};
+          return '<tr><td>' + a.login + '</td><td>' + a.atividades.length + '</td><td>' +
+            (u.ativ || '') + '</td><td>' + (u.ultima ? fmt(u.ultima) : '') + '</td></tr>';
+        }).join('');
+        el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.86rem">' +
+          '<thead><tr style="text-align:left;color:#8b95b8"><th>Aluno</th><th>Atividades</th><th>Última</th><th>Quando</th></tr></thead>' +
+          '<tbody>' + linhas + '</tbody></table>' +
+          '<p style="margin-top:8px;color:#7c88ab;font-size:.78rem">' + lista.length + ' alunos com registro · ' +
+          (j.agora ? 'atualizado ' + fmt(j.agora) : '') + '</p>';
+      })
+      .catch(function () { el.textContent = 'Não consegui carregar as atividades agora.'; });
+  }
+  carrega();
+  setInterval(carrega, 60000);
+})();
+</script>
     <script>
         // Nomes reais só no painel local (alunos-rco.js tem dados pessoais e não vai para o GitHub)
         if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {

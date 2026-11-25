@@ -138,6 +138,7 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxlive') return rbxLive_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'ativdash') return ativDash_(e.parameter);
   if (e && e.parameter && EB_ACOES[e.parameter.acao]) return eb_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxfmt' && e.parameter.k === RBX_KEY) { rbxBeleza_(); return ok_('formatado'); }
   return ok_('Planilha do professor ativa.');
@@ -2319,4 +2320,38 @@ function eb_i_carteira_(login) {
   var cs = eb_carteiraResp_(login), totMo = 0, mo = [];
   EB_MOEDAS.forEach(function (m) { var s = cs.saldos[m], t = cs.taxas[m]; if (s > 0 && t && t.t) { var v = Math.round(s / eb_escala_(m) * t.t * 100); totMo += v; mo.push({ moeda: m, saldo: s, brl: v }); } });
   return { ok: 1, pos: pos, rf: rf, moedas: mo, prov_novos: novos, prov_total: eb_i_provTotal_(login), patrimonio: { acoes: totAc, rf: totRf, moedas: totMo, total: totAc + totRf + totMo }, ts: Date.now() };
+}
+
+// ---- Painel: progresso de TODAS as atividades (aba Resultados) ----
+function ativDash_(p) {
+  if (String(p.k || '') !== RBX_KEY) return ok_('sem permissao');
+  var out = { ok: 1, agora: Date.now(), alunos: [] };
+  var sh = SpreadsheetApp.getActive().getSheetByName('Resultados');
+  if (!sh || sh.getLastRow() < 2) return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+  var nc = Math.min(17, sh.getLastColumn());
+  var turma = String(p.turma || '').toUpperCase();
+  var rows = sh.getRange(2, 1, sh.getLastRow() - 1, nc).getValues(), m = {};
+  rows.forEach(function (r) {
+    var login = String(r[1] || '').toLowerCase();
+    if (!login) return;
+    if (turma && eb_turma_(login) !== turma) return;
+    var ts = new Date(r[0]).getTime() || 0;
+    var o = m[login] || (m[login] = { login: login, ultima: 0, ativ: {} });
+    var cod = String(r[5] || ''), ativ = String(r[6] || cod), disc = String(r[4] || '');
+    var k = cod || ativ;
+    var it = o.ativ[k] || (o.ativ[k] = { cod: cod, ativ: ativ, disc: disc, tent: 0, melhor: -1, ultima: 0, pct: null, conc: 0 });
+    it.tent++;
+    var pc = (r[9] === '' || r[9] == null) ? null : Number(r[9]);
+    if (pc !== null && pc > it.melhor) it.melhor = pc;
+    if (ts >= it.ultima) { it.ultima = ts; it.pct = pc; }
+    if (Number(r[10]) === 1) it.conc = 1;
+    if (ts > o.ultima) o.ultima = ts;
+  });
+  Object.keys(m).forEach(function (l) {
+    var o = m[l], arr = [];
+    Object.keys(o.ativ).forEach(function (k) { arr.push(o.ativ[k]); });
+    arr.sort(function (a, b) { return b.ultima - a.ultima; });
+    out.alunos.push({ login: l, ultima: o.ultima, atividades: arr });
+  });
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
