@@ -1464,8 +1464,17 @@
                 celebrate('👑', `${nm(newS[0])} assumiu a liderança!`, `ultrapassou ${nm(oldS[0])}`, ['👑','🥇','⭐']);
             novos.forEach(a => {
                 const o = state.prevData.get(key(a)); if (!o) return;
-                if (CFG.evLvl && Number(a.nivel) > Number(o.nivel)) celebrate('⬆️', `${nm(a)} subiu de nível!`, `Agora é nível ${a.nivel}`, ['⬆️','✨','🎉']);
-                if (CFG.evFase && Number(a.fim) > Number(o.fim)) showToast(`🎯 <strong>${nm(a)}</strong> concluiu mais uma fase!`);
+                const vivo = (state.agora - (Number(a.ultima) || 0)) < 180000;
+                if (CFG.evLvl && vivo && Number(a.nivel) > Number(o.nivel)) celebrate('⬆️', `${nm(a)} subiu de nível!`, `Agora é nível ${a.nivel}`, ['⬆️','✨','🎉']);
+                if (CFG.evFase && o.fim != null && a.fim != null && Number(a.fim) > Number(o.fim)
+                    && (state.agora - (Number(a.ultima) || 0)) < 180000) {
+                    const ck = 'fase|' + key(a);
+                    state.evCool = state.evCool || {};
+                    if (!state.evCool[ck] || Date.now() - state.evCool[ck] > 60000) {
+                        state.evCool[ck] = Date.now();
+                        showToast(`🎯 <strong>${nm(a)}</strong> concluiu mais uma fase!`);
+                    }
+                }
                 if (CFG.evMeta) {
                     const m = Math.max(50, CFG.mxp), x0 = Number(o.xp) || 0, x1 = Number(a.xp) || 0;
                     if (Math.floor(x1 / m) > Math.floor(x0 / m)) celebrate('🎯', `${nm(a)} bateu ${(Math.floor(x1 / m) * m).toLocaleString('pt-BR')} XP!`, 'Meta de XP alcançada', ['🎯','⭐','🔥']);
