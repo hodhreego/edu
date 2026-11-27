@@ -103,6 +103,13 @@ footer{margin-top:40px;text-align:center;color:var(--dim);font-size:.85rem}
 .lk-seg{display:flex;gap:6px;flex-wrap:wrap}
 .lk-seg button.on{background:linear-gradient(90deg,#6366f1,#a855f7);border-color:transparent;color:#fff}
 .lk-val{color:var(--dim);font-size:.8rem;min-width:46px}
+.lk-sw{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:.85rem;color:var(--dim)}
+.lk-sw input{position:absolute;opacity:0;width:0;height:0}
+.lk-sw .tr{width:42px;height:24px;border-radius:99px;background:var(--card);border:1px solid var(--bd);position:relative;transition:.18s}
+.lk-sw .tr::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--dim);transition:.18s}
+.lk-sw input:checked + .tr{background:#6366f1;border-color:#6366f1}
+.lk-sw input:checked + .tr::after{left:20px;background:#fff}
+.lk-sw em{font-style:normal;color:var(--tx);font-weight:700}
 #lkSize{flex:1;min-width:120px;accent-color:#818cf8}
 .lk-cores{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .lk-cor{width:26px;height:26px;border-radius:50%;border:2px solid var(--bd);background:var(--sw,#bbb);cursor:pointer;padding:0}
@@ -214,6 +221,10 @@ a.card .ic{width:38px;height:38px;font-size:1.3rem;border-radius:11px}
       <input id="lkSize" type="range" min="20" max="120" step="2" value="48" aria-label="Tamanho do link">
       <button class="lk-step" id="lkMais" type="button" aria-label="Aumentar tamanho">A+</button>
       <span class="lk-val" id="lkSizeVal">48 px</span>
+    </div>
+    <div class="lk-row">
+      <b>Link</b>
+      <label class="lk-sw"><input type="checkbox" id="lkAlt"><span class="tr"></span><em>usar x.gd/escola</em></label>
     </div>
     <div class="lk-row">
       <b>Posição</b>
@@ -352,18 +363,20 @@ chips.innerHTML=[{id:'todos',t:'Todos'}].concat(SEC.map(function(s){return {id:s
 chips.onclick=function(e){var id=e.target.dataset&&e.target.dataset.id;if(!id)return;cur=id;[].forEach.call(chips.children,function(c){c.classList.toggle('on',c.dataset.id===id)});render()};
 qi.addEventListener('input',render);
 (function(){
-  var KEY='atalhos_link_cfg_v1',def={s:48,p:'center',c:''};
+  var KEY='atalhos_link_cfg_v1',def={s:90,p:'center',c:'',alt:false};
   var lk=document.getElementById('lkTxt'),how=document.getElementById('how'),
       panel=document.getElementById('lkPanel'),gear=document.getElementById('lkCfg'),
       rng=document.getElementById('lkSize'),out=document.getElementById('lkSizeVal'),
       cin=document.getElementById('lkColor'),cores=document.getElementById('lkCores'),
-      pos=document.getElementById('lkPos');
-  var cfg={s:def.s,p:def.p,c:def.c};
-  try{var j=JSON.parse(localStorage.getItem(KEY)||'{}');if(j.s!=null)cfg.s=+j.s;if(j.p)cfg.p=j.p;if(typeof j.c==='string')cfg.c=j.c}catch(e){}
+      pos=document.getElementById('lkPos'),alt=document.getElementById('lkAlt');
+  var cfg={s:def.s,p:def.p,c:def.c,alt:def.alt};
+  try{var j=JSON.parse(localStorage.getItem(KEY)||'{}');if(j.s!=null)cfg.s=+j.s;if(j.p)cfg.p=j.p;if(typeof j.c==='string')cfg.c=j.c;if(j.alt)cfg.alt=!!j.alt}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
   function clamp(v){v=Math.round(+v||def.s);return Math.max(20,Math.min(120,v))}
   function paint(){
     cfg.s=clamp(cfg.s);
+    lk.textContent=cfg.alt?'x.gd/escola':'bit.ly/xus28';
+    if(alt)alt.checked=!!cfg.alt;
     lk.style.fontSize=cfg.s+'px';
     rng.value=cfg.s;out.textContent=cfg.s+' px';
     if(cfg.c){lk.style.color=cfg.c;lk.style.webkitTextFillColor=cfg.c}
@@ -375,6 +388,7 @@ qi.addEventListener('input',render);
     save();
   }
   rng.oninput=function(){cfg.s=clamp(rng.value);paint()};
+  if(alt)alt.onchange=function(){cfg.alt=!!alt.checked;paint()};
   document.getElementById('lkMenos').onclick=function(){cfg.s=clamp(cfg.s-2);paint()};
   document.getElementById('lkMais').onclick=function(){cfg.s=clamp(cfg.s+2);paint()};
   pos.onclick=function(e){var b=e.target.closest&&e.target.closest('[data-pos]');if(!b)return;cfg.p=b.getAttribute('data-pos');paint()};

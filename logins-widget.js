@@ -89,7 +89,7 @@
       <div class="lgw-sel">—</div>
       <div class="lgw-lock">
         <label>Senha do professor</label>
-        <input class="lgw-pass" type="password" inputmode="numeric" autocomplete="off" placeholder="Digite a senha">
+        <input class="lgw-pass" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Digite a senha">
         <div class="lgw-row"><button class="lgw-entrar" type="button">Entrar</button><span class="lgw-err"></span></div>
       </div>
       <div class="lgw-body" hidden>
