@@ -140,7 +140,7 @@ tr.cl{cursor:pointer}tr.cl:hover td{background:var(--soft)}tbody tr:last-child t
 <template id="tpl">
 <header id="hd"><div class="hin"><div class="brand"><div class="logo">🏛️</div><div><b>Painel do Professor</b><small>Ludopédia · tudo por clique</small></div></div>
 <div class="hact"><a href="painel.html" title="Painel ao vivo">📈<span> Painel ao vivo</span></a><a href="atalhos.html" title="Atalhos">🔗<span> Atalhos</span></a><button data-a="tema" title="Tema claro/escuro">🌓</button><button class="sair" data-a="sair">🚪<span> Sair</span></button></div></div>
-<nav id="top"><button class="tabb on" data-a="tab" data-k="alu"><span class="ic">👥</span><span>Turmas e alunos</span></button><button class="tabb" data-a="tab" data-k="cont"><span class="ic">📚</span><span>Por conteúdo</span></button><button class="tabb" data-a="tab" data-k="dash"><span class="ic">📊</span><span>Dashboards</span></button><button class="tabb" data-a="tab" data-k="env"><span class="ic">💸</span><span>Enviar R$</span></button></nav>
+<nav id="top"><button class="tabb on" data-a="tab" data-k="alu"><span class="ic">👥</span><span>Turmas e alunos</span></button><button class="tabb" data-a="tab" data-k="cont"><span class="ic">📚</span><span>Por conteúdo</span></button><button class="tabb" data-a="tab" data-k="dash"><span class="ic">📊</span><span>Dashboards</span></button><button class="tabb" data-a="tab" data-k="saldo"><span class="ic">💰</span><span>Por saldo</span></button><button class="tabb" data-a="tab" data-k="env"><span class="ic">💸</span><span>Enviar R$</span></button></nav>
 <div id="bcw"><span id="bc"></span></div></header>
 <main class="wrapx"><div id="v"></div></main>
 </template>
@@ -205,11 +205,24 @@ function draw(){var c=path[path.length-1],my=++SEQ,h='';
  h+='<span>🏠</span> '+path.map(function(p,i){return i<path.length-1?'<a data-a="crumb" data-i="'+i+'">'+esc(p.t)+'</a>':'<b>'+esc(p.t)+'</b>'}).join(' <span class="sep">›</span> ');
  $('bc').innerHTML=h;$('v').innerHTML=loading();window.scrollTo(0,0);tipHide();
  Promise.resolve(c.f(my)).catch(function(e){put(my,'<div class="msg er">Erro: '+esc(e&&e.message)+'</div>')})}
+function saldoTela(my){
+  put(my,'<h2>💰 Saldo no EduBank</h2><p class="sub">Todos os alunos, do maior para o menor saldo, já convertido em reais.</p><div id="saldow">'+loading()+'</div>');
+  fetch(EP+'?acao=profsaldos&k=ludo2026').then(function(r){return r.json()}).then(function(j){
+    if(SEQ!==my)return;
+    var a=(j&&j.alunos)||[],el=document.getElementById('saldow');if(!el)return;
+    if(!a.length){el.innerHTML='<p class="sub">Nenhum aluno com saldo no EduBank ainda.</p>';return}
+    var h='<div class="wrap"><table><tr><th>#</th><th>Aluno</th><th>Turma</th><th>Saldo (R$)</th><th>Ativos</th></tr>';
+    h+=a.map(function(x,i){return '<tr><td>'+String(i+1)+'</td><td><b>'+esc(x.login)+'</b></td><td>'+esc(tle(x.turma))+'</td><td>'+brl(x.brl)+'</td><td>'+(x.ativos&&x.ativos.length?x.ativos.map(function(y){return '<span class="chip">'+esc(y.m)+' '+String(y.q)+'</span>'}).join(' '):'–')+'</td></tr>'}).join('');
+    h+='</table></div><p class="sub">'+a.length+' alunos · atualizado '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</p>';
+    el.innerHTML=h;
+  }).catch(function(){var el=document.getElementById('saldow');if(el)el.innerHTML='<p class="sub">Não consegui carregar os saldos agora.</p>'});
+}
 function tab(k){
  [].forEach.call(document.querySelectorAll('#top .tabb'),function(b){b.classList.toggle('on',b.getAttribute('data-k')===k)});
  path=[];
  if(k==='alu')go('Turmas e alunos',function(my){return vEscolas(my,'alu')});
  else if(k==='cont')go('Por conteúdo',function(my){return vEscolas(my,'cont')});
+ else if(k==='saldo')go('Por saldo',function(my){return saldoTela(my)});
  else if(k==='env'){envReset('chave','');go('Enviar R$',function(my){put(my,'<h2>💸 Enviar dinheiro (R$)</h2><p class="sub">Vale para qualquer aluno, de qualquer turma. Não sai de nenhum saldo: é crédito do professor.</p><div class="box" id="env">'+envHtml()+'</div>')})}
  else go('Dashboards',vDash)}
 async function carregaEsc(my){if(ESC.length)return true;var j=await api({acao:'profturmas'});if(!j.ok){err(my,j);return false}ESC=j.escolas;ESCN={};ESC.forEach(function(e){ESCN[e.cod]=e.nome});return true}

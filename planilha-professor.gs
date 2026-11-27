@@ -139,6 +139,7 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxlive') return rbxLive_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'ativdash') return ativDash_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'profsaldos') return profSaldos_(e.parameter);
   if (e && e.parameter && EB_ACOES[e.parameter.acao]) return eb_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxfmt' && e.parameter.k === RBX_KEY) { rbxBeleza_(); return ok_('formatado'); }
   return ok_('Planilha do professor ativa.');
@@ -2353,5 +2354,36 @@ function ativDash_(p) {
     arr.sort(function (a, b) { return b.ultima - a.ultima; });
     out.alunos.push({ login: l, ultima: o.ultima, atividades: arr });
   });
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+// ---- Ranking por saldo no EduBank (todas as turmas) ----
+function profSaldos_(p) {
+  if (String(p.k || '') !== RBX_KEY) return ok_('sem permissao');
+  var turma = String(p.turma || '').toUpperCase();
+  var sh = SpreadsheetApp.getActive().getSheetByName('Carteiras');
+  var out = { ok: 1, alunos: [] };
+  if (!sh || sh.getLastRow() < 2) return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+  var t = eb_taxas_(), tx = t.taxas || {};
+  var nc = sh.getLastColumn(), head = sh.getRange(1, 1, 1, nc).getValues()[0];
+  var rows = sh.getRange(2, 1, sh.getLastRow() - 1, nc).getValues();
+  rows.forEach(function (r) {
+    var login = String(r[0] || '').toLowerCase();
+    if (!login) return;
+    if (turma && eb_turma_(login) !== turma) return;
+    var brl = 0, ativos = [];
+    for (var i = 1; i < head.length; i++) {
+      var m = String(head[i] || '').toUpperCase();
+      if (!m) continue;
+      var v = Number(r[i]) || 0;
+      if (!v) continue;
+      var esc = EB_CRIPTO.indexOf(m) >= 0 ? 1e8 : 100;
+      var q = v / esc, preco = (m === 'BRL') ? 1 : (Number(tx[m]) || 0);
+      brl += q * preco;
+      ativos.push({ m: m, q: Math.round(q * 1e6) / 1e6 });
+    }
+    out.alunos.push({ login: login, num: eb_numLogin_(login), turma: eb_turma_(login), brl: Math.round(brl * 100) / 100, ativos: ativos });
+  });
+  out.alunos.sort(function (a, b) { return b.brl - a.brl; });
+  out.ts = t.ts;
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
