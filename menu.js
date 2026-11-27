@@ -10,13 +10,13 @@
  size();addEventListener('resize',size)}catch(e){}})();
 try{if(/^\s*teste( de aluno)?\s*$/i.test(localStorage.getItem('edu_nome')||''))localStorage.removeItem('edu_nome')}catch(e){}
 window.EDU_COD=function(){var f=decodeURIComponent(location.pathname.split('/').pop()),r='';if(typeof JOGOS!=='undefined')JOGOS.forEach(function(j){if(j.href===f)r=j.cod});return r};
-/* Porteiro (edu-auth.js?v=3): DESLIGADO por padrao; liga com EDU_AUTH_ON===true em config.js ou localStorage.edu_auth_teste (?auth=1 / ?auth=0). */
+/* Porteiro (edu-auth.js?v=4): DESLIGADO por padrao; liga com EDU_AUTH_ON===true em config.js ou localStorage.edu_auth_teste (?auth=1 / ?auth=0). */
 (function(){try{var qa=(location.search.match(/[?&]auth=([01])/)||[])[1];if(qa==='1')localStorage.setItem('edu_auth_teste','1');else if(qa==='0')localStorage.removeItem('edu_auth_teste');
  if(!(window.EDU_AUTH_ON===true||localStorage.getItem('edu_auth_teste')==='1'))return;
  if(/[?&]imp=1/.test(location.search)||/^professor|gabaritos-professor/i.test(decodeURIComponent(location.pathname.split('/').pop()))||window.EDU_AUTH)return;
  var f=decodeURIComponent(location.pathname.split('/').pop()),ok=false;if(typeof JOGOS!=='undefined')JOGOS.forEach(function(j){if(j.href===f)ok=true});if(!ok)return;
  var s0=JSON.parse(localStorage.getItem('edu_sess')||'null');if(s0&&s0.login&&s0.exp>Date.now())sessionStorage.setItem('edu_idok','1');
- var sc=document.createElement('script');sc.src='edu-auth.js?v=3';document.head.appendChild(sc)}catch(e){}})();
+ var sc=document.createElement('script');sc.src='edu-auth.js?v=4';document.head.appendChild(sc)}catch(e){}})();
 /* Menu superior dos jogos (Prof. Rodrigo). Depende de catalogo.js (MATS, TEMAS, JOGOS, jogoPorCodigo). */
 (function(){
  var HUB='https://hodhreego.github.io/edu/';
