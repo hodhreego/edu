@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Avaliação 1º trimestre — Educação Financeira 3ª série EM - Jogo</title>
+<script src="edu-aviso-ia.js?v=1"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#eef2f7;font-family:"Segoe UI",Arial,sans-serif;color:#1b2440;min-height:100vh}
+#av{max-width:820px;margin:0 auto;padding:14px 12px 40px}
+.cab{background:linear-gradient(135deg,#0f9d58,#0b6e3d);color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.cab h1{margin:0;font-size:clamp(17px,3.2vw,23px)}
+.cab p{margin:4px 0 0;font-size:13px;opacity:.92}
+.barra{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 10px;font-weight:700;font-size:14px}
+.prog{flex:1;height:10px;background:#d6dde8;border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:#0f9d58;width:0;transition:width .3s}
+.coin{font-weight:800;color:#0b6e3d;white-space:nowrap}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:16px}
+.hab{display:inline-block;font-size:11.5px;font-weight:700;color:#0b6e3d;background:#e3f5ec;border-radius:99px;padding:2px 9px;margin-bottom:8px}
+#pergunta{font-size:clamp(16px,2.6vw,20px);line-height:1.4;margin:0 0 12px}
+.alts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:620px){.alts{grid-template-columns:1fr}}
+.alt{display:flex;gap:9px;align-items:flex-start;text-align:left;width:100%;border:2px solid #c9d3e3;background:#fff;border-radius:11px;padding:10px 11px;font-size:clamp(14px,2.2vw,16px);line-height:1.3;cursor:pointer;color:#1b2440;font-family:inherit}
+.alt:hover{border-color:#0f9d58;background:#f2fbf6}
+.alt b{flex:none;width:26px;height:26px;border-radius:50%;background:#e8edf5;display:flex;align-items:center;justify-content:center;font-size:14px}
+.alt.sel{border-color:#0f9d58;background:#e3f5ec}.alt.sel b{background:#0f9d58;color:#fff}
+.nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px}
+.btn{border:0;border-radius:10px;padding:11px 18px;font-weight:800;font-size:15px;cursor:pointer;background:#0f9d58;color:#fff;font-family:inherit}
+.btn.sec{background:#e3e8f0;color:#1b2440}
+.btn:disabled{opacity:.45;cursor:default}
+.mapa{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.mapa button{width:34px;height:30px;border-radius:8px;border:1.5px solid #c9d3e3;background:#fff;font-weight:700;cursor:pointer;font-family:inherit}
+.mapa button.ok{background:#0f9d58;color:#fff;border-color:#0f9d58}.mapa button.at{outline:3px solid #f4b400}
+#jg-fim{display:none}#jg-fim.on{display:block}
+.nota{font-size:clamp(34px,8vw,54px);font-weight:900;color:#0b6e3d;text-align:center;margin:6px 0}
+.rev{margin-top:12px;font-size:14px}
+.rev div{border-left:4px solid #c9d3e3;padding:6px 9px;margin:7px 0;background:#f8fafc;border-radius:0 8px 8px 0}
+.rev .c{border-color:#0f9d58}.rev .e{border-color:#d93025}
+.rev small{display:block;color:#5b6585}
+</style></head>
+<body>
+<div id="av">
+ <div class="cab"><h1>Avaliação · 1º trimestre — Educação Financeira</h1><p>3ª série EM · Mercado de trabalho, currículo, estágio, salário e direitos trabalhistas · 20 questões, 8 alternativas cada</p></div>
+ <div id="jogo">
+  <div class="barra"><span id="cont">Questão 1 de 20</span><div class="prog"><i id="pg"></i></div><span class="coin" id="coin">0 pontos</span></div>
+  <div class="card">
+   <span class="hab" id="hab"></span>
+   <p id="pergunta"></p>
+   <div class="alts" id="alts"></div>
+   <div class="nav"><button class="btn sec" id="ant">◀ Anterior</button><button class="btn" id="prox">Próxima ▶</button></div>
+   <div class="mapa" id="mapa"></div>
+  </div>
+ </div>
+ <div id="jg-fim" class="card">
+  <h2 style="margin:0;text-align:center">Avaliação entregue</h2>
+  <div class="nota" id="nota"></div>
+  <p style="text-align:center;margin:0" id="nota2"></p>
+  <div class="rev" id="rev"></div>
+ </div>
+</div>
+<script>
+(function(){
+ /* c = índice da alternativa correta (0 = primeira da lista) */
+ var Q=[
+ {h:'Hd14',t:'Qual é a principal função da <b>carteira de trabalho</b> assinada?',a:['Registrar o vínculo de emprego e garantir direitos como férias, 13º e FGTS.','Aumentar automaticamente o salário.','Servir como documento de identidade internacional.','Permitir trabalhar sem contrato.','Substituir o currículo na entrevista.','Dispensar o pagamento do INSS.','Garantir aprovação em concursos públicos.','Liberar o trabalhador de cumprir horário.'],c:0},
+ {h:'Hd13',t:'Qual atitude é adequada em uma <b>entrevista de emprego</b>?',a:['Pesquisar sobre a empresa, chegar no horário e responder com clareza.','Chegar atrasado, para mostrar que tem outros compromissos.','Falar mal do emprego anterior.','Inventar experiências que não teve.','Usar o celular durante a conversa.','Interromper o entrevistador para falar primeiro.','Perguntar só sobre folgas e feriados.','Ir sem saber qual é a vaga.'],c:0},
+ {h:'Hd13',t:'O <b>estágio</b> regulado pela Lei 11.788/2008:',a:['É ato educativo, não cria vínculo de emprego e exige termo de compromisso com a instituição de ensino.','Cria vínculo empregatício e garante 13º salário.','Dispensa a supervisão da escola.','Pode ter jornada de 12 horas por dia.','Paga obrigatoriamente o mesmo salário de um efetivo.','Só pode ser feito depois de terminar os estudos.','Exige carteira assinada como empregado comum.','Não precisa ter relação com o curso do estudante.'],c:0},
+ {h:'Hd13',t:'O <b>seguro-desemprego</b> é devido, em regra, ao trabalhador demitido:',a:['Sem justa causa, cumpridos os requisitos de tempo e de salário.','Por justa causa.','Que está em estágio.','Que pediu demissão.','Que nunca teve carteira assinada.','Que já está em outro emprego com carteira.','Que se aposentou.','Que trabalha como autônomo sem contribuir.'],c:0},
+ {h:'Hd13',t:'O que <b>não</b> deve constar em um currículo?',a:['Dados como CPF, RG e senhas.','Formação escolar e cursos.','Experiências e trabalhos voluntários.','Objetivo profissional.','Idiomas e habilidades.','Telefone e e-mail para contato.','Cursos de informática.','Cidade onde mora.'],c:0},
+ {h:'Hd13',t:'Um bom <b>currículo</b> deve conter:',a:['formação, experiências e contato profissional','senhas e documentos','fotos pessoais de festas','opinião política','dados bancários','apelidos e gírias','a religião e o time de futebol','reclamações sobre ex-chefes'],c:0},
+ {h:'Hd13',t:'O <b>LinkedIn</b> é uma rede social voltada para:',a:['relações e oportunidades profissionais','jogos online','vendas de carros','apostas','filmes','compartilhar receitas','namoro','transmissões de futebol'],c:0},
+ {h:'Hd14',t:'Um salário de <b>R$ 2.200,00</b> com jornada de <b>220 horas</b> por mês dá, por hora:',a:['R$ 10,00','R$ 20,00','R$ 12,00','R$ 100,00','R$ 1,00','R$ 22,00','R$ 2,20','R$ 11,00'],c:0},
+ {h:'Hd13',t:'Pela Lei do Estágio, a jornada máxima de estudantes do ensino médio regular é de:',a:['6 horas diárias e 30 semanais','8 horas diárias e 44 semanais','4 horas por mês','12 horas diárias','sem limite','10 horas diárias e 50 semanais','2 horas diárias e 10 semanais','8 horas diárias e 40 semanais'],c:0},
+ {h:'Hd13',t:'O contrato de <b>jovem aprendiz</b> é voltado a jovens de:',a:['14 a 24 anos','10 a 12 anos','30 a 40 anos','a partir de 60 anos','qualquer idade','18 a 30 anos','12 a 16 anos','25 a 35 anos'],c:0},
+ {h:'Hd14',t:'A <b>hora extra</b> deve ser paga com acréscimo mínimo de:',a:['50%','10%','20%','100%','nenhum','5%','30%','200%'],c:0},
+ {h:'Hd14',t:'Hora normal de <b>R$ 10,00</b>. A hora extra, com <b>50%</b> de acréscimo, vale:',a:['R$ 15,00','R$ 5,00','R$ 20,00','R$ 10,50','R$ 50,00','R$ 60,00','R$ 12,00','R$ 25,00'],c:0},
+ {h:'Hd14',t:'O vale-transporte pode descontar até <b>6%</b> do salário. Em <b>R$ 2.000,00</b>, o desconto máximo é:',a:['R$ 120,00','R$ 12,00','R$ 60,00','R$ 200,00','R$ 1.880,00','R$ 6,00','R$ 1.200,00','R$ 260,00'],c:0},
+ {h:'Hd13',t:'Qual das habilidades abaixo é <b>socioemocional</b> e valorizada no trabalho?',a:['trabalho em equipe e comunicação','chegar atrasado','evitar aprender','ignorar o cliente','não cumprir prazos','esconder erros dos colegas','recusar qualquer mudança','falar alto com os colegas'],c:0},
+ {h:'Hd14',t:'O <b>13º salário</b> de quem ganha <b>R$ 1.800,00</b> e trabalhou o ano todo é de:',a:['R$ 1.800,00','R$ 150,00','R$ 900,00','R$ 3.600,00','R$ 21.600,00','R$ 1.300,00','R$ 18,00','R$ 2.400,00'],c:0},
+ {h:'Hd14',t:'Trabalhar <b>sem carteira assinada</b> significa, em geral, ficar sem:',a:['direitos como FGTS e férias remuneradas','qualquer renda','a necessidade de trabalhar','imposto sobre produtos','vale-refeição obrigatório sempre','a obrigação de pagar contas','acesso ao SUS','o direito de votar'],c:0},
+ {h:'Hd13',t:'Na <b>entrevista de emprego</b>, é adequado:',a:['chegar no horário e se preparar sobre a empresa','chegar atrasado','olhar o celular o tempo todo','falar mal do emprego anterior','não fazer perguntas nunca','ir de qualquer jeito, sem se arrumar','responder só com "sim" e "não"','levar um amigo para responder por você'],c:0},
+ {h:'Hd13',t:'Quem trabalha <b>por conta própria</b>, sem patrão, é chamado de:',a:['autônomo','estagiário','aprendiz','servidor','empregado com carteira','terceirizado','temporário','sócio-empregado'],c:0},
+ {h:'Hd13',t:'Para buscar vagas de emprego, o trabalhador pode usar:',a:['sites de emprego e agências do trabalhador','apenas sorte','boatos','correntes de mensagem','apostas','sites que cobram para garantir a vaga','só esperar alguém ligar','pirâmides financeiras'],c:0},
+ {h:'Hd13',t:'A <b>taxa de desemprego</b> mede:',a:['a proporção de pessoas que procuram trabalho e não encontram','o salário médio','o número de aposentados','o preço dos produtos','a inflação','a quantidade de empresas abertas','o número de estudantes','o valor do salário mínimo'],c:0}
+ ];
+ var L='ABCDEFGH',N=Q.length,PT=5;
+ /* ordem embaralhada por aluno (fica igual se recarregar no mesmo aparelho) */
+ var KEY='av_ef3em_1tri',st=null;
+ try{st=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+ function emb(n){var a=[];for(var i=0;i<n;i++)a.push(i);for(i=n-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+ if(!st||!st.ordem||st.ordem.length!==N){st={ordem:emb(N),alt:Q.map(function(q){return emb(q.a.length)}),resp:{},fim:false,i:0}}
+ function salva(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+ var $=function(id){return document.getElementById(id)};
+ function certas(){var c=0;st.ordem.forEach(function(qi){if(st.resp[qi]===Q[qi].c)c++});return c}
+ function resp(){return Object.keys(st.resp).length}
+ window.EDU_EXTRA=function(){var c=st.fim?certas():0,r=resp();return{certas:c,erradas:st.fim?N-c:0,progresso:Math.round(100*r/N),concluido:!!st.fim}};
+ function mostra(){
+  var k=st.i,qi=st.ordem[k],q=Q[qi];
+  $('cont').textContent='Questão '+(k+1)+' de '+N;$('pg').style.width=(100*resp()/N)+'%';
+  $('hab').textContent=q.h;$('pergunta').innerHTML=(k+1)+'. '+q.t;
+  var box=$('alts');box.innerHTML='';
+  st.alt[qi].forEach(function(ai,p){var b=document.createElement('button');b.className='alt'+(st.resp[qi]===ai?' sel':'');b.type='button';
+   b.innerHTML='<b>'+L[p]+'</b><span>'+q.a[ai]+'</span>';b.onclick=function(){st.resp[qi]=ai;salva();mostra();};box.appendChild(b)});
+  $('ant').disabled=k===0;$('prox').textContent=k===N-1?'Entregar ✔':'Próxima ▶';
+  var m=$('mapa');m.innerHTML='';st.ordem.forEach(function(qj,p){var b=document.createElement('button');b.type='button';b.textContent=p+1;
+   b.className=(st.resp[qj]!=null?'ok':'')+(p===k?' at':'');b.onclick=function(){st.i=p;salva();mostra()};m.appendChild(b)});
+ }
+ function fim(){
+  var c=certas();$('coin').textContent=(c*PT)+' pontos';
+  $('jogo').style.display='none';$('jg-fim').classList.add('on');
+  $('nota').textContent=c+' / '+N;$('nota2').textContent='Nota: '+(c*10/N).toFixed(1).replace('.',',')+' · '+(c*PT)+' pontos';
+  var h='';st.ordem.forEach(function(qi,p){var q=Q[qi],r=st.resp[qi],ok=r===q.c,lr=r!=null?L[st.alt[qi].indexOf(r)]:'—',lc=L[st.alt[qi].indexOf(q.c)];
+   h+='<div class="'+(ok?'c':'e')+'"><b>'+(p+1)+'.</b> '+q.t+'<small>'+(ok?'✔ Acertou ('+lc+')':'✘ Sua resposta: '+lr+' · Correta: '+lc+') '+q.a[q.c])+'</small></div>'});
+  /* correção detalhada só para o professor (?correcao=1), para não espalhar o gabarito na sala */
+  $('rev').innerHTML=/correcao=1/.test(location.search)?h:'<p style="text-align:center;color:#5b6585">Suas respostas foram registradas. A correção será feita em sala com o professor.</p>';
+ }
+ $('ant').onclick=function(){if(st.i>0){st.i--;salva();mostra()}};
+ $('prox').onclick=function(){
+  if(st.i<N-1){st.i++;salva();mostra();return}
+  var f=N-resp();if(f>0&&!confirm('Ainda faltam '+f+' questão(ões) sem resposta. Entregar mesmo assim?'))return;
+  if(f===0&&!confirm('Entregar a avaliação? Depois não dá para mudar as respostas.'))return;
+  st.fim=true;salva();fim();
+ };
+ if(st.fim)fim();else mostra();
+})();
+</script>
+<script src="ident.js?v=6"></script><script src="config.js?v=7"></script><script src="catalogo.js?v=10"></script><script src="edu-report.js?v=9"></script><script src="menu.js?v=29"></script><script src="edu-lang.js?v=5"></script><script src="imprimir.js?v=12"></script><script src="anticheat.js?v=8"></script>
+</body></html>
