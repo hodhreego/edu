@@ -27,7 +27,8 @@
   var pg=Number(ex.progresso);if(isFinite(pg)&&ex.progresso!==''&&ex.progresso!=null)d.progresso=Math.max(0,Math.min(100,Math.round(pg)));else if(c)d.progresso=100;
   var dn=ex.ganhoCent!=null?Number(ex.ganhoCent):(ex.dinheiro!=null?Math.round(Number(ex.dinheiro)*100):NaN);if(isFinite(dn)&&dn>=0)d.dinheiro=Math.round(dn);
   var b={acao:'resultado',login:L,t:T,d:d};for(var k in d)b[k]=d[k];
-  try{fetch(u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b),keepalive:true})}catch(e){}}
+  try{fetch(u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(b),keepalive:true})}catch(e){}
+  try{if(window.EDU_AUTH&&EDU_AUTH.salvarJa)EDU_AUTH.salvarJa()}catch(e){}}   /* resultado enviado: salva o progresso na nuvem já */
  function enviar(fim){
   var p=pts();if(p>max)max=p;try{resultado(fim)}catch(e){}if(max<=0)return;var d=dados();guardar(d);
   var u=window.EDU_ENDPOINT;if(!u)return;var body=JSON.stringify(d);

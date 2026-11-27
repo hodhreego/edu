@@ -29,7 +29,18 @@ var CORES = {
   espanhol: '#ffe0e0', geometria: '#e0f4f7', algebra: '#fff6c2', default: '#eeeeee'
 };
 
+// Envelope: nenhuma exceção vaza (antes virava página HTML de erro do Google e o aluno via "falha de servidor").
 function doPost(e) {
+  try { return doPost0_(e); } catch (err) { return eb_jsonErro_(err); }
+}
+function doGet(e) {
+  try { return doGet0_(e); } catch (err) { return eb_jsonErro_(err); }
+}
+function eb_jsonErro_(err) {
+  try { Logger.log('erro geral: ' + (err && (err.stack || err.message))); } catch (x) { }
+  return ContentService.createTextOutput(JSON.stringify({ ok: 0, erro: 'Servidor ocupado. Tentando de novo…', tentar: 1 })).setMimeType(ContentService.MimeType.JSON);
+}
+function doPost0_(e) {
   var d = {};
   try { d = JSON.parse(e.postData.contents); } catch (err) { return ok_('json inválido'); }
   if (EB_ACOES[d.acao]) return eb_(d);
@@ -133,7 +144,7 @@ function reconstruir_() {
   });
 }
 
-function doGet(e) {
+function doGet0_(e) {
   if (e && e.parameter && e.parameter.acao === 'ranking') return rkTop_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxload') return rbxLoad_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxdash') return rbxDash_(e.parameter);
@@ -394,6 +405,7 @@ function rbxSave_(d) {
     for (var i = 0; i < ids.length; i++) if (ids[i][0] === login) { row = i + 2; break; }
     var js = JSON.stringify(d.st || {});
     if (js.length > 45000) return ok_('grande demais');
+    if (row) { var tsOld = Number(sh.getRange(row, 2).getValue()) || 0; if ((Number(d.ts) || 0) < tsOld) return ok_('ignorado (mais antigo)'); }   // nunca troca R$ novo por copia velha
     var linha = [login, Number(d.ts) || Date.now(), js];
     if (row) sh.getRange(row, 1, 1, 3).setValues([linha]); else sh.appendRow(linha);
     if (d.sum && login !== 'mestre') { try { rbxAlunos_(login, d.ts, d.sum); } catch (err) { } }
@@ -426,7 +438,7 @@ var EB_MOEDAS = EB_FIAT.concat(EB_CRIPTO);
 var EB_RESERVA = { USD: 5.4, EUR: 6.3, GBP: 7.25, JPY: 0.036, ARS: 0.0055, CNY: 0.75, BTC: 350000, ETH: 18000, SOL: 800, XRP: 12, DOGE: 1, USDT: 5.4 };
 var EB_URL_FIAT = 'https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,JPY-BRL,ARS-BRL,CNY-BRL';
 var EB_URL_CRIPTO = 'https://economia.awesomeapi.com.br/json/last/BTC-BRL,ETH-BRL,SOL-BRL,XRP-BRL,DOGE-BRL,USDT-BRL';
-var EB_MAX_ERROS = 5, EB_BLOQ_MIN = 10, EB_SESSAO_DIAS = 30, EB_SENHA_INICIAL = '2026.2026';
+var EB_MAX_ERROS = 5, EB_BLOQ_MIN = 10, EB_SESSAO_MIN = 100, EB_SESSAO_GRACA_MIN = 15, EB_SENHA_INICIAL = '2026.2026';
 var EB_ABAS = {
   Contas: { cab: ['login', 'turma', 'salt', 'hash', 'trocar', 'erros', 'bloqueio_ate', 'criado', 'ultimo_acesso', 'banco_salt', 'banco_hash'], cor: '#1e3a8a', w: [110, 80, 150, 420, 60, 60, 150, 150, 150, 150, 420], txt: [1, 2, 3, 4, 10, 11] },
   Sessoes: { cab: ['token_hash', 'login', 'expira', 'criado'], cor: '#475569', w: [420, 110, 140, 150], txt: [1, 2] },
@@ -442,7 +454,8 @@ var EB_ABAS = {
   Ordens: { cab: ['ts', 'login', 'id', 'tipo', 'ativo', 'qtd', 'preco', 'centavos', 'moeda'], cor: '#9333ea', w: [140, 110, 200, 50, 80, 70, 90, 90, 60], txt: [2, 3, 4, 5, 9] },
   Cotacoes: { cab: ['cod', 'preco', 'ant', 'ts', 'moeda'], cor: '#be123c', w: [80, 90, 90, 140, 70], txt: [1, 5] },
   Fundos: { cab: ['cnpj', 'dt', 'cota'], cor: '#4d7c0f', w: [150, 90, 110], txt: [1] },
-  Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid', 'progresso', 'dinheiro'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160, 80, 80], txt: [2, 3, 5, 6, 7, 14, 15] }
+  Resultados: { cab: ['ts', 'login', 'turma', 'trimestre', 'disc', 'cod', 'atividade', 'acertos', 'erros', 'pct', 'concluido', 'pontos', 'dur', 'serie', 'sid', 'progresso', 'dinheiro'], cor: '#15803d', w: [150, 110, 80, 80, 120, 100, 240, 70, 70, 70, 80, 80, 70, 80, 160, 80, 80], txt: [2, 3, 5, 6, 7, 14, 15] },
+  Nomes: { cab: ['login', 'nome', 'turma_legivel', 'escola', 'atualizado'], cor: '#be185d', w: [110, 280, 90, 110, 150], txt: [1, 2, 3, 4] }
 };
 
 // ---------- utilitários ----------
@@ -465,7 +478,7 @@ function eb_txt_(s) { s = String(s == null ? '' : s); return /^[=+\-@]/.test(s) 
 function eb_r6_(x) { return Math.round(x * 1e6) / 1e6; }
 function eb_lock_(fn) {
   var l = LockService.getScriptLock();
-  try { l.waitLock(30000); } catch (e) { return eb_erro_('Servidor ocupado, tente de novo em instantes.'); }
+  try { l.waitLock(15000); } catch (e) { return eb_erro_('Servidor ocupado, tente de novo em instantes.', { tentar: 1 }); }   // 15 s < timeout do cliente (20 s): responde JSON e o cliente tenta de novo
   try { return fn(); } finally { l.releaseLock(); }
 }
 function eb_aba_(nome) {
@@ -639,7 +652,7 @@ function eb_taxasResp_() { var t = eb_taxas_(); return { ok: 1, taxas: t.taxas, 
 function eb_(p) {
   var o;
   try { o = eb_dispatch_(p || {}); }
-  catch (err) { try { Logger.log('EduBank erro: ' + (err && err.message)); } catch (x) { } o = eb_erro_('Erro no servidor. Tente de novo.'); }
+  catch (err) { try { Logger.log('EduBank erro: ' + (err && err.message)); } catch (x) { } o = eb_erro_('Erro no servidor. Tente de novo.', { tentar: 1 }); }
   return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 }
 function eb_dispatch_(p) {
@@ -683,17 +696,37 @@ function eb_dispatch_(p) {
 }
 
 // ---------- sessões ----------
+// Sessão de aluno vale EB_SESSAO_MIN minutos a partir do login. Validação pelo CacheService (chave 's2_'+sha(token) -> 'login|expira');
+// a aba Sessoes é só reserva (cache apagado/evicto). Ações de SALVAR (nuvemsalvar/resultado) aceitam EB_SESSAO_GRACA_MIN a mais,
+// para o salvamento final feito pelo cliente no instante da expiração nunca ser recusado.
+var EB_SESSAO_GRACA_ACOES = { nuvemsalvar: 1, resultado: 1 };
+function eb_sessExp_(expira, criado) {   // sessões antigas (30 dias) ficam limitadas a criado + EB_SESSAO_MIN
+  var e = Number(expira) || 0, c = criado ? new Date(criado).getTime() : 0;
+  if (isFinite(c) && c > 0) e = Math.min(e, c + EB_SESSAO_MIN * 60000);
+  return e;
+}
+function eb_sessCache_(c, th, login, exp) {
+  var ttl = Math.floor((exp + EB_SESSAO_GRACA_MIN * 60000 - Date.now()) / 1000);
+  if (ttl < 1) return;
+  try { c.put('s2_' + th, login + '|' + exp, Math.min(21600, ttl)); } catch (e) { }
+}
 function eb_auth_(p) {
   var login = eb_loginOk_(p.login), t = String(p.t || ''), inv = eb_erro_('Sessão inválida. Entre de novo.', { relogin: 1 });
   if (!login || !/^[A-Za-z0-9]{24}$/.test(t)) return inv;
-  var th = eb_sha_(t), c = CacheService.getScriptCache(), cv = c.get('s_' + th), agora = Date.now();
-  if (cv) { var q = cv.split('|'); if (q[0] === login && Number(q[1]) > agora) return { ok: 1, login: login, th: th }; }
-  var sh = eb_aba_('Sessoes'), n = sh.getLastRow();
+  var graca = EB_SESSAO_GRACA_ACOES[String(p.acao || '')] ? EB_SESSAO_GRACA_MIN * 60000 : 0;
+  var th = eb_sha_(t), c = CacheService.getScriptCache(), cv = c.get('s2_' + th), agora = Date.now();
+  if (cv) {
+    var q = cv.split('|');
+    if (q[0] === login && Number(q[1]) + graca > agora) { eb_tocaAcesso_(login); return { ok: 1, login: login, th: th }; }
+    if (q[0] === login) return eb_erro_('Sua sessão terminou. Entre de novo.', { relogin: 1, expirou: 1 });
+  }
+  var sh = eb_aba_('Sessoes'), n = sh.getLastRow();   // reserva: só quando o cache não tem o token
   if (n >= 2) {
-    var v = sh.getRange(2, 1, n - 1, 3).getValues();
+    var ini = Math.max(2, n - 1999), v = sh.getRange(ini, 1, n - ini + 1, 4).getValues();
     for (var i = v.length - 1; i >= 0; i--) {
       if (String(v[i][0]) === th) {
-        if (String(v[i][1]) === login && Number(v[i][2]) > agora) { try { c.put('s_' + th, login + '|' + v[i][2], 21600); } catch (e) { } return { ok: 1, login: login, th: th }; }
+        var ex = eb_sessExp_(v[i][2], v[i][3]);
+        if (String(v[i][1]) === login && ex + graca > agora) { eb_sessCache_(c, th, login, ex); eb_tocaAcesso_(login); return { ok: 1, login: login, th: th }; }
         break;
       }
     }
@@ -704,52 +737,78 @@ function eb_sessoesApagar_(login, manter) {   // chamar com lock
   var sh = eb_aba_('Sessoes'), n = sh.getLastRow(), ks = [], c = 0;
   if (n < 2) return 0;
   var v = sh.getRange(2, 1, n - 1, 2).getValues();
-  for (var i = v.length - 1; i >= 0; i--) if (String(v[i][1]) === login && String(v[i][0]) !== manter) { ks.push('s_' + v[i][0]); sh.deleteRow(i + 2); c++; }
+  for (var i = v.length - 1; i >= 0; i--) if (String(v[i][1]) === login && String(v[i][0]) !== manter) { ks.push('s2_' + v[i][0]); sh.deleteRow(i + 2); c++; }
   var cache = CacheService.getScriptCache();
   for (var j = 0; j < ks.length; j += 100) cache.removeAll(ks.slice(j, j + 100));
   return c;
 }
-function eb_limpaSessoes_(sh) {   // chamar com lock
-  var n = sh.getLastRow(); if (n < 2) return;
-  var v = sh.getRange(2, 1, n - 1, 3).getValues(), agora = Date.now();
-  for (var i = v.length - 1; i >= 0; i--) if (Number(v[i][2]) <= agora) sh.deleteRow(i + 2);
+function eb_limpaSessoes_(sh) {   // chamar com lock; regrava só as linhas válidas (1 escrita em vez de N deleteRow)
+  var n = sh.getLastRow(); if (n < 2) return 0;
+  var v = sh.getRange(2, 1, n - 1, 4).getValues(), agora = Date.now(), g = EB_SESSAO_GRACA_MIN * 60000;
+  var ok = v.filter(function (r) { return eb_sessExp_(r[2], r[3]) + g > agora; });
+  if (ok.length === v.length) return 0;
+  sh.getRange(2, 1, n - 1, 4).clearContent();
+  if (ok.length) sh.getRange(2, 1, ok.length, 4).setValues(ok);
+  return v.length - ok.length;
+}
+// Rotina leve para um gatilho de tempo (Acionadores > limpezaSessoes > a cada hora). Também pode rodar à mão.
+function limpezaSessoes() {
+  var l = LockService.getScriptLock();
+  if (!l.tryLock(20000)) return 'ocupado';
+  try { return 'removidas: ' + eb_limpaSessoes_(eb_aba_('Sessoes')); } finally { l.releaseLock(); }
 }
 
 // ---------- contas ----------
 // Senha de LOGIN é FIXA (2026.2026) e não pode ser alterada; colunas salt/hash/trocar da aba Contas ficam sem uso.
+// entrar: caminho rápido SEM lock para a senha certa (30 alunos entrando juntos não fazem fila): a sessão vai primeiro para o
+// cache (já vale) e depois, com tryLock curto, para as abas Sessoes/Contas. Só a senha ERRADA usa lock (contador de erros).
 function eb_confere_(login, r, h) { return h === eb_hashInicial_(login); }
 function eb_entrar_(p) {
   var login = eb_loginOk_(p.login), h = String(p.h || '').toLowerCase();
   if (!login || !/^[0-9a-f]{64}$/.test(h)) return eb_erro_('Login ou senha incorretos.');
+  var cache = CacheService.getScriptCache(), agora = Date.now();
+  var cb = Number(cache.get('blk_' + login)) || 0; if (cb > agora) return eb_msgBloq_(cb);
+  var blq = cache.get('bq_' + login);   // bloqueio gravado na aba Contas (cache 5 min para não ler a aba a cada login)
+  if (blq === null) {
+    var sc = eb_aba_('Contas'), rw = eb_find_(sc, 1, login), ate0 = rw ? (Number(sc.getRange(rw, 7).getValue()) || 0) : 0;
+    blq = String(ate0); try { cache.put('bq_' + login, blq, 300); } catch (e) { }
+  }
+  if (Number(blq) > agora) return eb_msgBloq_(Number(blq));
+  if (h !== eb_hashInicial_(login)) return eb_entrarFalha_(login);
+  var token = (eb_sha_(Utilities.getUuid() + Date.now() + Math.random())).slice(0, 24), th = eb_sha_(token), exp = agora + EB_SESSAO_MIN * 60000;
+  eb_sessCache_(cache, th, login, exp);   // a sessão já vale a partir daqui
+  try { eb_aba_('Sessoes').appendRow([th, login, exp, new Date()]); } catch (e) { }   // reserva (appendRow é atômico; sem lock)
+  var l = LockService.getScriptLock();
+  if (l.tryLock(5000)) {   // Contas/Logs: só se o lock vier logo; senão fica para o próximo login (não atrasa o aluno)
+    try {
+      var ses = eb_aba_('Sessoes'); if (ses.getLastRow() > 3000) eb_limpaSessoes_(ses);   // reserva caso o gatilho limpezaSessoes não esteja instalado
+      var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login);
+      if (!row) sh.appendRow([login, eb_turma_(login), '', '', 0, 0, '', new Date(), new Date(), '', '']);
+      else { sh.getRange(row, 5, 1, 3).setValues([[0, 0, '']]); sh.getRange(row, 9).setValue(new Date()); }
+      eb_log_(login, 'entrar', 'ok');
+    } catch (e) { } finally { l.releaseLock(); }
+  }
+  return { ok: 1, token: token, trocar: 0, turma: eb_turma_(login), exp: exp, agora: agora, validadeMin: EB_SESSAO_MIN };
+}
+function eb_entrarFalha_(login) {
   var cache = CacheService.getScriptCache();
   return eb_lock_(function () {
-    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login), agora = Date.now(), r;
-    if (row) { r = sh.getRange(row, 1, 1, 9).getValues()[0]; var ate = Number(r[6]) || 0; if (ate > agora) return eb_msgBloq_(ate); }
-    else { var cb = Number(cache.get('blk_' + login)) || 0; if (cb > agora) return eb_msgBloq_(cb); r = [login, eb_turma_(login), '', '', 1, 0, '', '', '']; }
-    if (!eb_confere_(login, r, h)) {
-      var rest, bl = 0;
-      if (row) {
-        var e = (Number(r[5]) || 0) + 1;
-        if (e >= EB_MAX_ERROS) { bl = agora + EB_BLOQ_MIN * 60000; e = 0; }
-        sh.getRange(row, 6, 1, 2).setValues([[e, bl || '']]); rest = EB_MAX_ERROS - e;
-      } else {
-        var n = (Number(cache.get('bad_' + login)) || 0) + 1;
-        if (n >= EB_MAX_ERROS) { bl = agora + EB_BLOQ_MIN * 60000; cache.put('blk_' + login, String(bl), EB_BLOQ_MIN * 60); cache.remove('bad_' + login); }
-        else cache.put('bad_' + login, String(n), EB_BLOQ_MIN * 60);
-        rest = EB_MAX_ERROS - n;
-      }
-      eb_log_(login, 'falha', bl ? 'bloqueado por ' + EB_BLOQ_MIN + ' min' : 'senha incorreta');
-      if (bl) return eb_msgBloq_(bl);
-      return eb_erro_('Login ou senha incorretos. Restam ' + rest + ' tentativa(s).');
+    var sh = eb_aba_('Contas'), row = eb_find_(sh, 1, login), agora = Date.now(), r = row ? sh.getRange(row, 1, 1, 9).getValues()[0] : null;
+    var rest, bl = 0;
+    if (row) {
+      var e = (Number(r[5]) || 0) + 1;
+      if (e >= EB_MAX_ERROS) { bl = agora + EB_BLOQ_MIN * 60000; e = 0; }
+      sh.getRange(row, 6, 1, 2).setValues([[e, bl || '']]); rest = EB_MAX_ERROS - e;
+      if (bl) try { cache.put('bq_' + login, String(bl), 300); } catch (x) { }
+    } else {
+      var n = (Number(cache.get('bad_' + login)) || 0) + 1;
+      if (n >= EB_MAX_ERROS) { bl = agora + EB_BLOQ_MIN * 60000; cache.put('blk_' + login, String(bl), EB_BLOQ_MIN * 60); cache.remove('bad_' + login); }
+      else cache.put('bad_' + login, String(n), EB_BLOQ_MIN * 60);
+      rest = EB_MAX_ERROS - n;
     }
-    if (!row) sh.appendRow([login, eb_turma_(login), '', '', 0, 0, '', new Date(), new Date(), '', '']);
-    else sh.getRange(row, 5, 1, 5).setValues([[0, 0, '', r[7], new Date()]]);
-    var token = (eb_sha_(Utilities.getUuid() + Date.now() + Math.random())).slice(0, 24), th = eb_sha_(token), exp = agora + EB_SESSAO_DIAS * 86400000;
-    var ss = eb_aba_('Sessoes'); if (ss.getLastRow() > 300) eb_limpaSessoes_(ss);
-    ss.appendRow([th, login, exp, new Date()]);
-    try { cache.put('s_' + th, login + '|' + exp, 21600); } catch (e) { }
-    eb_log_(login, 'entrar', 'ok');
-    return { ok: 1, token: token, trocar: 0, turma: eb_turma_(login) };
+    eb_log_(login, 'falha', bl ? 'bloqueado por ' + EB_BLOQ_MIN + ' min' : 'senha incorreta');
+    if (bl) return eb_msgBloq_(bl);
+    return eb_erro_('Login ou senha incorretos. Restam ' + rest + ' tentativa(s).');
   });
 }
 // ---------- senha do EduBank (única senha alterável; só para transferir) ----------
@@ -799,7 +858,7 @@ function eb_bancoSenha_(p, login) {
     return { ok: 1 };
   });
 }
-function eb_limpaFalhas_(login) { var c = CacheService.getScriptCache(); c.remove('bad_' + login); c.remove('blk_' + login); }
+function eb_limpaFalhas_(login) { var c = CacheService.getScriptCache(); c.remove('bad_' + login); c.remove('blk_' + login); c.remove('bq_' + login); }
 function eb_limpaFalhasBanco_(login) { var c = CacheService.getScriptCache(); c.remove('bbad_' + login); c.remove('bblk_' + login); }
 
 // ---------- senha do PROFESSOR (guardada só em PropertiesService: sha256(hp+salt); hp = SHA-256 hex de 'prof:'+senha) ----------
@@ -897,16 +956,67 @@ function eb_profAcao_(p) {
   var a = String(p.acao || ''), e = eb_profCheck_(p.hp); if (e) return e;
   if (a === 'profentrar') return { ok: 1 };
   if (a === 'profturmas') return eb_profTurmas_();
-  if (a === 'profturma') return eb_profTurma_(p);
-  if (a === 'profaluno') return eb_profAluno_(p);
+  if (a === 'profturma') return eb_comNomes_(eb_profTurma_(p));
+  if (a === 'profaluno') return eb_comNomes_(eb_profAluno_(p));
   if (a === 'profconteudos') return eb_profConteudos_(p);
-  if (a === 'profconteudo') return eb_profConteudo_(p);
-  if (a === 'profdash') return eb_profDash_(p);
+  if (a === 'profconteudo') return eb_comNomes_(eb_profConteudo_(p));
+  if (a === 'profdash') return eb_comNomes_(eb_profDash_(p));
   if (a === 'profdesbloquear') { var l1 = eb_loginOk_(p.login); return l1 ? eb_desbloquearCore_(l1) : eb_erro_('Login inválido.'); }
   if (a === 'profzerar') { var l2 = eb_loginOk_(p.login); return l2 ? eb_zerarCore_(l2) : eb_erro_('Login inválido.'); }
-  if (a === 'profenviar') return eb_profEnviar_(p);
-  if (a === 'profenviarturma') return eb_profEnviarTurma_(p);
+  if (a === 'profenviar') return eb_comNomes_(eb_profEnviar_(p));
+  if (a === 'profenviarturma') return eb_comNomes_(eb_profEnviarTurma_(p));
   return eb_erro_('Ação desconhecida.');
+}
+// ---------- NOMES REAIS (só para o professor) ----------
+// Aba 'Nomes' (login, nome, turma_legivel, escola, atualizado). Nomes NUNCA ficam no repositório nem em respostas de ações de aluno:
+// só entram nas respostas prof* (depois que eb_profCheck_ validou o hp), por eb_comNomes_. Alunos continuam vendo 'Aluno nº N'.
+function eb_turmaNome_(login) { var m = String(login || '').match(/^\d+([a-z]{3})(\d)([a-z])$/); return m ? m[2] + 'º ' + m[3].toUpperCase() : ''; }
+function eb_escolaNome_(login) { var m = String(login || '').match(/^\d+([a-z]{3})\d[a-z]$/); return m ? (EB_ESCOLAS[m[1]] || m[1].toUpperCase()) : ''; }
+function eb_nomes_() {   // {login:{nome,turma,escola}} com cache de 10 min
+  var c = CacheService.getScriptCache(), cv = c.get('eb_nomes');
+  if (cv) { try { return JSON.parse(cv); } catch (e) { } }
+  var o = {}, sh = eb_aba_('Nomes'), n = sh.getLastRow();
+  if (n >= 2) sh.getRange(2, 1, n - 1, 4).getValues().forEach(function (r) {
+    var lg = String(r[0]).toLowerCase().trim(); if (!EB_ALUNO.test(lg) || !String(r[1]).trim()) return;
+    o[lg] = { nome: String(r[1]).trim(), turma: String(r[2] || eb_turmaNome_(lg)), escola: String(r[3] || eb_escolaNome_(lg)) };
+  });
+  try { var js = JSON.stringify(o); if (js.length < 95000) c.put('eb_nomes', js, 600); } catch (e) { }
+  return o;
+}
+function eb_comNome_(x, nm) {
+  if (!x || typeof x !== 'object' || !EB_ALUNO.test(String(x.login || ''))) return x;
+  var k = nm[x.login]; x.nome = k ? k.nome : ''; x.turmaNome = eb_turmaNome_(x.login); x.escola = eb_escolaNome_(x.login);
+  return x;
+}
+function eb_comNomes_(r) {   // acrescenta nome/turmaNome/escola em r (se tiver login) e em r.alunos[]
+  if (!r || !r.ok) return r;
+  try {
+    var nm = eb_nomes_();
+    if (r.login) eb_comNome_(r, nm);
+    if (r.alunos && r.alunos.length) r.alunos.forEach(function (a) { eb_comNome_(a, nm); });
+  } catch (e) { }
+  return r;
+}
+// Importação pelo editor (uma vez): eb_nomesImportar_([['12xus6d','Nome Sobrenome'], ...]). Grava/atualiza a aba Nomes com lock.
+// Para rodar: crie no editor uma função temporária que chame eb_nomesImportar_ com a lista e apague-a depois (não deixe nomes no código).
+function eb_nomesImportar_(lista) {
+  if (!lista || !lista.length) return 'lista vazia';
+  var r = eb_lock_(function () {
+    var sh = eb_aba_('Nomes'), n = sh.getLastRow(), idx = {}, novos = [], at = 0, agora = new Date();
+    var v = n >= 2 ? sh.getRange(2, 1, n - 1, 5).getValues() : [];
+    v.forEach(function (x, i) { idx[String(x[0]).toLowerCase().trim()] = i; });
+    lista.forEach(function (it) {
+      var lg = String(it && it[0] || '').toLowerCase().trim(), nome = eb_txt_(eb_t_(it && it[1], 120));
+      if (!EB_ALUNO.test(lg) || !nome) return;
+      var linha = [lg, nome, eb_turmaNome_(lg), eb_escolaNome_(lg), agora];
+      if (idx[lg] != null) { v[idx[lg]] = linha; at++; } else { idx[lg] = -1; novos.push(linha); }
+    });
+    if (v.length) sh.getRange(2, 1, v.length, 5).setValues(v);
+    if (novos.length) sh.getRange(sh.getLastRow() + 1, 1, novos.length, 5).setValues(novos);
+    return { ok: 1, atualizados: at, novos: novos.length };
+  });
+  CacheService.getScriptCache().remove('eb_nomes');
+  return r;
 }
 // {ok,escolas:[{cod,nome,turmas:[{turma,ano,letra,alunos,ativos}]}]}
 function eb_profTurmas_() {
@@ -1301,7 +1411,7 @@ function eb_profEnviarTurma_(p) {
     var ids = eb_credIds_(), n = 0, dup = 0;
     logins.forEach(function (l) { if (eb_credAdd_(l, v.id + l, v.cent, v.nota, ids)) n++; else dup++; });
     eb_log_('', 'profenviarturma', 'turma ' + turma + ' ' + v.cent + ' centavos para ' + n + ' aluno(s) id=' + v.id);
-    return { ok: 1, n: n, dup: dup, msg: 'Enviado para ' + n + ' aluno(s) de ' + turma + '.' };
+    return { ok: 1, n: n, dup: dup, msg: 'Enviado para ' + n + ' aluno(s) de ' + turma + '.', alunos: logins.map(function (l) { return { login: l, num: eb_numLogin_(l) }; }) };
   });
 }
 // aluno: lista créditos 'novo'
@@ -1707,22 +1817,63 @@ function rbxAlunos_(login, ts, s) {
 }
 function rbxDash_(p) {
   if (String(p.k || '') !== RBX_KEY) return ContentService.createTextOutput(JSON.stringify({ ok: 0 })).setMimeType(ContentService.MimeType.JSON);
-  var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] };
-  out.mult = rbxMult_(), sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
+  var pronto = rbx_cGet_('rbxdash');   // vários painéis abertos = 1 leitura a cada 5 s
+  if (pronto) return ContentService.createTextOutput(pronto).setMimeType(ContentService.MimeType.JSON);
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] }, sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
+  out.mult = rbxMult_();
   if (rs && rs.getLastRow() > 1) {
-    var rn = rs.getLastRow(), v = rs.getRange(2, 1, rn - 1, 12).getValues();
-    v.forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0, t: {} }; cnt[l].n++; var tm = String(r[5] || '-'); cnt[l].t[tm] = cnt[l].t[tm] || { n: 0, ok: 0 }; cnt[l].t[tm].n++; if (r[10] === 'SIM') { cnt[l].ok++; cnt[l].t[tm].ok++; } });
-    out.recentes = v.slice(-30).reverse().map(function (r) { return { t: new Date(r[0]).getTime(), login: r[1], mat: r[2], mundo: r[3], fase: r[4], tema: r[5], q: r[7], ok: r[10] === 'SIM' }; });
+    var rn = rs.getLastRow(), cj = rbx_cGet_('rbxcnt');
+    if (cj) { try { cnt = JSON.parse(cj); } catch (e) { cj = null; } }
+    if (!cj) {   // contagem completa no máximo 1x por minuto
+      cnt = {};
+      rs.getRange(2, 1, rn - 1, 12).getValues().forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0, t: {} }; cnt[l].n++; var tm = String(r[5] || '-'); cnt[l].t[tm] = cnt[l].t[tm] || { n: 0, ok: 0 }; cnt[l].t[tm].n++; if (r[10] === 'SIM') { cnt[l].ok++; cnt[l].t[tm].ok++; } });
+      rbx_cPut_('rbxcnt', JSON.stringify(cnt), 60);
+    }
+    var ini = Math.max(2, rn - 29), v = rs.getRange(ini, 1, rn - ini + 1, 12).getValues();
+    out.recentes = v.reverse().map(function (r) { return { t: new Date(r[0]).getTime(), login: r[1], mat: r[2], mundo: r[3], fase: r[4], tema: r[5], q: r[7], ok: r[10] === 'SIM' }; });
   }
+  var ua = {}; try { var pc = eb_profContas_(); for (var lg in pc) ua[lg] = pc[lg].ultimo || 0; } catch (e) { }
   if (sh && sh.getLastRow() > 1) {
     var d = sh.getRange(2, 1, sh.getLastRow() - 1, 27).getValues();
     d.forEach(function (r) {
       var s = {}; try { s = JSON.parse(r[26]); } catch (e) { }
       var c = cnt[r[0]] || { n: 0, ok: 0 };
-      out.alunos.push({ login: r[0], nick: r[2], serie: r[3], nivel: r[4], xp: r[5], moedas: r[6], cofrinho: r[7], gasto: r[8], vendido: r[9], itens: r[10], ini: r[11], fim: r[12], pct: r[13], est: r[14], acertosJogo: r[15], perfeitas: r[16], combo: r[17], mundos: r[18], resp: c.n, respOk: c.ok, ultima: new Date(r[23]).getTime(), own: s.own || [], gastos: (s.gastos || []).slice(0, 8), ganhas: s.ganhas || 0, atual: s.atual || null, mw: s.mw || {}, temas: c.t || {} });
+      out.alunos.push({ login: r[0], nick: r[2], serie: r[3], nivel: r[4], xp: r[5], moedas: r[6], cofrinho: r[7], gasto: r[8], vendido: r[9], itens: r[10], ini: r[11], fim: r[12], pct: r[13], est: r[14], acertosJogo: r[15], perfeitas: r[16], combo: r[17], mundos: r[18], resp: c.n, respOk: c.ok, ultima: new Date(r[23]).getTime(), own: s.own || [], gastos: (s.gastos || []).slice(0, 8), ganhas: s.ganhas || 0, atual: s.atual || null, mw: s.mw || {}, temas: c.t || {}, ultimoAcesso: ua[r[0]] || 0 });
     });
   }
-  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+  var js = JSON.stringify(out);
+  rbx_cPut_('rbxdash', js, 5);
+  return ContentService.createTextOutput(js).setMimeType(ContentService.MimeType.JSON);
+}
+// Cache em pedaços (CacheService aceita até 100 KB por chave)
+function rbx_cPut_(k, s, ttl) {
+  try {
+    var c = CacheService.getScriptCache(), n = Math.ceil(s.length / 90000), o = {};
+    if (n > 20) return;
+    for (var i = 0; i < n; i++) o[k + '_' + i] = s.substr(i * 90000, 90000);
+    o[k + '_n'] = String(n); c.putAll(o, ttl);
+  } catch (e) { }
+}
+function rbx_cGet_(k) {
+  try {
+    var c = CacheService.getScriptCache(), n = Number(c.get(k + '_n')) || 0, ks = [];
+    if (!n) return null;
+    for (var i = 0; i < n; i++) ks.push(k + '_' + i);
+    var m = c.getAll(ks), s = '';
+    for (var j = 0; j < n; j++) { if (m[ks[j]] == null) return null; s += m[ks[j]]; }
+    return s;
+  } catch (e) { return null; }
+}
+// Último acesso: grava em Contas (coluna 9) no máximo 1x a cada 5 min por aluno
+function eb_tocaAcesso_(login) {
+  try {
+    var c = CacheService.getScriptCache();
+    if (c.get('ua_' + login)) return;
+    c.put('ua_' + login, '1', 300);
+    var sh = eb_aba_('Contas'), n = sh.getLastRow(); if (n < 2) return;
+    var f = sh.getRange(2, 1, n - 1, 1).createTextFinder(login).matchEntireCell(true).findNext();
+    if (f) sh.getRange(f.getRow(), 9).setValue(new Date());
+  } catch (e) { }
 }
 
 // Deixa as abas do RobIox bonitas e organizadas (não apaga nada)

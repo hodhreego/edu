@@ -867,6 +867,19 @@
             animation: pulse 2s infinite;
         }
 
+        /* Estado da conexão e último acesso */
+        .live-indicator.recon { border-color: rgba(245, 158, 11, .6) !important; color: #fbbf24 !important; }
+        .live-indicator.recon .pulse { background: #f59e0b !important; }
+        .live-indicator.parado { opacity: .75; }
+        .ua { display: inline-flex; align-items: center; gap: 5px; font-size: .72rem; color: var(--text-dim); font-weight: 700; white-space: nowrap; }
+        .ua-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; background: #64748b; }
+        .ua-dot.g { background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, .25); }
+        .ua-dot.y { background: #eab308; }
+        .ua-dot.c { background: #64748b; }
+        .rank-ua { margin-top: 2px; }
+        .feed-ua { margin-left: 6px; }
+        .nav-extra button.on { border-color: var(--green) !important; color: #4ade80 !important; }
+
         #conn-warn {
             position: fixed;
             top: 0;
@@ -1088,7 +1101,7 @@
 <label>Subtítulo <input type="text" id="c-sub" maxlength="40"></label>
 <h3>Ranking</h3>
 <label>Quantos aparecem <select id="c-top"><option>5</option><option>8</option><option>10</option><option>15</option><option>30</option></select></label>
-<label>Ordenar por <select id="c-ord"><option value="xp">XP</option><option value="est">Estrelas</option><option value="pct">% concluído</option><option value="acc">% de acertos</option><option value="cofrinho">Dinheiro</option></select></label>
+<label>Ordenar por <select id="c-ord"><option value="xp">XP</option><option value="est">Estrelas</option><option value="pct">% concluído</option><option value="acc">% de acertos</option><option value="cofrinho">Dinheiro</option><option value="ultimo">Último acesso</option></select></label>
 <label>Mostrar cartões do topo <input type="checkbox" id="c-stats"></label>
 <h3>Animações e avisos</h3>
 <label>Animações ligadas <input type="checkbox" id="c-anim"></label>
@@ -1137,8 +1150,8 @@
                     <button type="button" id="lkReset2">Restaurar</button>
                 </div>
                 <div id="clock" class="clock-box" title="Horário atual">00:00</div>
-                <div class="live-indicator">
-                    <div class="pulse"></div> SINAL AO VIVO
+                <div class="live-indicator" id="live-ind" title="Estado da conexão com a planilha">
+                    <div class="pulse"></div> <span id="live-txt">conectando…</span>
                 </div>
             </div>
         </header>
@@ -1201,6 +1214,8 @@
             <div class="nav-extra">
                 <button onclick="togglePresentation()" id="btn-present" title="Alternar rotação automática de telas">▶ Apresentar (Telão)</button>
                 <button onclick="toggleDemo()" id="btn-demo" title="Alternar modo demonstração fictícia">Modo Demo</button>
+                <button onclick="toggleAtivos()" id="btn-ativos" title="Mostrar só quem acessou nos últimos 3 minutos">🟢 Ativos agora</button>
+                <button onclick="toggleOrdUltimo()" id="btn-ordua" title="Ordenar Ranking e Progresso pelo último acesso">⏱ Último acesso</button>
                 <select id="sel-foco" title="Escolher um aluno para acompanhar" onchange="setFoco(this.value)"><option value="">👁 Acompanhar aluno…</option></select>
                 <button id="btn-logins" data-logins-trigger title="Lista de logins dos alunos (senha do professor)">🔑 Logins</button>
                 <button onclick="cfgToggle()" id="btn-cfg" title="Personalizar o painel">🎨 Personalizar</button>
@@ -1294,13 +1309,31 @@
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' +
       d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }
-  function carrega() {
+  // Último acesso vindo da aba Resultados (todas as atividades), usado também pelo painel principal.
+  window.ATIV_ULT = window.ATIV_ULT || {};
+  var ocupado = false, ultimoOk = 0, sig = '';
+  function carrega(forcar) {
     var el = document.getElementById('ativLista');
-    if (!el || !window.EDU_ENDPOINT) return;
-    fetch(window.EDU_ENDPOINT + '?acao=ativdash&k=ludo2026')
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        if (!j || !j.alunos || !j.alunos.length) { el.textContent = 'Ainda sem atividades registradas.'; return; }
+    if (!el || !window.EDU_ENDPOINT || ocupado) return;
+    if (!forcar && document.hidden) return;
+    if (!forcar && Date.now() - ultimoOk < 50000) return;
+    ocupado = true;
+    var ctl = window.AbortController ? new AbortController() : null, to = setTimeout(function () { if (ctl) ctl.abort(); }, 30000);
+    fetch(window.EDU_ENDPOINT + '?acao=ativdash&k=ludo2026', ctl ? { signal: ctl.signal, cache: 'no-store' } : { cache: 'no-store' })
+      .then(function (r) { return r.text(); })
+      .then(function (tx) {
+        var j = null; try { j = JSON.parse(tx); } catch (e) { }
+        ultimoOk = Date.now(); // próxima tentativa só daqui a ~1 min, mesmo se falhou
+        if (!j) {
+          // O Apps Script publicado ainda não conhece a ação ativdash (responde texto) ou voltou página de erro.
+          el.textContent = /^\s*</.test(tx) ? 'Servidor demorou ou deu erro; tentando de novo em 1 min.' : 'O servidor ainda não tem a ação "ativdash" (falta publicar a nova versão do Apps Script).';
+          return;
+        }
+        if (!j.alunos || !j.alunos.length) { el.textContent = 'Ainda sem atividades registradas.'; return; }
+        j.alunos.forEach(function (a) { if (a && a.login) window.ATIV_ULT[String(a.login).toLowerCase()] = Number(a.ultima) || 0; });
+        try { window.dispatchEvent(new Event('ativ-ult')); } catch (e) { }
+        var s2 = tx.length + ':' + j.alunos.map(function (a) { return a.login + a.ultima + a.atividades.length; }).join('|');
+        if (s2 === sig) return; sig = s2;
         var lista = j.alunos.slice().sort(function (a, b) { return b.ultima - a.ultima; });
         var linhas = lista.map(function (a) {
           var u = a.atividades[0] || {};
@@ -1313,10 +1346,12 @@
           '<p style="margin-top:8px;color:#7c88ab;font-size:.78rem">' + lista.length + ' alunos com registro · ' +
           (j.agora ? 'atualizado ' + fmt(j.agora) : '') + '</p>';
       })
-      .catch(function () { el.textContent = 'Não consegui carregar as atividades agora.'; });
+      .catch(function () { if (!sig) el.textContent = 'Não consegui carregar as atividades agora (tentando de novo).'; })
+      .then(function () { clearTimeout(to); ocupado = false; });
   }
-  carrega();
-  setInterval(carrega, 60000);
+  carrega(true);
+  setInterval(function () { carrega(false); }, 10000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) carrega(false); });
 })();
 </script>
     <script>
@@ -1342,7 +1377,11 @@
             filterSerie: 'TODOS',
             filterJogo: 'TODOS',
             searchTerm: '',
-            hasLoadedOnce: false
+            hasLoadedOnce: false,
+            soAtivos: false,
+            lastOk: 0,
+            falhas: 0,
+            sig: ''
         };
 
         const sections = ['ranking', 'progress', 'live', 'jogos', 'economy'];
@@ -1495,13 +1534,85 @@
             if (k === 'pct') return Number(a.pct) || 0;
             if (k === 'cofrinho') return Number(a.cofrinho) || 0;
             if (k === 'est') return Number(a.est) || 0;
+            if (k === 'ultimo') return ultimoDe(a);
             return Number(a.xp) || 0;
         }
+
+        // --- Último acesso de cada aluno ---
+        // Fonte: maior entre a última gravação do jogo (rbxdash.ultima), o último registro em Resultados (ativdash)
+        // e, quando o servidor passar a mandar, o último login (campo "ultimoAcesso"/"ua" da aba Contas).
+        const UA_ATIVO = 180000;
+        function ultimoDe(a) {
+            if (!a) return 0;
+            const l = String(a.login || '').toLowerCase();
+            return Math.max(Number(a.ultima) || 0, Number(a.ultimoAcesso) || 0, Number(a.ua) || 0, (window.ATIV_ULT && window.ATIV_ULT[l]) || 0);
+        }
+        function ativoAgora(a) { const u = ultimoDe(a); return !!u && (Date.now() - u) < UA_ATIVO; }
+        function rbxAtivo(a) { return !!a && (Date.now() - (Number(a.ultima) || 0)) < UA_ATIVO; }
+        function uaClasse(t) {
+            if (!t) return 'c';
+            if (Date.now() - t < UA_ATIVO) return 'g';
+            return new Date(t).toDateString() === new Date().toDateString() ? 'y' : 'c';
+        }
+        function haQuanto(t) {
+            if (!t) return 'nunca';
+            const d = Math.max(0, Date.now() - t);
+            if (d < 45000) return 'agora';
+            if (d < 3600000) return 'há ' + Math.max(1, Math.round(d / 60000)) + ' min';
+            if (d < 86400000) return 'há ' + Math.floor(d / 3600000) + ' h';
+            return 'há ' + Math.floor(d / 86400000) + ' d';
+        }
+        function dataHora(t) {
+            const d = new Date(t);
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+        function uaTexto(t) { return t ? 'último acesso: ' + haQuanto(t) + ' · ' + dataHora(t) : 'último acesso: sem registro'; }
+        function uaHtml(a, cls) {
+            const t = ultimoDe(a);
+            return `<span class="ua ${cls || ''}" data-ua="${t}"><i class="ua-dot ${uaClasse(t)}"></i><span class="ua-t">${uaTexto(t)}</span></span>`;
+        }
+        // Atualiza só os textos "há X min" e as bolinhas, sem redesenhar nada.
+        function tickUA() {
+            document.querySelectorAll('[data-ua]').forEach(el => {
+                const t = Number(el.dataset.ua) || 0, s = el.querySelector('.ua-t'), d = el.querySelector('.ua-dot');
+                const tx = uaTexto(t); if (s && s.textContent !== tx) s.textContent = tx;
+                if (d) { const c = 'ua-dot ' + uaClasse(t); if (d.className !== c) d.className = c; }
+            });
+        }
+        function toggleAtivos() {
+            state.soAtivos = !state.soAtivos;
+            const b = document.getElementById('btn-ativos'); if (b) b.classList.toggle('on', state.soAtivos);
+            updateUI();
+        }
+        function toggleOrdUltimo() {
+            if (CFG.ord === 'ultimo') CFG.ord = CFG._ordAnt || 'xp'; else { CFG._ordAnt = CFG.ord; CFG.ord = 'ultimo'; }
+            cfgSave(); const s = document.getElementById('c-ord'); if (s) s.value = CFG.ord;
+            const b = document.getElementById('btn-ordua'); if (b) b.classList.toggle('on', CFG.ord === 'ultimo');
+            updateUI();
+        }
+        // Lista de logins (logins-widget.js): acrescenta bolinha + último acesso no texto de cada opção.
+        function decoraLogins() {
+            const mapa = new Map((state._todos || state.alunos || []).map(a => [String(a.login || '').toLowerCase(), a]));
+            document.querySelectorAll('.lgw-win select option[value]').forEach(o => {
+                const l = String(o.value || '').toLowerCase(); if (!l) return;
+                const base = o.dataset.base || o.textContent.replace(/\s+[🟢🟡⚪].*$/u, '');
+                o.dataset.base = base;
+                const a = mapa.get(l) || { login: l };
+                const t = ultimoDe(a);
+                if (!t && !mapa.has(l)) return;
+                const ic = { g: '🟢', y: '🟡', c: '⚪' }[uaClasse(t)];
+                const tx = base + '  ' + ic + ' ' + (t ? haQuanto(t) + ' · ' + dataHora(t) : 'sem acesso');
+                if (o.textContent !== tx) o.textContent = tx;
+            });
+        }
+        try { new MutationObserver(() => { clearTimeout(decoraLogins._t); decoraLogins._t = setTimeout(decoraLogins, 150); }).observe(document.body, { childList: true, subtree: true }); } catch (e) { }
+        window.addEventListener('ativ-ult', () => { if (state.hasLoadedOnce) { updateUI(); } });
         const nm = a => (a.login === CFG.foco ? '👁 ' : '') + esc(a.nick || a.login || 'Aluno');
         const rankMove = new Map();
         function detectEvents(novos) {
             if (!state.alunos.length) return;
             const key = a => a.login || a.nick;
+            if (CFG.ord === 'ultimo') return; // ordem por último acesso muda o tempo todo: sem avisos de subida
             const oldS = [...state.alunos].sort((a, b) => ordKey(b) - ordKey(a)), newS = [...novos].sort((a, b) => ordKey(b) - ordKey(a));
             const oldPos = new Map(oldS.map((a, i) => [key(a), i]));
             newS.forEach((a, i) => {
@@ -1514,10 +1625,10 @@
                 celebrate('👑', `${nm(newS[0])} assumiu a liderança!`, `ultrapassou ${nm(oldS[0])}`, ['👑','🥇','⭐']);
             novos.forEach(a => {
                 const o = state.prevData.get(key(a)); if (!o) return;
-                const vivo = (state.agora - (Number(a.ultima) || 0)) < 180000;
+                const vivo = rbxAtivo(a);
                 if (CFG.evLvl && vivo && Number(a.nivel) > Number(o.nivel)) celebrate('⬆️', `${nm(a)} subiu de nível!`, `Agora é nível ${a.nivel}`, ['⬆️','✨','🎉']);
                 if (CFG.evFase && o.fim != null && a.fim != null && Number(a.fim) > Number(o.fim)
-                    && (state.agora - (Number(a.ultima) || 0)) < 180000) {
+                    && rbxAtivo(a)) {
                     const ck = 'fase|' + key(a);
                     state.evCool = state.evCool || {};
                     if (!state.evCool[ck] || Date.now() - state.evCool[ck] > 60000) {
@@ -1533,7 +1644,7 @@
                     if ((Number(a.combo) || 0) >= CFG.mcb && (Number(o.combo) || 0) < CFG.mcb) celebrate('🔥', `${nm(a)} em chamas!`, `${a.combo} acertos seguidos`, ['🔥','💥','⭐']);
                 }
                 if (CFG.evOn) {
-                    const w = x => (state.agora - (Number(x.ultima) || 0)) < 300000;
+                    const w = x => ativoAgora(x);
                     if (w(a) && !w(o)) showToast(`🟢 <strong>${nm(a)}</strong> entrou no jogo`);
                 }
             });
@@ -1542,7 +1653,7 @@
 
         // --- Acompanhar um aluno ---
         let focoPrev = null;
-        function setFoco(login) { CFG.foco = login || ''; focoPrev = null; cfgSave(); renderFoco(); renderRankingMark(); }
+        function setFoco(login) { CFG.foco = login || ''; if (CFG.foco && typeof syncAgora === 'function' && Date.now() - state.lastOk > 3000) setTimeout(syncAgora, 0); focoPrev = null; cfgSave(); renderFoco(); renderRankingMark(); }
         function renderRankingMark() { document.querySelectorAll('.rank-item').forEach(el => el.classList.toggle('foco-sel', !!CFG.foco && el.dataset.login === CFG.foco)); }
         function fillFocoSelect() {
             const sel = document.getElementById('sel-foco'); if (!sel) return;
@@ -1563,14 +1674,14 @@
             const box = document.getElementById('foco'); fillFocoSelect();
             const a = CFG.foco && state.alunos.find(x => x.login === CFG.foco);
             if (!a) { box.className = ''; box.innerHTML = ''; focoPrev = null; return; }
-            const on = (state.agora - (Number(a.ultima) || 0)) < 300000;
+            const on = ativoAgora(a);
             const xp = Number(a.xp) || 0, rt = Number(a.resp) || 0, ro = Number(a.respOk) || 0;
             const acc = rt ? Math.round(ro / rt * 100) : 0, pct = Math.round((Number(a.pct) || 0) * 100);
             const pos = [...state.alunos].sort((p, q) => ordKey(q) - ordKey(p)).findIndex(x => x.login === a.login) + 1;
             const vals = {saldo: formatMoney(a.cofrinho), moedas: a.moedas || 0, ganhas: a.ganhas || 0, fim: a.fim || 0, ini: a.ini || 0, pct: pct + '%', est: a.est || 0, acc: acc + '%', combo: a.combo || 0, mundos: a.mundos || 0, gasto: a.gasto || 0, vendido: a.vendido || 0, itens: a.itens || 0, xp: xp, resp: rt};
             const card = (k, l, v) => `<div class="fc-card${focoPrev && focoPrev[k] !== vals[k] ? ' flash' : ''}"><small>${l}</small><b>${v}</b></div>`;
             const ult = (state.recentes || []).filter(r => r.login === a.login).slice(0, 8);
-            box.innerHTML = `<div class="fc-top"><div><div class="fc-name">👁 ${esc(a.nick || a.login)} <span class="badge-status ${on ? 'badge-online' : 'badge-offline'}">${on ? '● Online' : '○ Offline'}</span></div><div class="fc-sub">${esc(a.serie || '')} • login ${esc(a.login)} • ${pos}º no ranking • Nível ${esc(a.nivel || 1)}</div></div><button class="fc-x" onclick="setFoco('')">✕ Parar de acompanhar</button></div>
+            box.innerHTML = `<div class="fc-top"><div><div class="fc-name">👁 ${esc(a.nick || a.login)} <span class="badge-status ${on ? 'badge-online' : 'badge-offline'}">${on ? '● Online' : '○ Offline'}</span></div><div class="fc-sub">${esc(a.serie || '')} • login ${esc(a.login)} • ${pos}º no ranking • Nível ${esc(a.nivel || 1)} • ${uaHtml(a)}</div></div><button class="fc-x" onclick="setFoco('')">✕ Parar de acompanhar</button></div>
             <div class="fc-atual">${a.atual ? `🎮 ${on ? 'Fazendo agora' : 'Última atividade'}: <b>${esc(a.atual.nome)}</b> <span class="fc-cod">código ${esc(a.atual.cod)}</span>` : '🎮 Atividade atual: <b>menu / nenhuma</b>'}</div>
             <div class="fc-grid">${card('saldo','💰 Saldo (cofrinho)',vals.saldo)}${card('moedas','🪙 Moedas (agora)',vals.moedas)}${card('ganhas','🪙 Moedas ganhas',a.ganhas || 0)}${card('fim','✅ Fases concluídas',vals.fim)}${card('ini','🚩 Fases começadas',vals.ini)}${card('pct','📊 % concluído',vals.pct)}${card('xp','⭐ XP',xp.toLocaleString('pt-BR'))}${card('est','🌟 Estrelas',vals.est)}${card('acc','🎯 % de acertos',vals.acc + ' <small>' + ro + '/' + rt + '</small>')}${card('combo','🔥 Melhor sequência',vals.combo)}${card('mundos','🗺️ Mundos',vals.mundos)}${card('gasto','🛍️ Gasto na loja',vals.gasto + ' 🪙')}${card('vendido','🏷️ Vendido',vals.vendido + ' 🪙')}${card('itens','🎒 Itens',vals.itens)}</div>
             <div class="fc-cols"><div class="fc-box"><h4>Progresso por mundo</h4>${mundosHtml(a)}</div><div class="fc-box"><h4>Desempenho por tema</h4>${temasHtml(a)}</div></div>
@@ -1610,14 +1721,36 @@
         }
 
         // A conta mestre não entra na aba RobIox-Alunos; buscamos o progresso bruto e montamos a linha.
-        async function adicionarMestre(data) {
-            if (!data || !Array.isArray(data.alunos) || data.alunos.some(a => a.login === 'mestre')) return;
+        // Antes: a cada atualização fazia mais um fetch (rbxload) em série, ~1,5 s a mais por ciclo.
+        // Agora: a linha do mestre fica em cache e é renovada em segundo plano no máximo a cada 60 s.
+        const mestreC = { j: null, t: 0, busy: false, ts: 0 };
+        function adicionarMestre(data) {
+            if (!data || !Array.isArray(data.alunos) || data.alunos.some(a => a.login === 'mestre') || !mestreC.j) return;
+            montaMestre(mestreC.j, data);
+        }
+        async function pedirMestre(data) {
+            if (!data || !Array.isArray(data.alunos) || data.alunos.some(a => a.login === 'mestre' && !a._mestre)) return;
+            if (mestreC.busy || Date.now() - mestreC.t < 60000) return;
             const endpoint = window.EDU_ENDPOINT || '';
             if (!endpoint) return;
+            mestreC.busy = true;
             try {
-                const r = await fetch(endpoint + (endpoint.indexOf('?') < 0 ? '?' : '&') + 'acao=rbxload&login=mestre');
-                const j = await r.json();
+                const r = await fetch(endpoint + (endpoint.indexOf('?') < 0 ? '?' : '&') + 'acao=rbxload&login=mestre', { cache: 'no-store' });
+                const j = JSON.parse(await r.text());
+                mestreC.t = Date.now();
                 if (!j || !j.ok || !j.st) return;
+                const mudou = !mestreC.j || Number(j.ts) !== mestreC.ts;
+                mestreC.j = j; mestreC.ts = Number(j.ts) || 0;
+                if (mudou && state.hasLoadedOnce) {
+                    const base = { alunos: state.alunos.filter(a => !a._mestre), recentes: state.recentes };
+                    montaMestre(j, base);
+                    state.alunos = base.alunos;
+                    updateUI();
+                }
+            } catch (e) { } finally { mestreC.busy = false; }
+        }
+        function montaMestre(j, data) {
+            try {
                 const st = j.st;
                 const rec = (data.recentes || []).filter(x => x.login === 'mestre');
                 const temas = {};
@@ -1736,28 +1869,39 @@
                 return;
             }
 
+            const ctl = window.AbortController ? new AbortController() : null;
+            const to = setTimeout(() => { if (ctl) ctl.abort(); }, 35000); // rbxdash leva ~9–15 s; corta se travar
             try {
                 const endpoint = window.EDU_ENDPOINT || '';
                 const url = `${endpoint}?acao=rbxdash&k=${encodeURIComponent(CHAVE)}`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('Falha de rede na API');
-                
-                const data = await res.json();
-                if (data && data.ok === 1) {
-                    document.getElementById('conn-warn').style.display = 'none';
-                    state.hasLoadedOnce = true;
-                    await adicionarMestre(data);
+                const res = await fetch(url, ctl ? { signal: ctl.signal, cache: 'no-store' } : { cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const tx = await res.text();
+                let data = null;
+                try { data = JSON.parse(tx); } catch (e) { throw new Error(/^\s*</.test(tx) ? 'servidor respondeu página de erro (Apps Script frio/ocupado)' : 'resposta inválida'); }
+                if (!data || data.ok !== 1) throw new Error('Retorno inválido do servidor');
+                document.getElementById('conn-warn').style.display = 'none';
+                state.falhas = 0;
+                state.lastOk = Date.now();
+                state.hasLoadedOnce = true;
+                // Sem mudança nos dados? não redesenha nada (evita piscar e perder rolagem); só o "há Xs" anda.
+                const sig = String(tx.length) + ':' + tx.replace(/"agora":\d+,?/, '');
+                if (sig === state.sig) { state.agora = Number(data.agora) || Date.now(); }
+                else {
+                    state.sig = sig;
+                    adicionarMestre(data);
                     processNewData(data);
-                } else {
-                    throw new Error('Retorno inválido do servidor');
                 }
+                pedirMestre(data);
             } catch (e) {
-                console.warn('Erro ao sincronizar:', e);
-                document.getElementById('conn-warn').style.display = 'block';
-                // Se ainda não tiver carregado nada, atualiza a UI para mostrar estado amigável
-                if (!state.hasLoadedOnce) {
-                    updateUI();
-                }
+                state.falhas++;
+                console.warn('Erro ao sincronizar (' + state.falhas + 'ª falha seguida):', e && e.message || e);
+                // Aviso vermelho grande só depois de 3 falhas seguidas; antes disso, só "reconectando…" discreto.
+                if (state.falhas >= 3 || !state.hasLoadedOnce) document.getElementById('conn-warn').style.display = 'block';
+                if (!state.hasLoadedOnce) updateUI();
+            } finally {
+                clearTimeout(to);
+                atualizaIndicador();
             }
         }
 
@@ -1779,6 +1923,7 @@
             return n.replace(/\s*[·\-–]\s*fase\s*\d+\s*\/\s*\d+\s*$/i, '').trim();
         }
         function alunoVisivel(a) {
+            if (state.soAtivos && !ativoAgora(a)) return false;
             if (state.filterSerie && state.filterSerie !== 'TODOS' && String(a.serie) !== String(state.filterSerie)) return false;
             const j = state.filterJogo;
             if (j && j !== 'TODOS') {
@@ -1791,24 +1936,34 @@
             const sel = document.getElementById('filter-jogo');
             if (!sel) return;
             const nomes = new Set();
-            (state.alunos || []).forEach(a => { const n = jogoBaseDe(a); if (n) nomes.add(n); });
+            (state._todos || state.alunos || []).forEach(a => { const n = jogoBaseDe(a); if (n) nomes.add(n); });
             const lista = ['TODOS', 'SEM', ...Array.from(nomes).sort()];
             const atual = state.filterJogo;
-            sel.innerHTML = '<option value="TODOS">Todas as atividades</option><option value="SEM">Sem atividade</option>' +
-                Array.from(nomes).sort().map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
+            if (atual && !['TODOS', 'SEM'].includes(atual) && !lista.includes(atual)) lista.push(atual); // mantém o filtro escolhido
+            const sig = lista.join('|');
+            // Só reconstrói a lista quando muda (reconstruir fechava o menu aberto a cada atualização).
+            if (sel.dataset.sig !== sig) {
+                sel.dataset.sig = sig;
+                sel.innerHTML = '<option value="TODOS">Todas as atividades</option><option value="SEM">Sem atividade</option>' +
+                    lista.slice(2).map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join('');
+            }
             sel.value = lista.includes(atual) ? atual : 'TODOS';
             if (sel.value === 'TODOS') state.filterJogo = 'TODOS';
         }
         function updateUI() {
             const todos = state.alunos, rec = state.recentes || [];
             state._todos = todos;
-            const filtroAtivo = (state.filterSerie && state.filterSerie !== 'TODOS') || (state.filterJogo && state.filterJogo !== 'TODOS');
+            const filtroAtivo = state.soAtivos || (state.filterSerie && state.filterSerie !== 'TODOS') || (state.filterJogo && state.filterJogo !== 'TODOS');
             if (filtroAtivo) {
                 const vis = todos.filter(alunoVisivel);
                 const logins = new Set(vis.map(a => a.login));
                 state.alunos = vis;
                 state.recentes = rec.filter(r => logins.has(r.login) && (state.filterJogo === 'TODOS' || !state.filterJogo || (state.filterJogo === 'SEM' ? false : mesmoJogo(limpaJogo(r.mundo || ''), state.filterJogo))));
             }
+            // Guarda a rolagem da página e das listas para a atualização não "pular" a tela.
+            const sy = window.scrollY, rolas = ['ranking-container', 'progress-container', 'feed-container', 'games-container']
+                .map(id => { const el = document.getElementById(id); return el ? [el, el.scrollTop, el.offsetHeight] : null; }).filter(Boolean);
+            rolas.forEach(([el, , h]) => { if (h) el.style.minHeight = h + 'px'; });
             try {
                 updateStats();
                 renderRanking();
@@ -1822,11 +1977,14 @@
             } finally {
                 state.alunos = todos;
                 state.recentes = rec;
+                rolas.forEach(([el, st]) => { el.style.minHeight = ''; if (el.scrollTop !== st) el.scrollTop = st; });
+                if (Math.abs(window.scrollY - sy) > 1) window.scrollTo(0, sy);
+                decoraLogins();
             }
         }
 
         function updateStats() {
-            const onlineCount = state.alunos.filter(a => (state.agora - (Number(a.ultima) || 0)) < 300000).length;
+            const onlineCount = state.alunos.filter(a => ativoAgora(a)).length;
             const totalResp = state.alunos.reduce((acc, a) => acc + (Number(a.resp) || 0), 0);
             const totalOk = state.alunos.reduce((acc, a) => acc + (Number(a.respOk) || 0), 0);
             const totalMoney = state.alunos.reduce((acc, a) => acc + (Number(a.cofrinho) || 0), 0);
@@ -1854,8 +2012,8 @@
             const sorted = [...state.alunos].sort((a, b) => ordKey(b) - ordKey(a)).slice(0, CFG.top);
 
             container.innerHTML = sorted.map((a, i) => {
-                const isOnline = (state.agora - (Number(a.ultima) || 0)) < 300000;
-                const live = isOnline && a.atual && a.atual.nome;
+                const isOnline = ativoAgora(a);
+                const live = rbxAtivo(a) && a.atual && a.atual.nome;
                 const xp = Number(a.xp) || 0;
                 const xpInLevel = xp % 1000;
                 const xpPct = Math.min(100, Math.max(0, Math.round(xpInLevel / 10)));
@@ -1880,6 +2038,8 @@
                                 <span>Série: ${esc(a.serie || 'Geral')}</span>
                                 <span>•</span>
                                 <span>Nível ${esc(a.nivel || 1)}</span>
+                                <span>•</span>
+                                ${uaHtml(a, 'rank-ua')}
                                 ${live ? `<span class="live-act">🎮 ${esc(a.atual.nome)}</span>` : ''}
                             </div>
                         </div>
@@ -1947,9 +2107,10 @@
                 return;
             }
 
+            if (CFG.ord === 'ultimo') filtered.sort((a, b) => ultimoDe(b) - ultimoDe(a));
             container.innerHTML = filtered.map(a => {
-                const isOnline = (state.agora - (Number(a.ultima) || 0)) < 300000;
-                const live = isOnline && a.atual && a.atual.nome;
+                const isOnline = ativoAgora(a);
+                const live = rbxAtivo(a) && a.atual && a.atual.nome;
                 const pct = Math.min(100, Math.max(0, Math.round((Number(a.pct) || 0) * 100)));
                 const respTotal = Number(a.resp) || 0;
                 const respOk = Number(a.respOk) || 0;
@@ -1972,6 +2133,7 @@
                             </span>
                         </div>
                         
+                        <div>${uaHtml(a)}</div>
                         ${live ? `<div class="prog-live">🎮 Fazendo agora: <b>${esc(a.atual.nome)}</b></div>` : ''}
 
                         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2050,6 +2212,7 @@
                         <div class="feed-content">
                             <div class="feed-title">
                                 <span>${esc(r.nick || r.login || 'Aluno')}</span>
+                                ${(() => { const al = alunoPorLogin(r.login); return al ? uaHtml(al, 'feed-ua') : ''; })()}
                                 ${r.mat ? `<span class="feed-tag">📚 ${esc(r.mat)}</span>` : ''}
                                 ${r.tema ? `<span class="feed-tag">🏷️ ${esc(r.tema)}</span>` : ''}
                             </div>
@@ -2100,7 +2263,7 @@
 
             state.alunos.forEach(a => {
                 if (!a.atual || !a.atual.nome) return;
-                if ((agora - (Number(a.ultima) || 0)) > 300000) return;
+                if (!rbxAtivo(a)) return;
                 const g = garante(a.atual.nome, '🎮');
                 if (!g) return;
                 g.jogando++;
@@ -2223,6 +2386,7 @@
             const targetBtn = document.getElementById('btn-' + id);
             if (targetSection) targetSection.classList.add('active');
             if (targetBtn) targetBtn.classList.add('active');
+            if (['live', 'jogos'].includes(id) && typeof syncAgora === 'function' && Date.now() - state.lastOk > 3000) syncAgora(); // abriu aba ao vivo: busca já
         }
 
         function handleSearch() {
@@ -2278,7 +2442,7 @@
                 btn.classList.remove('active');
                 btn.textContent = 'Modo Demo';
             }
-            fetchData();
+            state.sig = ''; syncAgora();
         }
 
         function showToast(msg) {
@@ -2468,11 +2632,51 @@
         });
 
         // Loop de atualização dos dados (modo demo a cada 3.5s, modo normal a cada 8s)
+        // Antes: setInterval fixo de 8 s, mas o rbxdash leva 9–15 s → até 2–3 pedidos sobrepostos,
+        // respostas fora de ordem e fila no Apps Script. Agora: um pedido por vez, intervalo adaptativo,
+        // retentativa com espera crescente e retomada imediata ao voltar para a aba.
+        let syncTimer = null, syncBusy = false;
+        function intervaloSync() {
+            if (state.isDemo) return 3500;
+            if (state.falhas) return Math.min(30000, 2000 * Math.pow(2, state.falhas - 1)); // 2, 4, 8, 16, 30 s
+            if (document.hidden) return 60000;                                                // aba em segundo plano
+            if (['live', 'jogos'].includes(state.activeSection) || CFG.foco) return 3000;     // Ao Vivo / Jogos / acompanhando aluno
+            return 15000;                                                                     // demais abas
+        }
+        async function syncAgora() {
+            clearTimeout(syncTimer);
+            if (syncBusy) return;
+            syncBusy = true;
+            try { await fetchData(); } finally {
+                syncBusy = false;
+                syncTimer = setTimeout(syncAgora, intervaloSync());
+            }
+        }
         function startSyncLoop() {
-            fetchData();
-            setInterval(() => {
-                fetchData();
-            }, state.isDemo ? 3500 : 8000);
+            syncAgora();
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && Date.now() - state.lastOk > 3000) syncAgora();
+                atualizaIndicador();
+            });
+            window.addEventListener('online', () => syncAgora());
+            window.addEventListener('focus', () => { if (Date.now() - state.lastOk > 10000) syncAgora(); });
+            setInterval(() => { atualizaIndicador(); tickUA(); }, 1000);
+        }
+        function atualizaIndicador() {
+            const box = document.getElementById('live-ind'), tx = document.getElementById('live-txt');
+            if (!box || !tx) return;
+            let s, cls = '';
+            if (state.isDemo) s = 'demonstração';
+            else if (state.falhas) { s = 'reconectando…' + (state.lastOk ? ' (dados de ' + haQuanto(state.lastOk).replace('agora', 'agora há pouco') + ')' : ''); cls = 'recon'; }
+            else if (!state.lastOk) s = syncBusy ? 'conectando…' : 'aguardando…';
+            else {
+                const d = Math.round((Date.now() - state.lastOk) / 1000);
+                s = 'ao vivo · atualizado há ' + (d < 60 ? d + ' s' : Math.round(d / 60) + ' min');
+                if (document.hidden) cls = 'parado';
+            }
+            if (tx.textContent !== s) tx.textContent = s;
+            box.classList.toggle('recon', cls === 'recon');
+            box.classList.toggle('parado', cls === 'parado');
         }
 
         if (state.isDemo) {

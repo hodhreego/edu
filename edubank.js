@@ -119,17 +119,27 @@ function sessao(){
   if(RE.test(l)&&t){LOGIN=l;TOKEN=String(t);return true}
   return false;
 }
+/* timeout 20 s + até 4 novas tentativas (1,5/3/5/8 s) se não vier JSON, der timeout/rede ou o servidor pedir {tentar:1}.
+   As ações que mexem em saldo levam id (o servidor ignora repetição), então repetir é seguro. */
 function api(p){
   var base=ep();
   if(!base)return Promise.reject(new Error('EduBank indisponível: servidor não configurado.'));
   p.login=LOGIN;p.t=TOKEN;
   var q=Object.keys(p).filter(function(k){return p[k]!==undefined&&p[k]!==null}).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(p[k])}).join('&');
-  return fetch(base+(base.indexOf('?')>-1?'&':'?')+q).then(function(r){return r.json()}).then(function(j){
-    if(!j)throw new Error('Resposta inválida do servidor.');
-    if(j.relogin&&root){recPara();setTimeout(function(){if(root)semSessao('Sua sessão expirou. Entre de novo.')},0);throw new Error('Sessão expirada.')}
+  var url=base+(base.indexOf('?')>-1?'&':'?')+q,esp=[1500,3000,5000,8000],n=0;
+  function um(){var ac=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ac)ac.abort()},20000);
+    return fetch(url,ac?{signal:ac.signal}:{}).then(function(r){return r.text()}).then(function(t){clearTimeout(tm);var j=null;try{j=JSON.parse(t)}catch(e){}return j&&typeof j==='object'?j:{ok:0,net:1}},function(){clearTimeout(tm);return {ok:0,net:1}})}
+  function vai(){return um().then(function(j){if(!j.ok&&(j.net||j.tentar)&&n<esp.length){var w=esp[n++];return new Promise(function(r){setTimeout(r,w)}).then(vai)}return j})}
+  return vai().then(function(j){
+    if(j.net)throw new Error('Sem conexão com o banco. Tente de novo.');
+    if(j.relogin&&root){recPara();
+      var A=window.EDU_AUTH,as=A&&A.sessao?A.sessao():null;
+      if(A&&A.pedirLogin&&!(as&&(as.mestre||as.local))){A.pedirLogin('Sua sessão terminou. Entre de novo.',function(){if(root&&sessao()){telaInicio();recIniciar()}})}   /* um único lugar pede login: o porteiro */
+      else setTimeout(function(){if(root)semSessao('Sua sessão expirou. Entre de novo.')},0);
+      throw new Error('Sessão expirada.')}
     if(!j.ok&&/sess|token|login/i.test(j.erro||'')&&/inv|expir|entre/i.test(j.erro||''))j.sessao=1;
     return j;
-  },function(){throw new Error('Sem conexão com o banco. Tente de novo.')});
+  });
 }
 function hb(senha){
   if(!(window.crypto&&crypto.subtle))return Promise.reject(new Error('Este navegador não permite criar senha (precisa de https).'));
@@ -751,10 +761,12 @@ function adaptadorLocal(login){
       var st=ler();st.cash=Math.round((Number(st.cash)||0)+Number(d||0));
       if(st.cash<0)st.cash=0;
       st._ts=Date.now();
-      lset(k,st);return st.cash;
+      lset(k,st);
+      try{if(window.EDU_AUTH&&EDU_AUTH.salvarJa)EDU_AUTH.salvarJa()}catch(e){}   /* saldo mudou: salva na nuvem já, sem esperar 8 s */
+      return st.cash;
     }
   };
 }
 
-window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:15,versao:'15'};
+window.EDUBANK={open:open,close:fechar,icone:icone,adaptadorLocal:adaptadorLocal,fmt:rs,qtd:qtd,moedas:MOEDAS,version:16,versao:'16'};
 })();

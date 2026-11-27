@@ -53,7 +53,7 @@
       W.EDU_LOGIN_UI.mostrar(body, { titulo: o.titulo, erro: msg, cor: o.cor, onOk: function () { o.opts.login = ''; o.opts.token = ''; depois(); } });
     }
     if (W.EDU_LOGIN_UI) return go();
-    var s = D.createElement('script'); s.src = 'edu-login-ui.js?v=1'; s.onload = go;
+    var s = D.createElement('script'); s.src = 'edu-login-ui.js?v=2'; s.onload = go;
     s.onerror = function () { body.innerHTML = '<p style="text-align:center;padding:30px 14px">Não foi possível abrir o login. Verifique a internet.</p>'; };
     D.head.appendChild(s);
   }
