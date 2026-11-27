@@ -19,6 +19,7 @@
       window.addEventListener('keydown', onEsc);
       var av = api.avatarColors || { skin: '#ffcc99', shirt: '#2563eb', pants: '#1e3a8a', hair: '#3f2a14' };
       var ANO = K.ano(api), TIER = api.tier ? api.tier() : 2, FACIL = api.easy ? api.easy() : false;
+      var SEL = (api && api.ANO >= 10) ? api.ANO : ANO, MN = QZ.nomeMateria(SEL), MATH = SEL <= 9;
       var GOAL = 40, LIMITE = 150, modo = 'menu', R = null, lobby = null, menuEl = null, fimEl = null;
       var stars = []; for (var si = 0; si < 70; si++) stars.push({ x: Math.random(), y: Math.random(), s: Math.random() * 1.8 + .4 });
       var clouds = []; for (var ci = 0; ci < 8; ci++) clouds.push({ x: Math.random(), y: Math.random() * 1.6, s: .6 + Math.random() });
@@ -26,8 +27,8 @@
       function menu() {
         modo = 'menu'; painel.esconder(); placar.mostrar(null); hud([]);
         menuEl = document.createElement('div'); menuEl.className = 'qzl';
-        var h = '<div class="box"><h2>🧮 Corrida de Torre de Matemática</h2><p>Resolva contas para subir ' + GOAL + ' degraus antes de todo mundo!<br>⚡ Rápido (até 3 s): +3 degraus · até 6 s: +2 · depois: +1 · 🔥 combo de 3: +1 extra · ❌ erro: escorrega 1.</p><p>Ano das contas:</p><div class="row">';
-        [6, 7, 8, 9].forEach(function (a) { h += '<button data-a="' + a + '" class="' + (a === ANO ? 'y' : 'k') + '">' + a + 'º ano</button>'; });
+        var h = '<div class="box"><h2>🧮 Corrida de Torre de ' + MN + '</h2><p>' + (MATH ? 'Resolva contas' : 'Acerte perguntas de ' + MN) + ' para subir ' + GOAL + ' degraus antes de todo mundo!<br>⚡ Rápido (até 3 s): +3 degraus · até 6 s: +2 · depois: +1 · 🔥 combo de 3: +1 extra · ❌ erro: escorrega 1.</p><p>' + (MATH ? 'Ano das contas:' : '') + '</p><div class="row">';
+        if (MATH) [6, 7, 8, 9].forEach(function (a) { h += '<button data-a="' + a + '" class="' + (a === ANO ? 'y' : 'k') + '">' + a + 'º ano</button>'; });
         h += '</div><div class="row"><button class="g" data-m="b">🤖 Contra bots + fantasma</button><button data-m="l">👥 Jogar com a turma</button></div><p style="font-size:12px;opacity:.75">Teclado: 1–4 ou setas + Enter.</p></div>';
         menuEl.innerHTML = h; wrap.appendChild(menuEl);
         menuEl.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
@@ -36,11 +37,11 @@
           if (b.dataset.a) { ANO = +b.dataset.a; [].forEach.call(menuEl.querySelectorAll('[data-a]'), function (x) { x.className = +x.dataset.a === ANO ? 'y' : 'k'; }); return; }
           tiraMenu();
           if (b.dataset.m === 'b') corrida(null);
-          else lobby = K.lobby(wrap, { jogo: 'tm' + ANO, titulo: 'Torre de Matemática · ' + ANO + 'º ano', minimo: 2, onSolo: function () { lobby = null; corrida(null); }, onSair: function () { lobby = null; menu(); }, onLargada: function (info) { lobby = null; corrida(info); } });
+          else lobby = K.lobby(wrap, { jogo: 'tm' + (MATH ? ANO : SEL), titulo: 'Torre de ' + MN + (MATH ? ' · ' + ANO + 'º ano' : ''), minimo: 2, onSolo: function () { lobby = null; corrida(null); }, onSair: function () { lobby = null; menu(); }, onLargada: function (info) { lobby = null; corrida(info); } });
         });
       }
       function tiraMenu() { if (menuEl && menuEl.parentNode) menuEl.parentNode.removeChild(menuEl); menuEl = null; }
-      function ghostKey() { return 'rbx_torremat_ghost_' + ANO; }
+      function ghostKey() { return 'rbx_torremat_ghost_' + (MATH ? ANO : SEL); }
 
       function corrida(info) {
         modo = 'corrida';
@@ -59,8 +60,8 @@
       function pergunta() {
         if (fechado || !R || R.fim) return;
         var nv = Math.max(1, Math.min(5, 1 + Math.floor(R.passos / 8) + (TIER - 2)));
-        var q = QZ.mat(ANO, nv);
-        painel.perguntar({ q: q, alts: QZ.alts(q, FACIL ? 3 : 4), titulo: '🧮 ' + ANO + 'º ano · nível ' + nv, sub: 'Degrau ' + R.passos + '/' + GOAL, cor: '#2563eb', aguardar: 'erro', semExplicacao: true }, function (r) {
+        var q = QZ.porMateria(MATH ? ANO : SEL, nv);
+        painel.perguntar({ q: q, alts: QZ.alts(q, FACIL ? 3 : 4), titulo: '🧮 ' + (MATH ? ANO + 'º ano' : MN) + ' · nível ' + nv, sub: 'Degrau ' + R.passos + '/' + GOAL, cor: '#2563eb', aguardar: 'erro', semExplicacao: true }, function (r) {
           if (!R || R.fim) return;
           try { api.log(q, r.ok, 1); } catch (e) {}
           if (r.ok) {

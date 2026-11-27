@@ -579,10 +579,30 @@ Uma pizza foi cortada em 8 fatias e foram comidas 3. Que fração sobrou?|5/8|3/
 
   /* pergunta de uma disciplina. ano: 6–9 (para contas); rng opcional (para salas ao vivo com semente) */
   var USED = {};
+  /* Perguntas da disciplina escolhida no RobIox (10 Inglês, 11 História, 12 Geografia, 13 Filosofia, 14 Español, 15 Ed. Financeira).
+     Com R (semente) o sorteio é igual para todos da sala. */
+  function doRobiox(ano, nv, R) {
+    var G = window.RBXB && RBXB.G && RBXB.G[ano]; if (!G) return null;
+    var ks = Object.keys(G).filter(function (k) { return typeof G[k] === 'function'; }); if (!ks.length) return null;
+    var o = null, old = Math.random;
+    try { if (R) Math.random = R; var kk = ks[Math.floor(Math.random() * ks.length)]; o = G[kk](Math.max(1, Math.min(3, nv))); if (o) o.topic = (RBXB.TN && RBXB.TN[kk]) || o.topic; }
+    catch (e) { o = null; } finally { Math.random = old; }
+    if (!o || !o.q || !o.a || !o.d || o.d.length < 1) return null;
+    o.disc = ano === 10 ? 'ing' : ano === 11 ? 'his' : ano === 12 ? 'geo' : 'mix'; o.tier = nv;
+    return o;
+  }
+  function porMateria(sel, nivel, R) {
+    sel = +sel || 7; nivel = Math.max(1, Math.min(5, +nivel || 1));
+    if (sel >= 6 && sel <= 9) return mat(sel, nivel, R);
+    return doRobiox(sel, Math.min(3, Math.ceil(nivel * 3 / 5)), R) || mat(7, nivel, R);
+  }
+  function nomeMateria(sel) { sel = +sel; if (sel >= 6 && sel <= 9) return 'Matemática'; if (sel === 10) return 'Inglês'; var m = window.RBX_MAT && RBX_MAT[sel]; return m ? m[1] : 'Matemática'; }
+  function discDe(sel) { return { 10: 'ing', 11: 'his', 12: 'geo' }[+sel] || null; }
   function pergunta(disc, nivel, R, ano) {
     nivel = Math.max(1, Math.min(5, nivel || 1));
     if (disc === 'mix') { var ds = ['mat', 'cie', 'his', 'geo', 'por', 'ing', 'ban']; disc = ds[Math.floor((R || Math.random)() * ds.length)]; }
     if (disc === 'mat' && (R || Math.random)() < 0.6) return mat(ano || 7, nivel, R);
+    if (disc === 'ing') { var oi = doRobiox(10, Math.min(3, Math.ceil(nivel * 3 / 5)), R); if (oi) return oi; }
     var pool = POOL[disc] || POOL.cie, nv = Math.min(3, Math.ceil(nivel * 3 / 5));
     var cand = pool.filter(function (x) { return x.n <= nv; });
     if (!cand.length) cand = pool;
@@ -600,10 +620,13 @@ Uma pizza foi cortada em 8 fatias e foram comidas 3. Que fração sobrou?|5/8|3/
   /* sequência determinística (todos da sala recebem a mesma pergunta na mesma rodada) */
   function sequencia(disc, seed, ano) {
     var cache = {};
-    return function (rodada) {
+    return function sq(rodada) {
       if (cache[rodada]) return cache[rodada];
+      for (var pr = 0; pr < rodada; pr++) if (!cache[pr]) sq(pr);   /* mesma ordem em todos os aparelhos */
       var R = rng((seed ^ hashStr(disc + ':' + rodada)) >>> 0), nivel = Math.min(5, 1 + Math.floor(rodada / 3));
-      var q = pergunta(disc, nivel, R, ano);
+      var q = pergunta(disc, nivel, R, ano), vistas = {}, tt = 0;
+      Object.keys(cache).forEach(function (k) { vistas[cache[k].q] = 1; });
+      while (vistas[q.q] && tt++ < 8) q = pergunta(disc, nivel, R, ano);   /* sem repetir pergunta na mesma partida */
       q.alts = shuf([q.a].concat(q.d.slice(0, 3)), R);
       return (cache[rodada] = q);
     };
@@ -612,5 +635,5 @@ Uma pizza foi cortada em 8 fatias e foram comidas 3. Que fração sobrou?|5/8|3/
   function alts(q, n, R) { return shuf([q.a].concat(shuf(q.d, R).slice(0, (n || 4) - 1)), R); }
   function total() { var t = 0; Object.keys(POOL).forEach(function (k) { t += POOL[k].length; }); return t; }
 
-  window.RBX_QZ = { DISC: DISC, POOL: POOL, total: total, pergunta: pergunta, sequencia: sequencia, mat: mat, rng: rng, hash: hashStr, shuf: shuf, alts: alts, flagSVG: flagSVG, flagURL: flagURL, FLAGS: FCODES };
+  window.RBX_QZ = { DISC: DISC, POOL: POOL, total: total, pergunta: pergunta, sequencia: sequencia, mat: mat, porMateria: porMateria, nomeMateria: nomeMateria, discDe: discDe, rng: rng, hash: hashStr, shuf: shuf, alts: alts, flagSVG: flagSVG, flagURL: flagURL, FLAGS: FCODES };
 })();

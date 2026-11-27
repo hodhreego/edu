@@ -20,6 +20,7 @@
       var ANO = K.ano(api), TIER = api.tier ? api.tier() : 2, FACIL = api.easy ? api.easy() : false;
       var FASES = 8, disc = 'mix', G = null, S = null, lobby = null, menuEl = null, fimEl = null;
       try { disc = localStorage.getItem('rbx_ot_disc') || 'mix'; } catch (e) {}
+      var ddM = QZ.discDe && QZ.discDe(api && api.ANO); if (ddM) disc = ddM;
       function dInfo(id) { for (var i = 0; i < QZ.DISC.length; i++) if (QZ.DISC[i].id === id) return QZ.DISC[i]; return QZ.DISC[0]; }
       var COR = [0x22c55e, 0x3b82f6, 0xf59e0b, 0xa855f7, 0x06b6d4, 0xec4899, 0x84cc16, 0xf97316];
 

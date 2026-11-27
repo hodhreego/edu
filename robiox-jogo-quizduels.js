@@ -20,6 +20,7 @@
       var ANO = K.ano(api), TIER = api.tier ? api.tier() : 2, FACIL = api.easy ? api.easy() : false;
       var disc = 'mix', modo = 'menu', parts = [], moedas = 0, acertos = 0;
       try { disc = localStorage.getItem('rbx_qd_disc') || 'mix'; } catch (e) {}
+      var ddM = QZ.discDe && QZ.discDe(api && api.ANO); if (ddM) disc = ddM;
       function dInfo(id) { for (var i = 0; i < QZ.DISC.length; i++) if (QZ.DISC[i].id === id) return QZ.DISC[i]; return QZ.DISC[0]; }
 
       /* ---------------- menu ---------------- */

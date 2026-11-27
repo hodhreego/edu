@@ -739,6 +739,12 @@ function triviaStart(api) {
   function nextQ(p) {
     var cats = ['C', 'G', 'H', 'K'], cat = cats[(p - 1) % 4], tier = p <= 33 ? 1 : p <= 66 ? 2 : 3, i;
     try {
+      /* disciplina escolhida no RobIox (ex.: Inglês) manda nas perguntas: 3 de cada 4 vêm do conteúdo dela */
+      var sd = +(api && api.ANO) || 0;
+      if (sd >= 10 && api.B && api.B.G && api.B.G[sd] && Math.random() < .75) {
+        var ks2 = Object.keys(api.B.G[sd]).filter(function (k) { return typeof api.B.G[sd][k] === 'function'; });
+        if (ks2.length) { var tk2 = ks2[Math.floor(Math.random() * ks2.length)], q2 = api.B.make(sd, tk2, tier); if (q2 && q2.q && q2.a != null) { var nm = (api.B.TN && api.B.TN[tk2]) || 'Inglês'; q2.topic = nm; q2._chip = sd === 10 ? '🇬🇧 ' + nm : nm; return q2; } }
+      }
       var an = cat === 'H' ? 11 : cat === 'G' ? 12 : 0;
       if (an && api.B && api.B.G && api.B.G[an] && Math.random() < .3) {
         var ks = Object.keys(api.B.G[an]).filter(function (k) { return typeof api.B.G[an][k] === 'function'; });

@@ -18,13 +18,14 @@
       function onEsc(e) { if (e.key === 'Escape') fechar(); }
       window.addEventListener('keydown', onEsc);
       var ANO = K.ano(api), TIER = api.tier ? api.tier() : 2, FACIL = api.easy ? api.easy() : false;
+      var SEL = (api && api.ANO >= 10) ? api.ANO : ANO, MN = QZ.nomeMateria(SEL), MATH = SEL <= 9;
       var TOTAL = 20, G = null, S = null, lobby = null, menuEl = null, fimEl = null;
       var COR = [0x60a5fa, 0x34d399, 0xfbbf24, 0xf472b6, 0xa78bfa, 0x22d3ee];
 
       function menu() {
         menuEl = document.createElement('div'); menuEl.className = 'qzl';
-        var h = '<div class="box"><h2>➗ Obby de Matemática</h2><p>Cada conta certa faz a próxima plataforma surgir. Pule até a plataforma ' + TOTAL + '! Errou: −1 vida. Caiu: volta à plataforma atual.</p><p>Ano das contas:</p><div class="row">';
-        [6, 7, 8, 9].forEach(function (a) { h += '<button data-a="' + a + '" class="' + (a === ANO ? 'y' : 'k') + '">' + a + 'º ano</button>'; });
+        var h = '<div class="box"><h2>➗ Obby de ' + MN + '</h2><p>' + (MATH ? 'Cada conta certa' : 'Cada pergunta certa') + ' faz a próxima plataforma surgir. Pule até a plataforma ' + TOTAL + '! Errou: −1 vida. Caiu: volta à plataforma atual.</p><p>' + (MATH ? 'Ano das contas:' : '') + '</p><div class="row">';
+        if (MATH) [6, 7, 8, 9].forEach(function (a) { h += '<button data-a="' + a + '" class="' + (a === ANO ? 'y' : 'k') + '">' + a + 'º ano</button>'; });
         h += '</div><div class="row"><button class="g" data-m="j">▶ Jogar</button><button data-m="l">👥 Largada com a turma</button></div><p style="font-size:12px;opacity:.75">Setas/WASD + Espaço · no celular: joystick + PULAR · contas: 1–4.</p></div>';
         menuEl.innerHTML = h; wrap.appendChild(menuEl);
         menuEl.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
@@ -33,7 +34,7 @@
           if (b.dataset.a) { ANO = +b.dataset.a; [].forEach.call(menuEl.querySelectorAll('[data-a]'), function (x) { x.className = +x.dataset.a === ANO ? 'y' : 'k'; }); return; }
           tira();
           if (b.dataset.m === 'j') jogar(null);
-          else lobby = K.lobby(wrap, { jogo: 'om' + ANO, titulo: 'Obby de Matemática · ' + ANO + 'º ano', minimo: 2, onSolo: function () { lobby = null; jogar(null); }, onSair: function () { lobby = null; menu(); }, onLargada: function (info) { lobby = null; jogar(info); } });
+          else lobby = K.lobby(wrap, { jogo: 'om' + (MATH ? ANO : SEL), titulo: 'Obby de ' + MN + (MATH ? ' · ' + ANO + 'º ano' : ''), minimo: 2, onSolo: function () { lobby = null; jogar(null); }, onSair: function () { lobby = null; menu(); }, onLargada: function (info) { lobby = null; jogar(info); } });
         });
         O.pausar(true);
       }
@@ -68,8 +69,8 @@
       function pergunta() {
         if (!G || G.fim) return;
         O.pausar(true);
-        var q = QZ.mat(ANO, nivel());
-        painel.perguntar({ q: q, alts: QZ.alts(q, FACIL ? 3 : 4), titulo: '➗ Plataforma ' + (G.passo + 1) + '/' + TOTAL, sub: ANO + 'º ano · nível ' + nivel(), cor: '#7c3aed', aguardar: 'erro' }, function (r) {
+        var q = QZ.porMateria(MATH ? ANO : SEL, nivel());
+        painel.perguntar({ q: q, alts: QZ.alts(q, FACIL ? 3 : 4), titulo: '➗ Plataforma ' + (G.passo + 1) + '/' + TOTAL, sub: (MATH ? ANO + 'º ano' : MN) + ' · nível ' + nivel(), cor: '#7c3aed', aguardar: 'erro' }, function (r) {
           painel.esconder(); O.pausar(false);
           try { api.log(q, r.ok, 1); } catch (e) {}
           if (r.ok) { G.acertos++; G.combo++; api.gain(6 + Math.min(G.combo, 10), 1); surgir(); }
