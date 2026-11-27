@@ -62,9 +62,12 @@ function entrar(u,p){
  if(u===MESTRA||p===MESTRA){var l=RE.test(u)?u:'mestre';wr({login:l,t:'',local:1,mestre:1,exp:Date.now()+12*36e5,turma:turmaDe(l),trocar:0});return Promise.resolve({ok:1,local:1,mestre:1,trocar:0})}
  if(!RE.test(u))return Promise.resolve({ok:0,erro:'Login inválido. Use o formato do RCO, ex.: 7cla6b.'});
  if(!p)return Promise.resolve({ok:0,erro:'Digite a senha.'});
+ /* servidor fora do ar/desatualizado: a senha da turma entra direto (sessão local, sem token) */
+ var semServ=function(){if(p===SENHA_FIXA){wr({login:u,t:'',local:1,exp:Date.now()+DIAS30,turma:turmaDe(u),trocar:0});return{ok:1,local:1,trocar:0}}return null};
+ if(!(window.crypto&&crypto.subtle)){var r0=semServ();if(r0)return Promise.resolve(r0)}
  return hash(u,p).then(function(h){return api('entrar',{login:u,h:h}).then(function(j){
-  if(j&&j.ok&&!j.token)return{ok:0,erro:'Servidor ainda nao atualizado (login indisponivel). Fale com o professor.'};
-  if(j&&!j.ok&&(j.net||!j.erro||/desconhec|a[cç][aã]o/i.test(j.erro)))return{ok:0,net:j.net,erro:'Servidor ainda nao atualizado ou sem conexao. Somente o professor (senha mestra) consegue entrar agora.'};
+  if(j&&j.ok&&!j.token)return semServ()||{ok:0,erro:'Servidor ainda nao atualizado (login indisponivel). Fale com o professor.'};
+  if(j&&!j.ok&&(j.net||!j.erro||/desconhec|a[cç][aã]o|servidor|erro interno|exception/i.test(j.erro)))return semServ()||{ok:0,net:j.net,erro:'Servidor ainda nao atualizado ou sem conexao. Somente o professor (senha mestra) consegue entrar agora.'};
   if(j&&j.ok&&j.token){j.trocar=0;wr({login:u,t:j.token,exp:Date.now()+DIAS30,turma:j.turma||turmaDe(u)})}
   return j})},function(){return{ok:0,erro:'Este navegador não permite entrar (precisa de https).'}});
 }
