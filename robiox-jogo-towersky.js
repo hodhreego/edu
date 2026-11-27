@@ -326,7 +326,13 @@ function OBBY(api, o) {
     if (o.autoCam !== false && gt - lastDrag > 1.2 && az > .35 && m > .3) camYaw += angD(Math.atan2(-wx, -wz), camYaw) * Math.min(1, dt * 1.1 * az);
     if (pl.gr) pl.coy = .1; else pl.coy -= dt;
     if (jHeld) pl.jb = Math.max(pl.jb, .06); if (pl.jb > 0) pl.jb -= dt;
-    if (pl.jb > 0 && pl.coy > 0) { pl.vy = JV; pl.jb = 0; pl.coy = 0; pl.gr = false; pl.gnd = null; snd(520, .1, 'square', .03, 880); }
+    if (pl.gnd) pl.lg = pl.gnd;
+    if (pl.jb > 0 && pl.coy > 0) {   /* pulo turbo: 3º pulo seguido na mesma plataforma = alto, 6º = mais alto, 7º = bem mais alto */
+      if (pl.lg !== pl.jplat) { pl.jn = 0; pl.jplat = pl.lg; }
+      pl.jn = ((pl.jn || 0) % 7) + 1; var jbm = pl.jn === 3 ? Math.SQRT2 : pl.jn === 6 ? Math.sqrt(3) : pl.jn === 7 ? 2.05 : 1;
+      pl.vy = JV * jbm; pl.jb = 0; pl.coy = 0; pl.gr = false; pl.gnd = null; snd(jbm > 1 ? (pl.jn === 7 ? 820 : 660) : 520, .1, 'square', .03, 880);
+      if (jbm > 1) { try { var tq = document.getElementById('rbxTurbo'); if (!tq) { tq = document.createElement('div'); tq.id = 'rbxTurbo'; tq.style.cssText = 'position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:2147483600;background:rgba(15,23,42,.82);color:#fde047;font:900 20px system-ui,Arial;padding:8px 16px;border-radius:12px;pointer-events:none;transition:opacity .3s;opacity:0'; document.body.appendChild(tq); } tq.textContent = pl.jn === 7 ? '🚀 SUPER PULO!' : '🚀 Pulo turbo!'; tq.style.opacity = 1; clearTimeout(tq._t); tq._t = setTimeout(function () { tq.style.opacity = 0; }, 900); } catch (e) {} }
+    }
     pl.vy -= G * dt; if (pl.vy < -38) pl.vy = -38;
     pl.x += pl.vx * dt; pl.z += pl.vz * dt; side();
     var py = pl.y; pl.y += pl.vy * dt; vert(py);

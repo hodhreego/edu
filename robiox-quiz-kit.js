@@ -403,7 +403,13 @@
       var v = O.velocidade * sp, ac = P.chao ? 14 : 6;
       P.vx += (ix * v - P.vx) * Math.min(1, ac * dt); P.vz += (iz * v - P.vz) * Math.min(1, ac * dt);
       if (P.chao) P.coyote = .12; else P.coyote -= dt;
-      if (jumpQ && P.coyote > 0) { P.vy = 9.6; P.coyote = 0; P.chao = null; K.beep(520, .07, 'square', .025); }
+      if (P.chao) P.lg = P.chao;
+      if (jumpQ && P.coyote > 0) {   /* pulo turbo igual ao obby principal: 3º pulo seguido na mesma plataforma = alto, 6º = mais alto, 7º = bem mais alto */
+        if (P.lg !== P.jplat) { P.jn = 0; P.jplat = P.lg; }
+        P.jn = ((P.jn || 0) % 7) + 1; var jbm = P.jn === 3 ? Math.SQRT2 : P.jn === 6 ? Math.sqrt(3) : P.jn === 7 ? 2.05 : 1;
+        P.vy = 9.6 * jbm; P.coyote = 0; P.chao = null; K.beep(jbm > 1 ? (P.jn === 7 ? 820 : 660) : 520, .07, 'square', .025);
+        if (jbm > 1) { try { (O.turboMsg = O.turboMsg || K.msg(wrap))(P.jn === 7 ? '🚀 SUPER PULO!' : '🚀 Pulo turbo!', 900); } catch (e) {} }
+      }
       jumpQ = false;
       P.vy -= 24 * dt; if (P.vy < -30) P.vy = -30;
       if (P.chao) { P.x += P.chao.dx || 0; P.y += P.chao.dy || 0; P.z += P.chao.dz || 0; }
