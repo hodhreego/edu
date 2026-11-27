@@ -140,6 +140,7 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.acao === 'rbxlive') return rbxLive_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'ativdash') return ativDash_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'profsaldos') return profSaldos_(e.parameter);
+  if (e && e.parameter && e.parameter.acao === 'rbxmult') return rbxMultSet_(e.parameter);
   if (e && e.parameter && EB_ACOES[e.parameter.acao]) return eb_(e.parameter);
   if (e && e.parameter && e.parameter.acao === 'rbxfmt' && e.parameter.k === RBX_KEY) { rbxBeleza_(); return ok_('formatado'); }
   return ok_('Planilha do professor ativa.');
@@ -404,6 +405,7 @@ function rbxLoad_(p) {
   var ate = rbxBloqueio_(login);
   if (ate > Date.now()) return ContentService.createTextOutput(JSON.stringify({ ok: 0, bloqueado: 1, ate: ate })).setMimeType(ContentService.MimeType.JSON);
   var out = { ok: 0 };
+  out.mult = rbxMult_();
   if (n > 1) {
     var v = sh.getRange(2, 1, n - 1, 3).getValues();
     for (var i = 0; i < v.length; i++) if (v[i][0] === login) { try { out = { ok: 1, ts: Number(v[i][1]), st: JSON.parse(v[i][2]) }; } catch (e) {} break; }
@@ -1705,7 +1707,8 @@ function rbxAlunos_(login, ts, s) {
 }
 function rbxDash_(p) {
   if (String(p.k || '') !== RBX_KEY) return ContentService.createTextOutput(JSON.stringify({ ok: 0 })).setMimeType(ContentService.MimeType.JSON);
-  var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] }, sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
+  var ss = SpreadsheetApp.getActiveSpreadsheet(), out = { ok: 1, agora: Date.now(), alunos: [], recentes: [] };
+  out.mult = rbxMult_(), sh = ss.getSheetByName('RobIox-Alunos'), rs = ss.getSheetByName('RobIox-Respostas'), cnt = {};
   if (rs && rs.getLastRow() > 1) {
     var rn = rs.getLastRow(), v = rs.getRange(2, 1, rn - 1, 12).getValues();
     v.forEach(function (r) { var l = r[1]; cnt[l] = cnt[l] || { n: 0, ok: 0, t: {} }; cnt[l].n++; var tm = String(r[5] || '-'); cnt[l].t[tm] = cnt[l].t[tm] || { n: 0, ok: 0 }; cnt[l].t[tm].n++; if (r[10] === 'SIM') { cnt[l].ok++; cnt[l].t[tm].ok++; } });
@@ -2386,4 +2389,21 @@ function profSaldos_(p) {
   out.alunos.sort(function (a, b) { return b.brl - a.brl; });
   out.ts = t.ts;
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+// ---- Multiplicador x5 (evento) ----
+function rbxMult_() {
+  var p = PropertiesService.getScriptProperties();
+  var f = Number(p.getProperty('rbx_mult') || 1), ate = Number(p.getProperty('rbx_mult_ate') || 0);
+  if (!(ate > Date.now())) return { f: 1, ate: 0 };
+  return { f: f, ate: ate };
+}
+function rbxMultSet_(p) {
+  if (String(p.k || '') !== RBX_KEY) return ok_('sem permissao');
+  var min = Math.max(0, Math.min(720, Math.round(Number(p.min) || 0)));
+  var f = Math.max(1, Math.min(10, Number(p.f) || 5));
+  var pr = PropertiesService.getScriptProperties();
+  if (!min) { pr.setProperty('rbx_mult', '1'); pr.setProperty('rbx_mult_ate', '0'); return ok_('desligado'); }
+  pr.setProperty('rbx_mult', String(f));
+  pr.setProperty('rbx_mult_ate', String(Date.now() + min * 60000));
+  return ok_('x' + f + ' por ' + min + ' min');
 }

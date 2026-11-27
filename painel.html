@@ -1109,6 +1109,18 @@
 
 
     <div class="container">
+    <div class="box" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+        <b style="font-size:.95rem">🔥 Multiplicador x5</b>
+        <select id="multMin" style="background:#0b1120;color:#f4f6ff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 8px">
+            <option value="15">15 min</option>
+            <option value="30" selected>30 min</option>
+            <option value="60">1 hora</option>
+            <option value="120">2 horas</option>
+        </select>
+        <button onclick="multOn()" style="background:#f59e0b;color:#1a1204;border:0;border-radius:8px;padding:7px 12px;font-weight:900">Ativar</button>
+        <button onclick="multOff()" style="background:rgba(255,255,255,.1);color:#f4f6ff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 12px;font-weight:800">Desligar</button>
+        <span id="multMsg" style="font-size:.82rem;color:#a9b4d6"></span>
+    </div>
         <header>
             <div class="logo-area">
                 <h1>🎮 <span class="roblox-tag" id="ttl">RobIox</span></h1>
@@ -2502,6 +2514,9 @@
             });
             document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pn.hidden = true; bt.setAttribute('aria-expanded', 'false'); } });
         })();
+
+        function multOn(){var m=document.getElementById('multMin').value,el=document.getElementById('multMsg');el.textContent='Ativando…';fetch(window.EDU_ENDPOINT+'?acao=rbxmult&k=ludo2026&f=5&min='+m).then(function(r){return r.text()}).then(function(t){el.textContent='Ativado: x5 por '+m+' min ('+t+')'}).catch(function(){el.textContent='Não consegui ativar.'})}
+        function multOff(){var el=document.getElementById('multMsg');el.textContent='Desligando…';fetch(window.EDU_ENDPOINT+'?acao=rbxmult&k=ludo2026&f=5&min=0').then(function(r){return r.text()}).then(function(t){el.textContent='Desligado ('+t+')'}).catch(function(){el.textContent='Não consegui desligar.'})}
 
         cfgInit();
         festaHoje();
