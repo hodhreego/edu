@@ -363,11 +363,11 @@
     O.topoEm = function (x, z) { var best = null; plats.forEach(function (p) { if (p.vivo && Math.abs(x - p.x) <= p.w / 2 + .3 && Math.abs(z - p.z) <= p.d / 2 + .3 && (!best || p.y > best.y)) best = p; }); return best ? best.y : null; };
 
     /* controles: teclado, toque (joystick + pulo), gamepad */
-    function kd(e) { var k = e.key; if (/^(Arrow|w|a|s|d|W|A|S|D| )/.test(k) && k.length <= 10) { keys[k.toLowerCase()] = true; if (k === ' ' || k === 'ArrowUp' || k === 'ArrowDown') e.preventDefault(); if (k === ' ') jumpQ = true; } }
-    function ku(e) { keys[e.key.toLowerCase()] = false; }
+    function kd(e) { var k = e.key; if (k === 'h' || k === 'H') keys.h = true; if (/^(Arrow|w|a|s|d|W|A|S|D| )/.test(k) && k.length <= 10) { keys[k.toLowerCase()] = true; if (k === ' ' || k === 'ArrowUp' || k === 'ArrowDown') e.preventDefault(); if (k === ' ') jumpQ = true; } }
+    function ku(e) { keys[e.key.toLowerCase()] = false; if (e.key === ' ') P.hc = 0; }
     window.addEventListener('keydown', kd); window.addEventListener('keyup', ku);
     var jb = document.createElement('div'); jb.className = 'qzt touch'; jb.style.cssText += 'right:16px;bottom:64px;width:84px;height:84px;font-size:15px'; jb.textContent = 'PULAR'; wrap.appendChild(jb);
-    jb.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); jumpQ = true; P.jb = 1; });
+    jb.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); P.hc = 0; jumpQ = true; P.jb = 1; });
     jb.addEventListener('pointerup', function () { P.jb = 0; });
     var jbase = document.createElement('div'); jbase.className = 'qzt touch'; jbase.style.cssText += 'left:16px;bottom:64px;width:120px;height:120px;background:rgba(255,255,255,.1)'; var knob = document.createElement('div'); knob.style.cssText = 'width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none'; jbase.appendChild(knob); wrap.appendChild(jbase);
     var jid = null;
@@ -426,9 +426,9 @@
       if (P.chao) P.lg = P.chao;
       if (jumpQ && P.coyote > 0) {   /* pulo turbo igual ao obby principal: 3º pulo seguido na mesma plataforma = alto, 6º = mais alto, 7º = bem mais alto */
         if (P.lg !== P.jplat) { P.jn = 0; P.jplat = P.lg; }
-        P.jn = ((P.jn || 0) % 7) + 1; var jbm = P.jn === 3 ? Math.SQRT2 : P.jn === 6 ? Math.sqrt(3) : P.jn === 7 ? 2.05 : 1;
+        P.jn = ((P.jn || 0) % 7) + 1; var jbm = P.jn === 3 ? Math.SQRT2 : P.jn === 6 ? Math.sqrt(3) : P.jn === 7 ? 2.05 : 1; P.hc = (P.hc || 0) + 1; var hyp = !!keys.h || P.hc % 10 === 0; if (hyp) jbm = Math.sqrt(20);   /* HIPER PULO 20x: 10º pulo sem soltar ou Espaço + H */
         P.vy = 9.6 * jbm; P.coyote = 0; P.chao = null; K.beep(jbm > 1 ? (P.jn === 7 ? 820 : 660) : 520, .07, 'square', .025);
-        if (jbm > 1) { try { (O.turboMsg = O.turboMsg || K.msg(wrap))(P.jn === 7 ? '🚀 SUPER PULO!' : '🚀 Pulo turbo!', 900); } catch (e) {} }
+        if (jbm > 1) { try { (O.turboMsg = O.turboMsg || K.msg(wrap))(hyp ? '⚡ HIPER PULO!' : P.jn === 7 ? '🚀 SUPER PULO!' : '🚀 Pulo turbo!', 900); } catch (e) {} }
       }
       jumpQ = false;
       P.vy -= 24 * dt; if (P.vy < -30) P.vy = -30;
