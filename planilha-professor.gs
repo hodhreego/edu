@@ -103,7 +103,7 @@ function stamp_(x) {
 
 function paraPainel_(ss, x, carimbo) {
   var turma = String(x[3] || 'Sem turma').substring(0, 30);
-  var p = painel_(ss, turma.indexOf('(') === 0 ? 'Sem turma' : turma);
+  var p = painel_(ss, nomeTurma_(turma));
   gravar_(p, [x[2], x[0], x[1], x[7], x[8], x[9], x[11], x[12], x[13], x[14], x[15], x[17], x[18], x[19], '', carimbo, x[22]], x[22], PAI.length, 0);
   var n = p.getLastRow() - HR;
   if (n < 1) return;
@@ -128,7 +128,7 @@ function reconstruir_() {
   if (!t || t.getLastRow() <= HR) return;
   var v = t.getRange(HR + 1, 1, t.getLastRow() - HR, DET.length).getValues(), grupos = {};
   v.forEach(function (x) {
-    var turma = String(x[3] || 'Sem turma').substring(0, 30), nome = turma.indexOf('(') === 0 ? 'Sem turma' : turma;
+    var turma = String(x[3] || 'Sem turma').substring(0, 30), nome = nomeTurma_(turma);
     (grupos[nome] = grupos[nome] || []).push(x);
   });
   Object.keys(grupos).forEach(function (nome) {
@@ -160,6 +160,11 @@ function ok_(t) { return ContentService.createTextOutput(t); }
 
 // ---- Escolas liberadas: Schuster e Clarito salvam direto; qualquer outra fica retida até o professor liberar. ----
 function norm_(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); }
+
+/* Turmas válidas (as mesmas do menu.js). Qualquer outra vira "Sem turma": nunca cria aba nova. */
+var TURMAS_OK = ['6º a','6º b','6º c','6º d','8º a','8º b','8º c','9º a','9º b','9º c','2º c','3º b','3º c'];
+function turmaOk_(t) { var n = norm_(t).replace(/\s+/g, ' '); return TURMAS_OK.indexOf(n) >= 0; }
+function nomeTurma_(t) { t = String(t || '').substring(0, 30); if (t.indexOf('(') === 0 || !turmaOk_(t)) return 'Sem turma'; return t.replace(/\s+/g, ' ').trim().replace(/\s?([a-d])$/i, function (m, l) { return ' ' + l.toUpperCase(); }); }
 function liberadas_(ss) {
   var sh = ss.getSheetByName('Config');
   if (!sh) {
