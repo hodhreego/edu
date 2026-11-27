@@ -282,15 +282,24 @@ function OBBY(api, o) {
   function pd(e) {
     if (isOpen() || dead) return; if (e.target !== cv && e.target !== root) return; e.preventDefault();
     if (e.pointerType !== 'mouse' && e.clientX < vw * .45 && stk.id == null) { stk.id = e.pointerId; stk.ox = e.clientX; stk.oy = e.clientY; stick.style.left = e.clientX + 'px'; stick.style.top = e.clientY + 'px'; stick.style.display = 'block'; knob.style.transform = ''; return; }
-    if (drag.id == null) { drag.id = e.pointerId; drag.lx = e.clientX; }
+    if (drag.id == null) { drag.id = e.pointerId; drag.lx = e.clientX; drag.ly = e.clientY; }
   }
   function pm(e) {
     if (e.pointerId === stk.id) { var dx = e.clientX - stk.ox, dy = e.clientY - stk.oy, m = Math.sqrt(dx * dx + dy * dy), R = 48; if (m > R) { dx *= R / m; dy *= R / m; } stk.x = dx / R; stk.y = -dy / R; if (m < 7) stk.x = stk.y = 0; knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; }
-    else if (e.pointerId === drag.id) { camYaw -= (e.clientX - drag.lx) * (e.pointerType === 'mouse' ? .0075 : .011); drag.lx = e.clientX; lastDrag = gt; }
+    else if (e.pointerId === drag.id) { camYaw -= (e.clientX - drag.lx) * (e.pointerType === 'mouse' ? .013 : .011); E.camH = cl(E.camH + (e.clientY - (drag.ly == null ? e.clientY : drag.ly)) * .02, 1, 8); drag.lx = e.clientX; drag.ly = e.clientY; lastDrag = gt; }
+    else if (camLivre && document.pointerLockElement === cv && e.pointerType === 'mouse') { camYaw -= (e.movementX || 0) * .006; E.camH = cl(E.camH + (e.movementY || 0) * .012, 1, 8); lastDrag = gt; }
   }
   function pu(e) { if (e.pointerId === stk.id) { stk.id = null; stk.x = stk.y = 0; stick.style.display = 'none'; } if (e.pointerId === drag.id) drag.id = null; if (e.pointerId === jId) { jHeld = false; jId = null; jumpB.classList.remove('dn'); } }
   jumpB.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); if (isOpen()) return; jHeld = true; jId = e.pointerId; pl.jb = .15; jumpB.classList.add('dn'); });
-  root.addEventListener('pointerdown', pd); window.addEventListener('pointermove', pm); window.addEventListener('pointerup', pu); window.addEventListener('pointercancel', pu);
+  root.addEventListener('pointerdown', pd); root.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  /* câmera livre: com o botão ligado, clicar na cena prende o mouse e só mexer o mouse já gira a câmera (Esc solta) */
+  var camLivre = false, camBt = document.createElement('button'); camBt.type = 'button'; camBt.textContent = '🖱️ Câmera livre';
+  camBt.style.cssText = 'position:absolute;right:10px;bottom:58px;z-index:5;border:0;border-radius:10px;padding:7px 11px;font:800 13px system-ui,Arial;background:rgba(15,23,42,.72);color:#fff;cursor:pointer';
+  camBt.title = 'Ligado: clique na cena e gire a câmera só mexendo o mouse (Esc solta). Desligado: arraste com o mouse para girar.';
+  if (!E.isTouch) root.appendChild(camBt);
+  camBt.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+  camBt.addEventListener('click', function (e) { e.stopPropagation(); camLivre = !camLivre; camBt.style.background = camLivre ? '#16a34a' : 'rgba(15,23,42,.72)'; camBt.textContent = camLivre ? '🖱️ Câmera livre: LIGADA (clique na cena)' : '🖱️ Câmera livre'; if (!camLivre && document.pointerLockElement === cv) try { document.exitPointerLock(); } catch (x) {} });
+  cv.addEventListener('click', function () { if (camLivre && document.pointerLockElement !== cv && !isOpen()) try { cv.requestPointerLock(); } catch (x) {} }); window.addEventListener('pointermove', pm); window.addEventListener('pointerup', pu); window.addEventListener('pointercancel', pu);
   function wh(e) { E.camD = cl(E.camD + (e.deltaY > 0 ? .6 : -.6), 4.5, 11); }
   root.addEventListener('wheel', wh, { passive: true });
   function kd(e) {
@@ -323,7 +332,7 @@ function OBBY(api, o) {
     var sy = Math.sin(camYaw), cy = Math.cos(camYaw), wx = -sy * az + cy * ax, wz = -cy * az - sy * ax;
     var k = Math.min(1, (pl.gr ? 16 : 7) * dt); pl.vx += (wx * SPD - pl.vx) * k; pl.vz += (wz * SPD - pl.vz) * k;
     if (m > .1) pl.face += angD(Math.atan2(wx, wz), pl.face) * Math.min(1, dt * 14);
-    if (o.autoCam !== false && gt - lastDrag > 1.2 && az > .35 && m > .3) camYaw += angD(Math.atan2(-wx, -wz), camYaw) * Math.min(1, dt * 1.1 * az);
+    if (o.autoCam !== false && !camLivre && gt - lastDrag > 6 && az > .35 && m > .3) camYaw += angD(Math.atan2(-wx, -wz), camYaw) * Math.min(1, dt * 1.1 * az);
     if (pl.gr) pl.coy = .1; else pl.coy -= dt;
     if (jHeld) pl.jb = Math.max(pl.jb, .06); if (pl.jb > 0) pl.jb -= dt;
     if (pl.gnd) pl.lg = pl.gnd;

@@ -377,6 +377,25 @@
     function jend(e) { if (e.pointerId !== jid) return; jid = null; joy.x = joy.y = 0; knob.style.transform = ''; }
     jbase.addEventListener('pointerup', jend); jbase.addEventListener('pointercancel', jend);
     var gpPrev = false;
+    /* câmera: arrastar (mouse esquerdo/direito ou dedo fora do joystick) gira; roda do mouse aproxima; botão "Câmera livre" gira só mexendo o mouse */
+    var camYaw = 0, camDist = 9, camH = 5.6, cdrag = null, camLivre = false, cvE = ren.domElement;
+    function cl2(v, a, b) { return v < a ? a : v > b ? b : v; }
+    wrap.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    wrap.addEventListener('pointerdown', function (e) { if (e.target !== cvE) return; cdrag = { id: e.pointerId, x: e.clientX, y: e.clientY }; if (camLivre && e.pointerType === 'mouse' && document.pointerLockElement !== cvE) try { cvE.requestPointerLock(); } catch (x) {} });
+    function cmove(e) {
+      if (camLivre && document.pointerLockElement === cvE && e.pointerType === 'mouse') { camYaw -= (e.movementX || 0) * .006; camH = cl2(camH + (e.movementY || 0) * .015, 2, 12); return; }
+      if (!cdrag || e.pointerId !== cdrag.id) return; camYaw -= (e.clientX - cdrag.x) * .012; camH = cl2(camH + (e.clientY - cdrag.y) * .025, 2, 12); cdrag.x = e.clientX; cdrag.y = e.clientY;
+    }
+    function cup(e) { if (cdrag && e.pointerId === cdrag.id) cdrag = null; }
+    window.addEventListener('pointermove', cmove); window.addEventListener('pointerup', cup); window.addEventListener('pointercancel', cup);
+    wrap.addEventListener('wheel', function (e) { camDist = cl2(camDist + (e.deltaY > 0 ? .8 : -.8), 4, 18); }, { passive: true });
+    var camBt = document.createElement('button'); camBt.type = 'button'; camBt.textContent = '🖱️ Câmera livre';
+    camBt.style.cssText = 'position:absolute;right:12px;bottom:12px;z-index:6;border:0;border-radius:10px;padding:7px 11px;font:800 13px system-ui,Arial;background:rgba(15,23,42,.72);color:#fff;cursor:pointer';
+    camBt.title = 'Ligado: clique na cena e gire a câmera só mexendo o mouse (Esc solta). Desligado: arraste com o mouse para girar. Rodinha: aproximar/afastar.';
+    if (!matchMedia('(pointer: coarse)').matches) wrap.appendChild(camBt);
+    camBt.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+    camBt.addEventListener('click', function (e) { e.stopPropagation(); camLivre = !camLivre; camBt.style.background = camLivre ? '#16a34a' : 'rgba(15,23,42,.72)'; camBt.textContent = camLivre ? '🖱️ Câmera livre: LIGADA (clique na cena)' : '🖱️ Câmera livre'; if (!camLivre && document.pointerLockElement === cvE) try { document.exitPointerLock(); } catch (x) {} });
+    O.camReset = function () { camYaw = 0; camDist = 9; camH = 5.6; };
 
     var t = 0, last = 0, raf = 0, upd = null, vivo = true, anim = 0;
     O.loop = function (fn) { upd = fn; };
@@ -400,6 +419,7 @@
         try { var gp = navigator.getGamepads ? navigator.getGamepads()[0] : null; if (gp) { if (Math.abs(gp.axes[0]) > .2) ix += gp.axes[0]; if (Math.abs(gp.axes[1]) > .2) iz += gp.axes[1]; var pr = gp.buttons[0] && gp.buttons[0].pressed; if (pr && !gpPrev) jumpQ = true; gpPrev = pr; if (gp.buttons[14] && gp.buttons[14].pressed) ix -= 1; if (gp.buttons[15] && gp.buttons[15].pressed) ix += 1; if (gp.buttons[12] && gp.buttons[12].pressed) iz -= 1; if (gp.buttons[13] && gp.buttons[13].pressed) iz += 1; } } catch (e) {}
         var m = Math.hypot(ix, iz); if (m > 1) { ix /= m; iz /= m; }
       } else jumpQ = false;
+      if (camYaw) { var cyw = Math.cos(camYaw), syw = Math.sin(camYaw), rx = ix * cyw + iz * syw, rz = -ix * syw + iz * cyw; ix = rx; iz = rz; }
       var v = O.velocidade * sp, ac = P.chao ? 14 : 6;
       P.vx += (ix * v - P.vx) * Math.min(1, ac * dt); P.vz += (iz * v - P.vz) * Math.min(1, ac * dt);
       if (P.chao) P.coyote = .12; else P.coyote -= dt;
@@ -442,9 +462,9 @@
       /* fantasmas */
       for (var k in ghosts) { var g = ghosts[k]; g.x += (g.tx - g.x) * Math.min(1, dt * 3); g.y += (g.ty - g.y) * Math.min(1, dt * 3); g.z += (g.tz - g.z) * Math.min(1, dt * 3); g.g.position.set(g.x, g.y, g.z); }
       /* câmera atrás e acima */
-      var cx = P.x, cz = P.z + 9, cy = P.y + 5.6;
+      var cx = P.x + Math.sin(camYaw) * camDist, cz = P.z + Math.cos(camYaw) * camDist, cy = P.y + camH;
       cam.position.x += (cx - cam.position.x) * Math.min(1, dt * 5); cam.position.y += (cy - cam.position.y) * Math.min(1, dt * 4); cam.position.z += (cz - cam.position.z) * Math.min(1, dt * 5);
-      cam.lookAt(cam.position.x, pausado ? P.y - 2.6 : P.y + 1, P.z - 6);
+      cam.lookAt(P.x - Math.sin(camYaw) * 6, pausado ? P.y - 2.6 : P.y + 1, P.z - Math.cos(camYaw) * 6);
       deco.position.z = cam.position.z * .6;
     }
     function frame(ts) {
